@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def add_arguments(self):
         self.add_argument('--currency', help='the expected currency')
 
-    def handle(self, args, other, data):
+    def handle(self, args, data):
         # Initialize the variables.
 
         releases_by_buyer = defaultdict(list)

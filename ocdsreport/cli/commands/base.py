@@ -1,7 +1,6 @@
 import json
-import os.path
-
-import requests
+import io
+import sys
 
 from ocdsreport.exceptions import CommandError
 
@@ -17,13 +16,9 @@ class BaseCommand(object):
     def add_argument(self, *args, **kwargs):
         self.subparser.add_argument(*args, **kwargs)
 
-    def read_json_data(self, url_or_path, encoding):
+    def read(self, encoding):
         try:
-            if os.path.isfile(url_or_path):
-                with open(url_or_path, 'r', encoding=encoding) as f:
-                    return json.loads(f.read())
-            else:
-                return requests.get(url_or_path).json()
+            return json.loads(io.TextIOWrapper(sys.stdin.buffer, encoding=encoding).read())
         except UnicodeDecodeError as e:
             if encoding and encoding.lower() == 'iso-8859-1':
                 suggestion = 'utf-8'

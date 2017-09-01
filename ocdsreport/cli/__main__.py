@@ -9,13 +9,13 @@ logger = logging.getLogger('pupa')
 
 COMMAND_MODULES = (
     'ocdsreport.cli.commands.measure',
+    'ocdsreport.cli.commands.merge',
     'ocdsreport.cli.commands.validate',
 )
 
 
 def main():
     parser = argparse.ArgumentParser(description='reporting CLI')
-    parser.add_argument('url_or_path', help='a URL or a path to a file')
     parser.add_argument('--encoding', help='the file encoding')
 
     subparsers = parser.add_subparsers(dest='subcommand', help='subcommands')
@@ -33,8 +33,8 @@ def main():
     if args.subcommand:
         command = subcommands[args.subcommand]
         try:
-            data = command.read_json_data(args.url_or_path, args.encoding)
-            command.handle(args, None, data)
+            data = command.read(args.encoding)
+            command.handle(args, data)
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)

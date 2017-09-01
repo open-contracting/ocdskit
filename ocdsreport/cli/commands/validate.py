@@ -14,7 +14,7 @@ class Command(BaseCommand):
                           default='http://standard.open-contracting.org/schema/1__1__1/release-package-schema.json')
         self.add_argument('--limit', type=int, help='the number of items to validate')
 
-    def handle(self, args, other, data):
+    def handle(self, args, data):
         schema = requests.get(args.schema).json()
 
         if isinstance(data, dict):
