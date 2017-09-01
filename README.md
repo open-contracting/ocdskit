@@ -2,5 +2,5 @@
 
 Scripts for automatically measuring specific indicators.
 
-    pip install -r requirements.txt
-    python measure.py --help
+    pip install --upgrade .
+    ocdsreport --help
