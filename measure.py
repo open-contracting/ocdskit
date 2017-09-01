@@ -13,12 +13,12 @@ from dateutil import parser
 
 # Parse the arguments.
 
-parser = argparse.ArgumentParser(description='Measure indicators in OCDS data.')
-parser.add_argument('url_or_path', help='a URL or a path to a file')
-parser.add_argument('--encoding', help='the file encoding')
-parser.add_argument('--currency', help='the expected currency')
+argument_parser = argparse.ArgumentParser(description='Measure indicators in OCDS data.')
+argument_parser.add_argument('url_or_path', help='a URL or a path to a file')
+argument_parser.add_argument('--encoding', help='the file encoding')
+argument_parser.add_argument('--currency', help='the expected currency')
 
-args = parser.parse_args()
+args = argument_parser.parse_args()
 
 if os.path.isfile(args.url_or_path):
     with open(args.url_or_path, 'r', encoding=args.encoding) as f:
