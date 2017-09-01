@@ -1,2 +1,3 @@
 ocdsmerge==0.3
+python-dateutil==2.6.1
 requests==2.18.4
