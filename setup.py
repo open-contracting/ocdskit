@@ -13,6 +13,7 @@ setup(
     entry_points='''[console_scripts]
 ocdsreport = ocdsreport.cli.__main__:main''',
     install_requires=[
+        'jsonschema==2.6.0',
         'ocdsmerge==0.3',
         'python-dateutil==2.6.1',
         'pytz==2017.2',

@@ -8,8 +8,8 @@ from ocdsreport.exceptions import CommandError
 logger = logging.getLogger('pupa')
 
 COMMAND_MODULES = (
+    'ocdsreport.cli.commands.compile',
     'ocdsreport.cli.commands.measure',
-    'ocdsreport.cli.commands.merge',
     'ocdsreport.cli.commands.validate',
 )
 
@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description='reporting CLI')
     parser.add_argument('--encoding', help='the file encoding')
 
-    subparsers = parser.add_subparsers(dest='subcommand', help='subcommands')
+    subparsers = parser.add_subparsers(dest='subcommand')
 
     subcommands = {}
     for module in COMMAND_MODULES:

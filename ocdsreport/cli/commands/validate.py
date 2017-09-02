@@ -3,6 +3,7 @@ from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
+from ocdsreport.exceptions import CommandError
 
 
 class Command(BaseCommand):
@@ -20,5 +21,6 @@ class Command(BaseCommand):
         if isinstance(data, dict):
             data = [data]
 
-        for item in data[0:args.limit]:
-            assert validator(schema, format_checker=FormatChecker()).is_valid(item)
+        for i, item in enumerate(data[0:args.limit]):
+            if not validator(schema, format_checker=FormatChecker()).is_valid(item):
+                raise CommandError('item {} is invalid'.format(i))
