@@ -13,7 +13,7 @@ To report on a local file:
 
     cat <path> | ocdsreport <command>
 
-For exploring the JSON output of the `merge` command, consider using [jq](https://stedolan.github.io/jq/).
+For exploring the JSON output of the `compile` command, consider using [jq](https://stedolan.github.io/jq/).
 
 ## Examples
 
