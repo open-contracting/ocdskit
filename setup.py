@@ -17,7 +17,7 @@ ocdsreport = ocdsreport.cli.__main__:main''',
         'ocdsmerge==0.3',
         'python-dateutil==2.6.1',
         'pytz==2017.2',
-        'requests==2.18.4',
+        'requests==2.18.4', 'sqlalchemy',
     ],
     classifiers=[
         'License :: OSI Approved :: BSD License',
