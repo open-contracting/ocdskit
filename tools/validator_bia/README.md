@@ -19,6 +19,12 @@ Install the requirements
 pip install -r requirements.txt
 ```
 
+Until [ocds-tabulate](https://github.com/open-contracting/ocds-tabulate) is integrated into this repository, you must:
+
+```shell
+curl -O https://raw.githubusercontent.com/open-contracting/ocds-tabulate/master/tabulate_ocds.py
+```
+
 ## Usage
 
 To see the options.
