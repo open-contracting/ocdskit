@@ -3,6 +3,10 @@ Assumptions:
 - All awards/suppliers/identifier/id appear in tender/tenderers/identifier/id
 """
 
+import io
+import json
+import sys
+
 from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
 from statistics import median
@@ -12,6 +16,7 @@ import pytz
 from dateutil import parser
 
 from .base import BaseCommand
+from ocdskit.exceptions import CommandError
 
 
 class Command(BaseCommand):
@@ -21,7 +26,16 @@ class Command(BaseCommand):
     def add_arguments(self):
         self.add_argument('--currency', help='the expected currency')
 
-    def handle(self, args, data):
+    def handle(self):
+        try:
+            data = json.loads(self.buffer().read())
+        except UnicodeDecodeError as e:
+            if self.args.encoding and self.args.encoding.lower() == 'iso-8859-1':
+                suggestion = 'utf-8'
+            else:
+                suggestion = 'iso-8859-1'
+            raise CommandError('encoding error: try `--encoding {}`? ({})'.format(suggestion, e))
+
         compiled_releases_by_buyer = defaultdict(list)
         min_date_by_buyer = {}
 
@@ -46,7 +60,7 @@ class Command(BaseCommand):
 
                 ocid = compiled_release['ocid']
                 # We use buyer names as keys, because buyer IDs are reused. We can make this optional.
-                buyer = compiled_release['buyer']['name']
+                buyer = str(compiled_release['buyer']['name'])
                 tender = compiled_release['tender']
                 procurementMethod = tender['procurementMethod']
                 numberOfTenderers = tender['numberOfTenderers']
@@ -66,9 +80,9 @@ class Command(BaseCommand):
                 b2_procurement_method_count[str(procurementMethod)] += 1  # if null
 
                 if procurementMethod and amount:
-                    if args.currency:
+                    if self.args.currency:
                         # Ensure we sum a single currency.
-                        assert currency == args.currency, '{} uses {}'.format(ocid, currency)
+                        assert currency == self.args.currency, '{} uses {}'.format(ocid, currency)
                     b3_procurement_method_amount[procurementMethod] += amount
                 else:
                     b3_no_data.append(amount)
@@ -162,7 +176,7 @@ class Command(BaseCommand):
                             currency = award['value']['currency']
 
                             # Ensure we sum a single currency.
-                            if not args.currency or currency == args.currency:
+                            if not self.args.currency or currency == self.args.currency:
                                 b5_suppliers_amount_all += amount
                                 if any(supplier['identifier']['id'] in b4_suppliers_count_new for supplier in award['suppliers']):  # noqa
                                     b5_suppliers_amount_new += amount
@@ -183,6 +197,7 @@ class Command(BaseCommand):
         def report_by_label(message, data, fmt='{1:-3.0%} {0}'):
             fmt = '  ' + fmt
             print(message)
+            print(repr(data))
             for label, value in sorted(data.items()):
                 print(fmt.format(label, value))
             print()

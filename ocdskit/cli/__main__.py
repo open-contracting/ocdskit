@@ -5,7 +5,7 @@ import sys
 
 from ocdskit.exceptions import CommandError
 
-logger = logging.getLogger('pupa')
+logger = logging.getLogger('ocdskit')
 
 COMMAND_MODULES = (
     'ocdskit.cli.commands.compile',
@@ -17,10 +17,12 @@ COMMAND_MODULES = (
 def main():
     parser = argparse.ArgumentParser(description='reporting CLI')
     parser.add_argument('--encoding', help='the file encoding')
+    parser.add_argument('--pretty', action='store_true', help='pretty print output')
 
     subparsers = parser.add_subparsers(dest='subcommand')
 
     subcommands = {}
+
     for module in COMMAND_MODULES:
         try:
             command = importlib.import_module(module).Command(subparsers)
@@ -33,8 +35,8 @@ def main():
     if args.subcommand:
         command = subcommands[args.subcommand]
         try:
-            data = command.read(args.encoding)
-            command.handle(args, data)
+            command.args = args
+            command.handle()
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
