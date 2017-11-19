@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 
 from .base import BaseCommand
 
@@ -9,7 +8,7 @@ class Command(BaseCommand):
     help = 'reads release packages from standard input, collects releases, and prints one release package'
 
     def handle(self):
-        output = {'releases': []}
+        output = {'extensions': set(), 'releases': []}
 
         for line in self.buffer():
             package = json.loads(line)
@@ -27,5 +26,10 @@ class Command(BaseCommand):
                     output[field] = package[field]
 
             output['releases'].extend(package['releases'])
+
+        if output['extensions']:
+            output['extensions'] = list(output['extensions'])
+        else:
+            del output['extensions']
 
         self.print(output)
