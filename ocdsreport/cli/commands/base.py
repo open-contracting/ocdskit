@@ -2,7 +2,7 @@ import json
 import io
 import sys
 
-from ocdsreport.exceptions import CommandError
+from ocdskit.exceptions import CommandError
 
 
 class BaseCommand(object):

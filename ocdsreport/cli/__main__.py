@@ -3,14 +3,14 @@ import importlib
 import logging.config
 import sys
 
-from ocdsreport.exceptions import CommandError
+from ocdskit.exceptions import CommandError
 
 logger = logging.getLogger('pupa')
 
 COMMAND_MODULES = (
-    'ocdsreport.cli.commands.compile',
-    'ocdsreport.cli.commands.measure',
-    'ocdsreport.cli.commands.validate',
+    'ocdskit.cli.commands.compile',
+    'ocdskit.cli.commands.measure',
+    'ocdskit.cli.commands.validate',
 )
 
 

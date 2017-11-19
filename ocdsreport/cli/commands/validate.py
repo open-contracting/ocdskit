@@ -3,7 +3,7 @@ from jsonschema import FormatChecker
 from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
-from ocdsreport.exceptions import CommandError
+from ocdskit.exceptions import CommandError
 
 
 class Command(BaseCommand):
