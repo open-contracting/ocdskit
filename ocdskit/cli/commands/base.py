@@ -26,12 +26,12 @@ class BaseCommand(object):
     def buffer(self):
         return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
 
-    def print(self, data, pretty=False):
+    def print(self, data):
         """
         Prints JSON data.
         """
         # See https://docs.python.org/2/library/json.html
-        if pretty:
+        if self.args.pretty:
             kwargs = {'indent': 2, 'separators': (',', ': ')}
         else:
             kwargs = {'separators': (',', ':')}

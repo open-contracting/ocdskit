@@ -9,16 +9,13 @@ from .base import BaseCommand
 
 class Command(BaseCommand):
     name = 'validate'
-    help = 'quickly validate OCDS data'
+    help = 'reads JSON data from standard input, validates it against the schema, and prints errors'
 
     def add_arguments(self):
         self.add_argument('--schema', help='the schema to validate against',
                           default='http://standard.open-contracting.org/latest/en/release-package-schema.json')
 
     def handle(self):
-        """
-        Reads JSON data from standard input, validates it against the schema, and prints errors.
-        """
         schema = requests.get(self.args.schema).json()
 
         for i, line in enumerate(self.buffer()):

@@ -8,6 +8,8 @@ from ocdskit.exceptions import CommandError
 logger = logging.getLogger('ocdskit')
 
 COMMAND_MODULES = (
+    'ocdskit.cli.commands.combine_record_packages',
+    'ocdskit.cli.commands.combine_release_packages',
     'ocdskit.cli.commands.compile',
     'ocdskit.cli.commands.measure',
     'ocdskit.cli.commands.validate',

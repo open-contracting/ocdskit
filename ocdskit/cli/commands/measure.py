@@ -3,9 +3,7 @@ Assumptions:
 - All awards/suppliers/identifier/id appear in tender/tenderers/identifier/id
 """
 
-import io
 import json
-import sys
 
 from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
