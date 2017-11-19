@@ -12,6 +12,8 @@ class Command(BaseCommand):
     def handle(self):
         """
         Reads a release package from standard input, merges its releases, and prints the compiled release.
+
+        This assumes the releases in the release package are for one contracting process.
         """
         for line in self.buffer():
             release_package = json.loads(line)
