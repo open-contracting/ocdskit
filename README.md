@@ -1,19 +1,23 @@
-# MEL Reporting Support
+# OCDS Kit
 
 Scripts for automatically measuring specific indicators.
 
+    pip install ocdskit
+    ocdskit --help
+
+To install from source:
+
     pip install --upgrade .
-    ocdsreport --help
 
-`ocdsreport` accepts JSON data from standard input. To report on a remote file:
+`ocdskit` accepts JSON data from standard input. To report on a remote file:
 
-    curl <url> | ocdsreport <command>
+    curl <url> | ocdskit <command>
 
 To report on a local file:
 
-    cat <path> | ocdsreport <command>
+    cat <path> | ocdskit <command>
 
-For exploring the JSON output of the `compile` command, consider using [jq](https://stedolan.github.io/jq/).
+For exploring JSON data, consider using [jq](https://stedolan.github.io/jq/).
 
 ## Examples
 
@@ -23,18 +27,18 @@ Download a list of release packages:
 
 Validate it:
 
-    cat release_packages.json | ocdsreport --encoding iso-8859-1 validate --schema http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
+    jq -rcM '.[]' release_packages.json | ocdskit validate --schema http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
 
-Transform it to a list of compiled releases:
+Transform it to a stream of compiled releases:
 
-    cat release_packages.json | ocdsreport --encoding iso-8859-1 compile > compiled_releases.json
+    jq -rcM '.[]' release_packages.json | ocdskit compile > compiled_releases.json
 
 Find a compiled release with a given `ocid` (replace the `…`):
 
-    cat compiled_releases.json | jq '.[] | select(.ocid == "…")'
+    jq 'select(.ocid == "OCDS-87SD3T-AD-SF-DRM-063-2015")' compiled_releases.json
 
 Measure indicators across release packages:
 
-    cat release_packages.json | ocdsreport --encoding iso-8859-1 measure --currency MXN
+    cat release_packages.json | ocdskit --encoding iso-8859-1 measure --currency MXN
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license

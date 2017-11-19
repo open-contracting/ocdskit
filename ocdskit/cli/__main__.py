@@ -3,24 +3,28 @@ import importlib
 import logging.config
 import sys
 
-from ocdsreport.exceptions import CommandError
+from ocdskit.exceptions import CommandError
 
-logger = logging.getLogger('pupa')
+logger = logging.getLogger('ocdskit')
 
 COMMAND_MODULES = (
-    'ocdsreport.cli.commands.compile',
-    'ocdsreport.cli.commands.measure',
-    'ocdsreport.cli.commands.validate',
+    'ocdskit.cli.commands.combine_record_packages',
+    'ocdskit.cli.commands.combine_release_packages',
+    'ocdskit.cli.commands.compile',
+    'ocdskit.cli.commands.measure',
+    'ocdskit.cli.commands.validate',
 )
 
 
 def main():
     parser = argparse.ArgumentParser(description='reporting CLI')
     parser.add_argument('--encoding', help='the file encoding')
+    parser.add_argument('--pretty', action='store_true', help='pretty print output')
 
     subparsers = parser.add_subparsers(dest='subcommand')
 
     subcommands = {}
+
     for module in COMMAND_MODULES:
         try:
             command = importlib.import_module(module).Command(subparsers)
@@ -33,8 +37,8 @@ def main():
     if args.subcommand:
         command = subcommands[args.subcommand]
         try:
-            data = command.read(args.encoding)
-            command.handle(args, data)
+            command.args = args
+            command.handle()
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
