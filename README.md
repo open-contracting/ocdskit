@@ -53,6 +53,22 @@ Download a list of record packages:
 
 Combine it into a single record package:
 
-    jq -crM '.[]' record_packages.json | ocdskit combine-record-packages
+    jq -crM '.[]' record_packages.json | ocdskit combine-record-packages > record_package.json
+
+If the file is too large for the OCDS Validator, you can break it into parts. First, transform the list into a stream:
+
+    jq -crM '.[]' record_packages.json > stream.json
+
+Combine the first 10,000 items from the stream into a single record package:
+
+    head -n 10000 stream.json | ocdskit combine-record-packages > record_package-1.json
+
+Then, combine the next 10,000 items from the stream into a single record package:
+
+    tail -n +10001 stream.json | head -n 10000 | ocdskit combine-record-packages > record_package-2.json
+
+And so on:
+
+    tail -n +20001 stream.json | head -n 10000 | ocdskit combine-record-packages > record_package-3.json
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
