@@ -20,6 +20,9 @@ ocdskit = ocdskit.cli.__main__:main''',
         'requests==2.18.4',
         'sqlalchemy',
     ],
+    extras_require={
+        'test': 'pytest<3',
+    },
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.3',

@@ -1,5 +1,10 @@
 # OCDS Kit
 
+[![PyPI version](https://badge.fury.io/py/ocdskit.svg)](https://badge.fury.io/py/ocdskit)
+[![Build Status](https://secure.travis-ci.org/open-contracting/ocdskit.png)](https://travis-ci.org/open-contracting/ocdskit)
+[![Dependency Status](https://gemnasium.com/open-contracting/ocdskit.png)](https://gemnasium.com/open-contracting/ocdskit)
+[![Coverage Status](https://coveralls.io/repos/open-contracting/ocdskit/badge.png)](https://coveralls.io/r/open-contracting/ocdskit)
+
 Scripts for automatically measuring specific indicators.
 
     pip install ocdskit
