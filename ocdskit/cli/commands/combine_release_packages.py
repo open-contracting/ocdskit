@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from .base import BaseCommand
 
@@ -8,7 +9,7 @@ class Command(BaseCommand):
     help = 'reads release packages from standard input, collects releases, and prints one release package'
 
     def handle(self):
-        output = {'extensions': set(), 'releases': []}
+        output = {'extensions': OrderedDict(), 'releases': []}
 
         for line in self.buffer():
             package = json.loads(line)
@@ -19,7 +20,8 @@ class Command(BaseCommand):
             output['publisher'] = package['publisher']
 
             if 'extensions' in package:
-                output['extensions'].update(package['extensions'])
+                # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
+                output['extensions'].update(dict.fromkeys(package['extensions'], True))
 
             for field in ('license', 'publicationPolicy', 'version'):
                 if field in package:
@@ -28,7 +30,7 @@ class Command(BaseCommand):
             output['releases'].extend(package['releases'])
 
         if output['extensions']:
-            output['extensions'] = list(output['extensions'])
+            output['extensions'] = list(output['extensions'].keys())
         else:
             del output['extensions']
 

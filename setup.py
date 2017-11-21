@@ -17,13 +17,17 @@ ocdskit = ocdskit.cli.__main__:main''',
         'ocdsmerge==0.3',
         'python-dateutil==2.6.1',
         'pytz==2017.2',
-        'requests==2.18.4', 'sqlalchemy',
+        'requests==2.18.4',
+        'sqlalchemy',
     ],
+    extras_require={
+        'test': [
+            'pytest<3',
+            'pytest-cov',
+        ],
+    },
     classifiers=[
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
 )

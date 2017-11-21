@@ -10,22 +10,26 @@ Get the first release package:
 
     jq  '.[0]' release_packages.json
 
-Before passing the data to an OCDS Kit command, make jq's output raw, compact and monochrome:
+Before passing the data to an OCDS Kit command, make jq's output compact, raw and monochrome:
 
-    jq --raw-output --compact-output --monochrome-output '.[0]' release_packages.json | ocdskit compile
+    jq --compact-output --raw-output --monochrome-output '.[0]' release_packages.json | ocdskit compile
 
 Or, with short options:
 
-    jq -rcM '.[0]' release_packages.json | ocdskit compile
+    jq -crM '.[0]' release_packages.json | ocdskit compile
 
 Get the release packages, one line per package:
 
-    jq -rcM '.[]' release_packages.json
+    jq -crM '.[]' release_packages.json
 
 Get the second 10 release packages, one line per package:
 
-    jq -rcM '.[10:20][]' release_packages.json
+    jq -crM '.[10:20][]' release_packages.json
 
-You can stream release packages, one line per package, to the `compile` command:
+You can stream release packages, one line per package, to most OCDS Kit commands:
 
-    jq -rcM '.[]' release_packages.json | ocdskit compile
+    jq -crM '.[]' release_packages.json | ocdskit compile
+
+Or, you can split the stream of release packages into individual files named `xaaaa`, `xaaab`, `xaaac`, etc.:
+
+    jq -crM '.[]' release_packages.json | split -l 1 -a 4
