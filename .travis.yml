@@ -14,6 +14,6 @@ install:
   - pip install coveralls
 script:
   - curl -s -S $BASEDIR/tests/script.sh | bash -
-  - nosetests --with-coverage --cover-package=ocdskit
+  - py.test --cov ocdskit tests/
 after_success:
   coveralls

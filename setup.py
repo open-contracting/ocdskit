@@ -21,7 +21,10 @@ ocdskit = ocdskit.cli.__main__:main''',
         'sqlalchemy',
     ],
     extras_require={
-        'test': 'pytest<3',
+        'test': [
+            'pytest<3',
+            'pytest-cov',
+        ],
     },
     classifiers=[
         'License :: OSI Approved :: BSD License',
