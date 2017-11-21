@@ -2,9 +2,6 @@ sudo: false
 language: python
 cache: pip
 python:
-  - "3.3"
-  - "3.4"
-  - "3.5"
   - "3.6"
 env:
   - BASEDIR="https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/master"
