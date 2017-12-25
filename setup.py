@@ -18,7 +18,9 @@ ocdskit = ocdskit.cli.__main__:main''',
         'python-dateutil==2.6.1',
         'pytz==2017.2',
         'requests==2.18.4',
+        'rfc3987==1.3.7',
         'sqlalchemy',
+        'strict-rfc3339==0.7',
     ],
     extras_require={
         'test': [
