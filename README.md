@@ -5,7 +5,7 @@
 [![Dependency Status](https://gemnasium.com/open-contracting/ocdskit.png)](https://gemnasium.com/open-contracting/ocdskit)
 [![Coverage Status](https://coveralls.io/repos/open-contracting/ocdskit/badge.png)](https://coveralls.io/r/open-contracting/ocdskit)
 
-Scripts for automatically measuring specific indicators.
+A collection of commands for working with OCDS data.
 
     pip install ocdskit
     ocdskit --help
@@ -37,6 +37,10 @@ Download a list of release packages:
 Transform it to a stream of release packages, and validate each:
 
     jq -crM '.[]' release_packages.json | ocdskit validate --schema http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
+
+Or, validate each with a local schema file:
+
+    jq -crM '.[]' release_packages.json | ocdskit validate --schema file:///path/to/release-package-schema.json
 
 Transform it to a stream of compiled releases:
 

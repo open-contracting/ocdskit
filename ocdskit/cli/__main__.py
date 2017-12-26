@@ -17,7 +17,7 @@ COMMAND_MODULES = (
 
 
 def main():
-    parser = argparse.ArgumentParser(description='reporting CLI')
+    parser = argparse.ArgumentParser(description='Open Contracting Data Standard CLI')
     parser.add_argument('--encoding', help='the file encoding')
     parser.add_argument('--pretty', action='store_true', help='pretty print output')
 
