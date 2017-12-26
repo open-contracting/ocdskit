@@ -27,11 +27,11 @@ class Command(BaseCommand):
 
         def remove_links(text, links):
             for key, link in links.items():
-                text = text.replace("[" + key + "](" + link + ")", key)
+                text = text.replace('[' + key + '](' + link + ')', key)
             return text
 
         def display_links(links):
-            return ", ".join(links.values())
+            return ', '.join(links.values())
 
         def display_properties(schema, path='', section='', deprecated=''):
             # Create a copy of obj, because there may be references to it from
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             for field in obj:
                 row = {'path': path + field, 'deprecated': deprecated}
 
-                section = row['path'].split("/")[0] if "/" in row['path'] else ""
+                section = row['path'].split('/')[0] if '/' in row['path'] else ''
 
                 row['section'] = section
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                 if hasattr(obj[field], '__reference__'):
                     obj[field].update(obj[field].__reference__)
 
-                row['title'] = obj[field]['title'] if 'title' in obj[field] else field + "*"
+                row['title'] = obj[field]['title'] if 'title' in obj[field] else field + '*'
 
                 if 'description' in obj[field]:
                     links = find_md_links(obj[field]['description'])
@@ -69,19 +69,19 @@ class Command(BaseCommand):
                         required = 'string' in obj[field]['type'] or 'integer' in obj[field]['type']
 
                     if type(obj[field]['type']) in (tuple, list):
-                        row['type'] = ", ".join(obj[field]['type'])
+                        row['type'] = ', '.join(obj[field]['type'])
                     else:
                         row['type'] = obj[field]['type']
                 else:
-                    row['type'] = "unknown"
+                    row['type'] = 'unknown'
 
                 # Required field
                 if field in required_fields:
                     required = True
 
-                maxn = 'n' if row['type'] == "array" else '1'
+                maxn = 'n' if row['type'] == 'array' else '1'
                 minn = '1' if required else '0'
-                row['range'] = minn + ".." + maxn
+                row['range'] = minn + '..' + maxn
 
                 # Format or restrictions
                 if 'format' in obj[field]:
@@ -89,9 +89,9 @@ class Command(BaseCommand):
                 elif 'enum' in obj[field]:
                     if None in obj[field]['enum']:
                         obj[field]['enum'].remove(None)
-                    row['values'] = "Codelist: " + ", ".join(obj[field]['enum'])
+                    row['values'] = 'Codelist: ' + ', '.join(obj[field]['enum'])
                 else:
-                    row['values'] = ""
+                    row['values'] = ''
 
                 # Check for deprecation
                 if 'deprecated' in obj[field]:
@@ -101,7 +101,7 @@ class Command(BaseCommand):
                 rows.append(row)
 
                 if 'properties' in obj[field]:
-                    rows = rows + display_properties(obj[field], path + field + "/", section, row['deprecated'])
+                    rows = rows + display_properties(obj[field], path + field + '/', section, row['deprecated'])
 
                 if 'items' in obj[field]:
                     if 'properties' in obj[field]['items']:
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                         else:
                             pass
 
-                        rows = rows + display_properties(obj[field]['items'], path + field + "/", section,
+                        rows = rows + display_properties(obj[field]['items'], path + field + '/', section,
                                                          row['deprecated'])
 
             return rows
