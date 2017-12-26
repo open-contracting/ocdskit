@@ -19,9 +19,7 @@ class Command(BaseCommand):
         try:
             r = requests.get(sys.argv[1])
             release = r.json()
-            print("Fetched schema from URL")
         except:
-            print("Using local release schema")
             with open('release-schema.json', 'r') as f:
                 release = json.loads(f.read(), object_pairs_hook=collections.OrderedDict)
 
@@ -142,9 +140,7 @@ class Command(BaseCommand):
 
         schema = display_properties(release)
 
-        f = open('fields.csv', 'wt')
-        w = csv.DictWriter(f, ['section', 'path', 'title', 'description', 'type',
-                               'range', 'values', 'links', 'deprecated', 'deprecationNotes'])
+        w = csv.DictWriter(sys.stdout, ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links',
+                                        'deprecated', 'deprecationNotes'])
         w.writeheader()
         w.writerows(schema)
-        f.close()
