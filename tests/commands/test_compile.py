@@ -1,6 +1,5 @@
 import io
 import sys
-from io import StringIO
 from unittest.mock import patch
 
 import pytest
@@ -12,7 +11,7 @@ from tests import read
 def test_command(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
         main()
 
@@ -23,7 +22,7 @@ def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
             main()
 
@@ -36,7 +35,7 @@ def test_command_help(monkeypatch, caplog):
 def test_command_pretty(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'compile'])
         main()
 
@@ -46,7 +45,7 @@ def test_command_pretty(monkeypatch):
 def test_command_encoding(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', 'compile'])
         main()
 
@@ -57,7 +56,7 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
+        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO):
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
             main()
 
