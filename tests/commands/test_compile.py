@@ -34,7 +34,7 @@ def test_command_encoding(monkeypatch, caplog):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', 'compile'])
         main()
 
-    assert actual.getvalue() == read('realdata/compile_encoding.json')
+    assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
 
 def test_command_no_encoding(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding.json', 'rb')
