@@ -1,7 +1,4 @@
-import argparse
-import collections
 import json
-import sys
 
 import jsonref
 import sqlalchemy

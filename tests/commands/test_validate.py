@@ -1,6 +1,6 @@
-import io
 import os
 import sys
+from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
 
 import pytest
@@ -12,7 +12,7 @@ from tests import read
 def test_command(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
         main()
 
@@ -24,7 +24,7 @@ def test_command_invalid_json(monkeypatch, caplog):
         stdin = b'{\n'
 
         with pytest.raises(SystemExit) as excinfo:
-            with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO):
+            with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
                 monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
                 main()
 
@@ -40,7 +40,7 @@ def test_command_valid_release_package_url(monkeypatch):
 
     stdin = read('realdata/release-package-1.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url])
         main()
 
@@ -52,7 +52,7 @@ def test_command_valid_release_package_file(monkeypatch):
 
     stdin = read('realdata/release-package-1.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url])
         main()
 
@@ -64,7 +64,7 @@ def test_command_invalid_record_package(monkeypatch):
 
     stdin = read('realdata/record-package-1.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=io.StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url])
         main()
 
