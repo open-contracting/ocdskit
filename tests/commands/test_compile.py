@@ -3,6 +3,8 @@ import sys
 from io import StringIO
 from unittest.mock import patch
 
+import pytest
+
 from ocdskit.cli.__main__ import main
 from tests import read
 
@@ -24,3 +26,16 @@ def test_command_pretty(monkeypatch):
         main()
 
     assert actual.getvalue() == read('compile_pretty_minimal.json')
+
+def test_command_no_encoding(monkeypatch, caplog):
+    stdin = read('realdata/release-package_encoding.json', 'rb')
+
+    with pytest.raises(SystemExit) as excinfo:
+        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+            main()
+
+    assert len(caplog.records()) == 1
+    assert caplog.records()[0].levelname == 'CRITICAL'
+    assert caplog.records()[0].message == "encoding error: try `--encoding iso-8859-1`? ('utf-8' codec can't decode byte 0xd3 in position 592: invalid continuation byte)"
+    assert excinfo.value.code == 1

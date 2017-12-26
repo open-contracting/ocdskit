@@ -25,14 +25,7 @@ class Command(BaseCommand):
         self.add_argument('--currency', help='the expected currency')
 
     def handle(self):
-        try:
-            data = json.loads(self.buffer().read())
-        except UnicodeDecodeError as e:
-            if self.args.encoding and self.args.encoding.lower() == 'iso-8859-1':
-                suggestion = 'utf-8'
-            else:
-                suggestion = 'iso-8859-1'
-            raise CommandError('encoding error: try `--encoding {}`? ({})'.format(suggestion, e))
+        data = json.loads(self.buffer().read())
 
         compiled_releases_by_buyer = defaultdict(list)
         min_date_by_buyer = {}
