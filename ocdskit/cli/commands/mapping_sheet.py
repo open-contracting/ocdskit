@@ -28,8 +28,6 @@ class Command(BaseCommand):
 
         release = JsonRef.replace_refs(release)
 
-        print(jsonref.dumps(release, indent=3))
-
 
         # Based on https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
         INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
