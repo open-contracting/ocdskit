@@ -8,7 +8,7 @@ from tests import read
 
 
 def test_command(monkeypatch):
-    stdin = read('release-package-1.json', 'rb')
+    stdin = read('realdata/release-package-1.json', 'rb')
 
     with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
@@ -20,7 +20,7 @@ def test_command(monkeypatch):
 def test_command_valid(monkeypatch):
     url = 'http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json'
 
-    stdin = read('release-package-1.json', 'rb')
+    stdin = read('realdata/release-package-1.json', 'rb')
 
     with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url])
@@ -32,7 +32,7 @@ def test_command_valid(monkeypatch):
 def test_command_invalid(monkeypatch):
     url = 'http://standard.open-contracting.org/latest/en/record-package-schema.json'
 
-    stdin = read('record-package-1.json', 'rb')
+    stdin = read('realdata/record-package-1.json', 'rb')
 
     with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url])
