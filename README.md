@@ -5,7 +5,7 @@
 [![Dependency Status](https://gemnasium.com/open-contracting/ocdskit.png)](https://gemnasium.com/open-contracting/ocdskit)
 [![Coverage Status](https://coveralls.io/repos/open-contracting/ocdskit/badge.png)](https://coveralls.io/r/open-contracting/ocdskit)
 
-Scripts for automatically measuring specific indicators.
+A collection of commands for working with OCDS data.
 
     pip install ocdskit
     ocdskit --help
@@ -37,6 +37,10 @@ Download a list of release packages:
 Transform it to a stream of release packages, and validate each:
 
     jq -crM '.[]' release_packages.json | ocdskit validate --schema http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
+
+Or, validate each with a local schema file:
+
+    jq -crM '.[]' release_packages.json | ocdskit validate --schema file:///path/to/release-package-schema.json
 
 Transform it to a stream of compiled releases:
 
@@ -75,5 +79,11 @@ Then, combine the next 10,000 items from the stream into a single record package
 And so on:
 
     tail -n +20001 stream.json | head -n 10000 | ocdskit combine-record-packages > record_package-3.json
+
+## Tabulate
+
+    cat release_package.json | ocdskit tabulate sqlite:///data.db
+
+For the format of `database_url`, see the [SQLAlchemy documentation](https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls).
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license

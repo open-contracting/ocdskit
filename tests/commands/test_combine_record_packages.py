@@ -1,6 +1,5 @@
-import io
 import sys
-from io import StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
 
 from ocdskit.cli.__main__ import main
@@ -12,7 +11,7 @@ def test_command(monkeypatch):
             read('record-package_maximal.json', 'rb') + \
             read('record-package_extensions.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-record-packages'])
         main()
 
@@ -22,7 +21,7 @@ def test_command(monkeypatch):
 def test_command_no_extensions(monkeypatch):
     stdin = read('record-package_minimal.json', 'rb')
 
-    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-record-packages'])
         main()
 

@@ -13,6 +13,7 @@ setup(
     entry_points='''[console_scripts]
 ocdskit = ocdskit.cli.__main__:main''',
     install_requires=[
+        'jsonref==0.1',
         'jsonschema==2.6.0',
         'ocdsmerge==0.3',
         'python-dateutil==2.6.1',
