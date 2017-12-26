@@ -3,15 +3,52 @@ import sys
 from io import StringIO
 from unittest.mock import patch
 
+import pytest
+
 from ocdskit.cli.__main__ import main
 from tests import read
 
 
 def test_command(monkeypatch):
-    stdin = read('release-package-1.json', 'rb') + read('release-package-2.json', 'rb')
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
         main()
 
-    assert actual.getvalue() == read('compiled-release-1.json') + read('compiled-release-2.json')
+    assert actual.getvalue() == read('realdata/compiled-release-1.json') + read('realdata/compiled-release-2.json')
+
+
+def test_command_pretty(monkeypatch):
+    stdin = read('release-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'compile'])
+        main()
+
+    assert actual.getvalue() == read('compile_pretty_minimal.json')
+
+
+def test_command_encoding(monkeypatch, caplog):
+    stdin = read('realdata/release-package_encoding.json', 'rb')
+
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', 'compile'])
+        main()
+
+    assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
+
+
+def test_command_no_encoding(monkeypatch, caplog):
+    stdin = read('realdata/release-package_encoding.json', 'rb')
+
+    with pytest.raises(SystemExit) as excinfo:
+        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+            main()
+
+    assert len(caplog.records()) == 1
+    assert caplog.records()[0].levelname == 'CRITICAL'
+    assert caplog.records()[0].message == "encoding error: try `--encoding iso-8859-1`? ('utf-8' codec can't decode " \
+                                          "byte 0xd3 in position 592: invalid continuation byte)"
+    assert excinfo.value.code == 1

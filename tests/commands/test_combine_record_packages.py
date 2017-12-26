@@ -8,10 +8,22 @@ from tests import read
 
 
 def test_command(monkeypatch):
-    stdin = read('record-package-1.json', 'rb') + read('record-package-2.json', 'rb')
+    stdin = read('record-package_minimal.json', 'rb') + \
+            read('record-package_maximal.json', 'rb') + \
+            read('record-package_extensions.json', 'rb')
 
     with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-record-packages'])
         main()
 
-    assert actual.getvalue() == read('record-package-1-2.json')
+    assert actual.getvalue() == read('combine-record-packages_minimal-maximal-extensions.json')
+
+
+def test_command_no_extensions(monkeypatch):
+    stdin = read('record-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-record-packages'])
+        main()
+
+    assert actual.getvalue() == read('combine-record-packages_minimal.json')

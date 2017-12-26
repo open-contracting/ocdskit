@@ -1,0 +1,1 @@
+{"uri":"http://example.com/id/3","publisher":{"name":"NewCo"},"publishedDate":"2003-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-3","id":"3","date":"2003-02-03T04:05:06Z","tag":["award"],"initiationType":"tender"}],"version":"1.1","extensions":["http://example.com/d/extension.json","http://example.com/b/extension.json","http://example.com/a/extension.json"]}

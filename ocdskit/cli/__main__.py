@@ -38,7 +38,14 @@ def main():
         command = subcommands[args.subcommand]
         try:
             command.args = args
-            command.handle()
+            try:
+                command.handle()
+            except UnicodeDecodeError as e:
+                if args.encoding and args.encoding.lower() == 'iso-8859-1':
+                    suggestion = 'utf-8'
+                else:
+                    suggestion = 'iso-8859-1'
+                raise CommandError('encoding error: try `--encoding {}`? ({})'.format(suggestion, e))
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
