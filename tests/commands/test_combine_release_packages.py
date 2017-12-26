@@ -16,7 +16,7 @@ def test_command(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-release-packages'])
         main()
 
-    assert actual.getvalue() == read('combine_minimal-maximal-extensions.json')
+    assert actual.getvalue() == read('combine-release-packages_minimal-maximal-extensions.json')
 
 def test_command_no_extensions(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
@@ -25,4 +25,4 @@ def test_command_no_extensions(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-release-packages'])
         main()
 
-    assert actual.getvalue() == read('combine_minimal.json')
+    assert actual.getvalue() == read('combine-release-packages_minimal.json')
