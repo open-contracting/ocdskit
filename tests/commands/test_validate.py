@@ -22,7 +22,7 @@ def test_command(monkeypatch):
 
 def test_command_invalid_json(monkeypatch, caplog):
     with caplog.atLevel('INFO'):
-        stdin = read('invalid.json', 'rb')
+        stdin = b'{\n'
 
         with pytest.raises(SystemExit) as excinfo:
             with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
