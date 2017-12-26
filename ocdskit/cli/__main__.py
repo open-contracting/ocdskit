@@ -11,6 +11,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.combine_record_packages',
     'ocdskit.cli.commands.combine_release_packages',
     'ocdskit.cli.commands.compile',
+    'ocdskit.cli.commands.mapping_sheet',
     'ocdskit.cli.commands.measure',
     'ocdskit.cli.commands.tabulate',
     'ocdskit.cli.commands.validate',
