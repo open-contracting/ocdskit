@@ -36,11 +36,17 @@ def test_command_record_package(monkeypatch):
     assert actual.getvalue() == ''
 
 
-def test_command_drop(monkeypatch):
+def test_command_drop(monkeypatch, tmpdir):
     stdin = read('release-package_minimal.json', 'rb')
 
+    database_url = 'sqlite:///{}'.format(tmpdir.join('tmp.db'))
+
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://', '--drop'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', database_url])
+        main()
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', database_url, '--drop'])
         main()
 
     assert actual.getvalue() == ''
