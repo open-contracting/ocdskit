@@ -9,10 +9,10 @@ class Command(BaseCommand):
     help = 'reads record packages from standard input, collects packages and records, and prints one record package'
 
     def handle(self):
-        output = {'extensions': OrderedDict(), 'packages': [], 'records': []}
+        output = OrderedDict([('extensions', OrderedDict()), ('packages', []), ('records', [])])
 
         for line in self.buffer():
-            package = json.loads(line)
+            package = json.loads(line, object_pairs_hook=OrderedDict)
 
             # Use sample metadata.
             output['uri'] = package['uri']
