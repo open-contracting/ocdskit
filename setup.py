@@ -13,15 +13,15 @@ setup(
     entry_points='''[console_scripts]
 ocdskit = ocdskit.cli.__main__:main''',
     install_requires=[
-        'jsonref==0.1',
-        'jsonschema==2.6.0',
-        'ocdsmerge==0.3',
-        'python-dateutil==2.6.1',
-        'pytz==2017.2',
-        'requests==2.18.4',
-        'rfc3987==1.3.7',
+        'jsonref',
+        'jsonschema',
+        'ocdsmerge',
+        'python-dateutil',
+        'pytz',
+        'requests',
+        'rfc3987',
         'sqlalchemy',
-        'strict-rfc3339==0.7',
+        'strict-rfc3339',
     ],
     extras_require={
         'test': [
