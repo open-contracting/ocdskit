@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument('database_url', help='sqlalchemy database URL')
-        self.add_argument('--drop', help='drop all current tables', action='store_true')
+        self.add_argument('--drop', help='drop all tables before loading', action='store_true')
         self.add_argument('--schema', help='the release-schema.json to use',
                           default='http://standard.open-contracting.org/latest/en/release-schema.json')
 
@@ -27,11 +27,10 @@ class Command(BaseCommand):
 
     def process_schema_object(self, path, current_name, flattened, obj):
         """
-        Return a dictionary with a flattened representation of the schema
-        NB: patternProperties are skipped as we don't want them as field names
-        (a regex string) in the database.
+        Return a dictionary with a flattened representation of the schema. `patternProperties` are skipped as we don't
+        want them as field names (a regular expression string) in the database.
         """
-        properties = obj.get('properties', {})  # An object may have patternProperties only
+        properties = obj.get('properties', {})  # an object may have patternProperties only
         current_object = flattened.get(path)
 
         if current_object is None:

@@ -80,4 +80,10 @@ And so on:
 
     tail -n +20001 stream.json | head -n 10000 | ocdskit combine-record-packages > record_package-3.json
 
+## Tabulate
+
+    cat release_package.json | ocdskit tabulate sqlite:///data.db
+
+For the format of `database_url`, see the [SQLAlchemy documentation](https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls).
+
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
