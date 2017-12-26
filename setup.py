@@ -25,6 +25,7 @@ ocdskit = ocdskit.cli.__main__:main''',
     extras_require={
         'test': [
             'pytest<3',
+            'pytest-capturelog',
             'pytest-cov',
         ],
     },

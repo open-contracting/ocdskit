@@ -27,6 +27,15 @@ def test_command_pretty(monkeypatch):
 
     assert actual.getvalue() == read('compile_pretty_minimal.json')
 
+def test_command_encoding(monkeypatch, caplog):
+    stdin = read('realdata/release-package_encoding.json', 'rb')
+
+    with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', 'compile'])
+        main()
+
+    assert actual.getvalue() == read('realdata/compile_encoding.json')
+
 def test_command_no_encoding(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding.json', 'rb')
 
