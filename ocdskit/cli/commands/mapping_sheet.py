@@ -5,7 +5,6 @@ import json
 import re
 import sys
 
-import jsonref
 import requests
 from jsonref import JsonRef
 
@@ -28,21 +27,17 @@ class Command(BaseCommand):
 
         release = JsonRef.replace_refs(release)
 
-
-        # Based on https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
+        # See https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
         INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
-
 
         def find_md_links(md):
             links = dict(INLINE_LINK_RE.findall(md))
             return links
 
-
         def remove_links(text, links):
             for key, link in links.items():
                 text = text.replace("[" + key + "](" + link + ")", key)
             return text
-
 
         def display_links(links):
             link_list = []
@@ -50,7 +45,6 @@ class Command(BaseCommand):
                 link_list.append(link)
 
             return ", ".join(link_list)
-
 
         def display_properties(schema, path='', section='', deprecated=''):
             # Create a copy of obj, because there may be references to it from
@@ -140,12 +134,11 @@ class Command(BaseCommand):
                                              'type': obj[field]['items']['type']})
                         else:
                             pass
-                            # rows.append({'section':section,'path':path + field,'title':'missing','description':'missing'})
 
-                        rows = rows + display_properties(obj[field]['items'], path + field + "/", section, row['deprecated'])
+                        rows = rows + display_properties(obj[field]['items'], path + field + "/", section,
+                                                         row['deprecated'])
 
             return rows
-
 
         schema = display_properties(release)
 
