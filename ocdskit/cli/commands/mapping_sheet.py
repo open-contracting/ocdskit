@@ -1,11 +1,10 @@
-import collections
 import copy
 import csv
 import json
 import re
 import sys
+from collections import OrderedDict
 
-import requests
 from jsonref import JsonRef
 
 from .base import BaseCommand
@@ -16,12 +15,7 @@ class Command(BaseCommand):
     help = 'generates a spreadsheet with all field paths from an OCDS schema'
 
     def handle(self):
-        try:
-            r = requests.get(sys.argv[1])
-            release = r.json()
-        except:
-            with open('release-schema.json', 'r') as f:
-                release = json.loads(f.read(), object_pairs_hook=collections.OrderedDict)
+        release = json.loads(self.buffer().read(), object_pairs_hook=OrderedDict)
 
         release = JsonRef.replace_refs(release)
 

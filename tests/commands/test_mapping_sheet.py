@@ -7,7 +7,7 @@ from tests import read
 
 
 def test_command(monkeypatch):
-    stdin = read('release-package-schema.json', 'rb')
+    stdin = read('release-schema.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet'])
