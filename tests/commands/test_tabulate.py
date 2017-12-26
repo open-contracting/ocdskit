@@ -7,10 +7,40 @@ from tests import read
 
 
 def test_command(monkeypatch):
+    stdin = read('realdata/release-package-1.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://'])
+        main()
+
+    assert actual.getvalue() == ''
+
+
+def test_command_release_package(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://'])
+        main()
+
+    assert actual.getvalue() == ''
+
+
+def test_command_record_package(monkeypatch):
+    stdin = read('record-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://', '--drop'])
+        main()
+
+    assert actual.getvalue() == ''
+
+
+def test_command_drop(monkeypatch):
+    stdin = read('release-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://', '--drop'])
         main()
 
     assert actual.getvalue() == ''
