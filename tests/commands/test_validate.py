@@ -25,13 +25,14 @@ def test_command_invalid_json(monkeypatch, caplog):
         stdin = read('invalid.json', 'rb')
 
         with pytest.raises(SystemExit) as excinfo:
-            with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+            with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
                 monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
                 main()
 
         assert len(caplog.records()) == 1
         assert caplog.records()[0].levelname == 'CRITICAL'
-        assert caplog.records()[0].message == "item 0: JSON error: Expecting property name enclosed in double quotes: line 2 column 1 (char 2)"
+        assert caplog.records()[0].message == "item 0: JSON error: Expecting property name enclosed in double " \
+                                              "quotes: line 2 column 1 (char 2)"
         assert excinfo.value.code == 1
 
 

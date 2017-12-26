@@ -18,6 +18,7 @@ def test_command(monkeypatch):
 
     assert actual.getvalue() == read('combine-record-packages_minimal-maximal-extensions.json')
 
+
 def test_command_no_extensions(monkeypatch):
     stdin = read('record-package_minimal.json', 'rb')
 

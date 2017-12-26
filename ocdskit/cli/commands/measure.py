@@ -14,7 +14,6 @@ import pytz
 from dateutil import parser
 
 from .base import BaseCommand
-from ocdskit.exceptions import CommandError
 
 
 class Command(BaseCommand):

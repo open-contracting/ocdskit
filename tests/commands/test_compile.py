@@ -18,6 +18,7 @@ def test_command(monkeypatch):
 
     assert actual.getvalue() == read('realdata/compiled-release-1.json') + read('realdata/compiled-release-2.json')
 
+
 def test_command_pretty(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
@@ -26,6 +27,7 @@ def test_command_pretty(monkeypatch):
         main()
 
     assert actual.getvalue() == read('compile_pretty_minimal.json')
+
 
 def test_command_encoding(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding.json', 'rb')
@@ -36,15 +38,17 @@ def test_command_encoding(monkeypatch, caplog):
 
     assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
 
+
 def test_command_no_encoding(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        with patch('sys.stdin', io.TextIOWrapper(io.BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
             main()
 
     assert len(caplog.records()) == 1
     assert caplog.records()[0].levelname == 'CRITICAL'
-    assert caplog.records()[0].message == "encoding error: try `--encoding iso-8859-1`? ('utf-8' codec can't decode byte 0xd3 in position 592: invalid continuation byte)"
+    assert caplog.records()[0].message == "encoding error: try `--encoding iso-8859-1`? ('utf-8' codec can't decode " \
+                                          "byte 0xd3 in position 592: invalid continuation byte)"
     assert excinfo.value.code == 1
