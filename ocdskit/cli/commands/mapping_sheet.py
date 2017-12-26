@@ -29,8 +29,7 @@ class Command(BaseCommand):
         INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
         def find_md_links(md):
-            links = dict(INLINE_LINK_RE.findall(md))
-            return links
+            return dict(INLINE_LINK_RE.findall(md))
 
         def remove_links(text, links):
             for key, link in links.items():
@@ -38,11 +37,7 @@ class Command(BaseCommand):
             return text
 
         def display_links(links):
-            link_list = []
-            for key, link in links.items():
-                link_list.append(link)
-
-            return ", ".join(link_list)
+            return ", ".join(links.values())
 
         def display_properties(schema, path='', section='', deprecated=''):
             # Create a copy of obj, because there may be references to it from
@@ -77,10 +72,7 @@ class Command(BaseCommand):
                         obj[field]['type'].remove('null')
                         required = False
                     else:
-                        if 'string' in obj[field]['type'] or 'integer' in obj[field]['type']:
-                            required = True
-                        else:
-                            required = False
+                        required = 'string' in obj[field]['type'] or 'integer' in obj[field]['type']
 
                     if type(obj[field]['type']) in (tuple, list):
                         row['type'] = ", ".join(obj[field]['type'])
@@ -120,16 +112,10 @@ class Command(BaseCommand):
                 if 'items' in obj[field]:
                     if 'properties' in obj[field]['items']:
                         if 'title' in obj[field]['items']:
-                            if 'description' in obj[field]['items']:
-                                rows.append({'section': section, 'path': path + field,
-                                             'title': obj[field]['items']['title'],
-                                             'description': obj[field]['items']['description'],
-                                             'type': obj[field]['items']['type']})
-                            else:
-                                rows.append({'section': section, 'path': path + field,
-                                             'title': obj[field]['items']['title'],
-                                             'description': "",
-                                             'type': obj[field]['items']['type']})
+                            rows.append({'section': section, 'path': path + field,
+                                         'title': obj[field]['items']['title'],
+                                         'description': obj[field]['items'].get('description', ''),
+                                         'type': obj[field]['items']['type']})
                         else:
                             pass
 
