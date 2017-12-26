@@ -3,9 +3,8 @@ import collections
 import json
 import sys
 
-import ocdsmerge
 import jsonref
-import sqlalchemy as sa
+import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 from .base import BaseCommand
@@ -13,29 +12,29 @@ from .base import BaseCommand
 
 class Command(BaseCommand):
     name = 'tabulate'
-    help = 'Get some ocds data tabularized'
+    help = 'load OCDS data into a database'
 
     def add_arguments(self):
         self.add_argument('database_url', help='sqlalchemy database url')
         self.add_argument('files', help='json files to upload to db', nargs='+')
-        self.add_argument('--merge', help='say if you want to ocds merge the files', action='store_true')
         self.add_argument('--drop', help='drop all current tables', action='store_true')
-        self.add_argument('--schema_url', help='release-schema.json file used, defaults to 1.',
-                            default='http://ocds.open-contracting.org/standard/r/1__0__2/release-schema.json')
+        self.add_argument('--schema', help='the release-schema.json to use',
+                          default='http://standard.open-contracting.org/latest/en/release-schema.json')
 
     def handle(self):
         deref_schema = jsonref.load_uri(self.args.schema_url)
 
         metadata, engine = create_db(self.args.database_url, deref_schema, drop=self.args.drop)
 
-        upload_files(metadata, engine, deref_schema, self.args.files, self.args.merge)
+        upload_files(metadata, engine, deref_schema, self.args.files)
 
 
 def process_schema_object(path, current_name, flattened, obj):
-    '''Return a dictionary with a flattened representation of the schema
+    """
+    Return a dictionary with a flattened representation of the schema
     NB: patterProperties are skipped as we don't want them as field names
     (a regex string) in the database.
-    '''
+    """
     properties = obj.get('properties', {})  # An object may have patternProperties only
     current_object = flattened.get(path)
 
@@ -60,14 +59,14 @@ def process_schema_object(path, current_name, flattened, obj):
 
 
 def create_db(sqlalchemy_url, deref_schema, drop=False):
-    engine = sa.create_engine(sqlalchemy_url)
-    metadata = sa.MetaData(engine)
+    engine = sqlalchemy.create_engine(sqlalchemy_url)
+    metadata = sqlalchemy.MetaData(engine)
 
     if drop:
         metadata.reflect()
         for table in reversed(metadata.sorted_tables):
             table.drop()
-        metadata = sa.MetaData(engine)
+        metadata = sqlalchemy.MetaData(engine)
 
     flattened = {}
     flat = process_schema_object((), '', flattened, deref_schema)
@@ -76,36 +75,35 @@ def create_db(sqlalchemy_url, deref_schema, drop=False):
         table_name = "_".join(table)
         if not table_name:
             table_name = 'releases'
-        columns = [sa.Column('ocid', sa.Text)]
+        columns = [sqlalchemy.Column('ocid', sqlalchemy.Text)]
         for parent_table in ('releases',) + table:
-            columns.append(sa.Column(parent_table[:-1] + '_id', sa.Text))
-            # columns.append(sa.Column(parent_table + '_id', sa.Text))
+            columns.append(sqlalchemy.Column(parent_table[:-1] + '_id', sqlalchemy.Text))
+            # columns.append(sqlalchemy.Column(parent_table + '_id', sqlalchemy.Text))
 
         for field in sorted(fields.keys()):
             types = fields[field]
             if field == 'id':
                 continue
             if 'string' in types:
-                columns.append(sa.Column(field, sa.Text))
+                columns.append(sqlalchemy.Column(field, sqlalchemy.Text))
             elif 'number' in types:
-                columns.append(sa.Column(field, sa.Numeric))
+                columns.append(sqlalchemy.Column(field, sqlalchemy.Numeric))
             elif 'integer' in types:
-                columns.append(sa.Column(field, sa.Integer))
+                columns.append(sqlalchemy.Column(field, sqlalchemy.Integer))
             else:
-                columns.append(sa.Column(field, sa.Text))
+                columns.append(sqlalchemy.Column(field, sqlalchemy.Text))
         if 'postgresql' in engine.name:
-            columns.append(sa.Column('extras', JSONB))
+            columns.append(sqlalchemy.Column('extras', JSONB))
         else:
-            columns.append(sa.Column('extras', sa.Text))
+            columns.append(sqlalchemy.Column('extras', sqlalchemy.Text))
 
-        sa.Table(table_name, metadata, *columns)
+        sqlalchemy.Table(table_name, metadata, *columns)
 
     metadata.create_all(engine)
     return metadata, engine
 
 
 def process_object(path, current_name, current_keys, flattened, obj, flat_obj):
-
     if flat_obj is None:
         flat_list = flattened.get(path)
         if flat_list is None:
@@ -142,37 +140,21 @@ def process_object(path, current_name, current_keys, flattened, obj, flat_obj):
     return flattened
 
 
-def upload_files(metadata, engine, deref_schema, files, merge=False):
-    if merge:
-        all_releases = collections.defaultdict(list)
-        for file in files:
-            with open(file) as document:
-                json_document = json.loads(document.read())
-                if 'releases' not in json_document:
-                    print("If you select --merge then all the packages have to be release packages, exiting...")
-                    sys.exit(0)
-                for release in json_document['releases']:
-                    all_releases[release['ocid']].append(release)
-        releases = []
-        for release_list in all_releases.values():
-            releases.append(ocdsmerge.merge(release_list))
-        upload_file(metadata, engine, deref_schema, releases)
-    else:
-        for file in files:
-            with open(file) as document:
-                json_document = json.loads(document.read())
-                if 'releases' in json_document:
-                    releases = json_document["releases"]
-                elif 'records' in json_document:
-                    releases = []
-                    for record in json_document['records']:
-                        releases.append(record['compiledRelease'])
+def upload_files(metadata, engine, deref_schema, files):
+    for file in files:
+        with open(file) as document:
+            json_document = json.loads(document.read())
+            if 'releases' in json_document:
+                releases = json_document["releases"]
+            elif 'records' in json_document:
+                releases = []
+                for record in json_document['records']:
+                    releases.append(record['compiledRelease'])
 
-            upload_file(metadata, engine, deref_schema, releases)
+        upload_file(metadata, engine, deref_schema, releases)
 
 
 def upload_file(metadata, engine, deref_schema, releases):
-
     conn = engine.connect()
 
     tabulated = {}
