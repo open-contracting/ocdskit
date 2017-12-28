@@ -21,7 +21,7 @@ class Command(BaseCommand):
         components = urlparse(self.args.schema)
         if components.scheme == 'file':
             with open(self.args.schema[7:]) as f:
-                schema = json.loads(f.read())
+                schema = json.load(f)
         else:
             schema = requests.get(self.args.schema).json()
 

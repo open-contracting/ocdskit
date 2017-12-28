@@ -24,7 +24,7 @@ class Command(BaseCommand):
         self.add_argument('--currency', help='the expected currency')
 
     def handle(self):
-        data = json.loads(self.buffer().read())
+        data = json.load(self.buffer())
 
         compiled_releases_by_buyer = defaultdict(list)
         min_date_by_buyer = {}
