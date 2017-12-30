@@ -2,26 +2,27 @@ from setuptools import setup, find_packages
 
 setup(
     name='ocdskit',
-    version='0.0.1',
+    version='0.0.2',
     author='James McKinney',
     author_email='james@slashpoundbang.com',
     url='https://github.com/open-contracting/ocdskit',
-    description='A suite of command-line tools for working with OCDS',
+    description='A suite of command-line tools for working with OCDS data',
     platforms=['any'],
     license='BSD',
     packages=find_packages(),
+    long_description=open('README.rst').read(),
     entry_points='''[console_scripts]
 ocdskit = ocdskit.cli.__main__:main''',
     install_requires=[
-        'jsonref==0.1',
-        'jsonschema==2.6.0',
-        'ocdsmerge==0.3',
-        'python-dateutil==2.6.1',
-        'pytz==2017.2',
-        'requests==2.18.4',
-        'rfc3987==1.3.7',
+        'jsonref',
+        'jsonschema',
+        'ocdsmerge',
+        'python-dateutil',
+        'pytz',
+        'requests',
+        'rfc3987',
         'sqlalchemy',
-        'strict-rfc3339==0.7',
+        'strict-rfc3339',
     ],
     extras_require={
         'test': [
