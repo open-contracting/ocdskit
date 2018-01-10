@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = 'generates a spreadsheet with all field paths from an OCDS schema'
 
     def handle(self):
-        release = json.loads(self.buffer().read(), object_pairs_hook=OrderedDict)
+        release = json.load(self.buffer(), object_pairs_hook=OrderedDict)
 
         release = JsonRef.replace_refs(release)
 

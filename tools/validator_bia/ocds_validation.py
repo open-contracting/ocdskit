@@ -271,17 +271,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--publisher', help='Publisher File Path')
     parser.add_argument('--database', help='Database File Path')
-    parser.add_argument('--container', default='R', help='Packaged Records (P) or Releases (R)')
-    parser.add_argument('--refresh', default=True, help='Refresh metadata flag')
-    parser.add_argument('--schema', default=True, help='Latest schema flag')  # To do, provide schema reference number
+    parser.add_argument('--container', help='Packaged Records (P) or Releases (R)', default='R')
+    parser.add_argument('--refresh', help='Refresh metadata flag', default=True)
+    parser.add_argument('--schema', help='Latest schema flag', default=True)  # To do, provide schema reference number
     #  to use. Right now, ignore the schema and use latest
-    parser.add_argument('--package', default=True, help='Latest package flag')  # To do, provide schema reference
+    parser.add_argument('--package', help='Latest package flag', default=True)  # To do, provide schema reference
     # number to use. Right now, ignore the schema and use latest
-    parser.add_argument('--validate', default=True, help='Validate JSON flag')
-    parser.add_argument('--dashboard', default=False, help='Generate dashboard flag')
+    parser.add_argument('--validate', help='Validate JSON flag', default=True)
+    parser.add_argument('--dashboard', help='Generate dashboard flag', default=False)
     parser.add_argument('--country', help='Country or City name', default="Sample")
-    parser.add_argument('--lang', default='en', help='Language to generate the dashboard. English (en) or Spanish ('
-                                                     'es) supported')
+    parser.add_argument('--lang', help='Language to generate the dashboard. English (en) or Spanish (es) supported',
+                        default='en')
     args = parser.parse_args()
 
     # Check arguments

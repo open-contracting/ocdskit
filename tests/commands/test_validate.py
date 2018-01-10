@@ -24,9 +24,11 @@ def test_command_invalid_json(monkeypatch, caplog):
         stdin = b'{\n'
 
         with pytest.raises(SystemExit) as excinfo:
-            with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
+            with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:  # noqa
                 monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
                 main()
+
+        assert actual.getvalue() == ''
 
         assert len(caplog.records()) == 1
         assert caplog.records()[0].levelname == 'CRITICAL'
