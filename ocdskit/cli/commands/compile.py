@@ -14,7 +14,7 @@ class Command(BaseCommand):
         releases_by_ocid = collections.defaultdict(list)
 
         for line in self.buffer():
-            release_package = json.loads(line)
+            release_package = json.loads(line, object_pairs_hook=OrderedDict)
             for release in release_package['releases']:
                 releases_by_ocid[release['ocid']].append(release)
 
