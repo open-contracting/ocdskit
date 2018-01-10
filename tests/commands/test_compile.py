@@ -26,10 +26,10 @@ def test_command_help(monkeypatch, caplog):
             monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
             main()
 
+    assert actual.getvalue().startswith('usage: ocdskit [-h] ')
+
     assert len(caplog.records()) == 0
     assert excinfo.value.code == 0
-
-    assert actual.getvalue().startswith('usage: ocdskit [-h] ')
 
 
 def test_command_pretty(monkeypatch):
@@ -42,7 +42,7 @@ def test_command_pretty(monkeypatch):
     assert actual.getvalue() == read('compile_pretty_minimal.json')
 
 
-def test_command_encoding(monkeypatch, caplog):
+def test_command_encoding(monkeypatch):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -56,9 +56,11 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO):
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
             main()
+
+    assert actual.getvalue() == ''
 
     assert len(caplog.records()) == 1
     assert caplog.records()[0].levelname == 'CRITICAL'
