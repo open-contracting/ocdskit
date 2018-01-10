@@ -2,6 +2,10 @@
 
 # 0.0.2
 
+New commands:
+
+* indent
+
 # 0.0.1 (2017-12-25)
 
 New commands:
