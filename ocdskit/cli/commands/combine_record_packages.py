@@ -35,7 +35,7 @@ class Command(BaseCommand):
             del output['packages']
 
         if output['extensions']:
-            output['extensions'] = list(output['extensions'].keys())
+            output['extensions'] = list(output['extensions'])
         else:
             del output['extensions']
 
