@@ -5,6 +5,7 @@
 New commands:
 
 * indent
+* schema-report
 * set-closed-codelist-enums
 
 # 0.0.1 (2017-12-25)
