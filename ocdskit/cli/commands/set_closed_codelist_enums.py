@@ -11,7 +11,7 @@ logger = logging.getLogger('ocdskit')
 
 
 class Command(BaseCommand):
-    name = 'set-enum-json-schema'
+    name = 'set-closed-codelist-enums'
     help = 'Sets the enum in a JSON Schema to match the codes in the CSV files of closed codelists'
 
     def add_arguments(self):
