@@ -5,7 +5,7 @@
 New commands:
 
 * indent
-* set-enum-json-schema
+* set-closed-codelist-enums
 
 # 0.0.1 (2017-12-25)
 

@@ -128,7 +128,7 @@ def test_command(monkeypatch):
                 f.write(codelist)
 
         with patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'set-enum-json-schema', d])
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'set-closed-codelist-enums', d])
             main()
 
         assert actual.getvalue() == ''
