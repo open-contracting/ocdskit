@@ -5,6 +5,7 @@
 New commands:
 
 * indent
+* set-enum-json-schema
 
 # 0.0.1 (2017-12-25)
 

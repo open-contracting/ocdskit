@@ -13,11 +13,11 @@ class Command(BaseCommand):
     help = 'indents JSON files'
 
     def add_arguments(self):
-        self.add_argument('files', help='files to reindent', nargs='+')
+        self.add_argument('file', help='files to reindent', nargs='+')
         self.add_argument('-r', '--recursive', help='Recursively indent JSON files', action='store_true')
 
     def handle(self):
-        for file in self.args.files:
+        for file in self.args.file:
             if os.path.isfile(file):
                 self.indent(file)
             elif self.args.recursive:
@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 logger.warn('{} is a directory. Set --recursive to recurse into directories.'.format(file))
 
     def indent(self, path):
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
 
         with open(path, 'w') as f:

@@ -14,6 +14,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.indent',
     'ocdskit.cli.commands.mapping_sheet',
     'ocdskit.cli.commands.measure',
+    'ocdskit.cli.commands.set_enum_json_schema',
     'ocdskit.cli.commands.tabulate',
     'ocdskit.cli.commands.validate',
 )

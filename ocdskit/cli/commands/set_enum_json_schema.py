@@ -1,0 +1,114 @@
+import csv
+import json
+import logging.config
+import os.path
+from collections import OrderedDict
+from copy import deepcopy
+
+from .base import BaseCommand
+
+logger = logging.getLogger('ocdskit')
+
+
+class Command(BaseCommand):
+    name = 'set-enum-json-schema'
+    help = 'Sets the enum in a JSON Schema to match the codes in the CSV files of closed codelists'
+
+    def add_arguments(self):
+        self.add_argument('standard', help='path to directory containing standard JSON Schema files')
+        self.add_argument('extension', help='paths to directories containing extension JSON Schema files', nargs='*')
+
+    def handle(self):
+        def collect_codelists(directory):
+            for root, dirs, files in os.walk(directory):
+                if 'codelists_translated' in dirs:
+                    dirs.remove('codelists_translated')
+                for name in files:
+                    if name.endswith('.csv'):
+                        with open(os.path.join(root, name)) as f:
+                            data = [row for row in csv.DictReader(f)]
+                        if name in codelists:
+                            if codelists[name] != data:
+                                logger.error('conflicting codelists: {}'.format(name))
+                        elif 'Code' in data[0]:
+                            codelists[name] = data
+
+        # This method is similar to `validate_codelist_enum` in `test_json.py`.
+        def update_codelist_enum(data):
+            if isinstance(data, list):
+                return [update_codelist_enum(item) for item in data]
+            elif isinstance(data, dict):
+                if 'codelist' in data:
+                    codelists_seen.add(data['codelist'])
+
+                    if not data['openCodelist']:
+                        codes = [row['Code'] for row in codelists[data['codelist']]]
+
+                        if isinstance(data['type'], str):
+                            types = [data['type']]
+                        else:
+                            types = data['type']
+
+                        if 'string' in types:
+                            if 'null' in types:
+                                codes.append(None)
+                            if 'enum' not in data or set(data['enum']) != set(codes):
+                                data['enum'] = codes
+                        elif 'array' in types:
+                            if 'enum' not in data['items'] or set(data['items']['enum']) != set(codes):
+                                data['items']['enum'] = codes
+
+                    return data
+                else:
+                    return {key: update_codelist_enum(value) for key, value in data.items()}
+            else:
+                return data
+
+        def update_json_schema(directory):
+            for root, dirs, files in os.walk(directory):
+                for name in files:
+                    if name.endswith('.json') and name not in meta_schema_exceptions:
+                        path = os.path.join(root, name)
+
+                        with open(path) as f:
+                            data = json.load(f, object_pairs_hook=OrderedDict)
+
+                        # If the JSON file is a JSON Schema file.
+                        if any(field in data for field in ('$schema', 'definitions', 'properties')):
+                            expected = deepcopy(data)
+                            update_codelist_enum(data)
+
+                            if expected != data:
+                                with open(path, 'w') as f:
+                                    json.dump(data, f, indent=2, separators=(',', ': '))
+                                    f.write('\n')
+
+        codelists = {}
+        codelists_seen = set()
+        meta_schema_exceptions = {
+            'meta-schema.json',
+            'meta-schema-patch.json',
+        }
+
+        if self.args.extension:
+            collect_codelists(self.args.standard)
+            codelists_seen = set(codelists)
+
+            directories = self.args.extension
+        else:
+            directories = [self.args.standard]
+
+        for directory in directories:
+            collect_codelists(directory)
+            update_json_schema(directory)
+
+        modifications = []
+        codelists_not_seen = []
+        for codelist in codelists.keys():
+            if codelist[0] in ('+', '-'):
+                modifications.append(codelist)
+            elif codelist not in codelists_seen:
+                codelists_not_seen.append(codelist)
+
+        if codelists_not_seen:
+            logger.error('unused codelists: {}'.format(' '.join(codelists_not_seen)))
