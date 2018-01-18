@@ -120,14 +120,14 @@ codelist = 'Code\nfoo\nbar\n'
 
 def test_command(monkeypatch):
     with TemporaryDirectory() as d:
-        os.mkdir(os.path.join(d, 'codelists'))
-
         with open(os.path.join(d, 'release-schema.json'), 'w') as f:
             f.write(schema)
 
-        for basename in ('a', 'b', 'c', 'd'):
-            with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
-                f.write(codelist)
+        for directory in ('codelists', 'codelists_translated'):
+            os.mkdir(os.path.join(d, directory))
+            for basename in ('a', 'b', 'c', 'd'):
+                with open(os.path.join(d, directory, '{}.csv'.format(basename)), 'w') as f:
+                    f.write(codelist)
 
         with patch('sys.stdout', new_callable=StringIO) as actual:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'set-closed-codelist-enums', d])
@@ -141,11 +141,10 @@ def test_command(monkeypatch):
 
 def test_unused_codelists(monkeypatch, caplog):
     with TemporaryDirectory() as d:
-        os.mkdir(os.path.join(d, 'codelists'))
-
         with open(os.path.join(d, 'release-schema.json'), 'w') as f:
             f.write(schema)
 
+        os.mkdir(os.path.join(d, 'codelists'))
         for basename in ('a', 'b', 'c', 'd', 'e'):
             with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
                 f.write(codelist)
@@ -166,10 +165,10 @@ def test_unused_codelists(monkeypatch, caplog):
 
 def test_missing_codelists(monkeypatch, caplog):
     with TemporaryDirectory() as d:
-        os.mkdir(os.path.join(d, 'codelists'))
-
         with open(os.path.join(d, 'release-schema.json'), 'w') as f:
             f.write(schema)
+
+        os.mkdir(os.path.join(d, 'codelists'))
 
         with pytest.raises(KeyError) as excinfo:
             with patch('sys.stdout', new_callable=StringIO) as actual:
