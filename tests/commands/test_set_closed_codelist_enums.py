@@ -315,7 +315,7 @@ def test_modified_codelists(monkeypatch):
                 f.write('Code\nbaz\n')
 
             with open(os.path.join(e, 'codelists', '-b.csv'), 'w') as f:
-                f.write('Code\nbar\n')
+                f.write('Code,Description\nbar,bzz\n')
 
             with patch('sys.stdout', new_callable=StringIO) as actual:
                 monkeypatch.setattr(sys, 'argv', ['ocdskit', 'set-closed-codelist-enums', d, e])
