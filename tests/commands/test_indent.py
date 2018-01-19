@@ -26,6 +26,23 @@ def test_command(monkeypatch):
         assert f.read() == b'{\n  "lorem": "ipsum"\n}\n'
 
 
+def test_indent(monkeypatch):
+    with NamedTemporaryFile() as f:
+        f.write(content)
+
+        f.flush()
+
+        with patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'indent', '--indent', '4', f.name])
+            main()
+
+        f.seek(0)
+
+        assert actual.getvalue() == ''
+
+        assert f.read() == b'{\n    "lorem": "ipsum"\n}\n'
+
+
 def test_command_recursive(monkeypatch):
     with TemporaryDirectory() as d:
         with open(os.path.join(d, 'test.json'), 'wb') as f:
