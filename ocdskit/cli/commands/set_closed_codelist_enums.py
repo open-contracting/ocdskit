@@ -27,7 +27,12 @@ class Command(BaseCommand):
                     if name.endswith('.csv'):
                         with open(os.path.join(root, name)) as f:
                             data = [row for row in csv.DictReader(f)]
-                        if name in codelists:
+
+                        if name.startswith('+'):
+                            codelists[name[1:]] += data
+                        elif name.startswith('-'):
+                            codelists[name[1:]] = [row for row in codelists[name[1:]] if row not in data]
+                        elif name in codelists:
                             if codelists[name] != data:
                                 logger.error('conflicting codelists: {}'.format(name))
                         elif 'Code' in data[0]:
