@@ -26,12 +26,19 @@ class Command(BaseCommand):
                 for name in files:
                     if name.endswith('.csv'):
                         with open(os.path.join(root, name)) as f:
-                            data = [row for row in csv.DictReader(f)]
-                        if name in codelists:
-                            if codelists[name] != data:
-                                logger.error('conflicting codelists: {}'.format(name))
-                        elif 'Code' in data[0]:
-                            codelists[name] = data
+                            rows = [row for row in csv.DictReader(f)]
+
+                        if 'Code' in rows[0]:
+                            codes = [row['Code'] for row in rows]
+                            if name.startswith('+'):
+                                codelists[name[1:]] += codes
+                            elif name.startswith('-'):
+                                codelists[name[1:]] = [code for code in codelists[name[1:]] if code not in codes]
+                            elif name in codelists:
+                                if codelists[name] != codes:
+                                    logger.error('conflicting codelists: {}'.format(name))
+                            else:
+                                codelists[name] = codes
 
         # This method is similar to `validate_codelist_enum` in `test_json.py`.
         def update_codelist_enum(data):
@@ -42,7 +49,7 @@ class Command(BaseCommand):
                     codelists_seen.add(data['codelist'])
 
                     if not data['openCodelist']:
-                        codes = [row['Code'] for row in codelists[data['codelist']]]
+                        codes = codelists[data['codelist']]
 
                         if isinstance(data['type'], str):
                             types = [data['type']]

@@ -1,6 +1,0 @@
-pandas
-numpy
-sqlalchemy
-jsonref
-jsonschema
-openpyxl
