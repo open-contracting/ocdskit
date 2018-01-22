@@ -23,6 +23,7 @@ ocdskit = ocdskit.cli.__main__:main''',
         'rfc3987',
         'sqlalchemy',
         'strict-rfc3339',
+        'validators',
     ],
     extras_require={
         'test': [
