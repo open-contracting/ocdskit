@@ -16,8 +16,13 @@ To install from source:
 
     pip install --upgrade .
 
-``ocdskit`` accepts JSON data from standard input. To report on a remote
-file:
+To see all commands available, run:
+
+::
+
+    ocdskit --help
+
+Most ``ocdskit`` tools accept JSON data from standard input. To report on a remote file:
 
 ::
 
@@ -29,14 +34,7 @@ To report on a local file:
 
     cat <path> | ocdskit <command>
 
-To see all commands available, run:
-
-::
-
-    ocdskit --help
-
-For exploring JSON data, consider using
-`jq <https://stedolan.github.io/jq/>`__.
+For exploring JSON data, consider using `jq <https://stedolan.github.io/jq/>`__.
 
 Example 1
 ---------
@@ -106,8 +104,7 @@ package:
 
     head -n 10000 stream.json | ocdskit combine-record-packages > record_package-1.json
 
-Then, combine the next 10,000 items from the stream into a single record
-package:
+Then, combine the next 10,000 items from the stream into a single record package:
 
 ::
 
@@ -126,8 +123,7 @@ Tabulate
 
     cat release_package.json | ocdskit tabulate sqlite:///data.db
 
-For the format of ``database_url``, see the `SQLAlchemy
-documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
+For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
 
 check_documents_urls
 --------
@@ -136,9 +132,7 @@ check_documents_urls
 
     cat release_package.json | ocdskit check_documents_urls --timeout=10
 
-
-Copyright (c) 2017 Open Contracting Partnership, released under the BSD
-license
+Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
 
 .. |PyPI version| image:: https://badge.fury.io/py/ocdskit.svg
    :target: https://badge.fury.io/py/ocdskit
