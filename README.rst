@@ -125,13 +125,6 @@ Tabulate
 
 For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
 
-check_documents_urls
---------
-
-::
-
-    cat release_package.json | ocdskit check_documents_urls --timeout=10
-
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
 
 .. |PyPI version| image:: https://badge.fury.io/py/ocdskit.svg

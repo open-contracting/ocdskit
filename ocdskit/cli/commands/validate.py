@@ -2,7 +2,9 @@ import json
 from urllib.parse import urlparse
 
 import requests
+import rfc3987
 from jsonschema import FormatChecker
+from jsonschema.compat import str_types
 from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
@@ -16,6 +18,8 @@ class Command(BaseCommand):
     def add_arguments(self):
         self.add_argument('--schema', help='the schema to validate against',
                           default='http://standard.open-contracting.org/latest/en/release-package-schema.json')
+        self.add_argument('--check-urls', help='check the HTTP status code if "format": "uri"', action='store_true')
+        self.add_argument('--timeout', help='timeout (seconds) to GET a URL', type=int, default=10)
 
     def handle(self):
         components = urlparse(self.args.schema)
@@ -25,10 +29,29 @@ class Command(BaseCommand):
         else:
             schema = requests.get(self.args.schema).json()
 
+        format_checker = FormatChecker()
+        if self.args.check_urls:
+            def check_url(instance):
+                # See https://github.com/Julian/jsonschema/blob/master/jsonschema/_format.py
+                if not isinstance(instance, str_types):
+                    return True
+                rfc3987.parse(instance, rule='URI')  # raises ValueError
+                try:
+                    response = requests.get(instance, timeout=self.args.timeout)
+                    result = response.status_code in (200,)
+                    if not result:
+                        print('HTTP {} on GET {}'.format(response.status_code, instance))
+                    return result
+                except requests.exceptions.Timeout as e:
+                    print('Timedout on GET {}'.format(instance))
+                    return False
+
+            format_checker.checks('uri', raises=(ValueError))(check_url)
+
         for i, line in enumerate(self.buffer()):
             try:
                 data = json.loads(line)
-                for error in validator(schema, format_checker=FormatChecker()).iter_errors(data):
+                for error in validator(schema, format_checker=format_checker).iter_errors(data):
                     print('item {}: {} ({})'.format(i, error.message, '/'.join(error.absolute_schema_path)))
             except json.decoder.JSONDecodeError as e:
                 raise CommandError('item {}: JSON error: {}'.format(i, e))

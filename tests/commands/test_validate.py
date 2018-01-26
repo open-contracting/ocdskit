@@ -71,3 +71,26 @@ def test_command_invalid_record_package(monkeypatch):
         main()
 
     assert "item 0: None is not of type 'string' (properties/records/items/properties/compiledRelease/properties/tender/properties/submissionMethod/items/type)" in actual.getvalue()  # noqa
+
+
+def test_command_no_check_urls(monkeypatch):
+    stdin = read('release-package_urls.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate'])
+        main()
+
+    assert actual.getvalue() == ''
+
+def test_command_check_urls(monkeypatch):
+    stdin = read('release-package_urls.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--check-urls', '--timeout', '2'])
+        main()
+
+    assert actual.getvalue() == """HTTP 500 on GET http://httpbin.org/status/500
+item 0: 'http://httpbin.org/status/500' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
+Timedout on GET http://httpbin.org/delay/3
+item 0: 'http://httpbin.org/delay/3' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
+"""

@@ -18,7 +18,6 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.set_closed_codelist_enums',
     'ocdskit.cli.commands.tabulate',
     'ocdskit.cli.commands.validate',
-    'ocdskit.cli.commands.check_documents_urls',
 )
 
 
