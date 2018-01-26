@@ -14,8 +14,8 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument('file', help='files to reindent', nargs='+')
-        self.add_argument('-r', '--recursive', help='Recursively indent JSON files', action='store_true')
-        self.add_argument('--indent', help='Indent level', type=int, default=2)
+        self.add_argument('-r', '--recursive', help='recursively indent JSON files', action='store_true')
+        self.add_argument('--indent', help='indent level', type=int, default=2)
 
     def handle(self):
         for file in self.args.file:
