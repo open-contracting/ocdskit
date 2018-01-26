@@ -82,6 +82,7 @@ def test_command_no_check_urls(monkeypatch):
 
     assert actual.getvalue() == ''
 
+
 def test_command_check_urls(monkeypatch):
     stdin = read('release-package_urls.json', 'rb')
 
@@ -93,4 +94,4 @@ def test_command_check_urls(monkeypatch):
 item 0: 'http://httpbin.org/status/500' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
 Timedout on GET http://httpbin.org/delay/3
 item 0: 'http://httpbin.org/delay/3' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
-"""
+"""  # noqa
