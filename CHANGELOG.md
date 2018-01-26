@@ -2,6 +2,10 @@
 
 # 0.0.2
 
+New options:
+
+* validate: `--check-urls` and `--timeout`
+
 New commands:
 
 * indent
