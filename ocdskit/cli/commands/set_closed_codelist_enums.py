@@ -31,8 +31,10 @@ class Command(BaseCommand):
                         if 'Code' in rows[0]:
                             codes = [row['Code'] for row in rows]
                             if name.startswith('+'):
+                                # KeyError if codelist doesn't exist.
                                 codelists[name[1:]] += codes
                             elif name.startswith('-'):
+                                # KeyError if codelist doesn't exist.
                                 codelists[name[1:]] = [code for code in codelists[name[1:]] if code not in codes]
                             elif name in codelists:
                                 if codelists[name] != codes:
