@@ -109,12 +109,9 @@ class Command(BaseCommand):
             collect_codelists(directory)
             update_json_schema(directory)
 
-        modifications = []
         codelists_not_seen = []
         for codelist in codelists.keys():
-            if codelist[0] in ('+', '-'):
-                modifications.append(codelist)
-            elif codelist not in codelists_seen:
+            if codelist not in codelists_seen:
                 codelists_not_seen.append(codelist)
 
         if codelists_not_seen:
