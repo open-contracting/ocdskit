@@ -5,10 +5,7 @@ from .base import BaseCommand
 
 class Command(BaseCommand):
     name = 'schema-report'
-    help = 'Reports details of a JSON Schema'
-
-    def add_arguments(self):
-        self.add_argument('file', help='JSON Schema file')
+    help = 'Reports details of a JSON Schema (open and closed codelists)'
 
     def handle(self):
         def recurse(data, codelists):
@@ -27,11 +24,10 @@ class Command(BaseCommand):
                     for value in data.values():
                         recurse(value, codelists)
 
-        with open(self.args.file) as f:
-            data = json.load(f)
+        schema = json.load(self.buffer())
 
         codelists = {}
-        recurse(data, codelists)
+        recurse(schema, codelists)
 
         partitioned_codelists = {
             True: set(),

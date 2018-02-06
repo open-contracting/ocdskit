@@ -31,8 +31,10 @@ class Command(BaseCommand):
                         if 'Code' in rows[0]:
                             codes = [row['Code'] for row in rows]
                             if name.startswith('+'):
+                                # KeyError if codelist doesn't exist.
                                 codelists[name[1:]] += codes
                             elif name.startswith('-'):
+                                # KeyError if codelist doesn't exist.
                                 codelists[name[1:]] = [code for code in codelists[name[1:]] if code not in codes]
                             elif name in codelists:
                                 if codelists[name] != codes:
@@ -109,12 +111,9 @@ class Command(BaseCommand):
             collect_codelists(directory)
             update_json_schema(directory)
 
-        modifications = []
         codelists_not_seen = []
         for codelist in codelists.keys():
-            if codelist[0] in ('+', '-'):
-                modifications.append(codelist)
-            elif codelist not in codelists_seen:
+            if codelist not in codelists_seen:
                 codelists_not_seen.append(codelist)
 
         if codelists_not_seen:
