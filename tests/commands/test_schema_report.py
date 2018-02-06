@@ -1,11 +1,10 @@
 import sys
-from io import StringIO
-from tempfile import NamedTemporaryFile
+from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
 
 from ocdskit.cli.__main__ import main
 
-schema = b'''{
+stdin = b'''{
   "properties": {
     "open": {
       "type": [
@@ -54,16 +53,11 @@ schema = b'''{
 
 
 def test_command(monkeypatch):
-    with NamedTemporaryFile() as f:
-        f.write(schema)
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report'])
+        main()
 
-        f.flush()
-
-        with patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report', f.name])
-            main()
-
-        assert actual.getvalue() == '''openCodelist: False
+    assert actual.getvalue() == '''openCodelist: False
 a.csv
 b.csv
 c.csv

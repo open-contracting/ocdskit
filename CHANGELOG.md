@@ -10,6 +10,7 @@ New commands:
 
 * indent
 * schema-report
+* schema-strict
 * set-closed-codelist-enums
 
 # 0.0.1 (2017-12-25)
