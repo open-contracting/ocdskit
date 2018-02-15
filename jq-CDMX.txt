@@ -1,0 +1,64 @@
+add --until option to run analysis from earlier point in time
+add --every option to run analysis with different --until
+
+-- Calculating MEL indicators with jq
+
+set x 'cat compiled_releases.json | jq \'[.[]] | map(select(.buyer.name == "SECRETARÍA DE FINANZAS"))\''
+set a 'cat compiled_releases.json | jq \'[.[]] | map(select(.buyer.name == "SECRETARÍA DE FINANZAS" and .date < "\'(date -v-1y +%Y-%m-%d)\'"))\''
+set b 'cat compiled_releases.json | jq \'[.[]] | map(select(.buyer.name == "SECRETARÍA DE FINANZAS" and .date >= "\'(date -v-1y +%Y-%m-%d)\'"))\''
+
+# B0
+set n (eval $b | jq 'length')
+set m (eval $x | jq 'length')
+echo $n / $m = (echo 'scale=3;'$n'/'$m | bc)
+
+# B1
+set c 'eval $a | jq \'.[].tender.tenderers[].identifier.id\' | sort | uniq'
+set d 'eval $b | jq \'.[].tender.tenderers[].identifier.id\' | sort | uniq'
+echo (eval $c | wc -l) '|' (eval $d | wc -l)
+set n (comm -13 (eval $c | psub) (eval $d | psub) | wc -l)
+set m (eval $x | jq '.[].tender.tenderers[].identifier.id' | sort | uniq | wc -l)
+echo $n / $m = (echo 'scale=3;'$n'/'$m | bc)
+
+# B2
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == null)) | length'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "limited")) | length'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "open")) | length'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "selective")) | length'
+
+# B3
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "limited")) | [.[].value.amount] | add'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "open")) | [.[].value.amount] | add'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == "selective")) | [.[].value.amount] | add'
+cat compiled_releases.json | jq '[.[].tender] | map(select(.procurementMethod == null)) | [.[].value.amount] | add'
+
+# B4
+set c 'eval $a | jq \'.[].awards[].suppliers[].identifier.id\' | sort | uniq'
+set d 'eval $b | jq \'.[].awards[].suppliers[].identifier.id\' | sort | uniq'
+echo (eval $c | wc -l) '|' (eval $d | wc -l)
+set n (comm -13 (eval $c | psub) (eval $d | psub) | wc -l)
+set m (eval $x | jq '.[].awards[].suppliers[].identifier.id' | sort | uniq | wc -l)
+echo $n / $m = (echo 'scale=3;'$n'/'$m | bc)
+
+# B5
+# Not likely possible as need to use output of B4
+
+# B5.1
+cat compiled_releases.json | jq '[.[].awards[].value] | map(select(.currency == null).amount) | add'
+cat compiled_releases.json | jq '[.[].awards[].value] | map(select(.currency == "USD").amount) | add'
+
+# B8
+set n (eval $x | jq '[.[].tender.numberOfTenderers] | add')
+set m (eval $x | jq '[.[].awards[].suppliers | length] | add')
+echo $n / $m = (echo 'scale=3;'$n'/'$m | bc)
+
+# B8.1
+set c 'eval $x | jq \'.[].awards[].suppliers[].identifier.id\' | sort | uniq'
+set d 'eval $x | jq \'.[].tender.tenderers[].identifier.id\' | sort | uniq'
+echo (eval $c | wc -l) '|' (eval $d | wc -l)
+set n (comm -13 (eval $c | psub) (eval $d | psub) | wc -l)
+set m (eval $d | wc -l)
+echo $n / $m = (echo 'scale=3;'$n'/'$m | bc)
+
+# B9
+cat compiled_releases.json | jq '.[].tender.numberOfTenderers' | sort | head -n (cat compiled_releases.json | jq 'length / 2') | tail -n 1

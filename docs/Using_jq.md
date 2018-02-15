@@ -26,6 +26,15 @@ Get the second 10 release packages, one line per package:
 
     jq -crM '.[10:20][]' release_packages.json
 
+Or, using `head` and `tail`:
+
+    jq -crM '.[]' release_packages.json | tail -n +10 | head -n 10
+
+Get the first or last packages using `head` or `tail`:
+
+    jq -crM '.[]' release_packages.json | head -n 15
+    jq -crM '.[]' release_packages.json | tail -n 30
+
 You can stream release packages, one line per package, to most OCDS Kit commands:
 
     jq -crM '.[]' release_packages.json | ocdskit compile
