@@ -42,3 +42,7 @@ You can stream release packages, one line per package, to most OCDS Kit commands
 Or, you can split the stream of release packages into individual files named `xaaaa`, `xaaab`, `xaaac`, etc.:
 
     jq -crM '.[]' release_packages.json | split -l 1 -a 4
+
+If the file is large, the above commands will consume GBs of memory. Instead, you can run:
+
+    jq -cnM --stream 'fromstream(1|truncate_stream(inputs))' < release_packages.json | ocdskit compile
