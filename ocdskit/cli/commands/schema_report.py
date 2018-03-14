@@ -5,7 +5,7 @@ from .base import BaseCommand
 
 class Command(BaseCommand):
     name = 'schema-report'
-    help = 'Reports details of a JSON Schema (open and closed codelists)'
+    help = 'reports details of a JSON Schema (open and closed codelists)'
 
     def handle(self):
         def recurse(data, codelists):

@@ -10,7 +10,7 @@ logger = logging.getLogger('ocdskit')
 
 class Command(BaseCommand):
     name = 'indent'
-    help = 'indents JSON files'
+    help = 'indents JSON files by modifying the given files in-place'
 
     def add_arguments(self):
         self.add_argument('file', help='files to reindent', nargs='+')
