@@ -36,8 +36,128 @@ To report on a local file:
 
 For exploring JSON data, consider using `jq <https://stedolan.github.io/jq/>`__.
 
+Commands
+--------
+
+Optional arguments for all commands are:
+
+* ``-h``, ``--help`` show the help message and exit
+* ``--encoding ENCODING`` the file encoding
+* ``--pretty`` pretty print output
+
+combine-record-packages
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Reads record packages from standard input, collects packages and records, and prints one record package.
+
+::
+
+    cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
+
+combine-release-packages
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Reads release packages from standard input, collects releases, and prints one release package.
+
+::
+
+    cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
+
+compile
+~~~~~~~
+
+Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
+
+indent
+~~~~~~
+
+Indents JSON files by modifying the given files in-place.
+
+Optional arguments:
+
+* ``-r``, ``--recursive`` recursively indent JSON files
+* ``--indent INDENT`` indent level
+
+::
+
+    ocdskit indent --recursive file1 path/to/directory file2
+
+mapping-sheet
+~~~~~~~~~~~~~
+
+Generates a spreadsheet with all field paths from an OCDS schema.
+
+::
+
+    cat path/to/release-schema.json | ocdskit mapping-sheet > mapping-sheet.csv
+
+schema-report
+~~~~~~~~~~~~~
+
+Reports details of a JSON Schema (open and closed codelists).
+
+::
+
+    cat path/to/release-schema.json | ocdskit schema-report
+
+schema-strict
+~~~~~~~~~~~~~
+
+For any required field, adds "minItems" if an array, "minProperties" if an object and "minLength" if a string and "enum", "format" and "pattern" are not set.
+
+::
+
+    cat path/to/release-schema.json | ocdskit schema-strict > out.json
+
+set-closed-codelist-enums
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sets the enum in a JSON Schema to match the codes in the CSV files of closed codelists.
+
+::
+
+    ocdskit set-closed-codelist-enums path/to/standard path/to/extension1 path/to/extension2
+
+tabulate
+~~~~~~~~
+
+Load packages into a database.
+
+Optional arguments:
+
+* ``--drop`` drop all tables before loading
+* ``--schema SCHEMA`` the release-schema.json to use
+
+::
+
+    cat release_package.json | ocdskit tabulate sqlite:///data.db
+
+For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
+
+validate
+~~~~~~~~
+
+Reads JSON data from standard input, validates it against the schema, and prints errors.
+
+Optional arguments:
+
+* ``--schema SCHEMA`` the schema to validate against
+* ``--check-urls`` check the HTTP status code if "format": "uri"
+* ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
+
+::
+
+    cat tests/fixtures/* | ocdskit validate
+
+Examples
+--------
+
 Example 1
----------
+~~~~~~~~~
 
 Download a list of release packages:
 
@@ -76,7 +196,7 @@ Measure indicators across release packages:
     cat release_packages.json | ocdskit --encoding iso-8859-1 measure --currency MXN
 
 Example 2
----------
+~~~~~~~~~
 
 Download a list of record packages:
 
@@ -115,15 +235,6 @@ And so on:
 ::
 
     tail -n +20001 stream.json | head -n 10000 | ocdskit combine-record-packages > record_package-3.json
-
-Tabulate
---------
-
-::
-
-    cat release_package.json | ocdskit tabulate sqlite:///data.db
-
-For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
 
