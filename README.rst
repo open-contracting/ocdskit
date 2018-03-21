@@ -148,7 +148,7 @@ Optional arguments:
 * ``--schema SCHEMA`` the schema to validate against
 * ``--check-urls`` check the HTTP status code if "format": "uri"
 * ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
-* ``--verbose`` print also the items with no validation errors
+* ``--verbose`` print items without validation errors
 
 ::
 
