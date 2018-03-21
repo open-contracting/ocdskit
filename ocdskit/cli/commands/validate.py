@@ -20,6 +20,7 @@ class Command(BaseCommand):
                           default='http://standard.open-contracting.org/latest/en/release-package-schema.json')
         self.add_argument('--check-urls', help='check the HTTP status code if "format": "uri"', action='store_true')
         self.add_argument('--timeout', help='timeout (seconds) to GET a URL', type=int, default=10)
+        self.add_argument('--verbose', help='print also the items with no validation errors', action='store_true')
 
     def handle(self):
         components = urlparse(self.args.schema)
@@ -51,7 +52,11 @@ class Command(BaseCommand):
         for i, line in enumerate(self.buffer()):
             try:
                 data = json.loads(line)
+                errors = False
                 for error in validator(schema, format_checker=format_checker).iter_errors(data):
                     print('item {}: {} ({})'.format(i, error.message, '/'.join(error.absolute_schema_path)))
+                    errors = True
+                if not errors and self.args.verbose:
+                    print('item {}: no errors'.format(i))
             except json.decoder.JSONDecodeError as e:
                 raise CommandError('item {}: JSON error: {}'.format(i, e))
