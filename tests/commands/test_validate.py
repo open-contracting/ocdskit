@@ -61,6 +61,18 @@ def test_command_valid_release_package_file(monkeypatch):
     assert actual.getvalue() == ''
 
 
+def test_command_valid_release_package_file_verbose(monkeypatch):
+    url = 'file://{}'.format(os.path.realpath(os.path.join('tests', 'fixtures', 'release-package-schema.json')))
+
+    stdin = read('realdata/release-package-1.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--schema', url, '--verbose'])
+        main()
+
+    assert actual.getvalue() == 'item 0: no errors\n'
+
+
 def test_command_invalid_record_package(monkeypatch):
     url = 'http://standard.open-contracting.org/latest/en/record-package-schema.json'
 
