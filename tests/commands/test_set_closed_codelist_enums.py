@@ -183,11 +183,10 @@ def test_command(monkeypatch):
         with open(os.path.join(d, 'release-schema.json'), 'w') as f:
             f.write(schema)
 
-        for directory in ('codelists'):
-            os.mkdir(os.path.join(d, directory))
-            for basename in ('a', 'b', 'c', 'd'):
-                with open(os.path.join(d, directory, '{}.csv'.format(basename)), 'w') as f:
-                    f.write(codelist)
+        os.mkdir(os.path.join(d, 'codelists'))
+        for basename in ('a', 'b', 'c', 'd'):
+            with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
+                f.write(codelist)
 
         with patch('sys.stdout', new_callable=StringIO) as actual:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'set-closed-codelist-enums', d])
