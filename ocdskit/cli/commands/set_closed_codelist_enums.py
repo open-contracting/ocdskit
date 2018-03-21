@@ -21,8 +21,6 @@ class Command(BaseCommand):
     def handle(self):
         def collect_codelists(directory):
             for root, dirs, files in os.walk(directory):
-                if 'codelists_translated' in dirs:
-                    dirs.remove('codelists_translated')
                 for name in files:
                     if name.endswith('.csv'):
                         with open(os.path.join(root, name)) as f:

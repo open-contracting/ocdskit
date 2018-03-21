@@ -183,7 +183,7 @@ def test_command(monkeypatch):
         with open(os.path.join(d, 'release-schema.json'), 'w') as f:
             f.write(schema)
 
-        for directory in ('codelists', 'codelists_translated'):
+        for directory in ('codelists'):
             os.mkdir(os.path.join(d, directory))
             for basename in ('a', 'b', 'c', 'd'):
                 with open(os.path.join(d, directory, '{}.csv'.format(basename)), 'w') as f:
