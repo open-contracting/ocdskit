@@ -22,7 +22,7 @@ To see all commands available, run:
 
     ocdskit --help
 
-Most ``ocdskit`` tools accept JSON data from standard input. To process a remote file:
+Most ``ocdskit`` tools accept only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data from standard input. To process a remote file:
 
 ::
 
@@ -34,7 +34,13 @@ To process a local file:
 
     cat <path> | ocdskit <command>
 
-For exploring JSON data, consider using `jq <https://stedolan.github.io/jq/>`__.
+If the JSON data is not line-delimited, you can make it line-delimited using `jq <https://stedolan.github.io/jq/>`__:
+
+::
+
+    curl <url> | jq -crM . | ocdskit <command>
+
+For exploring JSON data, consider using ``jq``.
 
 Commands
 --------
@@ -72,6 +78,43 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
+tabulate
+~~~~~~~~
+
+Load packages into a database.
+
+Optional arguments:
+
+* ``--drop`` drop all tables before loading
+* ``--schema SCHEMA`` the release-schema.json to use
+
+::
+
+    cat release_package.json | ocdskit tabulate sqlite:///data.db
+
+For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
+
+validate
+~~~~~~~~
+
+Reads JSON data from standard input, validates it against the schema, and prints errors.
+
+Optional arguments:
+
+* ``--schema SCHEMA`` the schema to validate against
+* ``--check-urls`` check the HTTP status code if "format": "uri"
+* ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
+* ``--verbose`` print items without validation errors
+
+::
+
+    cat tests/fixtures/* | ocdskit validate
+
+Generic Commands
+----------------
+
+The following commands may be used when working with JSON data, in general.
+
 indent
 ~~~~~~
 
@@ -85,6 +128,11 @@ Optional arguments:
 ::
 
     ocdskit indent --recursive file1 path/to/directory file2
+
+Schema Commands
+---------------
+
+The following commands may be used when working with OCDS schema from extensions, profiles, or OCDS itself.
 
 mapping-sheet
 ~~~~~~~~~~~~~
@@ -121,38 +169,6 @@ Sets the enum in a JSON Schema to match the codes in the CSV files of closed cod
 ::
 
     ocdskit set-closed-codelist-enums path/to/standard path/to/extension1 path/to/extension2
-
-tabulate
-~~~~~~~~
-
-Load packages into a database.
-
-Optional arguments:
-
-* ``--drop`` drop all tables before loading
-* ``--schema SCHEMA`` the release-schema.json to use
-
-::
-
-    cat release_package.json | ocdskit tabulate sqlite:///data.db
-
-For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
-
-validate
-~~~~~~~~
-
-Reads JSON data from standard input, validates it against the schema, and prints errors.
-
-Optional arguments:
-
-* ``--schema SCHEMA`` the schema to validate against
-* ``--check-urls`` check the HTTP status code if "format": "uri"
-* ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
-* ``--verbose`` print items without validation errors
-
-::
-
-    cat tests/fixtures/* | ocdskit validate
 
 Examples
 --------
@@ -211,15 +227,13 @@ Combine it into a single record package:
 
     jq -crM '.[]' record_packages.json | ocdskit combine-record-packages > record_package.json
 
-If the file is too large for the OCDS Validator, you can break it into
-parts. First, transform the list into a stream:
+If the file is too large for the OCDS Validator, you can break it into parts. First, transform the list into a stream:
 
 ::
 
     jq -crM '.[]' record_packages.json > stream.json
 
-Combine the first 10,000 items from the stream into a single record
-package:
+Combine the first 10,000 items from the stream into a single record package:
 
 ::
 
