@@ -22,13 +22,13 @@ To see all commands available, run:
 
     ocdskit --help
 
-Most ``ocdskit`` tools accept JSON data from standard input. To report on a remote file:
+Most ``ocdskit`` tools accept JSON data from standard input. To process a remote file:
 
 ::
 
     curl <url> | ocdskit <command>
 
-To report on a local file:
+To process a local file:
 
 ::
 
