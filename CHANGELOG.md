@@ -2,6 +2,8 @@
 
 # 0.0.3
 
+* Add helpful error message if the input is not [line-delimited JSON](https://en.wikipedia.org/wiki/JSON_streaming) data.
+
 # 0.0.2 (2018-03-14)
 
 New options:
