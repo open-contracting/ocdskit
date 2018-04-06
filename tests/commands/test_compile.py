@@ -64,6 +64,24 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records()) == 1
     assert caplog.records()[0].levelname == 'CRITICAL'
-    assert caplog.records()[0].message == "encoding error: try `--encoding iso-8859-1`? ('utf-8' codec can't decode " \
-                                          "byte 0xd3 in position 592: invalid continuation byte)"
+    assert caplog.records()[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
+                                          "invalid continuation byte\nTry `--encoding iso-8859-1`?"
+    assert excinfo.value.code == 1
+
+
+def test_command_bad_format(monkeypatch, caplog):
+    stdin = b'{\n}'
+
+    with pytest.raises(SystemExit) as excinfo:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+            main()
+
+    assert actual.getvalue() == ''
+
+    assert len(caplog.records()) == 1
+    assert caplog.records()[0].levelname == 'CRITICAL'
+    assert caplog.records()[0].message == "JSON error: Expecting property name enclosed in double quotes: line 2 " \
+                                          "column 1 (char 2)\nIs the JSON data not line-delimited? Try piping it " \
+                                          "through `jq -crM .`"
     assert excinfo.value.code == 1

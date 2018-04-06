@@ -1,5 +1,6 @@
 import argparse
 import importlib
+import json
 import logging.config
 import sys
 
@@ -46,12 +47,15 @@ def main():
             command.args = args
             try:
                 command.handle()
+            except json.decoder.JSONDecodeError as e:
+                raise CommandError('JSON error: {}\nIs the JSON data not line-delimited? '
+                                   'Try piping it through `jq -crM .`'.format(e))
             except UnicodeDecodeError as e:
                 if args.encoding and args.encoding.lower() == 'iso-8859-1':
                     suggestion = 'utf-8'
                 else:
                     suggestion = 'iso-8859-1'
-                raise CommandError('encoding error: try `--encoding {}`? ({})'.format(suggestion, e))
+                raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
