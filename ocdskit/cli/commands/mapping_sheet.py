@@ -23,7 +23,7 @@ class Command(BaseCommand):
         INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
         def find_md_links(md):
-            return dict(INLINE_LINK_RE.findall(md))
+            return OrderedDict(INLINE_LINK_RE.findall(md))
 
         def remove_links(text, links):
             for key, link in links.items():
