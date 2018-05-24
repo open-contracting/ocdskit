@@ -7,8 +7,7 @@ env:
   - BASEDIR="https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/master"
 install:
   - curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
-  - pip install -e .[test]
-  - pip install coveralls
+  - pip install .[test]
 script:
   - curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
   - py.test --cov ocdskit tests/

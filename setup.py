@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+with open('README.rst') as f:
+    long_description = f.read()
+
 setup(
     name='ocdskit',
     version='0.0.3',
@@ -7,12 +10,9 @@ setup(
     author_email='james@slashpoundbang.com',
     url='https://github.com/open-contracting/ocdskit',
     description='A suite of command-line tools for working with OCDS data',
-    platforms=['any'],
     license='BSD',
     packages=find_packages(),
-    long_description=open('README.rst').read(),
-    entry_points='''[console_scripts]
-ocdskit = ocdskit.cli.__main__:main''',
+    long_description=long_description,
     install_requires=[
         'jsonref',
         'jsonschema',
@@ -26,6 +26,7 @@ ocdskit = ocdskit.cli.__main__:main''',
     ],
     extras_require={
         'test': [
+            'coveralls',
             'pytest<3',
             'pytest-capturelog',
             'pytest-cov',
@@ -35,4 +36,6 @@ ocdskit = ocdskit.cli.__main__:main''',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.6',
     ],
+    entry_points='''[console_scripts]
+ocdskit = ocdskit.cli.__main__:main''',
 )
