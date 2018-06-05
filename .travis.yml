@@ -7,7 +7,6 @@ env:
 install:
   - curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
   - pip install .[test]
-  - pip freeze
 script:
   - curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
   - pytest --cov ocdskit
