@@ -9,6 +9,6 @@ install:
   - pip install .[test]
 script:
   - curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
-  - py.test --cov ocdskit tests/
+  - pytest --cov ocdskit
 after_success:
   coveralls
