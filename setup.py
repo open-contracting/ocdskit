@@ -28,7 +28,6 @@ setup(
         'test': [
             'coveralls',
             'pytest',
-            'pytest-capturelog',
             'pytest-cov',
         ],
     },
