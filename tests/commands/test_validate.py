@@ -20,7 +20,7 @@ def test_command(monkeypatch):
 
 
 def test_command_invalid_json(monkeypatch, caplog):
-    with caplog.atLevel('INFO'):
+    with caplog.at_level('INFO'):
         stdin = b'{\n'
 
         with pytest.raises(SystemExit) as excinfo:
@@ -30,10 +30,10 @@ def test_command_invalid_json(monkeypatch, caplog):
 
         assert actual.getvalue() == ''
 
-        assert len(caplog.records()) == 1
-        assert caplog.records()[0].levelname == 'CRITICAL'
-        assert caplog.records()[0].message == "item 0: JSON error: Expecting property name enclosed in double " \
-                                              "quotes: line 2 column 1 (char 2)"
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'CRITICAL'
+        assert caplog.records[0].message == "item 0: JSON error: Expecting property name enclosed in double " \
+                                            "quotes: line 2 column 1 (char 2)"
         assert excinfo.value.code == 1
 
 

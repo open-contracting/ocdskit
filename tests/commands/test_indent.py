@@ -72,6 +72,6 @@ def test_command_directory(monkeypatch, caplog):
 
         assert actual.getvalue() == ''
 
-        assert len(caplog.records()) == 1
-        assert caplog.records()[0].levelname == 'WARNING'
-        assert caplog.records()[0].message.endswith('is a directory. Set --recursive to recurse into directories.')
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'WARNING'
+        assert caplog.records[0].message.endswith('is a directory. Set --recursive to recurse into directories.')
