@@ -217,9 +217,9 @@ def test_unused_codelists(monkeypatch, caplog):
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema_with_enum
 
-        assert len(caplog.records()) == 1
-        assert caplog.records()[0].levelname == 'ERROR'
-        assert caplog.records()[0].message == 'unused codelists: e.csv'
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'ERROR'
+        assert caplog.records[0].message == 'unused codelists: e.csv'
 
 
 def test_missing_codelists(monkeypatch, caplog):
@@ -239,7 +239,7 @@ def test_missing_codelists(monkeypatch, caplog):
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema
 
-        assert len(caplog.records()) == 0
+        assert len(caplog.records) == 0
         assert excinfo.value.args == ('a.csv',)
 
 
@@ -263,7 +263,7 @@ def test_missing_targets(monkeypatch, caplog):
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema
 
-        assert len(caplog.records()) == 0
+        assert len(caplog.records) == 0
         assert excinfo.value.args == ('e.csv',)
 
 
@@ -292,9 +292,9 @@ def test_conflicting_codelists(monkeypatch, caplog):
             with open(os.path.join(e, 'release-schema.json')) as f:
                 assert f.read() == schema_with_enum
 
-            assert len(caplog.records()) == 1
-            assert caplog.records()[0].levelname == 'ERROR'
-            assert caplog.records()[0].message == 'conflicting codelists: a.csv'
+            assert len(caplog.records) == 1
+            assert caplog.records[0].levelname == 'ERROR'
+            assert caplog.records[0].message == 'conflicting codelists: a.csv'
 
 
 def test_modified_codelists(monkeypatch):

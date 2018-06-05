@@ -27,8 +27,7 @@ setup(
     extras_require={
         'test': [
             'coveralls',
-            'pytest<3',
-            'pytest-capturelog',
+            'pytest',
             'pytest-cov',
         ],
     },

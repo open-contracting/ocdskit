@@ -28,7 +28,7 @@ def test_command_help(monkeypatch, caplog):
 
     assert actual.getvalue().startswith('usage: ocdskit [-h] ')
 
-    assert len(caplog.records()) == 0
+    assert len(caplog.records) == 0
     assert excinfo.value.code == 0
 
 
@@ -62,10 +62,10 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert actual.getvalue() == ''
 
-    assert len(caplog.records()) == 1
-    assert caplog.records()[0].levelname == 'CRITICAL'
-    assert caplog.records()[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
-                                          "invalid continuation byte\nTry `--encoding iso-8859-1`?"
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'CRITICAL'
+    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
+                                        "invalid continuation byte\nTry `--encoding iso-8859-1`?"
     assert excinfo.value.code == 1
 
 
@@ -79,9 +79,9 @@ def test_command_bad_format(monkeypatch, caplog):
 
     assert actual.getvalue() == ''
 
-    assert len(caplog.records()) == 1
-    assert caplog.records()[0].levelname == 'CRITICAL'
-    assert caplog.records()[0].message == "JSON error: Expecting property name enclosed in double quotes: line 2 " \
-                                          "column 1 (char 2)\nIs the JSON data not line-delimited? Try piping it " \
-                                          "through `jq -crM .`"
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'CRITICAL'
+    assert caplog.records[0].message == "JSON error: Expecting property name enclosed in double quotes: line 2 " \
+                                        "column 1 (char 2)\nIs the JSON data not line-delimited? Try piping it " \
+                                        "through `jq -crM .`"
     assert excinfo.value.code == 1
