@@ -3,7 +3,7 @@ import io
 import sys
 
 
-class BaseCommand(object):
+class BaseCommand:
     def __init__(self, subparsers):
         """
         Initializes the subparser and adds arguments.
