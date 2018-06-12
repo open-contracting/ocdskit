@@ -1,6 +1,6 @@
-class ReportError(Exception):
+class OCDSKitError(Exception):
     """Base class for exceptions from within this package"""
 
 
-class CommandError(ReportError):
+class CommandError(OCDSKitError):
     """Errors from within this package's CLI"""
