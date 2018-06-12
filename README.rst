@@ -259,5 +259,5 @@ Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
    :target: https://travis-ci.org/open-contracting/ocdskit
 .. |Dependency Status| image:: https://requires.io/github/open-contracting/ocdskit/requirements.svg
    :target: https://requires.io/github/open-contracting/ocdskit/requirements/
-.. |Coverage Status| image:: https://coveralls.io/repos/open-contracting/ocdskit/badge.png
-   :target: https://coveralls.io/r/open-contracting/ocdskit
+.. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=master
+   :target: https://coveralls.io/github/open-contracting/ocdskit?branch=master
