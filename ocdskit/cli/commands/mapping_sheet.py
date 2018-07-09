@@ -34,10 +34,7 @@ class Command(BaseCommand):
             return ', '.join(links.values())
 
         def display_properties(schema, path='', section='', deprecated=''):
-            # Create a copy of obj, because there may be references to it from
-            # elsewhere in the JSON schema, and we don't want to mutate it in
-            # all those places
-            obj = copy.deepcopy(schema['properties'])
+            obj = schema['properties']
             required_fields = schema['required'] if 'required' in schema else []
             rows = []
             for field in obj:
@@ -62,16 +59,17 @@ class Command(BaseCommand):
                 if 'type' in obj[field]:
                     # ToDo: Add checking of the required array also.
                     # This checks whether this field is **implicity required**
-                    if 'null' in obj[field]['type']:
-                        obj[field]['type'].remove('null')
+                    type_ = copy.copy(obj[field]['type'])
+                    if 'null' in type_:
+                        type_.remove('null')
                         required = False
                     else:
-                        required = 'string' in obj[field]['type'] or 'integer' in obj[field]['type']
+                        required = 'string' in type_ or 'integer' in type_
 
-                    if type(obj[field]['type']) in (tuple, list):
-                        row['type'] = ', '.join(obj[field]['type'])
+                    if type(type_) in (tuple, list):
+                        row['type'] = ', '.join(type_)
                     else:
-                        row['type'] = obj[field]['type']
+                        row['type'] = type_
                 else:
                     row['type'] = 'unknown'
 
@@ -87,9 +85,10 @@ class Command(BaseCommand):
                 if 'format' in obj[field]:
                     row['values'] = obj[field]['format']
                 elif 'enum' in obj[field]:
-                    if None in obj[field]['enum']:
-                        obj[field]['enum'].remove(None)
-                    row['values'] = 'Codelist: ' + ', '.join(obj[field]['enum'])
+                    values = copy.copy(obj[field]['enum'])
+                    if None in values:
+                        values.remove(None)
+                    row['values'] = 'Codelist: ' + ', '.join(values)
                 else:
                     row['values'] = ''
 
