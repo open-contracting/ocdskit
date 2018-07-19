@@ -62,8 +62,6 @@ class Command(BaseCommand):
                     row['type'] = ', '.join(type_)
                 else:
                     row['type'] = type_
-            elif is_reference:
-                row['type'] = 'reference'
             else:
                 row['type'] = 'unknown'
 
@@ -100,8 +98,11 @@ class Command(BaseCommand):
             for field in obj:
                 # If there was a reference, add an extra row for that
                 if hasattr(obj[field], '__reference__'):
+                    reference = copy.copy(obj[field].__reference__)
+                    if 'type' not in reference and 'type' in obj[field]:
+                        reference['type'] = obj[field]['type']
                     reference_row = make_row(
-                        path, field, obj[field].__reference__, deprecated, required_fields, is_reference=True)
+                        path, field, reference, deprecated, required_fields, is_reference=True)
                     rows.append(reference_row)
                 else:
                     reference_row = {}
