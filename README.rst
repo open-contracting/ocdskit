@@ -78,6 +78,15 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
+versioned
+~~~~~~~
+
+Reads release packages from standard input, merges the releases by OCID, and prints the versioned releases.
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit versioned > out.json
+
 tabulate
 ~~~~~~~~
 
