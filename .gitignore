@@ -1,4 +1,5 @@
 /.cache
 /.coverage
+/.pytest_cache
 /dist
 /ocdskit.egg-info

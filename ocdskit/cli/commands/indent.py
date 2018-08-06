@@ -30,9 +30,12 @@ class Command(BaseCommand):
                 logger.warn('{} is a directory. Set --recursive to recurse into directories.'.format(file))
 
     def indent(self, path):
-        with open(path) as f:
-            data = json.load(f, object_pairs_hook=OrderedDict)
+        try:
+            with open(path) as f:
+                data = json.load(f, object_pairs_hook=OrderedDict)
 
-        with open(path, 'w') as f:
-            json.dump(data, f, indent=self.args.indent, separators=(',', ': '))
-            f.write('\n')
+            with open(path, 'w') as f:
+                json.dump(data, f, indent=self.args.indent, separators=(',', ': '))
+                f.write('\n')
+        except json.decoder.JSONDecodeError as e:
+            logger.error('{} is not valid JSON. (json.decoder.JSONDecodeError: {})'.format(path, e))
