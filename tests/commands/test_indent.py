@@ -7,6 +7,7 @@ from unittest.mock import patch
 from ocdskit.cli.__main__ import main
 
 content = b'{"lorem":"ipsum"}'
+invalid = b'{"lorem":"ipsum"'
 
 
 def test_command(monkeypatch):
@@ -74,4 +75,23 @@ def test_command_directory(monkeypatch, caplog):
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'WARNING'
-        assert caplog.records[0].message.endswith('is a directory. Set --recursive to recurse into directories.')
+        assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
+
+
+def test_command_invalid_json(monkeypatch, caplog):
+    with NamedTemporaryFile() as f:
+        f.write(invalid)
+
+        f.flush()
+
+        with patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'indent', f.name])
+            main()
+
+        f.seek(0)
+
+        assert actual.getvalue() == ''
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'ERROR'
+        assert ' is not valid JSON. (json.decoder.JSONDecodeError: ' in caplog.records[0].message
