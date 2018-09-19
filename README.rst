@@ -10,12 +10,6 @@ A suite of command-line tools for working with OCDS data.
     pip install ocdskit
     ocdskit --help
 
-To install from source:
-
-::
-
-    pip install --upgrade .
-
 To see all commands available, run:
 
 ::
