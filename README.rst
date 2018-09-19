@@ -73,6 +73,10 @@ compile
 
 Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
 
+Optional arguments:
+
+* ``--versioned`` print versioned releases
+
 ::
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
