@@ -10,17 +10,16 @@ A suite of command-line tools for working with OCDS data.
     pip install ocdskit
     ocdskit --help
 
-To install from source:
-
-::
-
-    pip install --upgrade .
+Or, `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
 
 To see all commands available, run:
 
 ::
 
     ocdskit --help
+
+Input format
+------------
 
 Most ``ocdskit`` tools accept only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data from standard input. To process a remote file:
 
@@ -40,7 +39,7 @@ If the JSON data is not line-delimited, you can make it line-delimited using `jq
 
     curl <url> | jq -crM . | ocdskit <command>
 
-For exploring JSON data, consider using ``jq``.
+For exploring JSON data, consider using ``jq``. See `our tips on using jq </docs/Using_jq.md>`__ and the `command-line </docs/Using_the_command_line.md>`__.
 
 Commands
 --------

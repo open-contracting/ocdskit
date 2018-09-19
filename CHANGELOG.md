@@ -2,6 +2,12 @@
 
 # 0.0.3
 
+New options:
+
+* compile: `--versioned`
+
+Other changes:
+
 * Add helpful error messages if:
   * the input is not [line-delimited JSON](https://en.wikipedia.org/wiki/JSON_streaming) data;
   * the input to the `indent` command is not valid JSON.

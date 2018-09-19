@@ -18,6 +18,16 @@ def test_command(monkeypatch):
     assert actual.getvalue() == read('realdata/compiled-release-1.json') + read('realdata/compiled-release-2.json')
 
 
+def test_command_versioned(monkeypatch):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--versioned'])
+        main()
+
+    assert actual.getvalue() == read('realdata/versioned-release-1.json') + read('realdata/versioned-release-2.json')
+
+
 def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
