@@ -81,6 +81,13 @@ class Command(BaseCommand):
                 if None in values:
                     values.remove(None)
                 row['values'] = 'Codelist: ' + ', '.join(values)
+            elif 'items' in schema and 'enum' in schema['items']:
+                values = copy.copy(schema['items']['enum'])
+                if None in values:
+                    values.remove(None)
+                row['values'] = 'Codelist: ' + ', '.join(values)
+            elif 'pattern' in schema:
+                row['values'] = 'RegEx: ' + schema['pattern']
             else:
                 row['values'] = ''
 
@@ -101,6 +108,10 @@ class Command(BaseCommand):
                     reference = copy.copy(obj[field].__reference__)
                     if 'type' not in reference and 'type' in obj[field]:
                         reference['type'] = obj[field]['type']
+                    if 'title' not in reference and 'title' in obj[field]:
+                        reference['title'] = obj[field]['title']
+                    if 'description' not in reference and 'description' in obj[field]:
+                        reference['description'] = obj[field]['description']
                     reference_row = make_row(
                         path, field, reference, deprecated, required_fields, is_reference=True)
                     rows.append(reference_row)
