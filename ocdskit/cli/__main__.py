@@ -1,7 +1,7 @@
 import argparse
 import importlib
 import json
-import logging.config
+import logging
 import sys
 
 from ocdskit.exceptions import CommandError

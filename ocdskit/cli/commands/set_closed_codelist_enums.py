@@ -1,6 +1,6 @@
 import csv
 import json
-import logging.config
+import logging
 import os.path
 from collections import OrderedDict
 from copy import deepcopy
