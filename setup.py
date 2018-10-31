@@ -35,6 +35,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3.6',
     ],
-    entry_points='''[console_scripts]
-ocdskit = ocdskit.cli.__main__:main''',
+    entry_points={
+        'console_scripts': [
+            'ocdskit = ocdskit.cli.__main__:main',
+        ],
+    },
 )

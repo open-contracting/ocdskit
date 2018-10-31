@@ -1,5 +1,5 @@
 import json
-import logging.config
+import logging
 import os.path
 from collections import OrderedDict
 

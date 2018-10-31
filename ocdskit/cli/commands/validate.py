@@ -43,7 +43,7 @@ class Command(BaseCommand):
                     if not result:
                         print('HTTP {} on GET {}'.format(response.status_code, instance))
                     return result
-                except requests.exceptions.Timeout as e:
+                except requests.exceptions.Timeout:
                     print('Timedout on GET {}'.format(instance))
                     return False
 
