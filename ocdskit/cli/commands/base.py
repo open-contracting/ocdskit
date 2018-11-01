@@ -43,4 +43,4 @@ class BaseCommand:
         else:
             kwargs = {'separators': (',', ':')}
 
-        print(json.dumps(data, **kwargs))
+        print(json.dumps(data, ensure_ascii=False, **kwargs))

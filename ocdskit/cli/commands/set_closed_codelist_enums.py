@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
                             if expected != data:
                                 with open(path, 'w') as f:
-                                    json.dump(data, f, indent=2, separators=(',', ': '))
+                                    json.dump(data, f, ensure_ascii=False, indent=2, separators=(',', ': '))
                                     f.write('\n')
 
         codelists = {}

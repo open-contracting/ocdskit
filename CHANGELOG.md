@@ -1,6 +1,6 @@
 # Changelog
 
-# 0.0.3
+# 0.0.3 (2018-11-01)
 
 New options:
 
@@ -15,6 +15,7 @@ Other changes:
 * Add helpful error messages if:
   * the input is not [line-delimited JSON](https://en.wikipedia.org/wiki/JSON_streaming) data;
   * the input to the `indent` command is not valid JSON.
+* Print UTF-8 characters instead of escape sequences.
 * Rename base exception class from `ReportError` to `OCDSKitError`.
 
 # 0.0.2 (2018-03-14)
