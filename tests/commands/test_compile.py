@@ -28,6 +28,40 @@ def test_command_versioned(monkeypatch):
     assert actual.getvalue() == read('realdata/versioned-release-1.json') + read('realdata/versioned-release-2.json')
 
 
+def test_command_package(monkeypatch, caplog):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package'])
+        main()
+
+    assert actual.getvalue() == read('realdata/record-package_package.json')
+
+
+def test_command_extension(monkeypatch, caplog):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', 'http://example.com/a/extension.json',
+                                          'http://example.com/b/extension.json'])
+        main()
+
+    assert actual.getvalue() == read('realdata/record-package_package_extension.json')
+
+
+def test_command_bad_extension(monkeypatch, caplog):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with pytest.raises(SystemExit) as excinfo:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', 'http://example.com/a/extension.json'])
+            main()
+
+    assert actual.getvalue() == ''
+
+    assert excinfo.value.code == 2
+
+
 def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 

@@ -75,7 +75,12 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
 Optional arguments:
 
-* ``--versioned`` print versioned releases
+* ``--package`` wrap the compiled releases in a record package (you will need to edit the package metadata)
+* ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
+
+Optional positional arguments:
+
+* ``extension`` add this extension to the package
 
 ::
 
@@ -84,7 +89,7 @@ Optional arguments:
 package-releases
 ~~~~~~~~~~~~~~~~
 
-Reads releases from standard input, and prints one release package.
+Reads releases from standard input, and prints one release package. You will need to edit the package metadata.
 
 Optional positional arguments:
 

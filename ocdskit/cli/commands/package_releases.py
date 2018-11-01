@@ -5,7 +5,8 @@ from .base import BaseCommand
 
 class Command(BaseCommand):
     name = 'package-releases'
-    help = 'reads releases from standard input, and prints one release package'
+    help = 'reads releases from standard input, and prints one release package ' \
+           '(you will need to edit the package metadata)'
 
     def add_arguments(self):
         self.add_argument('extension', help='add this extension to the package', nargs='*')
