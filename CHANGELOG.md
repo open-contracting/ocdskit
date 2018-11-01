@@ -6,6 +6,10 @@ New options:
 
 * compile: `--versioned`
 
+New commands:
+
+* release-package
+
 Other changes:
 
 * Add helpful error messages if:
