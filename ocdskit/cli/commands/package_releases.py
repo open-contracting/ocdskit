@@ -4,7 +4,7 @@ from .base import BaseCommand
 
 
 class Command(BaseCommand):
-    name = 'release-package'
+    name = 'package-releases'
     help = 'reads releases from standard input, and prints one release package'
 
     def add_arguments(self):

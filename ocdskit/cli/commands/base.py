@@ -42,5 +42,7 @@ class BaseCommand:
             kwargs = {'indent': 2, 'separators': (',', ': ')}
         else:
             kwargs = {'separators': (',', ':')}
+        if not self.args.ascii:
+            kwargs['ensure_ascii'] = False
 
-        print(json.dumps(data, ensure_ascii=False, **kwargs))
+        print(json.dumps(data, **kwargs))

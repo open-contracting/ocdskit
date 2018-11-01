@@ -81,8 +81,8 @@ Optional arguments:
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
-release-package
-~~~~~~~~~~~~~~~
+package-releases
+~~~~~~~~~~~~~~~~
 
 Reads releases from standard input, and prints one release package.
 
@@ -92,7 +92,7 @@ Optional positional arguments:
 
 ::
 
-    cat tests/fixtures/release_*.json | ocdskit release-package > out.json
+    cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
 tabulate
 ~~~~~~~~

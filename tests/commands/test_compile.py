@@ -12,7 +12,7 @@ def test_command(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile'])
         main()
 
     assert actual.getvalue() == read('realdata/compiled-release-1.json') + read('realdata/compiled-release-2.json')
@@ -22,7 +22,7 @@ def test_command_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--versioned'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile', '--versioned'])
         main()
 
     assert actual.getvalue() == read('realdata/versioned-release-1.json') + read('realdata/versioned-release-2.json')
@@ -56,7 +56,7 @@ def test_command_encoding(monkeypatch):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', 'compile'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', '--ascii', 'compile'])
         main()
 
     assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')

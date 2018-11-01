@@ -8,14 +8,15 @@ New options:
 
 New commands:
 
-* release-package
+* package-releases
 
 Other changes:
 
 * Add helpful error messages if:
   * the input is not [line-delimited JSON](https://en.wikipedia.org/wiki/JSON_streaming) data;
   * the input to the `indent` command is not valid JSON.
-* Print UTF-8 characters instead of escape sequences.
+* Change default behavior to print UTF-8 characters instead of escape sequences.
+* Add `--ascii` option to print escape sequences instead of UTF-8 characters.
 * Rename base exception class from `ReportError` to `OCDSKitError`.
 
 # 0.0.2 (2018-03-14)

@@ -15,7 +15,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.indent',
     'ocdskit.cli.commands.mapping_sheet',
     'ocdskit.cli.commands.measure',
-    'ocdskit.cli.commands.release_package',
+    'ocdskit.cli.commands.package_releases',
     'ocdskit.cli.commands.schema_report',
     'ocdskit.cli.commands.schema_strict',
     'ocdskit.cli.commands.set_closed_codelist_enums',
@@ -27,6 +27,7 @@ COMMAND_MODULES = (
 def main():
     parser = argparse.ArgumentParser(description='Open Contracting Data Standard CLI')
     parser.add_argument('--encoding', help='the file encoding')
+    parser.add_argument('--ascii', help='print escape sequences instead of UTF-8 characters', action='store_true')
     parser.add_argument('--pretty', help='pretty print output', action='store_true')
 
     subparsers = parser.add_subparsers(dest='subcommand')
