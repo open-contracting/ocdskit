@@ -14,12 +14,12 @@ class Command(BaseCommand):
         releases = [self.json_loads(line) for line in self.buffer()]
 
         self.print({
-            "uri": "http://example.com",
-            "publisher": {
-                "name": ""
+            'uri': 'http://example.com',
+            'publisher': {
+                'name': '',
             },
-            "publishedDate": datetime.utcnow().date().isoformat() + 'T00:00:00Z',
-            "version": "1.1",
-            "extensions": self.args.extension,
-            "releases": releases,
+            'publishedDate': datetime.utcnow().date().isoformat() + 'T00:00:00Z',
+            'version': '1.1',
+            'extensions': self.args.extension,
+            'releases': releases,
         })
