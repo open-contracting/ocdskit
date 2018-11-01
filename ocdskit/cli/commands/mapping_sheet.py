@@ -1,6 +1,5 @@
 import copy
 import csv
-import json
 import re
 import sys
 from collections import OrderedDict
@@ -15,7 +14,7 @@ class Command(BaseCommand):
     help = 'generates a spreadsheet with all field paths from an OCDS schema'
 
     def handle(self):
-        release = json.load(self.buffer(), object_pairs_hook=OrderedDict)
+        release = self.json_load(self.buffer())
 
         release = JsonRef.replace_refs(release)
 

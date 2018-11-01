@@ -27,6 +27,9 @@ class BaseCommand:
     def buffer(self):
         return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
 
+    def json_load(self, io):
+        return json.load(io, object_pairs_hook=OrderedDict)
+
     def json_loads(self, data):
         return json.loads(data, object_pairs_hook=OrderedDict)
 

@@ -1,7 +1,6 @@
 import json
 import logging
 import os.path
-from collections import OrderedDict
 
 from .base import BaseCommand
 
@@ -32,7 +31,7 @@ class Command(BaseCommand):
     def indent(self, path):
         try:
             with open(path) as f:
-                data = json.load(f, object_pairs_hook=OrderedDict)
+                data = self.json_load(f)
 
             with open(path, 'w') as f:
                 json.dump(data, f, indent=self.args.indent, separators=(',', ': '))
