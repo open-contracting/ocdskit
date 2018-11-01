@@ -1,4 +1,3 @@
-import json
 from collections import OrderedDict
 
 from .base import BaseCommand
@@ -12,7 +11,7 @@ class Command(BaseCommand):
         output = OrderedDict([('extensions', OrderedDict()), ('releases', [])])
 
         for line in self.buffer():
-            package = json.loads(line, object_pairs_hook=OrderedDict)
+            package = self.json_loads(line)
 
             # Use sample metadata.
             output['uri'] = package['uri']

@@ -1,6 +1,7 @@
 import json
 import io
 import sys
+from collections import OrderedDict
 
 
 class BaseCommand:
@@ -25,6 +26,9 @@ class BaseCommand:
 
     def buffer(self):
         return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
+
+    def json_loads(self, data):
+        return json.loads(data, object_pairs_hook=OrderedDict)
 
     def print(self, data):
         """

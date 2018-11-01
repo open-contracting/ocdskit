@@ -1,5 +1,4 @@
-import json
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 
 import ocdsmerge
 
@@ -17,7 +16,7 @@ class Command(BaseCommand):
         releases_by_ocid = defaultdict(list)
 
         for line in self.buffer():
-            release_package = json.loads(line, object_pairs_hook=OrderedDict)
+            release_package = self.json_loads(line)
             for release in release_package['releases']:
                 releases_by_ocid[release['ocid']].append(release)
 
