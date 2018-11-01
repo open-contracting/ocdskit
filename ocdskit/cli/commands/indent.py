@@ -26,7 +26,7 @@ class Command(BaseCommand):
                         if name.endswith('.json'):
                             self.indent(os.path.join(root, name))
             else:
-                logger.warn('{} is a directory. Set --recursive to recurse into directories.'.format(file))
+                logger.warning('{} is a directory. Set --recursive to recurse into directories.'.format(file))
 
     def indent(self, path):
         try:
