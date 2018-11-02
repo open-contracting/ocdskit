@@ -4,7 +4,7 @@
 
 New options:
 
-* compile: `--package`, `--versioned`, `extension`
+* compile: `--package`, `--versioned`
 
 New commands:
 

@@ -75,12 +75,8 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
 Optional arguments:
 
-* ``--package`` wrap the compiled releases in a record package (you will need to edit the package metadata)
+* ``--package`` wrap the compiled releases in a record package
 * ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
-
-Optional positional arguments:
-
-* ``extension`` add this extension to the package
 
 ::
 
@@ -99,7 +95,7 @@ Optional positional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to release packages, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record package, and the ``package-releases`` command to print a release package.
+To convert record packages to release packages, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record package, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
 
 ::
 
