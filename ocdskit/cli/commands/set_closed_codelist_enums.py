@@ -2,7 +2,6 @@ import csv
 import json
 import logging
 import os.path
-from collections import OrderedDict
 from copy import deepcopy
 
 from .base import BaseCommand
@@ -78,7 +77,7 @@ class Command(BaseCommand):
                         path = os.path.join(root, name)
 
                         with open(path) as f:
-                            data = json.load(f, object_pairs_hook=OrderedDict)
+                            data = self.json_load(f)
 
                         # If the JSON file is a JSON Schema file.
                         if any(field in data for field in ('$schema', 'definitions', 'properties')):
@@ -87,7 +86,7 @@ class Command(BaseCommand):
 
                             if expected != data:
                                 with open(path, 'w') as f:
-                                    json.dump(data, f, indent=2, separators=(',', ': '))
+                                    json.dump(data, f, ensure_ascii=False, indent=2, separators=(',', ': '))
                                     f.write('\n')
 
         codelists = {}

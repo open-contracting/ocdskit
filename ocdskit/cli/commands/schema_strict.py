@@ -1,6 +1,3 @@
-import json
-from collections import OrderedDict
-
 from .base import BaseCommand
 
 
@@ -31,6 +28,6 @@ class Command(BaseCommand):
                 for value in data.values():
                     recurse(value)
 
-        schema = json.load(self.buffer(), object_pairs_hook=OrderedDict)
+        schema = self.json_load(self.buffer())
         recurse(schema)
         self.print(schema)

@@ -1,6 +1,7 @@
 import json
 import io
 import sys
+from collections import OrderedDict
 
 
 class BaseCommand:
@@ -26,6 +27,18 @@ class BaseCommand:
     def buffer(self):
         return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
 
+    def json_load(self, io):
+        """
+        Parses JSON from a stream.
+        """
+        return json.load(io, object_pairs_hook=OrderedDict)
+
+    def json_loads(self, data):
+        """
+        Parses JSON from a string.
+        """
+        return json.loads(data, object_pairs_hook=OrderedDict)
+
     def print(self, data):
         """
         Prints JSON data.
@@ -35,5 +48,26 @@ class BaseCommand:
             kwargs = {'indent': 2, 'separators': (',', ': ')}
         else:
             kwargs = {'separators': (',', ':')}
+        if not self.args.ascii:
+            kwargs['ensure_ascii'] = False
 
         print(json.dumps(data, **kwargs))
+
+    def _update_package_metadata(self, output, package):
+        output['uri'] = package['uri']
+        output['publishedDate'] = package['publishedDate']
+        output['publisher'] = package['publisher']
+
+        if 'extensions' in package:
+            # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
+            output['extensions'].update(dict.fromkeys(package['extensions'], True))
+
+        for field in ('license', 'publicationPolicy', 'version'):
+            if field in package:
+                output[field] = package[field]
+
+    def _set_extensions_metadata(self, output):
+        if output['extensions']:
+            output['extensions'] = list(output['extensions'])
+        else:
+            del output['extensions']

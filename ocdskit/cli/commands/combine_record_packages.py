@@ -1,4 +1,3 @@
-import json
 from collections import OrderedDict
 
 from .base import BaseCommand
@@ -12,31 +11,18 @@ class Command(BaseCommand):
         output = OrderedDict([('extensions', OrderedDict()), ('packages', []), ('records', [])])
 
         for line in self.buffer():
-            package = json.loads(line, object_pairs_hook=OrderedDict)
+            package = self.json_loads(line)
 
-            # Use sample metadata.
-            output['uri'] = package['uri']
-            output['publishedDate'] = package['publishedDate']
-            output['publisher'] = package['publisher']
+            self._update_package_metadata(output, package)
 
-            if 'extensions' in package:
-                # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
-                output['extensions'].update(dict.fromkeys(package['extensions'], True))
+            output['records'].extend(package['records'])
 
-            for field in ('license', 'publicationPolicy', 'version'):
-                if field in package:
-                    output[field] = package[field]
-
-            for field in ('packages', 'records'):
-                if field in package:
-                    output[field].extend(package[field])
+            if 'packages' in package:
+                output['packages'].extend(package['packages'])
 
         if not output['packages']:
             del output['packages']
 
-        if output['extensions']:
-            output['extensions'] = list(output['extensions'])
-        else:
-            del output['extensions']
+        self._set_extensions_metadata(output)
 
         self.print(output)

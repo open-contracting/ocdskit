@@ -3,7 +3,7 @@ OCDS Kit
 
 |PyPI version| |Build Status| |Dependency Status| |Coverage Status|
 
-A suite of command-line tools for working with OCDS data.
+A suite of command-line tools for working with OCDS data, including: creating release packages from releases; creating record packages from release packages; creating compiled releases and versioned releases from release packages; combining small packages into large packages; splitting large packages into small packages.
 
 ::
 
@@ -50,6 +50,39 @@ Optional arguments for all commands are:
 * ``--encoding ENCODING`` the file encoding
 * ``--pretty`` pretty print output
 
+compile
+~~~~~~~
+
+Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
+
+Optional arguments:
+
+* ``--package`` wrap the compiled releases in a record package
+* ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
+
+package-releases
+~~~~~~~~~~~~~~~~
+
+Reads releases from standard input, and prints one release package. You will need to edit the package metadata.
+
+Optional positional arguments:
+
+* ``extension`` add this extension to the package
+
+::
+
+    cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
+
+To convert record packages to a release package, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record packages, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
+
+::
+
+    cat tests/fixtures/realdata/record-package* | jq -crM .records[].releases[] | ocdskit package-releases
+
 combine-record-packages
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -68,18 +101,27 @@ Reads release packages from standard input, collects releases, and prints one re
 
     cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
 
-compile
-~~~~~~~
+split-record-packages
+~~~~~~~~~~~~~~~~~~~~~
 
-Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
-
-Optional arguments:
-
-* ``--versioned`` print versioned releases
+Reads record packages from standard input, and prints smaller record packages for each.
 
 ::
 
-    cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
+    cat tests/fixtures/realdata/record-package-1.json | ocdskit split-record-packages 2 | split -l 1 -a 4
+
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+
+split-release-packages
+~~~~~~~~~~~~~~~~~~~~~~
+
+Reads release packages from standard input, and prints smaller release packages for each.
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit split-release-packages 2 | split -l 1 -a 4
+
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
 tabulate
 ~~~~~~~~

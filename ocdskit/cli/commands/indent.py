@@ -1,7 +1,6 @@
 import json
 import logging
 import os.path
-from collections import OrderedDict
 
 from .base import BaseCommand
 
@@ -27,15 +26,15 @@ class Command(BaseCommand):
                         if name.endswith('.json'):
                             self.indent(os.path.join(root, name))
             else:
-                logger.warn('{} is a directory. Set --recursive to recurse into directories.'.format(file))
+                logger.warning('{} is a directory. Set --recursive to recurse into directories.'.format(file))
 
     def indent(self, path):
         try:
             with open(path) as f:
-                data = json.load(f, object_pairs_hook=OrderedDict)
+                data = self.json_load(f)
 
             with open(path, 'w') as f:
-                json.dump(data, f, indent=self.args.indent, separators=(',', ': '))
+                json.dump(data, f, ensure_ascii=False, indent=self.args.indent, separators=(',', ': '))
                 f.write('\n')
         except json.decoder.JSONDecodeError as e:
             logger.error('{} is not valid JSON. (json.decoder.JSONDecodeError: {})'.format(path, e))
