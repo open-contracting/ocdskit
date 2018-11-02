@@ -3,7 +3,7 @@ OCDS Kit
 
 |PyPI version| |Build Status| |Dependency Status| |Coverage Status|
 
-A suite of command-line tools for working with OCDS data, including: creating release packages from releases; combining release packages or record packages into one package; creating compiled releases and versioned releases from releases.
+A suite of command-line tools for working with OCDS data, including: creating release packages from releases; creating record packages from release packages; creating compiled releases and versioned releases from release packages; combining small packages into large packages; splitting large packages into small packages.
 
 ::
 
@@ -50,24 +50,6 @@ Optional arguments for all commands are:
 * ``--encoding ENCODING`` the file encoding
 * ``--pretty`` pretty print output
 
-combine-record-packages
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Reads record packages from standard input, collects packages and records, and prints one record package.
-
-::
-
-    cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
-
-combine-release-packages
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Reads release packages from standard input, collects releases, and prints one release package.
-
-::
-
-    cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
-
 compile
 ~~~~~~~
 
@@ -95,11 +77,29 @@ Optional positional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to release packages, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record package, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
+To convert record packages to a release package, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record packages, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
 
 ::
 
     cat tests/fixtures/realdata/record-package* | jq -crM .records[].releases[] | ocdskit package-releases
+
+combine-record-packages
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Reads record packages from standard input, collects packages and records, and prints one record package.
+
+::
+
+    cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
+
+combine-release-packages
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Reads release packages from standard input, collects releases, and prints one release package.
+
+::
+
+    cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
 
 tabulate
 ~~~~~~~~
