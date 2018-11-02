@@ -39,7 +39,7 @@ If the JSON data is not line-delimited, you can make it line-delimited using `jq
 
     curl <url> | jq -crM . | ocdskit <command>
 
-For exploring JSON data, consider using ``jq``. See `our tips on using jq </docs/Using_jq.md>`__ and the `command-line </docs/Using_the_command_line.md>`__.
+For exploring JSON data, consider using ``jq``. See `our tips on using jq <https://github.com/open-contracting/ocdskit/blob/master/docs/Using_jq.md>`__ and the `command-line <https://github.com/open-contracting/ocdskit/blob/master/docs/Using_the_command_line.md>`__.
 
 Commands
 --------
@@ -77,7 +77,7 @@ Optional positional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to a release package, you can use `use jq </docs/Using_jq.md>`__ to get the releases from the record packages, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
+To convert record packages to a release package, you can use `use jq <https://github.com/open-contracting/ocdskit/blob/master/docs/Using_jq.md>`__ to get the releases from the record packages, and the ``package-releases`` command to print a release package. You will need to edit the package metadata.
 
 ::
 
