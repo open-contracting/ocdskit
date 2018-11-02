@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime
 
 from .base import BaseCommand
@@ -14,13 +15,11 @@ class Command(BaseCommand):
     def handle(self):
         releases = [self.json_loads(line) for line in self.buffer()]
 
-        self.print({
-            'uri': 'http://example.com',
-            'publisher': {
-                'name': '',
-            },
-            'publishedDate': datetime.utcnow().date().isoformat() + 'T00:00:00Z',
-            'version': '1.1',
-            'extensions': self.args.extension,
-            'releases': releases,
-        })
+        self.print(OrderedDict([
+            ('uri', 'http://example.com'),
+            ('publisher', {'name': ''}),
+            ('publishedDate', '9999-01-01T00:00:00Z'),
+            ('version', '1.1'),
+            ('extensions', self.args.extension),
+            ('releases', releases),
+        ]))
