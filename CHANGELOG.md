@@ -9,6 +9,8 @@ New options:
 New commands:
 
 * package-releases
+* split-record-packages
+* split-release-packages
 
 Other changes:
 

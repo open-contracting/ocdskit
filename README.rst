@@ -101,6 +101,28 @@ Reads release packages from standard input, collects releases, and prints one re
 
     cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
 
+split-record-packages
+~~~~~~~~~~~~~~~~~~~~~
+
+Reads record packages from standard input, and prints smaller record packages for each.
+
+::
+
+    cat tests/fixtures/realdata/record-package-1.json | ocdskit split-record-packages 2 | split -l 1 -a 4
+
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+
+split-release-packages
+~~~~~~~~~~~~~~~~~~~~~~
+
+Reads release packages from standard input, and prints smaller release packages for each.
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit split-release-packages 2 | split -l 1 -a 4
+
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+
 tabulate
 ~~~~~~~~
 
