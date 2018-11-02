@@ -1,5 +1,4 @@
 from collections import defaultdict, OrderedDict
-from datetime import datetime
 
 import ocdsmerge
 
