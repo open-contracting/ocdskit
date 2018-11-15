@@ -43,32 +43,31 @@ class Command(BaseCommand):
         def update_codelist_enum(data):
             if isinstance(data, list):
                 return [update_codelist_enum(item) for item in data]
-            elif isinstance(data, dict):
-                if 'codelist' in data:
-                    codelists_seen.add(data['codelist'])
 
-                    if not data['openCodelist']:
-                        codes = codelists[data['codelist']]
+            if isinstance(data, dict) and 'codelist' not in data:
+                return {key: update_codelist_enum(value) for key, value in data.items()}
 
-                        if isinstance(data['type'], str):
-                            types = [data['type']]
-                        else:
-                            types = data['type']
+            if isinstance(data, dict) and 'codelist' in data:
+                codelists_seen.add(data['codelist'])
 
-                        if 'string' in types:
-                            if 'null' in types:
-                                codes.append(None)
-                            if 'enum' not in data or set(data['enum']) != set(codes):
-                                data['enum'] = codes
-                        elif 'array' in types:
-                            if 'enum' not in data['items'] or set(data['items']['enum']) != set(codes):
-                                data['items']['enum'] = codes
+                if not data['openCodelist']:
+                    codes = codelists[data['codelist']]
 
-                    return data
-                else:
-                    return {key: update_codelist_enum(value) for key, value in data.items()}
-            else:
-                return data
+                    if isinstance(data['type'], str):
+                        types = [data['type']]
+                    else:
+                        types = data['type']
+
+                    if 'string' in types:
+                        if 'null' in types:
+                            codes.append(None)
+                        if 'enum' not in data or set(data['enum']) != set(codes):
+                            data['enum'] = codes
+                    elif 'array' in types:
+                        if 'enum' not in data['items'] or set(data['items']['enum']) != set(codes):
+                            data['items']['enum'] = codes
+
+            return data
 
         def update_json_schema(directory):
             for root, dirs, files in os.walk(directory):
