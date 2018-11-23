@@ -200,7 +200,7 @@ Generates a spreadsheet with all field paths from an OCDS schema.
 schema-report
 ~~~~~~~~~~~~~
 
-Reports details of a JSON Schema (open and closed codelists).
+Reports details of a JSON Schema (open and closed codelists, definitions that can use a common $ref in the versioned release schema).
 
 ::
 

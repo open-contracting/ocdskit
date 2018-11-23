@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.0.4 (2018-11-23)
+
+* `schema-report` now reports definitions that can use a common `$ref` in the versioned release schema.
+
 # 0.0.3 (2018-11-01)
 
 New options:

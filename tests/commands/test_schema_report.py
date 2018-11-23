@@ -46,6 +46,12 @@ stdin = b'''{
         "bar",
         "foo"
       ]
+    },
+    "definition": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   }
 }
@@ -63,4 +69,5 @@ b.csv
 c.csv
 d.csv
 
+ 3: {'type': ['string', 'null']}
 '''
