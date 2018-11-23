@@ -202,6 +202,12 @@ schema-report
 
 Reports details of a JSON Schema (open and closed codelists, definitions that can use a common $ref in the versioned release schema).
 
+Optional arguments:
+
+* ``--no-codelists`` skip reporting open and closed codelists
+* ``--no-definitions`` skip reporting definitions that can use a common $ref in the versioned release schema
+* ``--min-occurrences`` report definitions that occur at least this many times (default 5)
+
 ::
 
     cat path/to/release-schema.json | ocdskit schema-report

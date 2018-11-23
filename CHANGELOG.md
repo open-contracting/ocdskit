@@ -2,7 +2,14 @@
 
 # 0.0.4 (2018-11-23)
 
+New options:
+
+* schema-report: `--no-codelists`, `--no-definitions`, `--min-occurrences`
+
+Other changes:
+
 * `schema-report` now reports definitions that can use a common `$ref` in the versioned release schema.
+* `schema-report` reports open and closed codelists in CSV format
 
 # 0.0.3 (2018-11-01)
 
