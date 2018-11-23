@@ -30,9 +30,6 @@ class Command(BaseCommand):
 
             # Extended keywords
             # http://os4d.opendataservices.coop/development/schema/#extended-json-schema
-            'deprecated',
-            'codelist',
-            'openCodelist',
             'omitWhenMerged',
             'wholeListMerge',
             'versionId',
