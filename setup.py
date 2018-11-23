@@ -5,9 +5,9 @@ with open('README.rst') as f:
 
 setup(
     name='ocdskit',
-    version='0.0.3',
-    author='James McKinney',
-    author_email='james@slashpoundbang.com',
+    version='0.0.4',
+    author='Open Contracting Partnership',
+    author_email='data@open-contracting.org',
     url='https://github.com/open-contracting/ocdskit',
     description='A suite of command-line tools for working with OCDS data',
     license='BSD',
