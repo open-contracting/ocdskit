@@ -47,6 +47,14 @@ stdin = b'''{
       ],
       "codelist": "a.csv",
       "openCodelist": true
+    },
+    "same": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "codelist": "a.csv",
+      "openCodelist": true
     }
   }
 }
@@ -58,14 +66,13 @@ def test_command(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report', '--min-occurrences', '2'])
         main()
 
-    assert actual.getvalue() == '''codelist,openness
-a.csv,closed/open
-b.csv,closed
-c.csv,closed
-d.csv,closed
+    assert actual.getvalue() == '''codelist,openCodelist
+a.csv,False/True
+b.csv,False
+c.csv,False
+d.csv,False
 
- 2: {'type': ['string', 'null']}
- 2: {'type': 'string'}
+ 2: {'codelist': 'a.csv', 'openCodelist': True, 'type': ['string', 'null']}
 '''
 
 
@@ -74,7 +81,8 @@ def test_command_no_codelists(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report', '--min-occurrences', '2', '--no-codelists'])
         main()
 
-    assert 'codelist' not in actual.getvalue()
+    assert 'codelist,openCodelist' not in actual.getvalue()
+    assert ':' in actual.getvalue()
 
 
 def test_command_no_definitions(monkeypatch):
@@ -82,6 +90,7 @@ def test_command_no_definitions(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report', '--min-occurrences', '2', '--no-definitions'])
         main()
 
+    assert 'codelist,openCodelist' in actual.getvalue()
     assert ':' not in actual.getvalue()
 
 
@@ -90,4 +99,5 @@ def test_command_min_occurrences(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-report', '--min-occurrences', '1', '--no-codelists'])
         main()
 
+    assert 'codelist,openCodelist' not in actual.getvalue()
     assert '1:' in actual.getvalue()

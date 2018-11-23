@@ -35,28 +35,28 @@ class Command(BaseCommand):
             'versionId',
         )
 
+        def add_definition(data):
+            if '$ref' not in data:
+                definition = {k: v for k, v in sorted(data.items()) if k not in keywords_to_ignore}
+                definitions[repr(definition)] += 1
+
         def recurse(data, pointer=''):
             if isinstance(data, list):
                 for index, item in enumerate(data):
                     recurse(item, pointer='{}/{}'.format(pointer, index))
             elif isinstance(data, dict):
-                parts = pointer.rsplit('/', 2)
-                # Find item and property definitions that can use a common $ref in the versioned release schema.
-                if len(parts) == 3 and (parts[-2] == 'properties' or parts[-1] == 'items') and '$ref' not in data:
-                    # See http://standard.open-contracting.org/latest/en/schema/merging/#versioned-data
-                    if parts[-1] != 'id' or 'versionId' in data:
-                        definition = {k: data[k] for k in sorted(data) if k not in keywords_to_ignore}
-                        definitions[repr(definition)] += 1
-
                 if 'codelist' in data:
-                    codelist = data['codelist']
-                    # If the CSV file is used for open and closed codelists, treat it as closed.
-                    if data['openCodelist']:
-                        codelists[codelist].add('open')
-                    else:
-                        codelists[codelist].add('closed')
+                    codelists[data['codelist']].add(data['openCodelist'])
 
                 for key, value in data.items():
+                    # Find definitions that can use a common $ref in the versioned release schema.
+                    if key == 'items':
+                        add_definition(value)
+                    elif key in ('definitions', 'properties'):
+                        for k, v in value.items():
+                            # See http://standard.open-contracting.org/latest/en/schema/merging/#versioned-data
+                            if k != 'id' or 'versionId' in v:
+                                add_definition(v)
                     recurse(value, pointer='{}/{}'.format(pointer, key))
 
         schema = json.load(self.buffer())
@@ -67,9 +67,9 @@ class Command(BaseCommand):
 
         if not self.args.no_codelists:
             writer = csv.writer(sys.stdout, lineterminator='\n')
-            writer.writerow(['codelist', 'openness'])
+            writer.writerow(['codelist', 'openCodelist'])
             for codelist, openness in sorted(codelists.items()):
-                writer.writerow([codelist, '/'.join(sorted(openness))])
+                writer.writerow([codelist, '/'.join(str(value) for value in sorted(openness))])
 
         if not self.args.no_codelists and not self.args.no_definitions:
             print()
