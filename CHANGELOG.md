@@ -9,7 +9,7 @@ New options:
 Other changes:
 
 * `schema-report` now reports definitions that can use a common `$ref` in the versioned release schema.
-* `schema-report` reports open and closed codelists in CSV format
+* `schema-report` reports open and closed codelists in CSV format.
 
 # 0.0.3 (2018-11-01)
 
