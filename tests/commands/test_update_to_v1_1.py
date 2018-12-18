@@ -231,13 +231,11 @@ release_contracts = '''{
                   "id": "PY-PGN-12-8-1000000",
                   "legalName": "1000000-DIRECCION GENERAL DE ADMINISTRACION Y FINANZAS",
                   "scheme": "PY-PGN"
-                  
                 },
                 "receiverOrganization": {
                   "id": "PY-RUC-80017437-2",
                   "legalName": "NUCLEO S.A.",
                   "scheme":  "PY-PGN"
-                  
                 }
               }
             ]
@@ -402,18 +400,12 @@ def test_command_release_contracts(monkeypatch):
     with TemporaryDirectory() as d:
         with open(os.path.join(d, 'release-1.0.json'), 'w') as f:
             f.write(release_contracts)
-
         with patch('sys.stdout', new_callable=StringIO) as actual:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', 'update-to-v1_1', d])
             main()
-
         assert actual.getvalue() == ''
-
         with open(os.path.join(d, 'release-1.0.json')) as f:
             data = json.load(f)
             assert data['version'] == '1.1'
             payee = data['releases'][0]['contracts'][0]['implementation']['transactions'][0]['payee']
             assert payee['id'] == 'PY-PGN-PY-RUC-80017437-2'
-
-
-
