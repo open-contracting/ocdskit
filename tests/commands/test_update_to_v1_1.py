@@ -80,7 +80,7 @@ record_package_1_0 = '''{
                 "identifier": {
                   "id": "80007525-0",
                   "legalName": "MASTER SOFT SRL",
-                  "scheme": "Registro Único de Contribuyente emitido por el Ministerio de Hacienda del Gobierno de Paraguay"
+                  "scheme": "Registro Único de Contribuyente emitido por el Ministerio de Hacienda"
                 },
                 "address": {
                   "streetAddress": "CHOFERES DEL CHACO Nº1956",
@@ -170,7 +170,7 @@ release_package_1_0 = '''{
                 "identifier": {
                   "id": "80007525-0",
                   "legalName": "MASTER SOFT SRL",
-                  "scheme": "Registro Único de Contribuyente emitido por el Ministerio de Hacienda del Gobierno de Paraguay"
+                  "scheme": "Registro Único de Contribuyente emitido por el Ministerio de Hacienda"
                 },
                 "address": {
                   "streetAddress": "CHOFERES DEL CHACO Nº1956",

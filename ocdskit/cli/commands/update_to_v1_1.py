@@ -32,7 +32,7 @@ def generate_party(parties, org, role=None):
         else:
             raise Exception("Schemes need to be between 2 and 20 characters")
         identifier = scheme + "-" + orgid
-    except Exception as err:
+    except Exception:
         # Otherwise, generate an ID based on a hash of the
         # who organisation object.
         # ToDo: Check if we should do this from name instead.
@@ -65,19 +65,19 @@ def upgrade_parties(release):
     parties = {}
     try:
         release['buyer'] = generate_party(parties, release['buyer'], ['buyer'])
-    except Exception as err:
+    except Exception:
         pass
     try:
         release['tender']['procuringEntity'] = \
             generate_party(parties, release['tender']['procuringEntity'],
                            ['procuringEntity'])
-    except Exception as err:
+    except Exception:
         pass
     try:
         for num, tenderer in enumerate(release['tender']['tenderers']):
             release['tender']['tenderers'][num] = \
                 generate_party(parties, tenderer, ['tenderer'])
-    except Exception as err:
+    except Exception:
         pass
     # Update award and contract suppliers
     try:
@@ -86,7 +86,7 @@ def upgrade_parties(release):
             for snum, supplier in enumerate(suppliers):
                 release['awards'][anum]['suppliers'][snum] = \
                     generate_party(parties, supplier, ['supplier'])
-    except Exception as err:
+    except Exception:
         pass
     # (Although contract suppliers is not in the standard, some
     # implementations have been using this.)
@@ -96,7 +96,7 @@ def upgrade_parties(release):
             for snum, supplier in enumerate(suppliers):
                 release['contracts'][anum]['suppliers'][snum] = \
                     generate_party(parties, supplier, ['supplier'])
-    except Exception as err:
+    except Exception:
         pass
 
     # Now format the parties into a simple array. Get rid of
@@ -129,8 +129,7 @@ def upgrade_transactions(release):
                 del(transaction['providerOrganization'])
                 del(transaction['receiverOrganization'])
                 del(transaction['amount'])
-    except Exception as e:
-        # traceback.print_tb(e.__traceback__)
+    except Exception:
         pass
 
     return release
@@ -143,7 +142,7 @@ def upgrade_amendments(release):
             upgrade_amendment(award)
         for contract in release['contracts']:
             upgrade_amendment(contract)
-    except Exception as e:
+    except Exception:
         pass
     return release
 
@@ -153,7 +152,7 @@ def upgrade_amendment(parent):
         amendment = {'date': parent['amendment']['date'], 'rationale': parent['amendment']['rationale']}
         parent['amendments'] = []
         parent['amendments'].append(amendment)
-    except Exception as e:
+    except Exception:
         pass
     return parent
 
