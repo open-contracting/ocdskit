@@ -1,8 +1,22 @@
 from collections import defaultdict, OrderedDict
+from functools import lru_cache
 
 import ocdsmerge
 
 from .base import BaseCommand
+
+
+@lru_cache()
+def get_merge_rules(schema=None):
+    return ocdsmerge.get_merge_rules(schema)
+
+
+def make_compiled_release(releases, schema=None):
+    return ocdsmerge.merge(releases, merge_rules=get_merge_rules(schema))
+
+
+def make_versioned_release(releases, schema=None):
+    return ocdsmerge.merge_versioned(releases, merge_rules=get_merge_rules(schema))
 
 
 class Command(BaseCommand):
@@ -52,9 +66,9 @@ class Command(BaseCommand):
         else:
             for releases in releases_by_ocid.values():
                 if self.args.versioned:
-                    merge_method = ocdsmerge.merge_versioned
+                    merge_method = make_versioned_release
                 else:
-                    merge_method = ocdsmerge.merge
+                    merge_method = make_compiled_release
 
                 merged_release = merge_method(releases)
 
