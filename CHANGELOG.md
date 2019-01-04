@@ -1,5 +1,11 @@
 # Changelog
 
+# 0.0.5
+
+## Fixed
+
+* `indent` prints an error if a path doesn't exist
+
 # 0.0.4 (2018-11-23)
 
 New options:
