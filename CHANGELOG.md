@@ -5,6 +5,7 @@
 ## Highlights
 
 * You can set the `uri` and `publishedDate` of release packages and record packages.
+  * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
 * You can have record packages use linked releases instead of full releases.
 * You can create compiled releases and versioned releases using a specific release schema.
 * `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.

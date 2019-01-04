@@ -42,6 +42,41 @@ def test_command_package(monkeypatch, caplog):
     assert actual.getvalue() == read('realdata/record-package_package.json')
 
 
+def test_command_package_uri_published_date(monkeypatch):
+    stdin = read('release-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--uri', 'http://example.com/x.json',
+                                          '--published-date', '2010-01-01T00:00:00Z'])
+        main()
+
+    package = json.loads(actual.getvalue())
+    assert package['uri'] == 'http://example.com/x.json'
+    assert package['publishedDate'] == '2010-01-01T00:00:00Z'
+
+
+def test_command_package_linked_releases(monkeypatch):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--linked-releases', '--schema',
+                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        main()
+
+    assert actual.getvalue() == read('realdata/record-package_linked-releases.json')
+
+
+def test_command_package_versioned(monkeypatch):
+    stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--versioned', '--schema',
+                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        main()
+
+    assert actual.getvalue() == read('realdata/record-package_versioned.json')
+
+
 def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
