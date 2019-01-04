@@ -66,7 +66,11 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
 Optional arguments:
 
+* ``--schema SCHEMA`` the release schema to use
 * ``--package`` wrap the compiled releases in a record package
+* ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
+* ``--linked-releases`` if ``--package`` is set, use linked releases instead of full releases in the record package
 * ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
 
 ::
