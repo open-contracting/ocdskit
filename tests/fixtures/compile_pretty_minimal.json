@@ -2,8 +2,8 @@
   "tag": [
     "compiled"
   ],
+  "id": "ocds-213czf-1-2001-02-03T04:05:06Z",
   "date": "2001-02-03T04:05:06Z",
-  "id": "1",
-  "initiationType": "tender",
-  "ocid": "ocds-213czf-1"
+  "ocid": "ocds-213czf-1",
+  "initiationType": "tender"
 }

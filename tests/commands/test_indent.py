@@ -78,6 +78,18 @@ def test_command_directory(monkeypatch, caplog):
         assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
 
 
+def test_command_nonexistent(monkeypatch, caplog):
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'indent', 'nonexistent'])
+        main()
+
+    assert actual.getvalue() == ''
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'ERROR'
+    assert caplog.records[0].message == 'nonexistent: No such file or directory'
+
+
 def test_command_invalid_json(monkeypatch, caplog):
     with NamedTemporaryFile() as f:
         f.write(invalid)
