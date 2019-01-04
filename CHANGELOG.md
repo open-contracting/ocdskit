@@ -5,6 +5,12 @@
 ## Fixed
 
 * `indent` prints an error if a path doesn't exist
+* `combine-record-packages` and `combine-release-packages` have predictable field order
+
+New options:
+
+* combine-record-packages: `--uri`, `--published-date`
+* combine-release-packages: `--uri`, `--published-date`
 
 # 0.0.4 (2018-11-23)
 

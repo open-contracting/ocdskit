@@ -97,6 +97,11 @@ combine-record-packages
 
 Reads record packages from standard input, collects packages and records, and prints one record package.
 
+Optional arguments:
+
+* ``--uri URL`` set the record package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
+
 ::
 
     cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
@@ -105,6 +110,11 @@ combine-release-packages
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Reads release packages from standard input, collects releases, and prints one release package.
+
+Optional arguments:
+
+* ``--uri URL`` set the release package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
 
 ::
 
