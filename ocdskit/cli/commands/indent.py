@@ -25,8 +25,10 @@ class Command(BaseCommand):
                     for name in files:
                         if name.endswith('.json'):
                             self.indent(os.path.join(root, name))
-            else:
+            elif os.path.isdir(file):
                 logger.warning('{} is a directory. Set --recursive to recurse into directories.'.format(file))
+            else:
+                logger.error('{}: No such file or directory'.format(file))
 
     def indent(self, path):
         try:

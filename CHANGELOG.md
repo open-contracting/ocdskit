@@ -1,5 +1,29 @@
 # Changelog
 
+# 0.0.5
+
+## Highlights
+
+* You can set the `uri` and `publishedDate` of release packages and record packages.
+  * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
+* You can have record packages use linked releases instead of full releases.
+* You can create compiled releases and versioned releases using a specific release schema.
+* `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.
+
+New options:
+
+* combine-record-packages: `--uri`, `--published-date`
+* combine-release-packages: `--uri`, `--published-date`
+* compile: `--schema`, `--uri`, `--published-date`, `--linked-releases`
+
+Removed commands:
+
+* measure
+
+## Fixed
+
+* `indent` prints an error if a path doesn't exist.
+
 # 0.0.4 (2018-11-23)
 
 New options:

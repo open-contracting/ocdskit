@@ -54,13 +54,11 @@ class BaseCommand:
         print(json.dumps(data, **kwargs))
 
     def _update_package_metadata(self, output, package):
-        output['uri'] = package['uri']
-        output['publishedDate'] = package['publishedDate']
         output['publisher'] = package['publisher']
 
         if 'extensions' in package:
             # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
-            output['extensions'].update(dict.fromkeys(package['extensions'], True))
+            output['extensions'].update(OrderedDict.fromkeys(package['extensions']))
 
         for field in ('license', 'publicationPolicy', 'version'):
             if field in package:
@@ -71,3 +69,8 @@ class BaseCommand:
             output['extensions'] = list(output['extensions'])
         else:
             del output['extensions']
+
+    def _remove_empty_optional_metadata(self, output):
+        for field in ('license', 'publicationPolicy', 'version'):
+            if output[field] is None:
+                del output[field]

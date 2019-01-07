@@ -66,7 +66,11 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
 Optional arguments:
 
+* ``--schema SCHEMA`` the release schema to use
 * ``--package`` wrap the compiled releases in a record package
+* ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
+* ``--linked-releases`` if ``--package`` is set, use linked releases instead of full releases in the record package
 * ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
 
 ::
@@ -97,6 +101,11 @@ combine-record-packages
 
 Reads record packages from standard input, collects packages and records, and prints one record package.
 
+Optional arguments:
+
+* ``--uri URL`` set the record package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
+
 ::
 
     cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
@@ -105,6 +114,11 @@ combine-release-packages
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Reads release packages from standard input, collects releases, and prints one release package.
+
+Optional arguments:
+
+* ``--uri URL`` set the release package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
 
 ::
 
@@ -265,12 +279,6 @@ Find a compiled release with a given ``ocid`` (replace the ``…``):
 ::
 
     jq 'select(.ocid == "OCDS-87SD3T-AD-SF-DRM-063-2015")' compiled_releases.json
-
-Measure indicators across release packages:
-
-::
-
-    cat release_packages.json | ocdskit --encoding iso-8859-1 measure --currency MXN
 
 Example 2
 ~~~~~~~~~
