@@ -280,12 +280,6 @@ Find a compiled release with a given ``ocid`` (replace the ``…``):
 
     jq 'select(.ocid == "OCDS-87SD3T-AD-SF-DRM-063-2015")' compiled_releases.json
 
-Measure indicators across release packages:
-
-::
-
-    cat release_packages.json | ocdskit --encoding iso-8859-1 measure --currency MXN
-
 Example 2
 ~~~~~~~~~
 

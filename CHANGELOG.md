@@ -16,6 +16,10 @@ New options:
 * combine-release-packages: `--uri`, `--published-date`
 * compile: `--schema`, `--uri`, `--published-date`, `--linked-releases`
 
+Removed commands:
+
+* measure
+
 ## Fixed
 
 * `indent` prints an error if a path doesn't exist.
