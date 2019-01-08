@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'upgrades packages and releases from an old version of OCDS to a new version'
 
     def add_arguments(self):
-        self.add_argument('versions', help='the colon-separated old and new versions', default='1.0:1.1')
+        self.add_argument('versions', help='the colon-separated old and new versions')
 
     def handle(self):
         versions = self.args.versions
