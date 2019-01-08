@@ -82,6 +82,8 @@ upgrade
 
 Upgrades packages and releases from an old version of OCDS to a new version.
 
+Warns if any information is lost in the upgrade.
+
 ::
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
