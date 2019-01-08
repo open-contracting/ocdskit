@@ -11,7 +11,7 @@ def test_command_record(monkeypatch):
 
     stdin = read('realdata/record_package_1_0.json', 'rb')
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'upgrade', '--version', '1.0:1.1'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
         main()
     print(actual.getvalue())
 
@@ -25,7 +25,7 @@ def test_command_release(monkeypatch):
 
     stdin = read('realdata/release_package_1_0.json', 'rb')
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'upgrade', '--version', '1.0:1.1'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
         main()
     data = json.loads(actual.getvalue())
     assert data['version'] == '1.1'
@@ -37,9 +37,9 @@ def test_command_release_contracts(monkeypatch):
 
     stdin = read('realdata/release_package_1_0_contracts.json', 'rb')
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'upgrade', '--version', '1.0:1.1'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
         main()
     data = json.loads(actual.getvalue())
     assert data['version'] == '1.1'
     payee = data['releases'][0]['contracts'][0]['implementation']['transactions'][0]['payee']
-    assert payee['id'] == 'PY-RUC-80017437-2'
+    assert payee['id'] == '745a4d642e0e904e935a8fbd93b5366e'
