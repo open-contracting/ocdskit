@@ -53,7 +53,6 @@ def upgrade_release_10_11(release):
     upgrade_parties_10_to_11(release)
     upgrade_amendments_10_11(release)
     upgrade_transactions_10_11(release)
-    _move_to_top(release, ('ocid', 'id', 'date', 'tag', 'initiationType', 'parties'))
 
 
 def upgrade_parties_10_to_11(release):
@@ -82,6 +81,8 @@ def upgrade_parties_10_to_11(release):
     if parties:
         if 'parties' not in release:
             release['parties'] = []
+            _move_to_top(release, ('ocid', 'id', 'date', 'tag', 'initiationType', 'parties'))
+
         for party in parties.values():
             if party not in release['parties']:
                 release['parties'].append(party)
@@ -105,12 +106,12 @@ def _add_party(parties, party, role):
 
     if 'id' not in party:
         parts = [_get_bytes(party, 'name')]
-
         if 'identifier' in party:
             for field in ('scheme', 'id', 'legalName', 'uri'):
                 parts.append(_get_bytes(party['identifier'], field))
 
         party['id'] = md5(b'-'.join(parts)).hexdigest()
+        _move_to_top(party, ('id'))
 
     _id = party['id']
 
@@ -120,19 +121,21 @@ def _add_party(parties, party, role):
         # Warn about information loss.
         other = deepcopy(parties[_id])
         roles = other.pop('roles')
-        if party != other:
+        if dict(party) != dict(other):
             logger.warn('party differs in "{}" role than in "{}" roles:\n{}\n{}'.format(role, roles, party, other))
 
-    # Update the `roles` of the party in the `parties` array.
     if 'roles' not in parties[_id]:
         parties[_id]['roles'] = []
+        _move_to_top(parties[_id], ('id', 'roles'))
+
     if role not in parties[_id]['roles']:
+        # Update the `roles` of the party in the `parties` array.
         parties[_id]['roles'].append(role)
 
     # Create the OrganizationReference.
-    organization_reference = {
-        'id': _id,
-    }
+    organization_reference = OrderedDict([
+        ('id', _id),
+    ])
     if 'name' in party:
         organization_reference['name'] = party['name']
 
@@ -185,9 +188,9 @@ def upgrade_transactions_10_11(release):
 
                     for old, new in (('providerOrganization', 'payer'), ('receiverOrganization', 'payee')):
                         if old in transaction and new not in transaction:
-                            party = {
-                                'identifier': transaction[old],
-                            }
+                            party = OrderedDict([
+                                ('identifier', transaction[old]),
+                            ])
                             if 'legalName' in transaction[old]:
                                 party['name'] = transaction[old]['legalName']
 
