@@ -77,6 +77,15 @@ Optional arguments:
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
+upgrade
+~~~~~~~
+
+Upgrades packages and releases from an old version of OCDS to a new version.
+
+::
+
+    cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
+
 package-releases
 ~~~~~~~~~~~~~~~~
 
