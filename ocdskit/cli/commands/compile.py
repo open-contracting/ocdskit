@@ -1,6 +1,6 @@
 from collections import defaultdict, OrderedDict
 
-import ocdsmerge
+from ocdsmerge.merge import merge, merge_versioned, get_tags, get_release_schema_url
 
 from .base import BaseCommand
 
@@ -39,11 +39,21 @@ class Command(BaseCommand):
                 ('records', []),
             ])
 
+        schema = self.args.schema
         releases_by_ocid = defaultdict(list)
         linked_releases = []
 
         for line in self.buffer():
             package = self.json_loads(line)
+
+            if not schema:
+                if 'version' in package:
+                    prefix = package['version'].replace('.', '__') + '__'
+                else:
+                    prefix = '1__0__'
+
+                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+                schema = get_release_schema_url(tag)
 
             for release in package['releases']:
                 releases_by_ocid[release['ocid']].append(release)
@@ -65,7 +75,7 @@ class Command(BaseCommand):
                 record = OrderedDict([
                     ('ocid', ocid),
                     ('releases', []),
-                    ('compiledRelease', ocdsmerge.merge(releases, self.args.schema)),
+                    ('compiledRelease', merge(releases, schema)),
                 ])
 
                 if self.args.linked_releases:
@@ -74,7 +84,7 @@ class Command(BaseCommand):
                     record['releases'] = releases
 
                 if self.args.versioned:
-                    record['versionedRelease'] = ocdsmerge.merge_versioned(releases, self.args.schema)
+                    record['versionedRelease'] = merge_versioned(releases, schema)
 
                 output['records'].append(record)
 
@@ -85,10 +95,10 @@ class Command(BaseCommand):
         else:
             for releases in releases_by_ocid.values():
                 if self.args.versioned:
-                    merge_method = ocdsmerge.merge_versioned
+                    merge_method = merge_versioned
                 else:
-                    merge_method = ocdsmerge.merge
+                    merge_method = merge
 
-                merged_release = merge_method(releases, self.args.schema)
+                merged_release = merge_method(releases, schema)
 
                 self.print(merged_release)

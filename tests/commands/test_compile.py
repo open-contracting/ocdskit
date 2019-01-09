@@ -13,8 +13,7 @@ def test_command(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile'])
         main()
 
     assert actual.getvalue() == read('realdata/compiled-release-1.json') + read('realdata/compiled-release-2.json')
@@ -24,8 +23,7 @@ def test_command_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile', '--versioned', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--ascii', 'compile', '--versioned'])
         main()
 
     assert actual.getvalue() == read('realdata/versioned-release-1.json') + read('realdata/versioned-release-2.json')
@@ -35,8 +33,7 @@ def test_command_package(monkeypatch, caplog):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package'])
         main()
 
     assert actual.getvalue() == read('realdata/record-package_package.json')
@@ -59,8 +56,7 @@ def test_command_package_linked_releases(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--linked-releases', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--linked-releases'])
         main()
 
     assert actual.getvalue() == read('realdata/record-package_linked-releases.json')
@@ -70,8 +66,7 @@ def test_command_package_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--versioned', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--versioned'])
         main()
 
     assert actual.getvalue() == read('realdata/record-package_versioned.json')
@@ -105,8 +100,7 @@ def test_command_encoding(monkeypatch):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', '--ascii', 'compile', '--schema',
-                                          'http://standard.open-contracting.org/schema/1__0__3/release-schema.json'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', '--ascii', 'compile'])
         main()
 
     assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
