@@ -108,7 +108,8 @@ def _get_parties(release):
 
 def _add_party(parties, party, role):
     """
-    Adds an ``id`` to the party, adds the party to the ``parties`` array, and returns an OrganizationReference.
+    Adds an ``id`` to the party, adds the party to the ``parties`` array, sets the party's role, and returns an
+    OrganizationReference. Warns if there is any data loss from differences in non-identifying fields.
     """
     party = deepcopy(party)
 
@@ -130,7 +131,7 @@ def _add_party(parties, party, role):
     if _id not in parties:
         parties[_id] = party
     else:
-        # Warn about information loss.
+        # Warn about data loss.
         other = deepcopy(parties[_id])
         roles = other.pop('roles')
         if dict(party) != dict(other):
