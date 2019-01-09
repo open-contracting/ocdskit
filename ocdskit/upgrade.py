@@ -6,6 +6,14 @@ from hashlib import md5
 
 logger = logging.getLogger('ocdskit')
 
+# See http://standard.open-contracting.org/1.0/en/schema/reference/#identifier
+organization_identification_1_0 = (
+    (None, ('name',)),
+    ('identifier', ('scheme', 'id', 'legalName', 'uri')),
+    ('address', ('streetAddress', 'locality', 'region', 'postalCode', 'countryName')),
+    ('contactPoint', ('name', 'email', 'telephone', 'faxNumber', 'url')),
+)
+
 
 def _move_to_top(data, fields):
     for field in reversed(fields):
@@ -58,8 +66,7 @@ def upgrade_release_10_11(release):
 
 def upgrade_parties_10_to_11(release):
     """
-    Converts organizations to organization references and fills in the ``parties`` array. This can result in
-    duplicates in the ``parties`` array, if an organization has an inconsistent ``name`` or ``identifier``.
+    Converts organizations to organization references and fills in the ``parties`` array.
     """
     parties = _get_parties(release)
 
@@ -106,10 +113,14 @@ def _add_party(parties, party, role):
     party = deepcopy(party)
 
     if 'id' not in party:
-        parts = [_get_bytes(party, 'name')]
-        if 'identifier' in party:
-            for field in ('scheme', 'id', 'legalName', 'uri'):
-                parts.append(_get_bytes(party['identifier'], field))
+        parts = []
+        for parent, fields in organization_identification_1_0:
+            if not parent:
+                for field in fields:
+                    parts.append(_get_bytes(party, field))
+            elif parent in party:
+                for field in fields:
+                    parts.append(_get_bytes(party[parent], field))
 
         party['id'] = md5(b'-'.join(parts)).hexdigest()
         _move_to_top(party, ('id'))

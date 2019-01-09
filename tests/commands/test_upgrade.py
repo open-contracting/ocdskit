@@ -50,7 +50,7 @@ def test_command_release_tenderers_amendment(monkeypatch, caplog):
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
     assert caplog.records[0].message == 'party differs in "supplier" role than in "tenderer" roles:\n' \
-        '{"name": "Acme Inc.", "address": {"countryName": "Canada"}, "id": "6760c32d3e2e5499d51a709f563ed39a"}\n' \
+        '{"name": "Acme Inc.", "additionalIdentifiers": [{"id": 1}], "id": "6760c32d3e2e5499d51a709f563ed39a"}\n' \
         '{"id": "6760c32d3e2e5499d51a709f563ed39a", "name": "Acme Inc."}'
 
 
