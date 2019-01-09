@@ -31,7 +31,7 @@ def test_command_versioned(monkeypatch):
     assert actual.getvalue() == read('realdata/versioned-release-1.json') + read('realdata/versioned-release-2.json')
 
 
-def test_command_package(monkeypatch, caplog):
+def test_command_package(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
