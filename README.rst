@@ -1,7 +1,7 @@
 OCDS Kit
 ========
 
-|PyPI version| |Build Status| |Dependency Status| |Coverage Status|
+|PyPI version| |Build Status| |Coverage Status|
 
 A suite of command-line tools for working with OCDS data, including:
 
@@ -325,7 +325,5 @@ Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
    :target: https://badge.fury.io/py/ocdskit
 .. |Build Status| image:: https://secure.travis-ci.org/open-contracting/ocdskit.png
    :target: https://travis-ci.org/open-contracting/ocdskit
-.. |Dependency Status| image:: https://requires.io/github/open-contracting/ocdskit/requirements.svg
-   :target: https://requires.io/github/open-contracting/ocdskit/requirements/
 .. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=master
    :target: https://coveralls.io/github/open-contracting/ocdskit?branch=master
