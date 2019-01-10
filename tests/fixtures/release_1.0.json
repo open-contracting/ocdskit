@@ -1,0 +1,1 @@
+{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender","tender":{"id":1,"tenderers":[{"name":"Acme Inc."}],"amendment":{"date":"2001-10-10T00:00:00Z"}},"awards":[{"id":1,"suppliers":[{"name":"Acme Inc.","additionalIdentifiers":[{"id":1}]}]}]}
