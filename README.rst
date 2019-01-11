@@ -1,7 +1,7 @@
 OCDS Kit
 ========
 
-|PyPI version| |Build Status| |Coverage Status|
+|PyPI Version| |Build Status| |Coverage Status| |Python Version|
 
 A suite of command-line tools for working with OCDS data, including:
 
@@ -82,7 +82,7 @@ upgrade
 
 Upgrades packages and releases from an old version of OCDS to a new version.
 
-OCDS 1.0 `describes <http://standard.open-contracting.org/1.0/en/schema/reference/#identifier>`__ an organization's ``name``, ``identifier``, ``address`` and ``contactPoint`` as relevant to identifying it. OCDS 1.1 `moves <http://standard.open-contracting.org/1.1/en/schema/reference/#parties>`__ organization data into a ``parties`` array. To upgrade from OCDS 1.0 to 1.1, we create an ``id`` for each organization, based on those identifying fields. This can result in duplicates in the ``parties`` array, if the same organization has different or missing ``name``, ``identifier``, ``address`` or ``contactPoint`` values in different contexts. This can also lead to data loss if the same organization has different values for non-identifying fields in different contexts; the command prints warnings in such cases.
+OCDS 1.0 `describes <http://standard.open-contracting.org/1.0/en/schema/reference/#identifier>`__ an organization's ``name``, ``identifier``, ``address`` and ``contactPoint`` as relevant to identifying it. OCDS 1.1 `moves <http://standard.open-contracting.org/1.1/en/schema/reference/#parties>`__ organization data into a ``parties`` array. To upgrade from OCDS 1.0 to 1.1, we create an ``id`` for each organization, based on those identifying fields. This can result in duplicates in the ``parties`` array, if the same organization has different or missing values for identifying fields in different contexts. This can also lead to data loss if the same organization has different values for non-identifying fields in different contexts; the command prints warnings in such cases.
 
 ::
 
@@ -332,9 +332,11 @@ And so on:
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
 
-.. |PyPI version| image:: https://badge.fury.io/py/ocdskit.svg
-   :target: https://badge.fury.io/py/ocdskit
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/ocdskit.svg
+   :target: https://pypi.org/project/ocdskit/
 .. |Build Status| image:: https://secure.travis-ci.org/open-contracting/ocdskit.png
    :target: https://travis-ci.org/open-contracting/ocdskit
 .. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=master
    :target: https://coveralls.io/github/open-contracting/ocdskit?branch=master
+.. |Python Version| image:: https://img.shields.io/pypi/pyversions/ocdskit.svg
+   :target: https://pypi.org/project/ocdskit/
