@@ -2,44 +2,48 @@
 
 # 0.0.5
 
-## Highlights
-
-* You can set the `uri` and `publishedDate` of release packages and record packages.
-  * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
-* You can have record packages use linked releases instead of full releases.
-* You can create compiled releases and versioned releases using a specific release schema.
-* `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.
+## Added
 
 New options:
 
+* compile:
+  * `--uri`, `--published-date`: You can set the `uri` and `publishedDate` of the record package.
+    * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
+  * `--schema`: You can create compiled releases and versioned releases using a specific release schema.
+  * `--linked-releases`: You can have the record package use linked releases instead of full releases.
 * combine-record-packages: `--uri`, `--published-date`
 * combine-release-packages: `--uri`, `--published-date`
-* compile: `--schema`, `--uri`, `--published-date`, `--linked-releases`
 
 New commands:
 
 * upgrade
 
-Removed commands:
+## Changed
 
-* measure
+* `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.
+* Removed `measure` command.
 
 ## Fixed
 
 * `indent` prints an error if a path doesn't exist.
+* `compile`, `combine-record-packages` and `combine-release-packages` succeed if the required `publisher` field is missing.
 
 # 0.0.4 (2018-11-23)
+
+## Added
 
 New options:
 
 * schema-report: `--no-codelists`, `--no-definitions`, `--min-occurrences`
 
-Other changes:
+## Changed
 
 * `schema-report` now reports definitions that can use a common `$ref` in the versioned release schema.
 * `schema-report` reports open and closed codelists in CSV format.
 
 # 0.0.3 (2018-11-01)
+
+## Added
 
 New options:
 
@@ -51,7 +55,7 @@ New commands:
 * split-record-packages
 * split-release-packages
 
-Other changes:
+## Changed
 
 * Add helpful error messages if:
   * the input is not [line-delimited JSON](https://en.wikipedia.org/wiki/JSON_streaming) data;
@@ -61,6 +65,8 @@ Other changes:
 * Rename base exception class from `ReportError` to `OCDSKitError`.
 
 # 0.0.2 (2018-03-14)
+
+## Added
 
 New options:
 
@@ -74,6 +80,8 @@ New commands:
 * set-closed-codelist-enums
 
 # 0.0.1 (2017-12-25)
+
+## Added
 
 New commands:
 
