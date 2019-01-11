@@ -3,13 +3,14 @@ OCDS Kit
 
 |PyPI Version| |Build Status| |Coverage Status| |Python Version|
 
-A suite of command-line tools for working with OCDS data, including:
+A suite of command-line tools for working with OCDS data to:
 
-* creating release packages from releases
-* creating record packages from release packages
-* creating compiled releases and versioned releases from release packages
-* combining small packages into large packages
-* splitting large packages into small packages
+* create release packages from releases
+* create record packages from release packages
+* create compiled releases and versioned releases from release packages
+* upgrade from an old version of OCDS to a new version
+* combine small packages into large packages
+* split large packages into small packages
 * load packages into a database
 * validate JSON data against a JSON schema
 * generate a spreadsheet version of OCDS schema
