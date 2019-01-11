@@ -49,9 +49,35 @@ def test_command_release_tenderers_amendment(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == 'party differs in "supplier" role than in "tenderer" roles:\n' \
-        '{"name": "Acme Inc.", "additionalIdentifiers": [{"id": 1}], "id": "6760c32d3e2e5499d51a709f563ed39a"}\n' \
-        '{"id": "6760c32d3e2e5499d51a709f563ed39a", "name": "Acme Inc."}'
+    assert caplog.records[0].message == (
+        'party differs in "supplier" role than in "tenderer" roles:\n'
+        '{"name": "Acme Inc.", "identifier": {"id": 1}, "additionalIdentifiers": [{"id": "a"}], "id": "3c9756cf8983b14066a034079aa7aae4"}\n'  # noqa
+        '{"id": "3c9756cf8983b14066a034079aa7aae4", "name": "Acme Inc.", "identifier": {"id": 1}}'
+    )
+
+
+def test_command_passthrough_package(monkeypatch, caplog):
+    stdin = read('realdata/record-package_1.1.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
+        main()
+
+    assert actual.getvalue() == read('realdata/record-package_1.1.json')
+
+    assert len(caplog.records) == 0
+
+
+def test_command_passthrough_release(monkeypatch, caplog):
+    stdin = read('release_1.1.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
+        main()
+
+    assert actual.getvalue() == read('release_1.1.json')
+
+    assert len(caplog.records) == 0
 
 
 def test_command_identity(monkeypatch):

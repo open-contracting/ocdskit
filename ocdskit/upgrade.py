@@ -34,10 +34,11 @@ def upgrade_10_11(data):
     Upgrades a record package, release package or release from 1.0 to 1.1.
 
     Retains the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
-
-    Note: Versioned releases within a record package are not upgraded.
     """
     if 'records' in data or 'releases' in data:  # package
+        if 'version' in data:
+            return
+
         data['version'] = '1.1'
         _move_to_top(data, ('uri', 'version'))
 
@@ -51,7 +52,7 @@ def upgrade_10_11(data):
     elif 'releases' in data:  # release package
         for release in data['releases']:
             upgrade_release_10_11(release)
-    else:  # release
+    elif 'parties' not in data:  # release
         upgrade_release_10_11(data)
 
 
@@ -157,7 +158,8 @@ def _add_party(parties, party, role):
 
 
 def _get_bytes(obj, field):
-    return bytes(obj.get(field) or '', 'utf-8')
+    # Handle null and integers.
+    return bytes(str(obj.get(field) or ''), 'utf-8')
 
 
 def upgrade_amendments_10_11(release):
