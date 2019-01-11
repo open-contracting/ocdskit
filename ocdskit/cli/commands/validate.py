@@ -16,7 +16,7 @@ class Command(BaseCommand):
     help = 'reads JSON data from standard input, validates it against the schema, and prints errors'
 
     def add_arguments(self):
-        self.add_argument('--schema', help='the schema to validate against',
+        self.add_argument('--schema', help='the URL or path of the schema to validate against',
                           default='http://standard.open-contracting.org/latest/en/release-package-schema.json')
         self.add_argument('--check-urls', help='check the HTTP status code if "format": "uri"', action='store_true')
         self.add_argument('--timeout', help='timeout (seconds) to GET a URL', type=int, default=10)

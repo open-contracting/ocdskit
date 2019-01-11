@@ -66,7 +66,7 @@ Reads release packages from standard input, merges the releases by OCID, and pri
 
 Optional arguments:
 
-* ``--schema SCHEMA`` the release schema to use
+* ``--schema SCHEMA`` the URL or path of the release schema to use
 * ``--package`` wrap the compiled releases in a record package
 * ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
@@ -180,7 +180,7 @@ Reads JSON data from standard input, validates it against the schema, and prints
 
 Optional arguments:
 
-* ``--schema SCHEMA`` the schema to validate against
+* ``--schema SCHEMA`` the URL or path of the schema to validate against
 * ``--check-urls`` check the HTTP status code if "format": "uri"
 * ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
 * ``--verbose`` print items without validation errors
