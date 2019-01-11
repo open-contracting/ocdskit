@@ -72,6 +72,26 @@ def test_command_package_versioned(monkeypatch):
     assert actual.getvalue() == read('realdata/record-package_versioned.json')
 
 
+def test_command_version_mismatch(monkeypatch, caplog):
+    stdin = read('realdata/release-package_1.1-1.json', 'rb') + read('realdata/release-package_1.0-1.json', 'rb')
+
+    with pytest.raises(SystemExit) as excinfo:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--versioned'])
+            main()
+
+    assert actual.getvalue() == ''
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'CRITICAL'
+    assert caplog.records[0].message == "item 1: version error: this package uses version 1.0, but earlier packages " \
+                                        "used version 1.1\nTry upgrading packages to the same version:\n  cat file " \
+                                        "[file ...] | ocdskit upgrade 1.0:1.1 | ocdskit compile --package " \
+                                        "--versioned\nor set --schema to the URL or path of the release schema to " \
+                                        "use:\n  ocdskit compile --schema SCHEMA --package --versioned"
+    assert excinfo.value.code == 1
+
+
 def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 

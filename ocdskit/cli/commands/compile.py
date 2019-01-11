@@ -1,8 +1,14 @@
+import logging
+import sys
 from collections import defaultdict, OrderedDict
 
 from ocdsmerge.merge import merge, merge_versioned, get_tags, get_release_schema_url
 
 from .base import BaseCommand
+from ocdskit.exceptions import CommandError
+from ocdskit.util import get_ocds_minor_version
+
+logger = logging.getLogger('ocdskit')
 
 
 class Command(BaseCommand):
@@ -11,7 +17,7 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument('--schema',
-                          help='the release schema to use')
+                          help='the URL or path of the release schema to use')
         self.add_argument('--package', action='store_true',
                           help='wrap the compiled releases in a record package')
         self.add_argument('--uri', type=str,
@@ -40,20 +46,29 @@ class Command(BaseCommand):
             ])
 
         schema = self.args.schema
+        version = None
         releases_by_ocid = defaultdict(list)
         linked_releases = []
 
-        for line in self.buffer():
+        for i, line in enumerate(self.buffer()):
             package = self.json_loads(line)
 
             if not schema:
-                if 'version' in package:
-                    prefix = package['version'].replace('.', '__') + '__'
-                else:
-                    prefix = '1__0__'
-
+                version = get_ocds_minor_version(package)
+                prefix = version.replace('.', '__') + '__'
                 tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
                 schema = get_release_schema_url(tag)
+            elif version:
+                current = get_ocds_minor_version(package)
+                if current != version:
+                    versions = [version, current]
+                    if current < version:
+                        versions.reverse()
+                    raise CommandError('item {0}: version error: this package uses version {1}, but earlier packages '
+                                       'used version {2}\nTry upgrading packages to the same version:\n  cat file '
+                                       '[file ...] | ocdskit upgrade {3}:{4} | ocdskit compile {5}\nor set --schema '
+                                       'to the URL or path of the release schema to use:\n  ocdskit compile --schema '
+                                       'SCHEMA {5}'.format(i, current, version, *versions, ' '.join(sys.argv[2:])))
 
             for release in package['releases']:
                 releases_by_ocid[release['ocid']].append(release)

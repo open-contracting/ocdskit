@@ -7,10 +7,10 @@
 New options:
 
 * compile:
-  * `--uri`, `--published-date`: You can set the `uri` and `publishedDate` of the record package.
-    * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
   * `--schema`: You can create compiled releases and versioned releases using a specific release schema.
   * `--linked-releases`: You can have the record package use linked releases instead of full releases.
+  * `--uri`, `--published-date`: You can set the `uri` and `publishedDate` of the record package.
+    * If not set, these will be `null` instead of the `uri` and `publishedDate` of the last package.
 * combine-record-packages: `--uri`, `--published-date`
 * combine-release-packages: `--uri`, `--published-date`
 
@@ -20,8 +20,10 @@ New commands:
 
 ## Changed
 
+* `compile` determines the version of the release schema to use if `--schema` isn't set.
+* `compile` raises an error if the packages use different versions and `--schema` isn't set.
 * `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.
-* Removed `measure` command.
+* `measure` is removed.
 
 ## Fixed
 
