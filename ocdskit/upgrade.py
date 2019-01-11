@@ -4,6 +4,8 @@ from collections import OrderedDict
 from copy import deepcopy
 from hashlib import md5
 
+from ocdskit.util import get_ocds_minor_version, is_package, is_record_package, is_release_package
+
 logger = logging.getLogger('ocdskit')
 
 # See http://standard.open-contracting.org/1.0/en/schema/reference/#identifier
@@ -35,24 +37,25 @@ def upgrade_10_11(data):
 
     Retains the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
     """
-    if 'records' in data or 'releases' in data:  # package
-        if 'version' in data:
-            return
+    version = get_ocds_minor_version(data)
+    if version != '1.0':
+        return
 
+    if is_package(data):
         data['version'] = '1.1'
         _move_to_top(data, ('uri', 'version'))
 
-    if 'records' in data:  # record package
+    if is_record_package(data):
         for record in data['records']:
             if 'releases' in record:
                 for release in record['releases']:
                     upgrade_release_10_11(release)
             if 'compiledRelease' in record:
                 upgrade_release_10_11(record['compiledRelease'])
-    elif 'releases' in data:  # release package
+    elif is_release_package(data):
         for release in data['releases']:
             upgrade_release_10_11(release)
-    elif 'parties' not in data:  # release
+    else:  # release
         upgrade_release_10_11(data)
 
 
