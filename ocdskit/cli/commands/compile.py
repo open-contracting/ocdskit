@@ -25,11 +25,10 @@ class Command(BaseCommand):
         self.add_argument('--published-date', type=str,
                           help="if --package is set, set the record package's publishedDate to this value")
         self.add_argument('--linked-releases', action='store_true',
-                          help='if --package is set, use linked releases instead of full releases in '
-                               'the record package')
+                          help='if --package is set, use linked releases instead of full releases')
         self.add_argument('--versioned', action='store_true',
-                          help='if --package is set, include versioned releases in the record package; '
-                               'otherwise, print versioned releases instead of compiled releases')
+                          help='if --package is set, include versioned releases in the record package; otherwise, '
+                               'print versioned releases instead of compiled releases')
 
     def handle(self):
         if self.args.package:
@@ -53,22 +52,23 @@ class Command(BaseCommand):
         for i, line in enumerate(self.buffer()):
             package = self.json_loads(line)
 
-            if not schema:
+            if not version:
                 version = get_ocds_minor_version(package)
-                prefix = version.replace('.', '__') + '__'
-                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
-                schema = get_release_schema_url(tag)
-            elif version:
+            else:
                 current = get_ocds_minor_version(package)
                 if current != version:
                     versions = [version, current]
                     if current < version:
                         versions.reverse()
-                    raise CommandError('item {0}: version error: this package uses version {1}, but earlier packages '
-                                       'used version {2}\nTry upgrading packages to the same version:\n  cat file '
-                                       '[file ...] | ocdskit upgrade {3}:{4} | ocdskit compile {5}\nor set --schema '
-                                       'to the URL or path of the release schema to use:\n  ocdskit compile --schema '
-                                       'SCHEMA {5}'.format(i, current, version, *versions, ' '.join(sys.argv[2:])))
+                    raise CommandError('item {}: version error: this package uses version {}, but earlier packages '
+                                       'used version {}\nTry upgrading packages to the same version:\n  cat file '
+                                       '[file ...] | ocdskit upgrade {}:{} | ocdskit compile {}'.format(
+                                            i, current, version, *versions, ' '.join(sys.argv[2:])))
+
+            if not schema:
+                prefix = version.replace('.', '__') + '__'
+                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+                schema = get_release_schema_url(tag)
 
             for release in package['releases']:
                 releases_by_ocid[release['ocid']].append(release)

@@ -20,8 +20,8 @@ New commands:
 
 ## Changed
 
+* `compile` raises an error if the release packages use different versions.
 * `compile` determines the version of the release schema to use if `--schema` isn't set.
-* `compile` raises an error if the packages use different versions and `--schema` isn't set.
 * `compile`, `combine-record-packages` and `combine-release-packages` have a predictable field order.
 * `measure` is removed.
 
