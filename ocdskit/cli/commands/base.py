@@ -54,7 +54,8 @@ class BaseCommand:
         print(json.dumps(data, **kwargs))
 
     def _update_package_metadata(self, output, package):
-        output['publisher'] = package['publisher']
+        if 'publisher' in package:
+            output['publisher'] = package['publisher']
 
         if 'extensions' in package:
             # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
