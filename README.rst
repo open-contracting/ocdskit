@@ -85,6 +85,8 @@ Upgrades packages and releases from an old version of OCDS to a new version. Any
 
 OCDS 1.0 `describes <http://standard.open-contracting.org/1.0/en/schema/reference/#identifier>`__ an organization's ``name``, ``identifier``, ``address`` and ``contactPoint`` as relevant to identifying it. OCDS 1.1 `moves <http://standard.open-contracting.org/1.1/en/schema/reference/#parties>`__ organization data into a ``parties`` array. To upgrade from OCDS 1.0 to 1.1, we create an ``id`` for each organization, based on those identifying fields. This can result in duplicates in the ``parties`` array, if the same organization has different or missing values for identifying fields in different contexts. This can also lead to data loss if the same organization has different values for non-identifying fields in different contexts; the command prints warnings in such cases.
 
+**Note:** OCDS 1.0 uses the `whole-list merge <http://standard.open-contracting.org/1.0/en/schema/merging/#merging-rules>`__ strategy on the `suppliers` array to prepare the compiled release and versioned release, whereas OCDS 1.1 uses the `identifier merge <http://standard.open-contracting.org/1.1/en/schema/merging/#identifier-merge>`__ strategy. This means that you should merge first and then upgrade.
+
 ::
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
