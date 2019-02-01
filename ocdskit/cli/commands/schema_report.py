@@ -50,9 +50,7 @@ class Command(BaseCommand):
 
                 for key, value in data.items():
                     # Find definitions that can use a common $ref in the versioned release schema.
-                    if key == 'items':
-                        add_definition(value)
-                    elif key in ('definitions', 'properties'):
+                    if key in ('definitions', 'properties'):
                         for k, v in value.items():
                             # See http://standard.open-contracting.org/latest/en/schema/merging/#versioned-data
                             if k != 'id' or 'versionId' in v:
