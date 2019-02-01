@@ -40,10 +40,10 @@ class Command(BaseCommand):
                 definition = {k: v for k, v in sorted(data.items()) if k not in keywords_to_ignore}
                 definitions[repr(definition)] += 1
 
-        def recurse(data, pointer=''):
+        def recurse(data):
             if isinstance(data, list):
-                for index, item in enumerate(data):
-                    recurse(item, pointer='{}/{}'.format(pointer, index))
+                for item in data:
+                    recurse(item)
             elif isinstance(data, dict):
                 if 'codelist' in data:
                     codelists[data['codelist']].add(data['openCodelist'])
@@ -55,7 +55,7 @@ class Command(BaseCommand):
                             # See http://standard.open-contracting.org/latest/en/schema/merging/#versioned-data
                             if k != 'id' or 'versionId' in v:
                                 add_definition(v)
-                    recurse(value, pointer='{}/{}'.format(pointer, key))
+                    recurse(value)
 
         schema = json.load(self.buffer())
 
