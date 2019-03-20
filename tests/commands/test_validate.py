@@ -99,7 +99,7 @@ def test_command_check_urls(monkeypatch):
     stdin = read('release-package_urls.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--check-urls', '--timeout', '2'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'validate', '--check-urls', '--timeout', '3'])
         main()
 
     assert actual.getvalue() == """HTTP 500 on GET http://httpbin.org/status/500
