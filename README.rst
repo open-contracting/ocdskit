@@ -245,6 +245,10 @@ schema-strict
 
 For any required field, adds "minItems" if an array, "minProperties" if an object and "minLength" if a string and "enum", "format" and "pattern" are not set. For any array field, adds "uniqueItems".
 
+Optional arguments:
+
+* ``-no-unique-items`` don't add "uniqueItems" properties to array fields
+
 ::
 
     cat path/to/release-schema.json | ocdskit schema-strict > out.json

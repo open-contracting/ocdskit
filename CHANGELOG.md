@@ -4,7 +4,7 @@
 
 ## Changed
 
-* `schema-strict` adds `"uniqueItems": true` to all arrays.
+* `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
 
 ## Fixes
 

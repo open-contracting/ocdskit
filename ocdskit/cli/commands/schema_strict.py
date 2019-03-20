@@ -4,7 +4,11 @@ from .base import BaseCommand
 class Command(BaseCommand):
     name = 'schema-strict'
     help = 'for any required field, adds "minItems" if an array, "minProperties" if an object and "minLength" if a ' \
-           'string and "enum", "format" and "pattern" are not set'
+           'string and "enum", "format" and "pattern" are not set, and for any array field, adds "uniqueItems"'
+
+    def add_arguments(self):
+        self.add_argument('--no-unique-items', action='store_true',
+                          help="""don't add "uniqueItems" properties to array fields""")
 
     def handle(self):
         def recurse(data):
@@ -12,7 +16,7 @@ class Command(BaseCommand):
                 for item in data:
                     recurse(item)
             elif isinstance(data, dict):
-                if 'type' in data and 'array' in data['type']:
+                if not self.args.no_unique_items and 'type' in data and 'array' in data['type']:
                     if 'uniqueItems' not in data:
                         data['uniqueItems'] = True
 

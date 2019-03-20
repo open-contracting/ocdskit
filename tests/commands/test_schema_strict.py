@@ -1,3 +1,4 @@
+import json
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
@@ -137,3 +138,11 @@ def test_command(monkeypatch):
   }
 }
 '''
+
+
+def test_command_no_unique_items(monkeypatch):
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-strict', '--no-unique-items'])
+        main()
+
+    assert 'uniqueItems' not in json.loads(actual.getvalue())['properties']['array']
