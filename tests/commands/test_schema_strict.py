@@ -17,6 +17,9 @@ stdin = b'''{
     "patternString"
   ],
   "properties": {
+    "optionalArray": {
+      "type": "array"
+    },
     "array": {
       "type": "array"
     },
@@ -24,12 +27,18 @@ stdin = b'''{
       "type": "array",
       "minItems": 2
     },
+    "optionalObject": {
+      "type": "object"
+    },
     "object": {
       "type": "object"
     },
     "minPropertiesObject": {
       "type": "object",
       "minProperties": 2
+    },
+    "optionalString": {
+      "type": "string"
     },
     "string": {
       "type": "string"
@@ -75,13 +84,22 @@ def test_command(monkeypatch):
     "patternString"
   ],
   "properties": {
+    "optionalArray": {
+      "type": "array",
+      "uniqueItems": true
+    },
     "array": {
       "type": "array",
-      "minItems": 1
+      "minItems": 1,
+      "uniqueItems": true
     },
     "minItemsArray": {
       "type": "array",
-      "minItems": 2
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "optionalObject": {
+      "type": "object"
     },
     "object": {
       "type": "object",
@@ -90,6 +108,9 @@ def test_command(monkeypatch):
     "minPropertiesObject": {
       "type": "object",
       "minProperties": 2
+    },
+    "optionalString": {
+      "type": "string"
     },
     "string": {
       "type": "string",

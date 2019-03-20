@@ -12,6 +12,10 @@ class Command(BaseCommand):
                 for item in data:
                     recurse(item)
             elif isinstance(data, dict):
+                if 'type' in data and 'array' in data['type']:
+                    if 'uniqueItems' not in data:
+                        data['uniqueItems'] = True
+
                 if 'required' in data:
                     for name in data['required']:
                         definition = data['properties'][name]
@@ -27,8 +31,6 @@ class Command(BaseCommand):
                         if 'array' in definition_type:
                             if 'minItems' not in definition:
                                 definition['minItems'] = 1
-                            if 'uniqueItems' not in definition:
-                                definition['uniqueItems'] = True
                         if 'object' in definition_type:
                             if 'minProperties' not in definition:
                                 definition['minProperties'] = 1
