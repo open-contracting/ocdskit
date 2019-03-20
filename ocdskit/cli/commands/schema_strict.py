@@ -15,16 +15,24 @@ class Command(BaseCommand):
                 if 'required' in data:
                     for name in data['required']:
                         definition = data['properties'][name]
-                        if ('string' in definition['type'] and 'enum' not in definition and 'format' not in definition
+                        if 'type' in definition:
+                            definition_type = definition['type']
+                        else:
+                            definition_type = []
+
+                        if ('string' in definition_type and 'enum' not in definition and 'format' not in definition
                                 and 'pattern' not in definition):
                             if 'minLength' not in definition:
                                 definition['minLength'] = 1
-                        if 'array' in definition['type']:
+                        if 'array' in definition_type:
                             if 'minItems' not in definition:
                                 definition['minItems'] = 1
-                        if 'object' in definition['type']:
+                            if 'uniqueItems' not in definition:
+                                definition['uniqueItems'] = True
+                        if 'object' in definition_type:
                             if 'minProperties' not in definition:
                                 definition['minProperties'] = 1
+
                 for value in data.values():
                     recurse(value)
 

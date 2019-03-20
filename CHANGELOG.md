@@ -1,5 +1,15 @@
 # Changelog
 
+# 0.0.6
+
+## Changed
+
+* `schema-strict` adds `"uniqueItems": true` to all arrays.
+
+## Fixes
+
+* `schema-strict` no longer errors if a required field uses `$ref`.
+
 # 0.0.5 (2019-01-11)
 
 ## Added
@@ -40,7 +50,7 @@ New options:
 
 ## Changed
 
-* `schema-report` now reports definitions that can use a common `$ref` in the versioned release schema.
+* `schema-report` reports definitions that can use a common `$ref` in the versioned release schema.
 * `schema-report` reports open and closed codelists in CSV format.
 
 # 0.0.3 (2018-11-01)
