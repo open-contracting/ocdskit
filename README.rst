@@ -20,7 +20,7 @@ A suite of command-line tools for working with OCDS data to:
     pip install ocdskit
     ocdskit --help
 
-Or, `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
+Users with Python 2 as their default Python interpreter must either run ``pip3 install ocdskit``, set up a Python 3 virtual environment, or `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
 
 To see all commands available, run:
 
