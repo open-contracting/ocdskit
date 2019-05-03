@@ -22,6 +22,8 @@ A suite of command-line tools for working with OCDS data to:
 
 Users with Python 2 as their default Python interpreter must either run ``pip3 install ocdskit``, set up a Python 3 virtual environment, or `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
 
+Users on Windows should run ``set PYTHONIOENCODING=utf-8`` in the terminal before running any ``ocdskit`` commands.
+
 To see all commands available, run:
 
 ::
