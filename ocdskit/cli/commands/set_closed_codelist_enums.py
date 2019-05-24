@@ -5,6 +5,7 @@ import os.path
 from copy import deepcopy
 
 from .base import BaseCommand
+from ocdskit.util import json_load
 
 logger = logging.getLogger('ocdskit')
 
@@ -76,7 +77,7 @@ class Command(BaseCommand):
                         path = os.path.join(root, name)
 
                         with open(path) as f:
-                            data = self.json_load(f)
+                            data = json_load(f)
 
                         # If the JSON file is a JSON Schema file.
                         if any(field in data for field in ('$schema', 'definitions', 'properties')):

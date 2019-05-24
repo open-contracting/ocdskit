@@ -7,6 +7,7 @@ from collections import OrderedDict
 from jsonref import JsonRef
 
 from .base import BaseCommand
+from ocdskit.util import json_load
 
 
 class Command(BaseCommand):
@@ -14,7 +15,7 @@ class Command(BaseCommand):
     help = 'generates a spreadsheet with all field paths from an OCDS schema'
 
     def handle(self):
-        release = self.json_load(self.buffer())
+        release = json_load(self.buffer())
 
         release = JsonRef.replace_refs(release)
 

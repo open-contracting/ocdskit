@@ -1,5 +1,5 @@
-import json
 import io
+import json
 import sys
 from collections import OrderedDict
 
@@ -27,18 +27,6 @@ class BaseCommand:
     def buffer(self):
         return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
 
-    def json_load(self, io):
-        """
-        Parses JSON from a stream.
-        """
-        return json.load(io, object_pairs_hook=OrderedDict)
-
-    def json_loads(self, data):
-        """
-        Parses JSON from a string.
-        """
-        return json.loads(data, object_pairs_hook=OrderedDict)
-
     def print(self, data):
         """
         Prints JSON data.
@@ -53,25 +41,38 @@ class BaseCommand:
 
         print(json.dumps(data, **kwargs))
 
-    def _update_package_metadata(self, output, package):
-        if 'publisher' in package:
-            output['publisher'] = package['publisher']
+    def add_package_arguments(self, infix, prefix=''):
+        """
+        Adds arguments for setting package metadata to the subparser.
+        """
+        template = "{prefix}set the {infix} package's {{}} to this value".format(infix=infix, prefix=prefix)
 
-        if 'extensions' in package:
-            # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
-            output['extensions'].update(OrderedDict.fromkeys(package['extensions']))
+        self.add_argument('--uri', type=str,
+                          help=template.format('uri'))
+        self.add_argument('--published-date', type=str,
+                          help=template.format('publishedDate'))
+        self.add_argument('--publisher-name', type=str,
+                          help=template.format("publisher's name"))
+        self.add_argument('--publisher-uri', type=str,
+                          help=template.format("publisher's uri"))
+        self.add_argument('--publisher-scheme', type=str,
+                          help=template.format("publisher's scheme"))
+        self.add_argument('--publisher-uid', type=str,
+                          help=template.format("publisher's uid"))
 
-        for field in ('license', 'publicationPolicy', 'version'):
-            if field in package:
-                output[field] = package[field]
+    def parse_package_arguments(self):
+        """
+        Returns a publisher block as a dictionary.
+        """
+        metadata = {
+            'uri': self.args.uri,
+            'publisher': OrderedDict(),
+            'published_date': self.args.published_date,
+        }
 
-    def _set_extensions_metadata(self, output):
-        if output['extensions']:
-            output['extensions'] = list(output['extensions'])
-        else:
-            del output['extensions']
+        for key in ('publisher_name', 'publisher_uri', 'publisher_scheme', 'publisher_uid'):
+            value = getattr(self.args, key)
+            if value is not None:
+                metadata['publisher'][key[10:]] = value
 
-    def _remove_empty_optional_metadata(self, output):
-        for field in ('license', 'publicationPolicy', 'version'):
-            if output[field] is None:
-                del output[field]
+        return metadata

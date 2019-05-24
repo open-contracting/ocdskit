@@ -1,4 +1,5 @@
 from .base import BaseCommand
+from ocdskit.util import json_load
 
 
 class Command(BaseCommand):
@@ -42,6 +43,6 @@ class Command(BaseCommand):
                 for value in data.values():
                     recurse(value)
 
-        schema = self.json_load(self.buffer())
+        schema = json_load(self.buffer())
         recurse(schema)
         self.print(schema)

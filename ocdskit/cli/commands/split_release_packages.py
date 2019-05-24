@@ -1,4 +1,5 @@
 from .base import BaseCommand
+from ocdskit.util import json_loads
 
 
 class Command(BaseCommand):
@@ -11,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self):
         for line in self.buffer():
-            package = self.json_loads(line)
+            package = json_loads(line)
 
             releases = package['releases']
 

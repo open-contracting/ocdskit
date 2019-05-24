@@ -2,6 +2,22 @@
 
 # 0.0.6
 
+## Added
+
+New library methods:
+
+* `compile_release_packages`
+* `package_releases`
+* `combine_record_packages`
+* `combine_release_packages`
+
+New options:
+
+* package-releases: `--uri`, `--published-date`, `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* compile: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* combine-record-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* combine-release-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+
 ## Changed
 
 * `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
