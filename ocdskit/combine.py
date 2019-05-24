@@ -6,6 +6,26 @@ from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import json_loads, get_ocds_minor_version
 
 
+def package_releases(stream, uri='', publisher=None, published_date='', extensions=None):
+    if publisher is None:
+        publisher = OrderedDict()
+    if extensions is None:
+        extensions = []
+
+    releases = [json_loads(line) for line in stream]
+
+    output = OrderedDict([
+        ('uri', uri),
+        ('publisher', publisher),
+        ('publishedDate', published_date),
+        ('version', '1.1'),
+        ('extensions', extensions),
+        ('releases', releases),
+    ])
+
+    return output
+
+
 def combine_record_packages(stream, uri='', publisher=None, published_date=''):
     """
     Reads record packages from the stream, collects packages and records, and returns one record package.
@@ -28,7 +48,7 @@ def combine_record_packages(stream, uri='', publisher=None, published_date=''):
     for line in stream:
         package = json_loads(line)
 
-        _update_package_metadata(output, package)
+        _update_package_metadata(output, package, publisher)
 
         output['records'].extend(package['records'])
 
@@ -65,7 +85,7 @@ def combine_release_packages(stream, uri='', publisher=None, published_date=''):
     for line in stream:
         package = json_loads(line)
 
-        _update_package_metadata(output, package)
+        _update_package_metadata(output, package, publisher)
 
         output['releases'].extend(package['releases'])
 
@@ -124,7 +144,7 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
                 ]))
 
         if return_package:
-            _update_package_metadata(output, package)
+            _update_package_metadata(output, package, publisher)
 
             output['packages'].append(package['uri'])
 
@@ -162,8 +182,8 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
             yield merged_release
 
 
-def _update_package_metadata(output, package):
-    if 'publisher' in package:
+def _update_package_metadata(output, package, publisher):
+    if not publisher and 'publisher' in package:
         output['publisher'] = package['publisher']
 
     if 'extensions' in package:

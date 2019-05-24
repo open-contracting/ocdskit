@@ -72,7 +72,7 @@ class BaseCommand:
 
         for key in ('publisher_name', 'publisher_uri', 'publisher_scheme', 'publisher_uid'):
             value = getattr(self.args, key)
-            if value:
+            if value is not None:
                 metadata['publisher'][key[10:]] = value
 
         return metadata

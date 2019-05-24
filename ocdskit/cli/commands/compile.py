@@ -27,7 +27,6 @@ class Command(BaseCommand):
 
     def handle(self):
         kwargs = self.parse_package_arguments()
-
         kwargs['schema'] = self.args.schema
         kwargs['return_package'] = self.args.package
         kwargs['use_linked_releases'] = self.args.linked_releases
