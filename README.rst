@@ -247,6 +247,10 @@ mapping-sheet
 
 Generates a spreadsheet with all field paths from an OCDS schema.
 
+Optional arguments:
+
+* ``--order-by`` sort the spreadsheet's rows by this column
+
 ::
 
     cat path/to/release-schema.json | ocdskit mapping-sheet > mapping-sheet.csv

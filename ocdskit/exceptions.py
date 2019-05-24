@@ -13,3 +13,7 @@ class InconsistentVersionError(OCDSKitError):
         self.earlier_version = earlier_version
         self.current_version = current_version
         super().__init__(message)
+
+
+class MissingColumnError(OCDSKitError):
+    """Raised if the column to order by is missing"""

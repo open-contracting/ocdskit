@@ -5,18 +5,24 @@ from collections import OrderedDict
 
 from jsonref import JsonRef
 
+from ocdskit.exceptions import MissingColumnError
 from ocdskit.util import json_load
 
 # See https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(input_stream, output_stream):
+def mapping_sheet(input_stream, output_stream, order_by=None):
     schema = json_load(input_stream)
 
     schema = JsonRef.replace_refs(schema)
 
     rows = display_properties(schema)
+    if order_by:
+        try:
+            rows.sort(key=lambda row: row[order_by])
+        except KeyError:
+            raise MissingColumnError("the column '{}' doesn't exist – did you make a typo?".format(order_by))
 
     w = csv.DictWriter(output_stream, ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links',
                                        'deprecated', 'deprecationNotes'])
