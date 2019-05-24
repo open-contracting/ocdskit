@@ -67,6 +67,8 @@ compile
 
 Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
 
+If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+
 Optional arguments:
 
 * ``--schema SCHEMA`` the URL or path of the release schema to use
@@ -127,6 +129,8 @@ combine-record-packages
 
 Reads record packages from standard input, collects packages and records, and prints one record package.
 
+If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+
 Optional arguments:
 
 * ``--uri URL`` set the record package's ``uri`` to this value
@@ -144,6 +148,8 @@ combine-release-packages
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Reads release packages from standard input, collects releases, and prints one release package.
+
+If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
 Optional arguments:
 
