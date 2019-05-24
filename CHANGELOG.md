@@ -2,6 +2,10 @@
 
 # 0.0.6
 
+## Added
+
+* Add `compile_release_packages`, `combine_record_packages` and `combine_release_packages` library methods.
+
 ## Changed
 
 * `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.

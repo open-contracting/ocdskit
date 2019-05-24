@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from .base import BaseCommand
+from ocdskit.util import json_loads
 
 
 class Command(BaseCommand):
@@ -12,7 +13,7 @@ class Command(BaseCommand):
         self.add_argument('extension', help='add this extension to the package', nargs='*')
 
     def handle(self):
-        releases = [self.json_loads(line) for line in self.buffer()]
+        releases = [json_loads(line) for line in self.buffer()]
 
         self.print(OrderedDict([
             ('uri', 'http://example.com'),

@@ -1,6 +1,5 @@
-from collections import OrderedDict
-
 from .base import BaseCommand
+from ocdskit.combine import combine_record_packages
 
 
 class Command(BaseCommand):
@@ -8,38 +7,11 @@ class Command(BaseCommand):
     help = 'reads record packages from standard input, collects packages and records, and prints one record package'
 
     def add_arguments(self):
-        self.add_argument('--uri', type=str,
-                          help="set the record package's uri to this value")
-        self.add_argument('--published-date', type=str,
-                          help="set the record package's publishedDate to this value")
+        self.add_package_arguments('record')
 
     def handle(self):
-        output = OrderedDict([
-            ('uri', self.args.uri),
-            ('publisher', OrderedDict()),
-            ('publishedDate', self.args.published_date),
-            ('license', None),
-            ('publicationPolicy', None),
-            ('version', None),
-            ('extensions', OrderedDict()),
-            ('packages', []),
-            ('records', []),
-        ])
+        kwargs = self.parse_package_arguments()
 
-        for line in self.buffer():
-            package = self.json_loads(line)
-
-            self._update_package_metadata(output, package)
-
-            output['records'].extend(package['records'])
-
-            if 'packages' in package:
-                output['packages'].extend(package['packages'])
-
-        if not output['packages']:
-            del output['packages']
-
-        self._set_extensions_metadata(output)
-        self._remove_empty_optional_metadata(output)
+        output = combine_record_packages(self.buffer(), **kwargs)
 
         self.print(output)

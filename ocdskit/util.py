@@ -1,3 +1,21 @@
+import json
+from collections import OrderedDict
+
+
+def json_load(io):
+    """
+    Parses JSON from a stream.
+    """
+    return json.load(io, object_pairs_hook=OrderedDict)
+
+
+def json_loads(data):
+    """
+    Parses JSON from a string.
+    """
+    return json.loads(data, object_pairs_hook=OrderedDict)
+
+
 def get_ocds_minor_version(data):
     """
     Returns the OCDS minor version of the release package, record package or release.

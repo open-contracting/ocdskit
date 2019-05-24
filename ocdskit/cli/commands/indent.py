@@ -3,6 +3,7 @@ import logging
 import os.path
 
 from .base import BaseCommand
+from ocdskit.util import json_load
 
 logger = logging.getLogger('ocdskit')
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
     def indent(self, path):
         try:
             with open(path) as f:
-                data = self.json_load(f)
+                data = json_load(f)
 
             with open(path, 'w') as f:
                 json.dump(data, f, ensure_ascii=False, indent=self.args.indent, separators=(',', ': '))
