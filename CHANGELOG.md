@@ -4,7 +4,19 @@
 
 ## Added
 
-* Add `compile_release_packages`, `combine_record_packages` and `combine_release_packages` library methods.
+New library methods:
+
+* `compile_release_packages`
+* `package_releases`
+* `combine_record_packages`
+* `combine_release_packages`
+
+New options:
+
+* package-releases: `--uri`, `--published-date`, `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* compile: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* combine-record-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
+* combine-release-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
 
 ## Changed
 
