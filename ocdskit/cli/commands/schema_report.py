@@ -49,12 +49,12 @@ class Command(BaseCommand):
                     codelists[data['codelist']].add(data['openCodelist'])
 
                 for key, value in data.items():
-                    # Find definitions that can use a common $ref in the versioned release schema.
+                    # Find definitions that can use a common $ref in the versioned release schema. Unversioned fields,
+                    # like the `id`'s of objects in arrays that are not `wholeListMerge`, should be excluded, but it's
+                    # too much work with too little advantage to do so.
                     if key in ('definitions', 'properties'):
                         for k, v in value.items():
-                            # See http://standard.open-contracting.org/latest/en/schema/merging/#versioned-data
-                            if k != 'id' or 'versionId' in v:
-                                add_definition(v)
+                            add_definition(v)
                     recurse(value)
 
         schema = json.load(self.buffer())
