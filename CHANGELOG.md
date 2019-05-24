@@ -17,7 +17,7 @@ New options:
 * compile: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
 * combine-record-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
 * combine-release-packages: `--publisher-name`, `--publisher-uri`, `--publisher-scheme`, `--publisher-uid`
-* mapping-sheet: `--order-by`
+* mapping-sheet: `--order-by`, `--infer-required`
 
 ## Changed
 

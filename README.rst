@@ -245,15 +245,16 @@ The following commands may be used when working with OCDS schema from extensions
 mapping-sheet
 ~~~~~~~~~~~~~
 
-Generates a spreadsheet with all field paths from an OCDS or BODS schema.
+Generates a spreadsheet with all field paths from an OCDS, OC4IDS or BODS schema.
 
 Optional arguments:
 
-* ``--order-by`` sort the spreadsheet's rows by this column
+* ``--order-by COLUMN`` sort the spreadsheet's rows by this column
+* ``--infer-required`` infer whether fields are required (use with OCDS schema)
 
 ::
 
-    ocdskit mapping-sheet path/to/release-schema.json > mapping-sheet.csv
+    ocdskit mapping-sheet --infer-required path/to/release-schema.json > mapping-sheet.csv
     ocdskit mapping-sheet --order-by path path/to/person-statement.json > mapping-sheet.csv
 
 schema-report

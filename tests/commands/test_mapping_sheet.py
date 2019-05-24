@@ -10,7 +10,7 @@ from tests import path, read
 
 def test_command(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('release-schema.json')])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--infer-required', path('release-schema.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet.csv').replace('\n', '\r\n')  # not sure why
@@ -19,7 +19,7 @@ def test_command(monkeypatch):
 def test_command_order_by(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
-                                          path('release-schema.json')])
+                                          '--infer-required', path('release-schema.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet_order-by.csv').replace('\n', '\r\n')
@@ -28,7 +28,7 @@ def test_command_order_by(monkeypatch):
 def test_command_person_statement(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
-                                          path('bods/person-statement.json')])
+                                          '--infer-required', path('bods/person-statement.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet_person-statement.csv').replace('\n', '\r\n')
