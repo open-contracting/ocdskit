@@ -16,7 +16,7 @@ setup(
     install_requires=[
         'jsonref',
         'jsonschema',
-        'ocdsmerge>=0.5.1',
+        'ocdsmerge>=0.5.2',
         'python-dateutil',
         'pytz',
         'requests',
