@@ -33,20 +33,6 @@ def mapping_sheet(input_filename, output_stream, order_by=None):
     w.writerows(rows)
 
 
-def find_md_links(md):
-    return OrderedDict(INLINE_LINK_RE.findall(md))
-
-
-def remove_links(text, links):
-    for key, link in links.items():
-        text = text.replace('[' + key + '](' + link + ')', key)
-    return text
-
-
-def display_links(links):
-    return ', '.join(links.values())
-
-
 def make_row(path, field, schema, deprecated, required_fields, is_reference=False):
     row = {'path': path+field, 'deprecated': deprecated}
 
@@ -57,9 +43,11 @@ def make_row(path, field, schema, deprecated, required_fields, is_reference=Fals
     row['title'] = schema['title'] if 'title' in schema else field + '*'
 
     if 'description' in schema:
-        links = find_md_links(schema['description'])
-        row['description'] = remove_links(schema['description'], links)
-        row['links'] = display_links(links)
+        links = OrderedDict(INLINE_LINK_RE.findall(schema['description']))
+        row['description'] = schema['description']
+        for key, link in links.items():
+            row['description'] = row['description'].replace('[' + key + '](' + link + ')', key)
+        row['links'] = ', '.join(links.values())
 
     required = False
 
