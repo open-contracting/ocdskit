@@ -255,6 +255,7 @@ Optional arguments:
 ::
 
     ocdskit mapping-sheet --infer-required path/to/release-schema.json > mapping-sheet.csv
+    ocdskit mapping-sheet path/to/project-schema.json > mapping-sheet.csv
     ocdskit mapping-sheet --order-by path path/to/person-statement.json > mapping-sheet.csv
 
 schema-report

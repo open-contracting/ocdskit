@@ -13,7 +13,7 @@ def test_command(monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--infer-required', path('release-schema.json')])
         main()
 
-    assert actual.getvalue() == read('mapping-sheet.csv').replace('\n', '\r\n')  # not sure why
+    assert actual.getvalue() == read('mapping-sheet.csv', newline='')
 
 
 def test_command_order_by(monkeypatch):
@@ -22,16 +22,24 @@ def test_command_order_by(monkeypatch):
                                           '--infer-required', path('release-schema.json')])
         main()
 
-    assert actual.getvalue() == read('mapping-sheet_order-by.csv').replace('\n', '\r\n')
+    assert actual.getvalue() == read('mapping-sheet_order-by.csv', newline='')
 
 
-def test_command_person_statement(monkeypatch):
+def test_command_bods(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
                                           '--infer-required', path('bods/person-statement.json')])
         main()
 
-    assert actual.getvalue() == read('mapping-sheet_person-statement.csv').replace('\n', '\r\n')
+    assert actual.getvalue() == read('mapping-sheet_bods.csv', newline='')
+
+
+def test_command_oc4ids(monkeypatch):
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('project-schema.json')])
+        main()
+
+    assert actual.getvalue() == read('mapping-sheet_oc4ids.csv', newline='')
 
 
 def test_command_order_by_nonexistent(monkeypatch, caplog):
