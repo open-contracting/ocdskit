@@ -1,6 +1,6 @@
 # Changelog
 
-# 0.0.6
+# 0.1.0
 
 ## Added
 
@@ -22,8 +22,11 @@ New options:
 ## Changed
 
 * `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
+* `mapping-sheet` supports Beneficial Ownership Data Standard (BODS) schema.
+* `mapping-sheet` outputs the `enum` values of `items`.
+* **Backwards-incompatible**: mapping-sheet now reads a file argument instead of standard input.
 
-## Fixes
+## Fixed
 
 * `schema-strict` no longer errors if a required field uses `$ref`.
 

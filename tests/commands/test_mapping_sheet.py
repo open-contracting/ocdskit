@@ -1,39 +1,44 @@
 import sys
-from io import BytesIO, StringIO, TextIOWrapper
+from io import StringIO
 from unittest.mock import patch
 
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import read
+from tests import path, read
 
 
 def test_command(monkeypatch):
-    stdin = read('release-schema.json', 'rb')
-
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet'])
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('release-schema.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet.csv').replace('\n', '\r\n')  # not sure why
 
 
 def test_command_order_by(monkeypatch):
-    stdin = read('release-schema.json', 'rb')
-
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path'])
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
+                                          path('release-schema.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet_order-by.csv').replace('\n', '\r\n')
 
 
-def test_command_order_by_nonexistent(monkeypatch, caplog):
-    stdin = read('release-schema.json', 'rb')
+def test_command_person_statement(monkeypatch):
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
+                                          path('bods/person-statement.json')])
+        main()
 
+    assert actual.getvalue() == read('mapping-sheet_person-statement.csv').replace('\n', '\r\n')
+
+
+def test_command_order_by_nonexistent(monkeypatch, caplog):
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'nonexistent'])
+        with patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'nonexistent',
+                                              path('release-schema.json')])
             main()
 
     assert actual.getvalue() == ''

@@ -245,7 +245,7 @@ The following commands may be used when working with OCDS schema from extensions
 mapping-sheet
 ~~~~~~~~~~~~~
 
-Generates a spreadsheet with all field paths from an OCDS schema.
+Generates a spreadsheet with all field paths from an OCDS or BODS schema.
 
 Optional arguments:
 
@@ -253,7 +253,8 @@ Optional arguments:
 
 ::
 
-    cat path/to/release-schema.json | ocdskit mapping-sheet > mapping-sheet.csv
+    ocdskit mapping-sheet path/to/release-schema.json > mapping-sheet.csv
+    ocdskit mapping-sheet --order-by path path/to/person-statement.json > mapping-sheet.csv
 
 schema-report
 ~~~~~~~~~~~~~

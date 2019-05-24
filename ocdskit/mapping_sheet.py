@@ -1,5 +1,7 @@
 import copy
 import csv
+import os.path
+import pathlib
 import re
 from collections import OrderedDict
 
@@ -12,10 +14,11 @@ from ocdskit.util import json_load
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(input_stream, output_stream, order_by=None):
-    schema = json_load(input_stream)
+def mapping_sheet(input_filename, output_stream, order_by=None):
+    with open(input_filename) as f:
+        schema = json_load(f)
 
-    schema = JsonRef.replace_refs(schema)
+    schema = JsonRef.replace_refs(schema, base_uri=pathlib.Path(os.path.realpath(input_filename)).as_uri())
 
     rows = display_properties(schema)
     if order_by:
@@ -89,6 +92,11 @@ def make_row(path, field, schema, deprecated, required_fields, is_reference=Fals
         row['values'] = schema['format']
     elif 'enum' in schema:
         values = copy.copy(schema['enum'])
+        if None in values:
+            values.remove(None)
+        row['values'] = 'Codelist: ' + ', '.join(values)
+    elif 'items' in schema and 'enum' in schema['items']:
+        values = copy.copy(schema['items']['enum'])
         if None in values:
             values.remove(None)
         row['values'] = 'Codelist: ' + ', '.join(values)
