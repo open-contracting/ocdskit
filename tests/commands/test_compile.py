@@ -52,6 +52,17 @@ def test_command_package_uri_published_date(monkeypatch):
     assert package['publishedDate'] == '2010-01-01T00:00:00Z'
 
 
+def test_command_package_publisher(monkeypatch):
+    stdin = read('release-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--publisher-name', 'Acme Inc.'])
+        main()
+
+    package = json.loads(actual.getvalue())
+    assert package['publisher']['name'] == 'Acme Inc.'
+
+
 def test_command_package_linked_releases(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
