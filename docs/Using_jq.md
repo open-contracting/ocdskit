@@ -1,5 +1,7 @@
 # Using jq
 
+## Example 1
+
 [jq](https://stedolan.github.io/jq/) has a very good tutorial and manual. We cover common operations here.
 
 Get an array of release packages:
@@ -46,3 +48,9 @@ Or, you can split the stream of release packages into individual files named `xa
 If the file is large, the above commands will consume GBs of memory. Instead, you can run:
 
     jq -cnM --stream 'fromstream(1|truncate_stream(inputs))' < release_packages.json | ocdskit compile
+
+## Snippets
+
+Get the compiled releases from a record package:
+
+    jq -crM '.records[].compiledRelease' record_package.json
