@@ -38,7 +38,7 @@ def test_command_invalid_json(monkeypatch, caplog):
 
 
 def test_command_valid_release_package_url(monkeypatch):
-    url = 'http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json'
+    url = 'https://standard.open-contracting.org/schema/1__0__3/release-package-schema.json'
 
     stdin = read('realdata/release-package-1.json', 'rb')
 
@@ -74,7 +74,7 @@ def test_command_valid_release_package_file_verbose(monkeypatch):
 
 
 def test_command_invalid_record_package(monkeypatch):
-    url = 'http://standard.open-contracting.org/latest/en/record-package-schema.json'
+    url = 'https://standard.open-contracting.org/latest/en/record-package-schema.json'
 
     stdin = read('realdata/record-package-1.json', 'rb')
 

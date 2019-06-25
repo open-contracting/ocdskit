@@ -15,7 +15,7 @@ class Command(BaseCommand):
         self.add_argument('database_url', help='sqlalchemy database URL')
         self.add_argument('--drop', help='drop all tables before loading', action='store_true')
         self.add_argument('--schema', help='the release-schema.json to use',
-                          default='http://standard.open-contracting.org/latest/en/release-schema.json')
+                          default='https://standard.open-contracting.org/latest/en/release-schema.json')
 
     def handle(self):
         deref_schema = jsonref.load_uri(self.args.schema)

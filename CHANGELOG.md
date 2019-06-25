@@ -21,10 +21,11 @@ New options:
 
 ## Changed
 
-* `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
+* **Backwards-incompatible**: mapping-sheet now reads a file argument instead of standard input.
 * `mapping-sheet` supports Beneficial Ownership Data Standard (BODS) schema.
 * `mapping-sheet` outputs the `enum` values of `items`.
-* **Backwards-incompatible**: mapping-sheet now reads a file argument instead of standard input.
+* `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
+* Use `https://` instead of `http://` for `standard.open-contracting.org`
 
 ## Fixed
 

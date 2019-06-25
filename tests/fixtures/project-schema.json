@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://standard.open-contracting.org/infrastructure/0__9__0__beta/project-schema.json",
+  "id": "https://standard.open-contracting.org/infrastructure/0__9__0__beta/project-schema.json",
   "title": "Open Contracting for Infrastructure Data Standard Schema",
   "description": "The Open Contracting for Infrastructure Data Standard (OC4IDS) Schema sets out a data structure for capturing and exchanging information about infrastructure projects in line with the disclosure requirements of the [CoST Infrastructure Data Standard](http://infrastructuretransparency.org/resource/977/). In the context of OC4IDS, the term 'project' refers to the development of a set of infrastructure assets in a specified location, generally the responsibility of a single procuring entity and budget authority: for example, a highway overpass or a university campus.",
   "type": "object",
@@ -31,7 +31,7 @@
     },
     "status": {
       "title": "Status",
-      "description": "The current phase or status of this project, from the [projectStatus](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projectstatus) codelist.",
+      "description": "The current phase or status of this project, from the [projectStatus](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projectstatus) codelist.",
       "type": "string",
       "enum": [
         "identification",
@@ -51,7 +51,7 @@
     },
     "sector": {
       "title": "Project sector",
-      "description": "One or more values from the [projectSector codelist](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projectsector) representing the sector(s) this project relates to. More detailed sector breakdown information can be provided using the pattern [sector].[subsector]. Where subsector codes are used the parent code should also be included, e.g. `['transport', 'transport.air']`",
+      "description": "One or more values from the [projectSector codelist](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projectsector) representing the sector(s) this project relates to. More detailed sector breakdown information can be provided using the pattern [sector].[subsector]. Where subsector codes are used the parent code should also be included, e.g. `['transport', 'transport.air']`",
       "type": "array",
       "items": {
         "type": "string"
@@ -75,7 +75,7 @@
     },
     "type": {
       "title": "Project type",
-      "description": "Whether the primary focus of this project is the construction of a new asset or the rehabilitation or replacement of an existing asset, from the [projectType](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projecttype) codelist.",
+      "description": "Whether the primary focus of this project is the construction of a new asset or the rehabilitation or replacement of an existing asset, from the [projectType](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#projecttype) codelist.",
       "type": "string",
       "enum": [
         "construction",
@@ -197,7 +197,7 @@
       "properties": {
         "id": {
           "title": "Identifier",
-          "description": "An identifier for this contracting process. If this contacting process has been assigned an Open Contracting Identifier (OCID) by an external platform (e.g. national procurement system), that OCID must be recorded here. If information about this contracting process has been entered manually, or from a non-OCDS system, then an identifier may be created by the system data is entered into, following the [guidance for creating contracting process identifiers](http://standard.open-contracting.org/latest/en/schema/identifiers/#contracting-process-identifier-ocid).",
+          "description": "An identifier for this contracting process. If this contacting process has been assigned an Open Contracting Identifier (OCID) by an external platform (e.g. national procurement system), that OCID must be recorded here. If information about this contracting process has been entered manually, or from a non-OCDS system, then an identifier may be created by the system data is entered into, following the [guidance for creating contracting process identifiers](https://standard.open-contracting.org/latest/en/schema/identifiers/#contracting-process-identifier-ocid).",
           "type": "string",
           "minLength": 1
         },
@@ -236,7 +236,7 @@
         },
         "nature": {
           "title": "Nature",
-          "description": "Whether this contracting process relates to the design, construction and/or supervision of the project, from the [contractNature](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#contractnature) codelist. More than one value may be provided if the contract is for both design and construction, or both design and supervision, etc.",
+          "description": "Whether this contracting process relates to the design, construction and/or supervision of the project, from the [contractNature](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#contractnature) codelist. More than one value may be provided if the contract is for both design and construction, or both design and supervision, etc.",
           "type": "array",
           "items": {
             "type": [
@@ -263,7 +263,7 @@
         },
         "status": {
           "title": "Status",
-          "description": "The status of this contacting process. Drawn from the [contractingProcessStatus codelist](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#contractingprocessstatus).",
+          "description": "The status of this contacting process. Drawn from the [contractingProcessStatus codelist](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#contractingprocessstatus).",
           "type": "string",
           "enum": [
             "pre-award",
@@ -280,7 +280,7 @@
           "properties": {
             "procurementMethod": {
               "title": "Procurement method",
-              "description": "Specify tendering method using the [method](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#method) codelist (open, selective, limited, direct).",
+              "description": "Specify tendering method using the [method](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#method) codelist (open, selective, limited, direct).",
               "type": "string",
               "enum": [
                 "open",
@@ -371,7 +371,7 @@
         },
         "tag": {
           "title": "Release tag",
-          "description": "One or more values from the [releaseTag](http://standard.open-contracting.org/latest/en/schema/codelists/#release-tag) codelist used to indicate the information contained in this release, and the stage of the contracting process it represents. This should be filled from the related OCDS `release.tag` where available. ",
+          "description": "One or more values from the [releaseTag](https://standard.open-contracting.org/latest/en/schema/codelists/#release-tag) codelist used to indicate the information contained in this release, and the stage of the contracting process it represents. This should be filled from the related OCDS `release.tag` where available. ",
           "type": "string",
           "enum": [
             "planning",
@@ -461,7 +461,7 @@
         },
         "type": {
           "title": "Type",
-          "description": "A value from the [modificationType](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#modificationtype) codelist, indicating whether the modification relates to the duration, value, scope or other aspect of the contract.",
+          "description": "A value from the [modificationType](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#modificationtype) codelist, indicating whether the modification relates to the duration, value, scope or other aspect of the contract.",
           "type": [
             "string"
           ],
@@ -1014,12 +1014,12 @@
         },
         "identifier": {
           "title": "Primary identifier",
-          "description": "The primary identifier for this organization or participant. Identifiers that uniquely pick out a legal entity should be preferred. Consult the [organization identifier guidance](http://standard.open-contracting.org/1.1/en/schema/identifiers/) for the preferred scheme and identifier to use.",
+          "description": "The primary identifier for this organization or participant. Identifiers that uniquely pick out a legal entity should be preferred. Consult the [organization identifier guidance](https://standard.open-contracting.org/1.1/en/schema/identifiers/) for the preferred scheme and identifier to use.",
           "$ref": "#/definitions/Identifier"
         },
         "additionalIdentifiers": {
           "title": "Additional identifiers",
-          "description": "A list of additional / supplemental identifiers for the organization or participant, using the [organization identifier guidance](http://standard.open-contracting.org/1.1/en/schema/identifiers/). This could be used to provide an internally used identifier for this organization in addition to the primary legal entity identifier.",
+          "description": "A list of additional / supplemental identifiers for the organization or participant, using the [organization identifier guidance](https://standard.open-contracting.org/1.1/en/schema/identifiers/). This could be used to provide an internally used identifier for this organization in addition to the primary legal entity identifier.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Identifier"
@@ -1039,7 +1039,7 @@
         },
         "roles": {
           "title": "Party roles",
-          "description": "The party's role(s) in the project. Role(s) should be taken from the [partyRole codelist](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#partyrole). Values from the provided codelist should be used wherever possible, though extended values can be provided if the codelist does not have a relevant code.",
+          "description": "The party's role(s) in the project. Role(s) should be taken from the [partyRole codelist](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#partyrole). Values from the provided codelist should be used wherever possible, though extended values can be provided if the codelist does not have a relevant code.",
           "type": [
             "array"
           ],
@@ -1229,7 +1229,7 @@
         },
         "documentType": {
           "title": "Document type",
-          "description": "A classification of the document described taken from the [documentType codelist](http://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#documenttype). Values from the provided codelist should be used wherever possible, though extended values can be provided if the codelist does not have a relevant code.",
+          "description": "A classification of the document described taken from the [documentType codelist](https://standard.open-contracting.org/infrastructure/{{version}}/{{lang}}/reference/codelists/#documenttype). Values from the provided codelist should be used wherever possible, though extended values can be provided if the codelist does not have a relevant code.",
           "type": [
             "string"
           ],
@@ -1329,7 +1329,7 @@
       "properties": {
         "scheme": {
           "title": "Scheme",
-          "description": "Organization identifiers should be drawn from an existing organization identifier list. The scheme field is used to indicate the list or register from which the identifier is drawn. This value should be drawn from the [Organization Identifier Scheme](http://standard.open-contracting.org/1.1/en/schema/codelists/#organization-identifier-scheme) codelist.",
+          "description": "Organization identifiers should be drawn from an existing organization identifier list. The scheme field is used to indicate the list or register from which the identifier is drawn. This value should be drawn from the [Organization Identifier Scheme](https://standard.open-contracting.org/1.1/en/schema/codelists/#organization-identifier-scheme) codelist.",
           "type": [
             "string"
           ]

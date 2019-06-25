@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument('--schema', help='the URL or path of the schema to validate against',
-                          default='http://standard.open-contracting.org/latest/en/release-package-schema.json')
+                          default='https://standard.open-contracting.org/latest/en/release-package-schema.json')
         self.add_argument('--check-urls', help='check the HTTP status code if "format": "uri"', action='store_true')
         self.add_argument('--timeout', help='timeout (seconds) to GET a URL', type=int, default=10)
         self.add_argument('--verbose', help='print items without validation errors', action='store_true')

@@ -8,7 +8,7 @@ from ocdskit.util import get_ocds_minor_version, is_package, is_record_package, 
 
 logger = logging.getLogger('ocdskit')
 
-# See http://standard.open-contracting.org/1.0/en/schema/reference/#identifier
+# See https://standard.open-contracting.org/1.0/en/schema/reference/#identifier
 organization_identification_1_0 = (
     (None, ('name',)),
     ('identifier', ('scheme', 'id', 'legalName', 'uri')),
