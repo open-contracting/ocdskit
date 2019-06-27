@@ -7,6 +7,14 @@ from ocdskit.util import json_loads, get_ocds_minor_version
 
 
 def package_releases(stream, uri='', publisher=None, published_date='', extensions=None):
+    """
+    Reads releases from the stream, and returns one release package.
+
+    :param str uri: the release package's ``uri``
+    :param dict publisher: the release package's ``publisher``
+    :param str published_date: the release package's ``publishedDate``
+    :param list extensions: the release package's ``extensions``
+    """
     if publisher is None:
         publisher = OrderedDict()
     if extensions is None:
@@ -29,6 +37,10 @@ def package_releases(stream, uri='', publisher=None, published_date='', extensio
 def combine_record_packages(stream, uri='', publisher=None, published_date=''):
     """
     Reads record packages from the stream, collects packages and records, and returns one record package.
+
+    :param str uri: the record package's ``uri``
+    :param dict publisher: the record package's ``publisher``
+    :param str published_date: the record package's ``publishedDate``
     """
     if publisher is None:
         publisher = OrderedDict()
@@ -67,6 +79,10 @@ def combine_record_packages(stream, uri='', publisher=None, published_date=''):
 def combine_release_packages(stream, uri='', publisher=None, published_date=''):
     """
     Reads release packages from the stream, collects releases, and returns one release package.
+
+    :param str uri: the release package's ``uri``
+    :param dict publisher: the release package's ``publisher``
+    :param str published_date: the release package's ``publishedDate``
     """
     if publisher is None:
         publisher = OrderedDict()
@@ -95,10 +111,25 @@ def combine_release_packages(stream, uri='', publisher=None, published_date=''):
     return output
 
 
-def compile_release_packages(stream, uri='', publisher=None, published_date='', schema=None, return_package=False,
-                             use_linked_releases=False, add_versioned_release=False):
+def compile_release_packages(stream, uri='', publisher=None, published_date='', schema=None,
+                             return_versioned_release=False, return_package=False, use_linked_releases=False):
     """
     Reads release packages from the stream, merges the releases by OCID, and yields the compiled releases.
+
+    If ``return_versioned_release`` is ``True``, yields the versioned release. If ``return_package`` is ``True``, wraps
+    the compiled releases (and versioned releases if ``return_versioned_release`` is ``True``) in a record package.
+
+    If ``return_package`` is set and ``publisher`` isn't set, the output record package will have the same publisher as
+    the last input release package.
+
+    :param str uri: if ``return_package`` is ``True``, the record package's ``uri``
+    :param dict publisher: if ``return_package`` is ``True``, the record package's ``publisher``
+    :param str published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
+    :param dict schema: the URL or path of the release schema to use
+    :param bool return_package: wrap the compiled releases in a record package
+    :param bool use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases
+    :param bool return_versioned_release: if ``return_package`` is ``True``, include versioned releases in the record
+        package; otherwise, yield versioned releases instead of compiled releases
     """
     if return_package:
         output = OrderedDict([
@@ -161,7 +192,7 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
             else:
                 record['releases'] = releases
 
-            if add_versioned_release:
+            if return_versioned_release:
                 record['versionedRelease'] = merge_versioned(releases, schema)
 
             output['records'].append(record)
@@ -172,7 +203,7 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
         yield output
     else:
         for releases in releases_by_ocid.values():
-            if add_versioned_release:
+            if return_versioned_release:
                 merge_method = merge_versioned
             else:
                 merge_method = merge

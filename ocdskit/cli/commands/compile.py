@@ -30,7 +30,7 @@ class Command(BaseCommand):
         kwargs['schema'] = self.args.schema
         kwargs['return_package'] = self.args.package
         kwargs['use_linked_releases'] = self.args.linked_releases
-        kwargs['add_versioned_release'] = self.args.versioned
+        kwargs['return_versioned_release'] = self.args.versioned
 
         try:
             for output in compile_release_packages(self.buffer(), **kwargs):
