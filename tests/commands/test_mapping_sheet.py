@@ -28,7 +28,7 @@ def test_command_order_by(monkeypatch):
 def test_command_bods(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
-                                          '--infer-required', path('bods/person-statement.json')])
+                                          path('bods/person-statement.json')])
         main()
 
     assert actual.getvalue() == read('mapping-sheet_bods.csv', newline='')
