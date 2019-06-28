@@ -1,11 +1,14 @@
 import csv
-import json
+import os.path
+import pathlib
 import sys
 from collections import defaultdict
 from operator import itemgetter
 
+from jsonref import JsonRef
 
 from .base import BaseCommand
+from ocdskit.util import json_load
 
 
 class Command(BaseCommand):
@@ -13,6 +16,7 @@ class Command(BaseCommand):
     help = 'reports details of a JSON Schema'
 
     def add_arguments(self):
+        self.add_argument('file', help='the schema file')
         self.add_argument('--no-codelists', action='store_true',
                           help='skip reporting open and closed codelists')
         self.add_argument('--no-definitions', action='store_true',
@@ -46,7 +50,11 @@ class Command(BaseCommand):
                     recurse(item)
             elif isinstance(data, dict):
                 if 'codelist' in data:
-                    codelists[data['codelist']].add(data['openCodelist'])
+                    if 'openCodelist' in data:
+                        open_codelist = data['openCodelist']
+                    else:
+                        open_codelist = 'enum' not in data
+                    codelists[data['codelist']].add(open_codelist)
 
                 for key, value in data.items():
                     # Find definitions that can use a common $ref in the versioned release schema. Unversioned fields,
@@ -57,7 +65,10 @@ class Command(BaseCommand):
                             add_definition(v)
                     recurse(value)
 
-        schema = json.load(self.buffer())
+        with open(self.args.file) as f:
+            schema = json_load(f)
+
+        schema = JsonRef.replace_refs(schema, base_uri=pathlib.Path(os.path.realpath(self.args.file)).as_uri())
 
         codelists = defaultdict(set)
         definitions = defaultdict(int)
