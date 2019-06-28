@@ -13,7 +13,7 @@ A suite of command-line tools for working with OCDS data to:
 * split large packages into small packages
 * load packages into a database
 * validate JSON data against a JSON schema
-* generate a spreadsheet version of OCDS schema
+* generate a spreadsheet version of a JSON schema
 
 ::
 
@@ -245,7 +245,12 @@ The following commands may be used when working with OCDS schema from extensions
 mapping-sheet
 ~~~~~~~~~~~~~
 
-Generates a spreadsheet with all field paths from an OCDS, OC4IDS or BODS schema.
+Generates a spreadsheet with all field paths from a schema from:
+
+* Open Contracting Data Standard (OCDS)
+* Open Contracting for Infrastructure Data Standard (OC4IDS)
+* Beneficial Ownership Data Standard (BODS)
+* Social Investment Data Lab Specification (SEDL)
 
 Optional arguments:
 
@@ -280,7 +285,7 @@ For any required field, adds "minItems" if an array, "minProperties" if an objec
 
 Optional arguments:
 
-* ``-no-unique-items`` don't add "uniqueItems" properties to array fields
+* ``--no-unique-items`` don't add "uniqueItems" properties to array fields
 
 ::
 
