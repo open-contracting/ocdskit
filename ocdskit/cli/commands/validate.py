@@ -9,6 +9,7 @@ from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
 from ocdskit.exceptions import CommandError
+from ocdskit.util import json_load, json_loads
 
 
 class Command(BaseCommand):
@@ -26,7 +27,7 @@ class Command(BaseCommand):
         components = urlparse(self.args.schema)
         if components.scheme == 'file':
             with open(self.args.schema[7:]) as f:
-                schema = json.load(f)
+                schema = json_load(f)
         else:
             schema = requests.get(self.args.schema).json()
 
@@ -51,7 +52,7 @@ class Command(BaseCommand):
 
         for i, line in enumerate(self.buffer()):
             try:
-                data = json.loads(line)
+                data = json_loads(line)
                 errors = False
                 for error in validator(schema, format_checker=format_checker).iter_errors(data):
                     print('item {}: {} ({})'.format(i, error.message, '/'.join(error.absolute_schema_path)))
