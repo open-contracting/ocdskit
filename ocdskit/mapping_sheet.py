@@ -15,9 +15,6 @@ INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
 class MappingSheet:
-    def __init__(self):
-        pass
-
     def run(self, input_filename, output_stream, order_by=None, infer_required=False):
         self.infer_required = infer_required
 
@@ -134,8 +131,6 @@ class MappingSheet:
                                      'title': obj[field]['items']['title'],
                                      'description': obj[field]['items'].get('description', ''),
                                      'type': obj[field]['items']['type']})
-                    else:
-                        pass
 
                     rows = rows + self.display_properties(obj[field]['items'], path + field + '/', section,
                                                           row['deprecated'])
