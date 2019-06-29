@@ -81,12 +81,12 @@ class MappingSheet:
             values = copy.copy(schema['enum'])
             if None in values:
                 values.remove(None)
-            row['values'] = 'Codelist: ' + ', '.join(values)
+            row['values'] = 'Enum: ' + ', '.join(values)
         elif 'items' in schema and 'enum' in schema['items']:
             values = copy.copy(schema['items']['enum'])
             if None in values:
                 values.remove(None)
-            row['values'] = 'Codelist: ' + ', '.join(values)
+            row['values'] = 'Enum: ' + ', '.join(values)
         elif 'pattern' in schema:
             row['values'] = 'Pattern: ' + schema['pattern']
         else:
