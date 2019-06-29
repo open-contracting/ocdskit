@@ -5,10 +5,9 @@ import pathlib
 import re
 from collections import OrderedDict
 
-from jsonref import JsonRef
+import jsonref
 
 from ocdskit.exceptions import MissingColumnError
-from ocdskit.util import json_load
 
 # See https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -19,9 +18,8 @@ class MappingSheet:
         self.infer_required = infer_required
 
         with open(input_filename) as f:
-            schema = json_load(f)
-
-        schema = JsonRef.replace_refs(schema, base_uri=pathlib.Path(os.path.realpath(input_filename)).as_uri())
+            schema = jsonref.load(f, object_pairs_hook=OrderedDict,
+                                  base_uri=pathlib.Path(os.path.realpath(input_filename)).as_uri())
 
         rows = self.display_properties(schema)
         if order_by:
@@ -36,13 +34,13 @@ class MappingSheet:
         w.writerows(rows)
 
     def make_row(self, path, field, schema, deprecated, required_fields, is_reference=False):
-        row = {'path': path+field, 'deprecated': deprecated}
+        row = {
+            'path': path + field,
+            'title': schema.get('title', field + '*'),
+            'deprecated': deprecated,  # deprecation from parent
+        }
 
-        section = row['path'].split('/')[0] if '/' in row['path'] else ''
-
-        row['section'] = section
-
-        row['title'] = schema['title'] if 'title' in schema else field + '*'
+        row['section'] = row['path'].split('/')[0] if '/' in row['path'] else ''
 
         if 'description' in schema:
             links = OrderedDict(INLINE_LINK_RE.findall(schema['description']))
@@ -73,11 +71,10 @@ class MappingSheet:
         if field in required_fields:
             required = True
 
-        maxn = 'n' if row['type'] == 'array' else '1'
-        minn = '1' if required else '0'
-        row['range'] = minn + '..' + maxn
+        min_range = '1' if required else '0'
+        max_range = 'n' if row['type'] == 'array' else '1'
+        row['range'] = '{}..{}'.format(min_range, max_range)
 
-        # Format or restrictions
         if 'format' in schema:
             row['values'] = schema['format']
         elif 'enum' in schema:
@@ -90,10 +87,11 @@ class MappingSheet:
             if None in values:
                 values.remove(None)
             row['values'] = 'Codelist: ' + ', '.join(values)
+        elif 'pattern' in schema:
+            row['values'] = 'Pattern: ' + schema['pattern']
         else:
             row['values'] = ''
 
-        # Check for deprecation
         if 'deprecated' in schema:
             row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
             row['deprecationNotes'] = schema['deprecated'].get('description', '')
@@ -102,16 +100,19 @@ class MappingSheet:
 
     def display_properties(self, schema, path='', section='', deprecated=''):
         obj = schema['properties']
-        required_fields = schema['required'] if 'required' in schema else []
+
+        required_fields = schema.get('required', [])
+
         rows = []
+
         for field in obj:
             # If there was a reference, add an extra row for that
             if hasattr(obj[field], '__reference__'):
                 reference = copy.copy(obj[field].__reference__)
                 if 'type' not in reference and 'type' in obj[field]:
                     reference['type'] = obj[field]['type']
-                reference_row = self.make_row(
-                    path, field, reference, deprecated, required_fields, is_reference=True)
+                reference_row = self.make_row(path, field, reference, deprecated, required_fields, is_reference=True)
+
                 rows.append(reference_row)
             else:
                 reference_row = {}
@@ -119,20 +120,23 @@ class MappingSheet:
             row = self.make_row(path, field, obj[field], deprecated, required_fields)
             rows.append(row)
 
-            children_deprecated = reference_row.get('deprecated') or reference_row.get('deprecated')
+            children_deprecated = reference_row.get('deprecated')
 
             if 'properties' in obj[field]:
-                rows = rows + self.display_properties(obj[field], path + field + '/', section, children_deprecated)
+                rows += self.display_properties(obj[field], path + field + '/', section, children_deprecated)
 
             if 'items' in obj[field]:
                 if 'properties' in obj[field]['items']:
                     if 'title' in obj[field]['items']:
-                        rows.append({'section': section, 'path': path + field,
-                                     'title': obj[field]['items']['title'],
-                                     'description': obj[field]['items'].get('description', ''),
-                                     'type': obj[field]['items']['type']})
+                        rows.append({
+                            'section': section,
+                            'path': path + field,
+                            'title': obj[field]['items']['title'],
+                            'description': obj[field]['items'].get('description', ''),
+                            'type': obj[field]['items']['type'],
+                        })
 
-                    rows = rows + self.display_properties(obj[field]['items'], path + field + '/', section,
-                                                          row['deprecated'])
+                    rows += self.display_properties(obj[field]['items'], path + field + '/', section,
+                                                    row['deprecated'])
 
         return rows

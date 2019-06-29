@@ -1,0 +1,1790 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://github.com/SocialEconomyDataLab/spec/blob/master/schema/schema.json",
+  "title": "Deal",
+  "description": "A social investment deal.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "dealDate"
+  ],
+  "properties": {
+    "id": {
+      "title": "Identifier",
+      "description": "Unique internal identifier for the social investment deal.",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "description": "A title for the deal. Ideally, this is concise and under 140 characters.",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "description": "Current status of the social investment deal: in progress, an open investment, closed without funds being drawn down, closed without core funds being approved. Use the [status](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#status) codelist.",
+      "type": "string",
+      "enum": [
+        "pipeline",
+        "live",
+        "didNotProceed",
+        "closed"
+      ],
+      "enum_titles": [
+        "Pipeline",
+        "Live",
+        "Did not proceed",
+        "Closed"
+      ],
+      "enum_descriptions": [
+        "The deal is anticipated or under development.",
+        "Investments can be made into this deal.",
+        "The deal did not proceed.",
+        "No new investments can be made, but the project funded by the deal may be ongoing."
+      ],
+      "codelist": "status.csv"
+    },
+    "dealDate": {
+      "title": "Deal date",
+      "description": "The year (YYYY) or year-month (YYYY-MM) combination in which this deal should be counted. For a blended finance deal this should be the date of [financial close](http://www.businessdictionary.com/definition/financial-close.html). For other deals, this should be the date at which the most significant component was confirmed. Data analysts should be aware that components of a deal may each have their own significant dates.",
+      "type": [
+        "string"
+      ],
+      "pattern": "^(([0-9]{4})+(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?)$"
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "The default currency for the deal. All values within the deal are assumed to be in this currency unless otherwise stated. Use GBP for £",
+      "type": "string",
+      "enum": [
+        "GBP",
+        "EUR",
+        "USD"
+      ],
+      "enum_titles": [
+        "£ Sterling",
+        "€ Euros",
+        "$ US Dollars"
+      ]
+    },
+    "estimatedValue": {
+      "title": "Estimated deal value",
+      "description": "The total estimated value of this deal. This should be based on the **optimum** fund raising targets where these are available. In cases where a range if presented, the mid-point should be used. The estimated deal value may be based on documents, and does not necessarily match the sum of the values of the investments components of this deal recorded in this dataset. ",
+      "type": "number"
+    },
+    "value": {
+      "title": "Confirmed deal value",
+      "description": "The total value of this deal based on confirmed funds raised.",
+      "type": "number"
+    },
+    "recipientOrganization": {
+      "title": "Recipient Organization",
+      "description": "The Organization in receipt of the finances from the social investment deal.",
+      "$ref": "#/definitions/Organization"
+    },
+    "arrangingOrganization": {
+      "title": "Arranging Organization",
+      "description": "The lead Organization arranging the social investment deal.",
+      "$ref": "#/definitions/Organization"
+    },
+    "offers": {
+      "title": "Offers",
+      "description": "An offer describes the opportunity for investors to join a particular deal by providing finance by purchasing shares, making loans or providing some other form of input described by the offer documents. Each deal may have one or more offers associated with it.",
+      "type": "array",
+      "rollUp": [
+        "id",
+        "type",
+        "url",
+        "offerDocumentUrl",
+        "startDate",
+        "endDate",
+        "extensionDate",
+        "minimumInvestmentTarget",
+        "investmentTarget",
+        "maximumInvestmentTarget",
+        "minimumIndividualInvestment",
+        "maximumIndividualInvestment",
+        "investmentFeatures",
+        "interestRates/0/base",
+        "interestRates/0/margin",
+        "interestRates/0/effectiveRate",
+        "interestRates/0/hasAddedConditions",
+        "interestRates/0/isVariable",
+        "interestRates/0/details",
+        "matchFunding/status",
+        "matchFunding/details",
+        "withdrawals/0/start",
+        "withdrawals/0/description",
+        "withdrawals/0/capitalLimit",
+        "taxReliefs/0/type",
+        "taxReliefs/0/status",
+        "csuStandardMark/awarded",
+        "csuStandardMark/practitioner",
+        "crowdfunding/platform",
+        "crowdfunding/url"
+      ],
+      "items": {
+        "$ref": "#/definitions/Offer"
+      }
+    },
+    "projects": {
+      "title": "Project",
+      "description": "Projects associated with the deal.",
+      "type": "array",
+      "rollUp": [
+        "id",
+        "title",
+        "description",
+        "status",
+        "startDate",
+        "endDate",
+        "editionDate",
+        "estimatedValue",
+        "raisedValue",
+        "achieved",
+        "classification/0/scheme",
+        "classification/0/code",
+        "classification/0/title",
+        "locations/0/id",
+        "locations/0/name",
+        "locations/0/description",
+        "locations/0/countryCode",
+        "locations/0/latitude",
+        "locations/0/longitude",
+        "locations/0/geoCode",
+        "locations/0/geoCodeType",
+        "assets/0/id",
+        "assets/0/description",
+        "assets/0/type",
+        "assets/0/status",
+        "assets/0/quantity",
+        "assets/0/purchasePrice",
+        "assets/0/totalValue",
+        "assets/0/valuationMethod",
+        "assets/0/isSecurity",
+        "assets/0/referenceNumbers"
+      ],
+      "items": {
+        "$ref": "#/definitions/Project"
+      }
+    },
+    "investments": {
+      "title": "Investments",
+      "description": "The financial components of the deal.",
+      "type": "object",
+      "properties": {
+        "summary": {
+          "title": "Summary",
+          "description": "A free text summary of the investment structure of this deal.",
+          "type": "string"
+        },
+        "grants": {
+          "title": "Grants",
+          "description": "Grants made as part of the social investment deal.",
+          "type": "array",
+          "rollUp": [
+            "id",
+            "status",
+            "purpose",
+            "fundingOrganization/name",
+            "fundingOrganization/alternateName",
+            "fundingOrganization/id",
+            "fundingOrganization/charityNumber",
+            "fundingOrganization/companyNumber",
+            "fundingOrganization/streetAddress",
+            "fundingOrganization/addressLocality",
+            "fundingOrganization/postalCode",
+            "fundingOrganization/organizationType",
+            "fundingOrganization/url",
+            "description",
+            "dateOffered",
+            "dateAgreed",
+            "currency",
+            "amountRequested",
+            "amountCommitted",
+            "amountDisbursed",
+            "isMatchFunding",
+            "notes"
+          ],
+          "items": {
+            "$ref": "#/definitions/Grant"
+          }
+        },
+        "equity": {
+          "title": "Equity Investments",
+          "description": "Equity components of the social investment deal.",
+          "type": "array",
+          "rollUp": [
+            "id",
+            "status",
+            "purpose",
+            "fundingOrganizations/0/name",
+            "fundingOrganizations/0/alternateName",
+            "fundingOrganizations/0/id",
+            "fundingOrganizations/0/charityNumber",
+            "fundingOrganizations/0/companyNumber",
+            "fundingOrganizations/0/streetAddress",
+            "fundingOrganizations/0/addressLocality",
+            "fundingOrganizations/0/postalCode",
+            "fundingOrganizations/0/organizationType",
+            "fundingOrganizations/0/url",
+            "type",
+            "numberOfInvestors",
+            "description",
+            "currency",
+            "estimatedValue",
+            "dateOffered",
+            "dateAgreed",
+            "value",
+            "taxReliefs/0/type",
+            "taxReliefs/0/status",
+            "fund/code",
+            "fund/title",
+            "isMatchFunding",
+            "notes"
+          ],
+          "items": {
+            "$ref": "#/definitions/Equity"
+          }
+        },
+        "credit": {
+          "title": "Credit Investments",
+          "description": "Loan, bonds and leasing components of the social investment deal.",
+          "type": "array",
+          "rollUp": [
+            "id",
+            "status",
+            "purpose",
+            "fundingOrganization/name",
+            "fundingOrganization/alternateName",
+            "fundingOrganization/id",
+            "fundingOrganization/charityNumber",
+            "fundingOrganization/companyNumber",
+            "fundingOrganization/streetAddress",
+            "fundingOrganization/addressLocality",
+            "fundingOrganization/postalCode",
+            "fundingOrganization/organizationType",
+            "fundingOrganization/url",
+            "description",
+            "currency",
+            "estimatedValue",
+            "dateOffered",
+            "dateAgreed",
+            "value",
+            "durationInMonths",
+            "initialRepaymentHoliday",
+            "interestRate/base",
+            "interestRate/margin",
+            "interestRate/effectiveRate",
+            "interestRate/hasAddedConditions",
+            "interestRate/isVariable",
+            "interestRate/details",
+            "interestPayable",
+            "notes"
+          ],
+          "items": {
+            "$ref": "#/definitions/Credit"
+          }
+        }
+      }
+    },
+    "dateModified": {
+      "title": "Last modified",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "The date and time about when any part of the information for this deal was last updated. Should be in yyyy-mm-ddThh:mm:ssZ format."
+    },
+    "dataSource": {
+      "title": "Data Source",
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri",
+      "description": "A web link pointing to the source of this data, such as the actual data file or the publisher's website."
+    }
+  },
+  "definitions": {
+    "Offer": {
+      "title": "Offer",
+      "description": "An offer describes the opportunity for investors to join a particular deal by providing finance by purchasing shares, making loans or providing some other form of input described by the offer documents.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "type": "string",
+          "description": "A unique identifier for this offer."
+        },
+        "type": {
+          "title": "Type",
+          "description": "What kind of offer is this. Open offers allow investment at any time. Time limited offers have a closing date, and may only be actioned if they hit their fund-raising targets during the offer period. Values must be from the [offerType](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#offerType) codelist.",
+          "type": "string",
+          "enum": [
+            "open",
+            "timeBound",
+            "targetBound"
+          ],
+          "enum_titles": [
+            "Open",
+            "Time bound",
+            "Target bound"
+          ],
+          "enum_descriptions": [
+            "The offer remains open, with new participants investing at any time.",
+            "The offer closes after a specified period.",
+            "The offer closes after a specified target is met."
+          ],
+          "codelist": "offerType.csv",
+          "openCodelist": false
+        },
+        "url": {
+          "title": "Web page",
+          "description": "A link to more details of this offer",
+          "type": "string",
+          "format": "uri"
+        },
+        "offerDocumentUrl": {
+          "title": "Offer document URL",
+          "description": "A link to the offer document.",
+          "type": "string",
+          "format": "uri"
+        },
+        "startDate": {
+          "title": "Launch date",
+          "description": "The launch date of the offer.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "title": "Closing date",
+          "description": "The closing date of the offer.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "extensionDate": {
+          "title": "Extension date",
+          "description": "If an offer has been extended, the updated closing date should be provided here.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "minimumInvestmentTarget": {
+          "title": "Minimum investment target",
+          "description": "The minimum investment target. In many offers, if this is not reached, the offer will be cancelled.",
+          "type": "number"
+        },
+        "investmentTarget": {
+          "title": "Optimum investment target",
+          "description": "The optimum investment target. This is the primary fundraising goal for the offer. If only one target is given, this should be used.",
+          "type": "number"
+        },
+        "maximumInvestmentTarget": {
+          "title": "Maximum investment target",
+          "description": "The maximum investment target. The offer may be closed when it reaches this target, or funds above this amount returned as the project would not be able to use them.",
+          "type": "number"
+        },
+        "minimumIndividualInvestment": {
+          "title": "Individual investment: minimum",
+          "description": "The minimum investment amount that an individual investor may provide in response to this offer.",
+          "type": "number"
+        },
+        "maximumIndividualInvestment": {
+          "title": "Individual investment: maximum",
+          "description": "The maximum investment amount that an individual investor may provide in response to this offer.",
+          "type": "number"
+        },
+        "investmentFeatures": {
+          "title": "Investment features",
+          "description": "Any notable features of the investment criteria, such as variable minimum for particular geographical areas, or use of a subscription model.",
+          "type": "string"
+        },
+        "interestRates": {
+          "title": "Interest rate",
+          "description": "The interest rate specified in the offer.",
+          "type": "array",
+          "rollUp": [
+            "margin",
+            "effectiveRate",
+            "base",
+            "hasAddedConditions",
+            "details",
+            "isVariable"
+          ],
+          "items": {
+            "$ref": "#/definitions/InterestRate"
+          }
+        },
+        "matchFunding": {
+          "title": "Match funding",
+          "description": "If this offer has a match funding component, this is described here.",
+          "type": "object",
+          "properties": {
+            "required": {
+              "title": "Required?",
+              "description": "Is match funding required by this offer?",
+              "type": "boolean"
+            },
+            "status": {
+              "title": "Status",
+              "description": "Has match funding been applied for or secured? Values must be from the [matchFundingStatus](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#matchFundingStatus) codelist.",
+              "type": "string",
+              "enum": [
+                "appliedFor",
+                "secured"
+              ],
+              "enum_titles": [
+                "Applied for",
+                "Secured"
+              ],
+              "codelist": "matchFundingStatus.csv",
+              "openCodelist": false
+            },
+            "details": {
+              "title": "Details",
+              "description": "Details should be provided here of any match funding conditions for this offer, or any match funding secured.",
+              "type": "string"
+            }
+          }
+        },
+        "withdrawals": {
+          "title": "Withdrawal",
+          "description": "Can investors withdraw their investments? Each condition under which withdrawal can be made should be specified here.",
+          "type": "array",
+          "rollUp": [
+            "start",
+            "description",
+            "capitalLimit"
+          ],
+          "items": {
+            "title": "Withdrawal conditions",
+            "description": "A description of the conditions under which investment withdrawal may take place",
+            "type": "object",
+            "properties": {
+              "start": {
+                "title": "Initial period",
+                "description": "Where there is an initial period during which investment may not be withdrawn this should be given either as the anticipate date (YYYY-MM-DD) at which withdrawal will first be allowed, or as the period from the close of the deal using ISO 8601 duration format. For example, if capital cannot be widthdrawn for 3 years and 6 months, this field should contain '3Y6M'.",
+                "type": "string"
+              },
+              "description": {
+                "title": "Description",
+                "description": "A description of any conditions on withdrawal.",
+                "type": "string"
+              },
+              "capitalLimit": {
+                "title": "Capital limit",
+                "description": "Details of any limit on the amount of capital that can be withdrawn. This field may currently be populated as a string, but a structured representation for this data may be identified in future.",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "taxReliefs": {
+          "title": "Tax relief",
+          "description": "Details of the tax relief available for this offer",
+          "type": "array",
+          "rollUp": [
+            "type",
+            "status"
+          ],
+          "items": {
+            "$ref": "#/definitions/TaxRelief"
+          }
+        },
+        "csuStandardMark": {
+          "title": "CSU Standard Mark",
+          "description": "The Community Shares Unit standard mark is awarded to offers that meet national standards of good practice in the UK. See https://communityshares.org.uk/standard-mark-0 for more details.",
+          "type": "object",
+          "properties": {
+            "awarded": {
+              "title": "Awarded",
+              "description": "Has this offer been awarded the CSU Standard Mark",
+              "type": "boolean"
+            },
+            "practitioner": {
+              "title": "Practitioner",
+              "description": "The name of the practitioner involved in this CSU Standard Mark award.",
+              "type": "string"
+            }
+          }
+        },
+        "crowdfunding": {
+          "title": "Crowd funding",
+          "description": "If this offer took place through a crowdfunding platform, details should be provided here.",
+          "type": "object",
+          "properties": {
+            "platform": {
+              "title": "Platform",
+              "description": "The name of the platform the offer took place on",
+              "type": "string"
+            },
+            "url": {
+              "title": "URL",
+              "description": "The URL of the crowdfunding platform page for this offer.",
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      }
+    },
+    "Grant": {
+      "type": "object",
+      "title": "Grant",
+      "description": "A non-repayable award.",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "type": "string",
+          "description": "A unique identifier for this grant."
+        },
+        "status": {
+          "$ref": "#/definitions/InvestmentStatus"
+        },
+        "purpose": {
+          "$ref": "#/definitions/InvestmentPurpose"
+        },
+        "description": {
+          "title": "Description",
+          "description": "A description of the purpose of this grant.",
+          "type": "string"
+        },
+        "dateOffered": {
+          "title": "Date Offered",
+          "description": "The date that the grant was offered.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateAgreed": {
+          "title": "Date Agreed",
+          "description": "The date that the grant was agreed.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string",
+          "description": "The ISO 4217 three-digit country code (e.g. GBP for £)."
+        },
+        "amountRequested": {
+          "title": "Amount requested",
+          "type": "number",
+          "description": "The total amount requested/applied for from this grant source."
+        },
+        "amountCommitted": {
+          "title": "Amount committed",
+          "type": "number",
+          "description": "The total committed value of this grant."
+        },
+        "amountDisbursed": {
+          "title": "Amount disbursed",
+          "type": "number",
+          "description": "The total committed disbursed from this grant."
+        },
+        "fundingOrganization": {
+          "title": "Funding Organization",
+          "type": "object",
+          "description": "Details of the organization making this grant.",
+          "$ref": "#/definitions/Organization"
+        },
+        "isMatchFunding": {
+          "title": "Is match funding?",
+          "description": "If true, this investment, or proportion of it, is counted towards certain match funding requirements of this deal. More details may be given in the notes.",
+          "type": "boolean"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes related to this deal which cannot otherwise be captured as structured data may be entered here. Any information which can be provide using a structured data field MUST NOT be included in the notes, but should instead be represented as structured data.",
+          "type": "string"
+        }
+      }
+    },
+    "Equity": {
+      "type": "object",
+      "title": "Equity",
+      "description": "An equity investment.",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "type": "string",
+          "description": "A unique identifier for this equity investment"
+        },
+        "status": {
+          "$ref": "#/definitions/InvestmentStatus"
+        },
+        "purpose": {
+          "$ref": "#/definitions/InvestmentPurpose"
+        },
+        "description": {
+          "title": "Description",
+          "description": "A description of this equity investment",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "description": "Does this entry describe a single equity holding by an institutional investor, or one or more equity holdings from retail investors (usually individuals)? Values must be from the [equityType](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#equityType) codelist.",
+          "type": "string",
+          "enum": [
+            "institutional",
+            "retail",
+            "mixed"
+          ],
+          "enum_titles": [
+            "Institutional",
+            "Retail",
+            "Mixed"
+          ],
+          "codelist": "equityType.csv",
+          "openCodelist": false
+        },
+        "platform": {
+          "title": "Platform",
+          "description": "Was this equity raised through a particular platform. This may be lisetd using the format 'Online: {name}' or 'Offline: {name}' to indicate whether this was an Internet based platform or not. Where the platform name is not known, 'Online' or 'Offline' may be entered.",
+          "type": "string"
+        },
+        "numberOfInvestors": {
+          "title": "Number of investors",
+          "description": "Where this entry represents the total equity held by more than one party, enter the number of investors the entry describes here. In other cases, enter 1.",
+          "type": "number",
+          "minimum": 1
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string",
+          "description": "The ISO 4217 three-digit country code (e.g. GBP for £)."
+        },
+        "estimatedValue": {
+          "title": "Estimated value",
+          "description": "The estimated value to be raised through this equity. This may be set out in offer documents as an optimum target, or may come from other sources. In general, an estimated value will be from before this equity investment was completed, with the actually agreed amount in the `value` field.",
+          "type": "number"
+        },
+        "dateOffered": {
+          "title": "Date Offered",
+          "description": "The date that the investment was offered.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateAgreed": {
+          "title": "Date Agreed",
+          "description": "The date that the investment was agreed as part of the deal.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number",
+          "description": "The total value of the equity provided."
+        },
+        "shareClass": {
+          "title": "Share class",
+          "description": "The class of shares provided in return for this investment",
+          "type": "string"
+        },
+        "shareCapitalIssued": {
+          "title": "Share capital issued",
+          "description": "The percentage of the share class issued in return for this investment. Expressed as a value between 0 and 1.",
+          "type": "number",
+          "min": 0,
+          "max": 1
+        },
+        "shareRights": {
+          "title": "Share rights",
+          "description": "The rights associated with this class of share.",
+          "type": "string"
+        },
+        "taxReliefs": {
+          "title": "Tax relief",
+          "description": "Details of the tax relief available for this investment.",
+          "type": "array",
+          "rollUp": [
+            "type",
+            "status"
+          ],
+          "items": {
+            "$ref": "#/definitions/TaxRelief"
+          }
+        },
+        "fundingOrganizations": {
+          "title": "Funding Organization",
+          "type": "array",
+          "description": "The organization(s) providing this equity investment.",
+          "rollUp": [
+            "id",
+            "name",
+            "alternateName",
+            "department",
+            "contactName",
+            "charityNumber",
+            "companyNumber",
+            "streetAddress",
+            "addressLocality",
+            "addressRegion",
+            "addressCountry",
+            "postalCode",
+            "telephone",
+            "email",
+            "description",
+            "organizationType",
+            "url"
+          ],
+          "items": {
+            "$ref": "#/definitions/Organization"
+          }
+        },
+        "fund": {
+          "title": "Fund",
+          "description": "The fund that the investment forms a part of.",
+          "$ref": "#/definitions/Fund"
+        },
+        "isMatchFunding": {
+          "title": "Is match funding?",
+          "description": "If true, this investment, or proportion of it, is counted towards certain match funding requirements of this deal. More details may be given in the notes.",
+          "type": "boolean"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes related to this deal which cannot otherwise be captured as structured data may be entered here. Any information which can be provide using a structured data field MUST NOT be included in the notes, but should instead be represented as structured data.",
+          "type": "string"
+        }
+      }
+    },
+    "Credit": {
+      "type": "object",
+      "title": "Loan/credit",
+      "description": "Credit or loan based financing.",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "type": "string",
+          "description": "A unique identifier for this loan"
+        },
+        "status": {
+          "$ref": "#/definitions/InvestmentStatus"
+        },
+        "purpose": {
+          "$ref": "#/definitions/InvestmentPurpose"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of this loan/credit funding"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string",
+          "description": "The ISO 4217 three-digit country code (e.g. GBP for £)."
+        },
+        "estimatedValue": {
+          "title": "Estimated value",
+          "description": "The estimated value to be raised through this credit or loan. This may come from an offer document, or from other sources. Once credit is confirmed, the actual amount should be recorded in the `value` field.",
+          "type": "number"
+        },
+        "dateOffered": {
+          "title": "Date Offered",
+          "description": "The date that the loan was offered.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateAgreed": {
+          "title": "Date Agreed",
+          "description": "The date that the loan was agreed as part of the Deal.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number",
+          "description": "The total value of the credit or loan provided."
+        },
+        "durationInMonths": {
+          "title": "Term (months)",
+          "description": "The term of this credit/loan in months",
+          "type": "number"
+        },
+        "initialRepaymentHoliday": {
+          "title": "Initial repayment holiday (months)",
+          "description": "If this loan or credit comes with an initial repayment holiday, enter the period in months here",
+          "type": "number"
+        },
+        "interestRate": {
+          "title": "Interest rate",
+          "description": "The interest rate.",
+          "$ref": "#/definitions/InterestRate"
+        },
+        "interestPayable": {
+          "title": "Interest payable",
+          "description": "The total interest payable over the duration of the credit/loan.",
+          "type": "number"
+        },
+        "fundingOrganization": {
+          "title": "Funding Organization",
+          "type": "object",
+          "description": "Organization providing this credit or loan.",
+          "$ref": "#/definitions/Organization"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes related to this deal which cannot otherwise be captured as structured data may be entered here. Any information which can be provide using a structured data field MUST NOT be included in the notes, but should instead be represented as structured data.",
+          "type": "string"
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "title": "Project",
+      "description": "A project funded by a social investment",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "description": "The title of this project",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "description": "A description of this project",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "description": "What is the current status of this project when last updated. Values must be from the [projectStatus](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#projectStatus) codelist.",
+          "type": "string",
+          "enum": [
+            "planned",
+            "ongoing",
+            "completed",
+            "didNotProceed"
+          ],
+          "enum_titles": [
+            "Planned",
+            "Ongoing",
+            "Completed",
+            "Did not proceed"
+          ],
+          "codelist": "projectStatus.csv",
+          "openCodelist": false
+        },
+        "startDate": {
+          "title": "Start date",
+          "description": "When was/is this project scheduled to start?",
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "title": "End date",
+          "description": "When was/is this project scheduled to end?",
+          "type": "string",
+          "format": "date-time"
+        },
+        "editionDate": {
+          "title": "Version date",
+          "description": "If this project has been through a number of stages, iterations or phases, which 'edition' of the project does the information presented here represent? This should be indicated using a date. For example, if a particular project worked to raise capital to buy property in 2016, and then separately raised working capital from June 2018, there may be two project entries, one with `editionDate` of 2016-01-01, and the other with an `editionDate` of 2018-06-01",
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimatedValue": {
+          "title": "Estimated value",
+          "description": "The overall estimated value of this edition of the project. Given in the default currency.",
+          "type": "number"
+        },
+        "raisedValue": {
+          "title": "Project raised value",
+          "description": "The total raised for this project. This may match the sum of the deal components related to this project, but may in some cases also include investments from across a range of deals where the project was funded through more than one deal. Given in the default currency.",
+          "type": "number"
+        },
+        "achieved": {
+          "title": "Project achieved?",
+          "description": "Did this edition of the project meet its stated goals? For example, successfully raising finance and purchasing the assets specified, or delivering the services in the description. Further information can be provided in in the notes field if required.",
+          "type": "boolean"
+        },
+        "classification": {
+          "title": "Classification",
+          "description": "Project classification",
+          "type": "array",
+          "rollUp": [
+            "scheme",
+            "title",
+            "code"
+          ],
+          "items": {
+            "title": "Classification",
+            "description": "A project classification.",
+            "type": "object",
+            "properties": {
+              "scheme": {
+                "title": "Scheme",
+                "description": "A code describing the classification scheme in use. Values should be from the [classificationScheme](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#classificationScheme) codelist where applicable. Alternative codelist entries may be used by agreement between data publishers.",
+                "type": "string",
+                "enum": [
+                  "ptcCommunityBusiness",
+                  "bscOutcome",
+                  "bscBeneficiary"
+                ],
+                "enum_titles": [
+                  "Power to Change: Community Business Classification",
+                  "Big Society Capital: Outcome areas",
+                  "Big Society Capital: Beneficiary groups"
+                ],
+                "codelist": "classificationScheme.csv",
+                "openCodelist": true
+              },
+              "code": {
+                "title": "Code",
+                "description": "A code from the classification scheme.",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "description": "The title or label used in the classification scheme.",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "purposeOfFinance": {
+          "title": "Purpose of finance",
+          "description": "A description of the role of finance in this project.",
+          "$ref": "#/definitions/InvestmentPurpose"
+        },
+        "assets": {
+          "title": "Assets",
+          "description": "If this project involves the purchase of assets details of those assets should be provided here.",
+          "type": "array",
+          "rollUp": [
+            "id",
+            "description",
+            "type",
+            "status",
+            "quantity",
+            "purchasePrice",
+            "totalValue",
+            "valuationMethod",
+            "isSecurity",
+            "referenceNumbers"
+          ],
+          "items": {
+            "$ref": "#/definitions/Asset"
+          }
+        },
+        "locations": {
+          "title": "Location",
+          "description": "Information on locations associated with the project.",
+          "rollUp": [
+            "id",
+            "name",
+            "description",
+            "countryCode",
+            "postcode",
+            "latitude",
+            "longitude",
+            "geoCode",
+            "geoCodeType"
+          ],
+          "items": {
+            "$ref": "#/definitions/Location"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "title": "Notes",
+          "description": "Notes related to this project which cannot otherwise be captured as structured data may be entered here. Any information which can be provide using a structured data field MUST NOT be included in the notes, but should instead be represented as structured data.",
+          "type": "string"
+        }
+      }
+    },
+    "Organization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Organization name",
+          "title": "Name"
+        },
+        "id": {
+          "type": "string",
+          "description": "A globally unique identifier for this Organization. This enables data on funders and recipients to be linked up across different datasets. [Org-id.guide](http://org-id.guide) links to a number of official registers that can be used to generate identifiers in a common way (e.g. using UK Company or Charity number). Alternatively, unique identifiers from the publisher's internal systems can be used.",
+          "title": "Identifier"
+        },
+        "alternateName": {
+          "type": "string",
+          "description": "An alternative name for this Organization (e.g. trading name)",
+          "title": "Alternate Name"
+        },
+        "charityNumber": {
+          "type": "string",
+          "description": "Registered charity number, if applicable.",
+          "title": "Charity Number"
+        },
+        "companyNumber": {
+          "type": "string",
+          "description": "Registered UK company number, if applicable.",
+          "title": "Company Number"
+        },
+        "streetAddress": {
+          "type": "string",
+          "description": "Building number and street name.",
+          "title": "Street Address"
+        },
+        "addressLocality": {
+          "type": "string",
+          "description": "City or town.",
+          "title": "City"
+        },
+        "addressRegion": {
+          "type": "string",
+          "description": "County",
+          "title": "County"
+        },
+        "addressCountry": {
+          "type": "string",
+          "description": "Country",
+          "title": "Country"
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Postal code (please try and provide a post code whenever possible)",
+          "title": "Postal Code"
+        },
+        "department": {
+          "type": "string",
+          "description": "The department or sub-unit of this Organization making or receiving the grant.",
+          "title": "Department"
+        },
+        "contactName": {
+          "type": "string",
+          "description": "The contact person at this Organization.",
+          "title": "Contact Name"
+        },
+        "telephone": {
+          "type": "string",
+          "description": "Contact phone number.",
+          "title": "Phone Number"
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address for this Organization.",
+          "title": "Email"
+        },
+        "description": {
+          "type": "string",
+          "description": "A short description of this Organization and its area of work",
+          "title": "Description"
+        },
+        "organizationType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A value from the Organization Type codelist describing the nature of this organization. Values should be from the [organizationType](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#organizationType) codelist.",
+          "enum": [
+            "CIO - Charitable Incorporated Organisation",
+            "CLG - Company Limited by Guarantee",
+            "CLS - Company Limited by Shares",
+            "IPS - Industrial and Provident Society",
+            "LLP - Limited Liability Partnership",
+            "LA - Local Authority",
+            "CU - Mutual (Credit Union)",
+            "FS - Mutual (Friendly Society)",
+            "PLC - Public Listed Company",
+            "BENCOM - Registered Society (BenCom)",
+            "COOP - Registered Society (Cooperative)",
+            "UNINC - Unincorporated Organisation",
+            "OTH - Other"
+          ],
+          "enum_titles": [
+            "Charitable Incorporated Organisation",
+            "Company Limited by Guarantee",
+            "Company Limited by Shares",
+            "Industrial and Provident Society",
+            "Limited Liability Partnership",
+            "Local Authority",
+            "Mutual (Credit Union)",
+            "Mutual (Friendly Society)",
+            "Public Listed Company",
+            "Registered Society (BenCom)",
+            "Registered Society (Cooperative)",
+            "Unincorporated Organisation",
+            "Other"
+          ],
+          "codelist": "organizationType.csv",
+          "openCodelist": true,
+          "title": "Organization Type"
+        },
+        "industryClassifications": {
+          "title": "Industry classifications",
+          "description": "This field may be used to provide a list (array) of industry classifications. SIC codes are preferred, but the user may need to check and identify which codes are in use.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "startDate": {
+          "title": "Start date",
+          "description": "When was this organisation established?",
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "title": "End date",
+          "description": "When was this organisation dissolved? If the organization is still active this field should be blank.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "A web address for the organization",
+          "title": "Web Address"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Locations associated with the organization",
+          "rollUp": [
+            "id",
+            "name",
+            "description",
+            "countryCode",
+            "latitude",
+            "longitude",
+            "geoCode",
+            "geoCodeType"
+          ],
+          "items": {
+            "$ref": "#/definitions/Location"
+          },
+          "type": "array"
+        },
+        "dateModified": {
+          "format": "date-time",
+          "type": "string",
+          "description": "The date and time when information about this Organization was last updated.",
+          "title": "Last modified"
+        }
+      }
+    },
+    "Location": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Location identifier",
+          "title": "Identifier"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A name for this location.",
+          "title": "Name"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A description of this location. This could include details of the element of the activity that takes place here.",
+          "title": "Description"
+        },
+        "countryCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "codelist": "currency.csv",
+          "openCodelist": false,
+          "enum": [
+            "AF",
+            "AX",
+            "AL",
+            "DZ",
+            "AS",
+            "AD",
+            "AO",
+            "AI",
+            "AQ",
+            "AG",
+            "AR",
+            "AM",
+            "AW",
+            "AU",
+            "AT",
+            "AZ",
+            "BS",
+            "BH",
+            "BD",
+            "BB",
+            "BY",
+            "BE",
+            "BZ",
+            "BJ",
+            "BM",
+            "BT",
+            "BO",
+            "BQ",
+            "BA",
+            "BW",
+            "BV",
+            "BR",
+            "IO",
+            "BN",
+            "BG",
+            "BF",
+            "BI",
+            "KH",
+            "CM",
+            "CA",
+            "CV",
+            "KY",
+            "CF",
+            "TD",
+            "CL",
+            "CN",
+            "CX",
+            "CC",
+            "CO",
+            "KM",
+            "CG",
+            "CD",
+            "CK",
+            "CR",
+            "CI",
+            "HR",
+            "CU",
+            "CW",
+            "CY",
+            "CZ",
+            "DK",
+            "DJ",
+            "DM",
+            "DO",
+            "EC",
+            "EG",
+            "SV",
+            "GQ",
+            "ER",
+            "EE",
+            "ET",
+            "FK",
+            "FO",
+            "FJ",
+            "FI",
+            "FR",
+            "GF",
+            "PF",
+            "TF",
+            "GA",
+            "GM",
+            "GE",
+            "DE",
+            "GH",
+            "GI",
+            "GR",
+            "GL",
+            "GD",
+            "GP",
+            "GU",
+            "GT",
+            "GG",
+            "GN",
+            "GW",
+            "GY",
+            "HT",
+            "HM",
+            "VA",
+            "HN",
+            "HK",
+            "HU",
+            "IS",
+            "IN",
+            "ID",
+            "IR",
+            "IQ",
+            "IE",
+            "IM",
+            "IL",
+            "IT",
+            "JM",
+            "JP",
+            "JE",
+            "JO",
+            "KZ",
+            "KE",
+            "KI",
+            "KP",
+            "KR",
+            "KW",
+            "KG",
+            "LA",
+            "LV",
+            "LB",
+            "LS",
+            "LR",
+            "LY",
+            "LI",
+            "LT",
+            "LU",
+            "MO",
+            "MK",
+            "MG",
+            "MW",
+            "MY",
+            "MV",
+            "ML",
+            "MT",
+            "MH",
+            "MQ",
+            "MR",
+            "MU",
+            "YT",
+            "MX",
+            "FM",
+            "MD",
+            "MC",
+            "MN",
+            "ME",
+            "MS",
+            "MA",
+            "MZ",
+            "MM",
+            "NA",
+            "NR",
+            "NP",
+            "NL",
+            "NC",
+            "NZ",
+            "NI",
+            "NE",
+            "NG",
+            "NU",
+            "NF",
+            "MP",
+            "NO",
+            "OM",
+            "PK",
+            "PW",
+            "PS",
+            "PA",
+            "PG",
+            "PY",
+            "PE",
+            "PH",
+            "PN",
+            "PL",
+            "PT",
+            "PR",
+            "QA",
+            "RE",
+            "RO",
+            "RU",
+            "RW",
+            "BL",
+            "SH",
+            "KN",
+            "LC",
+            "MF",
+            "PM",
+            "VC",
+            "WS",
+            "SM",
+            "ST",
+            "SA",
+            "SN",
+            "RS",
+            "SC",
+            "SL",
+            "SG",
+            "SX",
+            "SK",
+            "SI",
+            "SB",
+            "SO",
+            "ZA",
+            "GS",
+            "SS",
+            "ES",
+            "LK",
+            "SD",
+            "SR",
+            "SJ",
+            "SZ",
+            "SE",
+            "CH",
+            "SY",
+            "TW",
+            "TJ",
+            "TZ",
+            "TH",
+            "TL",
+            "TG",
+            "TK",
+            "TO",
+            "TT",
+            "TN",
+            "TR",
+            "TM",
+            "TC",
+            "TV",
+            "UG",
+            "UA",
+            "AE",
+            "GB",
+            "US",
+            "UM",
+            "UY",
+            "UZ",
+            "VU",
+            "VE",
+            "VN",
+            "VG",
+            "VI",
+            "WF",
+            "EH",
+            "YE",
+            "ZM",
+            "ZW"
+          ],
+          "description": "The ISO Country Code of the location of this activity.",
+          "title": "Country Code"
+        },
+        "postcode": {
+          "title": "Postcode",
+          "description": "A postcode for this location.",
+          "type": "string"
+        },
+        "geoCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A code referring to a geographical area, drawn from an established gazetteer. For example, the code for a local authority ward, or parliamentary constituency.",
+          "title": "Geographic Code"
+        },
+        "geoCodeType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The type of Geographic Code (geoCode) used (e.g. Ward, Parliamentary Constituency etc.). This value for this field should be drawn from the [codelist of geographic code types](https://github.com/ThreeSixtyGiving/standard/tree/master/codelists/geoCodeType.csv).",
+          "title": "Geographic Code Type"
+        },
+        "latitude": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The latitude of a point location",
+          "title": "Latitude"
+        },
+        "longitude": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The longitude of a point location",
+          "title": "Longitude"
+        }
+      }
+    },
+    "Fund": {
+      "type": "object",
+      "title": "Fund",
+      "description": "Investments and grants are often made from specific funding schemes. This provides space to detail the particular funding scheme with which finance is associated.",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "An identifier for this fund.",
+          "title": "Code"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The title of this fund.",
+          "title": "Title"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A description of this fund.",
+          "title": "Description"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "description": "A web link to more details of this fund.",
+          "title": "URL"
+        },
+        "dateModified": {
+          "format": "date-time",
+          "type": "string",
+          "description": "The date and time when information about this fund was last updated.",
+          "title": "Last modified"
+        }
+      }
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "An asset purchased as part of a project in receipt of investment.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Identifier",
+          "description": "A unique identifier for this asset",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "description": "A short title or description of this asset",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "description": "The type of asset. Values must be from the [assetType](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#assetType) codelist.",
+          "type": "string",
+          "enum": [
+            "land",
+            "property",
+            "other"
+          ],
+          "enum_titles":[
+            "Land",
+            "Property",
+            "Other"
+          ],
+          "codelist": "assetType.csv",
+          "openCodelist": false
+        },
+        "status": {
+          "title": "Status",
+          "description": "Is the purchase of these assets planned or completed? Values must be from the [assetStatus](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#assetStatus) codelist.",
+          "type": "string",
+          "enum": [
+            "planned",
+            "purchased"
+          ],
+          "enum_titles":[
+            "Planned",
+            "Purchased"
+          ],
+          "codelist": "assetStatus.csv",
+          "openCodelist": false
+        },
+        "quantity": {
+          "title": "Quantity",
+          "description": "What is the estimated or actual quantity of these assets to be purchased.",
+          "type": "number"
+        },
+        "purchasePrice": {
+          "title": "Purchase price",
+          "description": "What was/is the purchase price of this/these assets? This must be given in the default currency of this deal.",
+          "type": "number"
+        },
+        "totalValue": {
+          "title": "Total value",
+          "description": "What is the total value given to this/these asset(s)? This must be given in the default currency of this deal.",
+          "type": "number"
+        },
+        "valuationMethod": {
+          "title": "Valuation method",
+          "description": "How has the value in 'total value' been arrived at? Values should be from the [valuationMethod](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#valuationMethod) codelist.",
+          "type": "string",
+          "enum": [
+            "estimated",
+            "actual"
+          ],
+          "enum_titles": [
+            "Estimated",
+            "Actual"
+          ],
+          "codelist": "valuationMethod.csv",
+          "openCodelist": true
+        },
+        "isSecurity": {
+          "title": "Is this asset security?",
+          "description": "Set to true if this asset is being used as security for some other component of a related deal.",
+          "type": "boolean"
+        },
+        "referenceNumbers": {
+          "title": "Reference number(s)",
+          "description": "One or more reference numbers for this asset. For example, the land registry title number in the case of property assets.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "InterestRate": {
+      "title": "Interest rate",
+      "description": "An interest rate.",
+      "type": "object",
+      "properties": {
+        "base": {
+          "title": "Base",
+          "description": "If this interest rate is based on a formula with a base rate + a percentage (e.g. Bank of England rate + 35) then a codelist entry to describe the base rate is given here. Where no recognised codelist value exists, a short clear string should be used that can be easily interpreted by a data user to identify the base rate uses. Where this is no base rate, and the margin specifies the full exchange rate, base should be left blank. Values should be from the [interestRate](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#interestRate) codelist, or may use a recognised interest rate code.",
+          "type": "string",
+          "enum": [
+            null,
+            "BofE",
+            "LIBOR"
+          ],
+          "codelist": "interestRate.csv",
+          "openCodelist": true
+        },
+        "margin": {
+          "title": "Margin",
+          "description": "The rate of interest charged above the base rate, as a value between 0 and 1 (e.g. 1% - 0.01).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "effectiveRate": {
+          "title": "Effective rate",
+          "description": "In cases where a variable base and margin are used, or where the interest payments have a complex profile (e.g. changing rates over the period of the investment; or effects of compound interest) then the effective rate should provide a figure that represents either (a) the value of the base and margin at the time of the offer; or (b) the average effective rate for the anticipated duration of an investment (Note: this is not the same as a Mortgage Effective Interest Rate).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "hasAddedConditions": {
+          "title": "Has added conditions?",
+          "description": "If true, the payment of interest may be subject to certain conditions. The conditions may be described in the details.",
+          "type": "boolean"
+        },
+        "isVariable": {
+          "title": "Is variable?",
+          "description": "If true, the rate of interest paid may vary based on time or performance of the related offer, deal or project. The rate recorded should be the initial anticipated rate. Any basis for variations may be explained in details.",
+          "type": "boolean"
+        },
+        "details": {
+          "title": "Details",
+          "description": "A description of the interest rate, and any specific conditions that apply, such as interest payment delays (e.g. interest is only paid from year 3 onwards), or other conditions on interest payments.",
+          "type": "string"
+        }
+      }
+    },
+    "TaxRelief": {
+      "title": "Tax relief",
+      "description": "A tax relief that may be applied to an offer or investment.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "title": "Type",
+          "description": "A code describing the type of tax relief available. Values should be from the [taxRelief](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#taxRelief) codelist.",
+          "type": "string",
+          "enum": [
+            "Other",
+            "SEIS",
+            "EIS",
+            "SITR",
+            "CITR"
+          ],
+          "enum_titles":[
+            "Other",
+            "Seed Enterprise Investment Scheme",
+            "Enterprise Investment Scheme",
+            "Social Investment Tax Relief",
+            "Community Investment Tax Relief"
+          ],
+          "codelist": "taxRelief.csv",
+          "openCodelist": true
+        },
+        "status": {
+          "title": "Status",
+          "description": "The status of this tax relief. Values should be from the [taxReliefStatus](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#taxReliefStatus) codelist.",
+          "type": "string",
+          "enum": [
+            "advanceAssuranceAppliedFor",
+            "advanceAssuranceReceived",
+            "fullTaxReliefApproval",
+            "applicationRejected",
+            "notAppliedFor"
+          ],
+          "enum_titles": [
+            "Advance assurance applied for",
+            "Advance assurance received",
+            "Full tax relief approval",
+            "Application rejected",
+            "Relief not applied for"
+          ],
+          "codelist": "taxReliefStatus.csv",
+          "openCodelist": false
+        }
+      }
+    },
+    "InvestmentStatus": {
+      "title": "Status",
+      "description": "The status of this investment. Values should be from the [investmentStatus](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#investmentStatus) codelist.",
+      "type": "string",
+      "enum": [
+        "requested",
+        "offered",
+        "expected",
+        "confirmed",
+        "cancelled"
+      ],
+      "enum_titles":[
+        "Requested",
+        "Offered",
+        "Expected",
+        "Confirmed",
+        "Cancelled"
+      ],
+      "codelist": "investmentStatus.csv",
+      "openCodelist": false
+    },
+    "InvestmentPurpose": {
+      "title": "Purpose",
+      "description": "The purpose(s) of this investment into the related organisation or project. Values must be from the [investmentPurpose](http://spec.socialeconomydatalab.org/en/latest/schema_reference/reference/#investmentPurpose) codelist.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "acquisition",
+          "asset",
+          "bridgingLoan",
+          "capital",
+          "developmentCapital",
+          "growthFinance",
+          "multiple",
+          "property",
+          "propertyRefurbishment",
+          "other",
+          "restructuringFinance",
+          "startupCosts",
+          "workingCapital"
+        ],
+        "enum_titles": [
+          "Acquisition",
+          "Asset",
+          "Bridging loan",
+          "Capital",
+          "Development Capital",
+          "Growth Finance",
+          "Multiple",
+          "Property",
+          "Property refurbishment",
+          "Other",
+          "Restructuring Finance",
+          "Start up costs",
+          "Working Capital"
+        ],
+        "codelist": "investmentPurpose.csv",
+        "openCodelist": true
+      }
+    }
+  }
+}
