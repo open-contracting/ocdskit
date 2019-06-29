@@ -1,11 +1,7 @@
 import copy
 import csv
-import os.path
-import pathlib
 import re
 from collections import OrderedDict
-
-import jsonref
 
 from ocdskit.exceptions import MissingColumnError
 
@@ -14,14 +10,10 @@ INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
 class MappingSheet:
-    def run(self, input_filename, output_stream, order_by=None, infer_required=False):
+    def run(self, schema, output_stream, order_by=None, infer_required=False):
         self.infer_required = infer_required
 
-        with open(input_filename) as f:
-            schema = jsonref.load(f, object_pairs_hook=OrderedDict,
-                                  base_uri=pathlib.Path(os.path.realpath(input_filename)).as_uri())
-
-        rows = self.display_properties(schema)
+        rows = list(self.traverse(schema))
         if order_by:
             try:
                 rows.sort(key=lambda row: row[order_by])
@@ -33,7 +25,7 @@ class MappingSheet:
         w.writeheader()
         w.writerows(rows)
 
-    def make_row(self, path, field, schema, deprecated, required_fields, is_reference=False):
+    def make_row(self, path, field, schema, deprecated, required_fields):
         row = {
             'path': path + field,
             'title': schema.get('title', field + '*'),
@@ -51,9 +43,7 @@ class MappingSheet:
 
         required = False
 
-        # Type
         if 'type' in schema:
-            # This checks whether this field is **implicity required**
             type_ = copy.copy(schema['type'])
             if 'null' in type_:
                 type_.remove('null')
@@ -67,7 +57,6 @@ class MappingSheet:
         else:
             row['type'] = 'unknown'
 
-        # This checks whether this field is **explicitly required**
         if field in required_fields:
             required = True
 
@@ -98,45 +87,37 @@ class MappingSheet:
 
         return row
 
-    def display_properties(self, schema, path='', section='', deprecated=''):
-        obj = schema['properties']
+    def traverse(self, schema, path='', section='', deprecated=''):
+        properties = schema.get('properties', {})
+        required = schema.get('required', [])
 
-        required_fields = schema.get('required', [])
-
-        rows = []
-
-        for field in obj:
+        for field, prop in properties.items():
             # If there was a reference, add an extra row for that
-            if hasattr(obj[field], '__reference__'):
-                reference = copy.copy(obj[field].__reference__)
-                if 'type' not in reference and 'type' in obj[field]:
-                    reference['type'] = obj[field]['type']
-                reference_row = self.make_row(path, field, reference, deprecated, required_fields, is_reference=True)
+            if hasattr(prop, '__reference__'):
+                reference = copy.copy(prop.__reference__)
+                if 'type' not in reference and 'type' in prop:
+                    reference['type'] = prop['type']
+                reference_row = self.make_row(path, field, reference, deprecated, required)
 
-                rows.append(reference_row)
+                yield reference_row
             else:
                 reference_row = {}
 
-            row = self.make_row(path, field, obj[field], deprecated, required_fields)
-            rows.append(row)
+            row = self.make_row(path, field, prop, deprecated, required)
+            yield row
 
-            children_deprecated = reference_row.get('deprecated')
+            children_deprecated = reference_row.get('deprecated', row['deprecated'])
+            if 'properties' in prop:
+                yield from self.traverse(prop, path + field + '/', section, children_deprecated)
 
-            if 'properties' in obj[field]:
-                rows += self.display_properties(obj[field], path + field + '/', section, children_deprecated)
+            if 'items' in prop and 'properties' in prop['items']:
+                if 'title' in prop['items']:
+                    yield {
+                        'section': section,
+                        'path': path + field,
+                        'title': prop['items']['title'],
+                        'description': prop['items'].get('description', ''),
+                        'type': prop['items']['type'],
+                    }
 
-            if 'items' in obj[field]:
-                if 'properties' in obj[field]['items']:
-                    if 'title' in obj[field]['items']:
-                        rows.append({
-                            'section': section,
-                            'path': path + field,
-                            'title': obj[field]['items']['title'],
-                            'description': obj[field]['items'].get('description', ''),
-                            'type': obj[field]['items']['type'],
-                        })
-
-                    rows += self.display_properties(obj[field]['items'], path + field + '/', section,
-                                                    row['deprecated'])
-
-        return rows
+                yield from self.traverse(prop['items'], path + field + '/', section, row['deprecated'])

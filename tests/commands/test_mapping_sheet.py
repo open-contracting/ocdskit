@@ -25,6 +25,14 @@ def test_command_order_by(monkeypatch):
     assert actual.getvalue() == read('mapping-sheet_order-by.csv', newline='')
 
 
+def test_command_oc4ids(monkeypatch):
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('project-schema.json')])
+        main()
+
+    assert actual.getvalue() == read('mapping-sheet_oc4ids.csv', newline='')
+
+
 def test_command_bods(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--order-by', 'path',
@@ -34,12 +42,12 @@ def test_command_bods(monkeypatch):
     assert actual.getvalue() == read('mapping-sheet_bods.csv', newline='')
 
 
-def test_command_oc4ids(monkeypatch):
+def test_command_sedl(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('project-schema.json')])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', path('sedl-schema.json')])
         main()
 
-    assert actual.getvalue() == read('mapping-sheet_oc4ids.csv', newline='')
+    assert actual.getvalue() == read('mapping-sheet_sedl.csv', newline='')
 
 
 def test_command_order_by_nonexistent(monkeypatch, caplog):
