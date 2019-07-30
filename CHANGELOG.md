@@ -21,9 +21,12 @@ New options:
 
 ## Changed
 
-* **Backwards-incompatible**: `mapping-sheet` and `schema-report` now read a file argument instead of standard input.
+* **Backwards-incompatible**: `mapping-sheet` and `schema-report` now read a file argument instead of standard input, so support schema that `$ref` other schema.
 * `mapping-sheet` and `schema-report` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), Social Investment Data Lab Specification (SEDL).
-* `mapping-sheet` outputs the `enum` values of `items` and the `pattern`.
+* `mapping-sheet` outputs:
+  * `enum` values of `items`
+  * `enum` as "Enum: " instead of "Codelist: "
+  * `pattern` as "Pattern: "
 * `schema-strict` adds `"uniqueItems": true` to all arrays, unless `--no-unique-items` is set.
 * Use `https://` instead of `http://` for `standard.open-contracting.org`
 

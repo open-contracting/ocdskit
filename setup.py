@@ -11,7 +11,7 @@ setup(
     url='https://github.com/open-contracting/ocdskit',
     description='A suite of command-line tools for working with OCDS data',
     license='BSD',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests', 'tests.*']),
     long_description=long_description,
     install_requires=[
         'jsonref',

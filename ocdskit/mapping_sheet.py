@@ -98,7 +98,6 @@ class MappingSheet:
                 if 'type' not in reference and 'type' in prop:
                     reference['type'] = prop['type']
                 reference_row = self.make_row(path, field, reference, deprecated, required)
-
                 yield reference_row
             else:
                 reference_row = {}
