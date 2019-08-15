@@ -4,6 +4,7 @@ import re
 from collections import OrderedDict
 
 from ocdskit.exceptions import MissingColumnError
+from ocdskit.schema import get_schema_fields
 
 # See https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -13,7 +14,31 @@ class MappingSheet:
     def run(self, schema, output_stream, order_by=None, infer_required=False):
         self.infer_required = infer_required
 
-        rows = list(self.traverse(schema))
+        rows = []
+        for field in get_schema_fields(schema):
+            if field['pointer'][0] == 'definitions':
+                continue
+
+            prop = field['schema']
+
+            # If the field uses `$ref`, add an extra row for it.
+            if hasattr(prop, '__reference__'):
+                reference = copy.copy(prop.__reference__)
+                if 'type' not in reference and 'type' in prop:
+                    reference['type'] = prop['type']
+                rows.append(self.make_row(field, reference))
+
+            rows.append(self.make_row(field, prop))
+
+            # If the field is an array, add an extra row for it.
+            if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
+                rows.append({
+                    'path': '/'.join(field['path']),
+                    'title': prop['items']['title'],
+                    'description': prop['items'].get('description', ''),
+                    'type': prop['items']['type'],
+                })
+
         if order_by:
             try:
                 rows.sort(key=lambda row: row[order_by])
@@ -25,14 +50,17 @@ class MappingSheet:
         w.writeheader()
         w.writerows(rows)
 
-    def make_row(self, path, field, schema, deprecated, required_fields):
+    def make_row(self, field, schema):
         row = {
-            'path': path + field,
-            'title': schema.get('title', field + '*'),
-            'deprecated': deprecated,  # deprecation from parent
+            'path': '/'.join(field['path']),
+            'title': schema.get('title', field['path'][-1] + '*'),
+            'deprecated': field['deprecated'].get('deprecatedVersion'),  # deprecation from parent
         }
 
-        row['section'] = row['path'].split('/')[0] if '/' in row['path'] else ''
+        if len(field['path']) > 1:
+            row['section'] = field['path'][0]
+        else:
+            row['section'] = ''
 
         if 'description' in schema:
             links = OrderedDict(INLINE_LINK_RE.findall(schema['description']))
@@ -57,7 +85,7 @@ class MappingSheet:
         else:
             row['type'] = 'unknown'
 
-        if field in required_fields:
+        if field['required']:
             required = True
 
         min_range = '1' if required else '0'
@@ -86,37 +114,3 @@ class MappingSheet:
             row['deprecationNotes'] = schema['deprecated'].get('description', '')
 
         return row
-
-    def traverse(self, schema, path='', section='', deprecated=''):
-        properties = schema.get('properties', {})
-        required = schema.get('required', [])
-
-        for field, prop in properties.items():
-            # If there was a reference, add an extra row for that
-            if hasattr(prop, '__reference__'):
-                reference = copy.copy(prop.__reference__)
-                if 'type' not in reference and 'type' in prop:
-                    reference['type'] = prop['type']
-                reference_row = self.make_row(path, field, reference, deprecated, required)
-                yield reference_row
-            else:
-                reference_row = {}
-
-            row = self.make_row(path, field, prop, deprecated, required)
-            yield row
-
-            children_deprecated = reference_row.get('deprecated', row['deprecated'])
-            if 'properties' in prop:
-                yield from self.traverse(prop, path + field + '/', section, children_deprecated)
-
-            if 'items' in prop and 'properties' in prop['items']:
-                if 'title' in prop['items']:
-                    yield {
-                        'section': section,
-                        'path': path + field,
-                        'title': prop['items']['title'],
-                        'description': prop['items'].get('description', ''),
-                        'type': prop['items']['type'],
-                    }
-
-                yield from self.traverse(prop['items'], path + field + '/', section, row['deprecated'])

@@ -10,6 +10,7 @@ New library methods:
 * `package_releases`
 * `combine_record_packages`
 * `combine_release_packages`
+* `get_schema_fields`
 
 New options:
 
@@ -32,6 +33,7 @@ New options:
 
 ## Fixed
 
+* `mapping-sheet` fills in the deprecated column if an object field uses `$ref`.
 * `schema-strict` no longer errors if a required field uses `$ref`.
 
 # 0.0.5 (2019-01-11)
