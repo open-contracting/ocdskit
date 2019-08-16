@@ -16,10 +16,10 @@ class MappingSheet:
 
         rows = []
         for field in get_schema_fields(schema):
-            if field['pointer'][0] == 'definitions':
+            if field.definition_pointer_components:
                 continue
 
-            prop = field['schema']
+            prop = field.schema
 
             # If the field uses `$ref`, add an extra row for it.
             if hasattr(prop, '__reference__'):
@@ -33,7 +33,7 @@ class MappingSheet:
             # If the field is an array, add an extra row for it.
             if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
                 rows.append({
-                    'path': '/'.join(field['path']),
+                    'path': field.slashed_path,
                     'title': prop['items']['title'],
                     'description': prop['items'].get('description', ''),
                     'type': prop['items']['type'],
@@ -52,13 +52,13 @@ class MappingSheet:
 
     def make_row(self, field, schema):
         row = {
-            'path': '/'.join(field['path']),
-            'title': schema.get('title', field['path'][-1] + '*'),
-            'deprecated': field['deprecated'].get('deprecatedVersion'),  # deprecation from parent
+            'path': field.slashed_path,
+            'title': schema.get('title', field.path_components[-1] + '*'),
+            'deprecated': field.deprecated.get('deprecatedVersion'),  # deprecation from parent
         }
 
-        if len(field['path']) > 1:
-            row['section'] = field['path'][0]
+        if len(field.path_components) > 1:
+            row['section'] = field.path_components[0]
         else:
             row['section'] = ''
 
@@ -85,7 +85,7 @@ class MappingSheet:
         else:
             row['type'] = 'unknown'
 
-        if field['required']:
+        if field.required:
             required = True
 
         min_range = '1' if required else '0'
