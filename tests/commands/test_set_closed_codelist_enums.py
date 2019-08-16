@@ -7,53 +7,9 @@ from unittest.mock import patch
 import pytest
 
 from ocdskit.cli.__main__ import main
+from tests import read
 
-schema = '''{
-  "properties": {
-    "closedStringNull": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "codelist": "a.csv",
-      "openCodelist": false
-    },
-    "closedArrayNull": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "codelist": "b.csv",
-      "openCodelist": false,
-      "items": {
-        "type": "string"
-      }
-    },
-    "closedString": {
-      "type": "string",
-      "codelist": "c.csv",
-      "openCodelist": false
-    },
-    "closedDisorder": {
-      "type": "string",
-      "codelist": "d.csv",
-      "openCodelist": false,
-      "enum": [
-        "bar",
-        "foo"
-      ]
-    },
-    "open": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "codelist": "a.csv",
-      "openCodelist": true
-    }
-  }
-}
-'''
+schema = read('test-schema.json')
 
 schema_with_enum = '''{
   "properties": {
@@ -104,6 +60,14 @@ schema_with_enum = '''{
       ]
     },
     "open": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "codelist": "a.csv",
+      "openCodelist": true
+    },
+    "same": {
       "type": [
         "string",
         "null"
@@ -164,6 +128,14 @@ schema_with_modification = '''{
       ]
     },
     "open": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "codelist": "a.csv",
+      "openCodelist": true
+    },
+    "same": {
       "type": [
         "string",
         "null"
