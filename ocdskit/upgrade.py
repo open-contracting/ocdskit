@@ -24,10 +24,16 @@ def _move_to_top(data, fields):
 
 
 def upgrade_10_10(data):
+    """
+    Upgrades a record package, release package or release from 1.0 to 1.0 (no-op).
+    """
     pass
 
 
 def upgrade_11_11(data):
+    """
+    Upgrades a record package, release package or release from 1.1 to 1.1 (no-op).
+    """
     pass
 
 
