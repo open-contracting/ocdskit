@@ -25,6 +25,6 @@ class Command(BaseCommand):
                                   base_uri=pathlib.Path(os.path.realpath(self.args.file)).as_uri())
 
         try:
-            MappingSheet().run(schema, sys.stdout, self.args.order_by, self.args.infer_required)
+            mapping_sheet(schema, sys.stdout, self.args.order_by, self.args.infer_required)
         except MissingColumnError as e:
             raise CommandError(str(e))

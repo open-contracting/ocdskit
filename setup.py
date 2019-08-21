@@ -31,6 +31,11 @@ setup(
             'pytest-cov',
             'pytest-vcr',
         ],
+        'docs': [
+            'Sphinx',
+            'sphinx-autobuild',
+            'sphinx_rtd_theme',
+        ],
     },
     classifiers=[
         'License :: OSI Approved :: BSD License',
