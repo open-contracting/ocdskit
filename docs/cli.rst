@@ -5,9 +5,7 @@ To see all commands available, run::
 
     ocdskit --help
 
-.. note:
-
-   Users on Windows should run ``set PYTHONIOENCODING=utf-8`` in the terminal before running any ``ocdskit`` commands.
+Users on Windows should run ``set PYTHONIOENCODING=utf-8`` in the terminal before running any ``ocdskit`` commands.
 
 Most ``ocdskit`` tools accept only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data from standard input. To process a remote file::
 
