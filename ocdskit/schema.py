@@ -2,21 +2,30 @@ LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|
 LANGUAGE_CODE_SUFFIX_LEN = len(LANGUAGE_CODE_SUFFIX)
 
 
-def _join_sep(words, sep):
+def _join_sep(sep, words):
     return sep + sep.join(words)
-
-
-def _join_dot(words):
-    return _join_sep(words, '.')
-
-
-def _join_slash(words):
-    return _join_sep(words, '/')
 
 
 class Field:
     def __init__(self, schema=None, pointer=None, path=None, definition_pointer=None, definition_path=None,
-                 required=None, deprecated=None, multilingual=None):
+                 required=None, deprecated=None, multilingual=None, sep='.'):
+        """
+        Initializes a schema field object.
+
+        :param dict schema: the field's schema
+        :param tuple pointer: the JSON pointer to the field in the schema, e.g.
+                              ``('properties', 'tender', 'properties', 'id')``
+        :param tuple path: the path to the field in data, e.g.
+                           ``('tender', 'id')``
+        :param tuple definition_pointer: the JSON pointer to the definition in which the field is defined, e.g.
+                                         ``('definitions', 'Item')``
+        :param tuple definition_path: the path to the definition in which the field is defined, e.g.
+                                      ``('Item')``
+        :param bool required: whether the field is listed in the schema's ``required``
+        :param bool required: whether the field, or an ancestor of the field, sets ``deprecated``
+        :param bool multilingual: whether the field has a corresponding field in the schema's ``patternProperties``
+        :param str sep: the separator to use in string representations of paths
+        """
         self.schema = schema
         self.pointer_components = pointer
         self.path_components = path
@@ -25,37 +34,68 @@ class Field:
         self.required = required
         self.deprecated = deprecated
         self.multilingual = multilingual
+        self._sep = sep
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
 
     @property
     def pointer(self):
-        return _join_slash(self.pointer_components)
+        """
+        Returns the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``.
+        """
+        return _join_sep('/', self.pointer_components)
 
     @property
     def definition_pointer(self):
-        return _join_slash(self.definition_pointer_components)
+        """
+        Returns the JSON pointer to the definition in which the field is defined, e.g. ``/definitions/Item``.
+        """
+        return _join_sep('/', self.definition_pointer_components)
 
     @property
-    def slashed_path(self):
-        return '/'.join(self.path_components)
-
-    @property
-    def dotted_path(self):
-        return '.'.join(self.path_components)
+    def path(self):
+        """
+        Returns the path to the field in data with ``self.sep`` as separator, e.g. ``tender.id``.
+        """
+        return self._sep.join(self.path_components)
 
     @property
     def definition_path(self):
-        return '.'.join(self.definition_path_components)
+        """
+        Returns the path to the definition in which the field is defined with ``self.sep`` as separator, e.g. ``Item``.
+        """
+        return self._sep.join(self.definition_path_components)
+
+    @property
+    def sep(self):
+        """
+        Returns the separator to use in string representations of paths.
+        """
+        return self._sep
+
+    @sep.setter
+    def sep(self, sep):
+        """
+        Sets the separator to use in string representations of paths.
+        """
+        self._sep = sep
 
     def __repr__(self):
         return repr(self.asdict())
 
-    def asdict(self, path_sep='.', exclude=None):
+    def asdict(self, sep=None, exclude=None):
+        """
+        Returns the field as a dict, with keys for: ``schema``, ``pointer``, ``path``,
+        ``definition_pointer``, ``definition_path``, ``required``, ``deprecated``, ``multilingual``.
+
+        :param list sep: the separator to use in string representations of paths, overriding ``self.sep``
+        :param list exclude: a list of keys to exclude from the dict
+        """
         d = {}
 
         exclude = exclude or ()
+        sep = sep or self.sep
 
         for k, v in self.__dict__.items():
             if k not in exclude and not k.endswith('_components'):
@@ -65,7 +105,7 @@ class Field:
                 d[k] = getattr(self, k)
         for k in ('path', 'definition_path'):
             if k not in exclude:
-                d[k] = path_sep.join(getattr(self, '{}_components'.format(k)))
+                d[k] = sep.join(getattr(self, '{}_components'.format(k)))
 
         return d
 

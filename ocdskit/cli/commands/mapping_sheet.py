@@ -7,7 +7,7 @@ import jsonref
 
 from .base import BaseCommand
 from ocdskit.exceptions import CommandError, MissingColumnError
-from ocdskit.mapping_sheet import MappingSheet
+from ocdskit.mapping_sheet import mapping_sheet
 
 
 class Command(BaseCommand):

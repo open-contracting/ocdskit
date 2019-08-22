@@ -13,6 +13,7 @@ New library methods:
 -  ``package_releases``
 -  ``combine_record_packages``
 -  ``combine_release_packages``
+-  ``mapping_sheet``
 -  ``get_schema_fields``
 
 New options:

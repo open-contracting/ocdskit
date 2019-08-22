@@ -17,6 +17,7 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
             continue
 
         prop = field.schema
+        field.sep = '/'
 
         # If the field uses `$ref`, add an extra row for it.
         if hasattr(prop, '__reference__'):
@@ -30,7 +31,7 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
         # If the field is an array, add an extra row for it.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
             rows.append({
-                'path': field.slashed_path,
+                'path': field.path,
                 'title': prop['items']['title'],
                 'description': prop['items'].get('description', ''),
                 'type': prop['items']['type'],
@@ -47,9 +48,10 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
     w.writeheader()
     w.writerows(rows)
 
+
 def _make_row(field, schema, infer_required):
     row = {
-        'path': field.slashed_path,
+        'path': field.path,
         'title': schema.get('title', field.path_components[-1] + '*'),
         'deprecated': field.deprecated.get('deprecatedVersion'),  # deprecation from parent
     }
@@ -72,7 +74,7 @@ def _make_row(field, schema, infer_required):
         type_ = copy.copy(schema['type'])
         if 'null' in type_:
             type_.remove('null')
-        elif self.infer_required:
+        elif infer_required:
             required = 'string' in type_ or 'integer' in type_
 
         if type(type_) in (tuple, list):
