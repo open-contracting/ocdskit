@@ -98,7 +98,7 @@ class Field:
         sep = sep or self.sep
 
         for k, v in self.__dict__.items():
-            if k not in exclude and not k.endswith('_components'):
+            if k not in exclude and not k.startswith('_') and not k.endswith('_components'):
                 d[k] = v
         for k in ('pointer', 'definition_pointer'):
             if k not in exclude:
