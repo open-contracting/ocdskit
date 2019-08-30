@@ -11,7 +11,7 @@ interactions:
       User-Agent:
       - python-requests/2.21.0
     method: GET
-    uri: https://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
+    uri: http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
   response:
     body:
       string: "{\n    \"id\": \"http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json\"\
@@ -106,7 +106,7 @@ interactions:
 
         <h1>Found</h1>
 
-        <p>The document has moved <a href="https://standard.open-contracting.org/schema/1__0__3/release-schema.json">here</a>.</p>
+        <p>The document has moved <a href="http://standard.open-contracting.org/schema/1__0__3/release-schema.json">here</a>.</p>
 
         <hr>
 
@@ -128,7 +128,7 @@ interactions:
       Keep-Alive:
       - timeout=5, max=100
       Location:
-      - https://standard.open-contracting.org/schema/1__0__3/release-schema.json
+      - http://standard.open-contracting.org/schema/1__0__3/release-schema.json
       Server:
       - Apache/2.4.29 (Ubuntu)
     status:
@@ -146,7 +146,7 @@ interactions:
       User-Agent:
       - python-requests/2.21.0
     method: GET
-    uri: https://standard.open-contracting.org/schema/1__0__3/release-schema.json
+    uri: http://standard.open-contracting.org/schema/1__0__3/release-schema.json
   response:
     body:
       string: "{\n    \"id\": \"http://standard.open-contracting.org/schema/1__0__3/release-schema.json\"\

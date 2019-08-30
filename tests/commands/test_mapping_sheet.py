@@ -26,10 +26,30 @@ def test_command_order_by(monkeypatch):
     assert actual.getvalue() == read('mapping-sheet_order-by.csv', newline='')
 
 
+def test_command_extension(monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--infer-required',
+                                          path('release-schema.json'), '--extension', url])
+        main()
+
+    assert actual.getvalue() == read('mapping-sheet_extension.csv', newline='')
+
+
 def test_command_extension_field(monkeypatch):
     with patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--infer-required', '--extension-field',
                                           'extension', path('release-schema-patched.json')])
+        main()
+
+    assert actual.getvalue() == read('mapping-sheet_extension-field.csv', newline='')
+
+
+def test_command_extension_and_extension_field(monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'mapping-sheet', '--infer-required', '--extension-field',
+                                          'extension', path('release-schema.json'), '--extension', url])
         main()
 
     assert actual.getvalue() == read('mapping-sheet_extension-field.csv', newline='')

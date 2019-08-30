@@ -41,7 +41,7 @@ def test_command_invalid_json(monkeypatch, caplog):
 
 @pytest.mark.vcr()
 def test_command_valid_release_package_url(monkeypatch):
-    url = 'https://standard.open-contracting.org/schema/1__0__3/release-package-schema.json'
+    url = 'http://standard.open-contracting.org/schema/1__0__3/release-package-schema.json'
 
     stdin = read('realdata/release-package-1.json', 'rb')
 
