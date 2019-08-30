@@ -22,6 +22,7 @@ Optional arguments:
 
 * ``--order-by COLUMN`` sort the spreadsheet's rows by this column
 * ``--infer-required`` infer whether fields are required (use with OCDS schema)
+* ``--extension-field`` add an "extension" column with values from this schema field
 
 ::
 

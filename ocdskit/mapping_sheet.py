@@ -10,7 +10,7 @@ from ocdskit.schema import get_schema_fields
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
+def mapping_sheet(schema, output_stream, order_by=None, infer_required=False, extension_field=None):
     rows = []
     for field in get_schema_fields(schema):
         if field.definition_pointer_components:
@@ -24,9 +24,9 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
             reference = copy.copy(prop.__reference__)
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
-            rows.append(_make_row(field, reference, infer_required))
+            rows.append(_make_row(field, reference, infer_required, extension_field))
 
-        rows.append(_make_row(field, prop, infer_required))
+        rows.append(_make_row(field, prop, infer_required, extension_field))
 
         # If the field is an array, add an extra row for it.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
@@ -43,13 +43,17 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False):
         except KeyError:
             raise MissingColumnError("the column '{}' doesn't exist – did you make a typo?".format(order_by))
 
-    w = csv.DictWriter(output_stream, ['section', 'path', 'title', 'description', 'type', 'range', 'values',
-                                       'links', 'deprecated', 'deprecationNotes'])
+    fieldnames = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
+                  'deprecationNotes']
+    if extension_field:
+        fieldnames.append(extension_field)
+
+    w = csv.DictWriter(output_stream, fieldnames)
     w.writeheader()
     w.writerows(rows)
 
 
-def _make_row(field, schema, infer_required):
+def _make_row(field, schema, infer_required, extension_field):
     row = {
         'path': field.path,
         'title': schema.get('title', field.path_components[-1] + '*'),
@@ -111,5 +115,8 @@ def _make_row(field, schema, infer_required):
     if 'deprecated' in schema:
         row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
+
+    if extension_field in schema:
+        row['extension'] = schema[extension_field]
 
     return row
