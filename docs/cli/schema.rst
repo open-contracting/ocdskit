@@ -22,13 +22,15 @@ Optional arguments:
 
 * ``--order-by COLUMN`` sort the spreadsheet's rows by this column
 * ``--infer-required`` infer whether fields are required (use with OCDS schema)
+* ``--extension`` patch the release schema with this extension
 * ``--extension-field`` add an "extension" column with values from this schema field
 
 ::
 
-    ocdskit mapping-sheet --infer-required path/to/release-schema.json > mapping-sheet.csv
     ocdskit mapping-sheet path/to/project-schema.json > mapping-sheet.csv
+    ocdskit mapping-sheet --infer-required path/to/release-schema.json > mapping-sheet.csv
     ocdskit mapping-sheet --order-by path path/to/person-statement.json > mapping-sheet.csv
+    ocdskit mapping-sheet --infer-required path/to/release-schema.json --extension https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip > mapping-sheet.csv
 
 schema-report
 -------------

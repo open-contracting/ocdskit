@@ -17,6 +17,7 @@ setup(
         'jsonref',
         'jsonschema',
         'ocdsmerge>=0.5.2',
+        'ocdsextensionregistry>=0.0.13',
         'python-dateutil',
         'pytz',
         'requests',

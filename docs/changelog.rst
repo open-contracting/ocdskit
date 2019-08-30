@@ -22,7 +22,7 @@ New options:
 -  compile: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
 -  combine-record-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
 -  combine-release-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension-field``
+-  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension``, ``--extension-field``
 
 Changed
 ~~~~~~~
