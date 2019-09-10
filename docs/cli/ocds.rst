@@ -62,7 +62,7 @@ Optional positional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to a release package, you can use `use jq <https://github.com/open-contracting/ocdskit/blob/master/docs/Using_jq.md>`__ to get the releases from the record packages, along with the ``package-releases`` command.
+To convert record packages to a release package, you can use :ref:`use jq <jq>` to get the releases from the record packages, along with the ``package-releases`` command.
 
 ::
 
