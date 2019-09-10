@@ -22,7 +22,7 @@ class Command(BaseCommand):
                           help="sort the spreadsheet's rows by this column")
         self.add_argument('--infer-required', action='store_true',
                           help='infer whether fields are required')
-        self.add_argument('--extension', nargs='+',
+        self.add_argument('--extension', nargs='*',
                           help='patch the release schema with this extension')
         self.add_argument('--extension-field',
                           help='add an "extension" column with values from this schema field')
