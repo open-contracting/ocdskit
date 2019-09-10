@@ -3,13 +3,14 @@ from collections import defaultdict, OrderedDict
 from ocdsmerge.merge import merge, merge_versioned, get_tags, get_release_schema_url
 
 from ocdskit.exceptions import InconsistentVersionError
-from ocdskit.util import json_loads, get_ocds_minor_version
+from ocdskit.util import get_ocds_minor_version
 
 
-def package_releases(stream, uri='', publisher=None, published_date='', extensions=None):
+def package_releases(releases, uri='', publisher=None, published_date='', extensions=None):
     """
-    Reads releases from the stream, and returns one release package.
+    Wraps releases in a release package.
 
+    :param list releases: a list of releases
     :param str uri: the release package's ``uri``
     :param dict publisher: the release package's ``publisher``
     :param str published_date: the release package's ``publishedDate``
@@ -19,8 +20,6 @@ def package_releases(stream, uri='', publisher=None, published_date='', extensio
         publisher = OrderedDict()
     if extensions is None:
         extensions = []
-
-    releases = [json_loads(line) for line in stream]
 
     output = OrderedDict([
         ('uri', uri),
@@ -34,10 +33,11 @@ def package_releases(stream, uri='', publisher=None, published_date='', extensio
     return output
 
 
-def combine_record_packages(stream, uri='', publisher=None, published_date=''):
+def combine_record_packages(packages, uri='', publisher=None, published_date=''):
     """
-    Reads record packages from the stream, collects packages and records, and returns one record package.
+    Collects the packages and records from the record packages into one record package.
 
+    :param list packages: a list of record packages
     :param str uri: the record package's ``uri``
     :param dict publisher: the record package's ``publisher``
     :param str published_date: the record package's ``publishedDate``
@@ -57,9 +57,7 @@ def combine_record_packages(stream, uri='', publisher=None, published_date=''):
         ('records', []),
     ])
 
-    for line in stream:
-        package = json_loads(line)
-
+    for package in packages:
         _update_package_metadata(output, package, publisher)
 
         output['records'].extend(package['records'])
@@ -76,10 +74,11 @@ def combine_record_packages(stream, uri='', publisher=None, published_date=''):
     return output
 
 
-def combine_release_packages(stream, uri='', publisher=None, published_date=''):
+def combine_release_packages(packages, uri='', publisher=None, published_date=''):
     """
-    Reads release packages from the stream, collects releases, and returns one release package.
+    Collects the releases from the release packages into one release package.
 
+    :param list packages: a list of release packages
     :param str uri: the release package's ``uri``
     :param dict publisher: the release package's ``publisher``
     :param str published_date: the release package's ``publishedDate``
@@ -98,9 +97,7 @@ def combine_release_packages(stream, uri='', publisher=None, published_date=''):
         ('releases', []),
     ])
 
-    for line in stream:
-        package = json_loads(line)
-
+    for package in packages:
         _update_package_metadata(output, package, publisher)
 
         output['releases'].extend(package['releases'])
@@ -111,10 +108,10 @@ def combine_release_packages(stream, uri='', publisher=None, published_date=''):
     return output
 
 
-def compile_release_packages(stream, uri='', publisher=None, published_date='', schema=None,
+def compile_release_packages(packages, uri='', publisher=None, published_date='', schema=None,
                              return_versioned_release=False, return_package=False, use_linked_releases=False):
     """
-    Reads release packages from the stream, merges the releases by OCID, and yields the compiled releases.
+    Merges releases by OCID and yields compiled releases.
 
     If ``return_versioned_release`` is ``True``, yields the versioned release. If ``return_package`` is ``True``, wraps
     the compiled releases (and versioned releases if ``return_versioned_release`` is ``True``) in a record package.
@@ -122,6 +119,7 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
     If ``return_package`` is set and ``publisher`` isn't set, the output record package will have the same publisher as
     the last input release package.
 
+    :param list packages: a list of release packages
     :param str uri: if ``return_package`` is ``True``, the record package's ``uri``
     :param dict publisher: if ``return_package`` is ``True``, the record package's ``publisher``
     :param str published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
@@ -148,9 +146,7 @@ def compile_release_packages(stream, uri='', publisher=None, published_date='', 
     releases_by_ocid = defaultdict(list)
     linked_releases = []
 
-    for i, line in enumerate(stream):
-        package = json_loads(line)
-
+    for i, package in enumerate(packages):
         if not version:
             version = get_ocds_minor_version(package)
         else:

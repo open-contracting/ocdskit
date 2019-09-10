@@ -1,5 +1,6 @@
 from .base import BaseCommand
 from ocdskit.combine import combine_release_packages
+from ocdskit.util import json_loads
 
 
 class Command(BaseCommand):
@@ -12,6 +13,7 @@ class Command(BaseCommand):
     def handle(self):
         kwargs = self.parse_package_arguments()
 
-        output = combine_release_packages(self.buffer(), **kwargs)
+        packages = [json_loads(line) for line in self.buffer()]
+        output = combine_release_packages(packages, **kwargs)
 
         self.print(output)

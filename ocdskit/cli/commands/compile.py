@@ -4,6 +4,7 @@ import sys
 from .base import BaseCommand
 from ocdskit.combine import compile_release_packages
 from ocdskit.exceptions import CommandError, InconsistentVersionError
+from ocdskit.util import json_loads
 
 logger = logging.getLogger('ocdskit')
 
@@ -33,7 +34,8 @@ class Command(BaseCommand):
         kwargs['return_versioned_release'] = self.args.versioned
 
         try:
-            for output in compile_release_packages(self.buffer(), **kwargs):
+            packages = [json_loads(line) for line in self.buffer()]
+            for output in compile_release_packages(packages, **kwargs):
                 self.print(output)
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]
