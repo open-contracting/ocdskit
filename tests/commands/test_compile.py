@@ -136,6 +136,16 @@ def test_command_pretty(monkeypatch):
     assert actual.getvalue() == read('compile_pretty_minimal.json')
 
 
+def test_command_encoding(monkeypatch):
+    stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', '--ascii', 'compile'])
+        main()
+
+    assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
+
+
 def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
@@ -148,8 +158,8 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 83: " \
-                                        "invalid continuation byte\nTry saving the inputs as UTF-8?"
+    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
+                                        "invalid continuation byte\nTry `--encoding iso-8859-1`?"
     assert excinfo.value.code == 1
 
 

@@ -29,7 +29,6 @@ New options:
 Changed
 ~~~~~~~
 
--  **Backwards-incompatible**: Remove ``--encoding`` option to support streaming.
 -  **Backwards-incompatible**: ``upgrade_10_10``, ``upgrade_11_11`` and ``upgrade_10_11`` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: ``mapping-sheet`` and ``schema-report`` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
 -  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), Social Investment Data Lab Specification (SEDL).

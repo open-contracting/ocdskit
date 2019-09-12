@@ -1,6 +1,5 @@
 from urllib.parse import urlparse
 
-import ijson
 import requests
 import rfc3987
 from jsonschema import FormatChecker
@@ -8,7 +7,6 @@ from jsonschema.compat import str_types
 from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
-from ocdskit.exceptions import CommandError
 from ocdskit.util import json_load
 
 

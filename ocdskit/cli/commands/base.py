@@ -10,6 +10,17 @@ except ijson.backends.YAJLImportError:
     import ijson
 
 
+class StandardInputReader:
+    def __init__(self, encoding):
+        self.encoding = encoding
+
+    def read(self, buf_size):
+        data = sys.stdin.buffer.read(buf_size)
+        if self.encoding is None or self.encoding == 'utf-8':
+            return data
+        return data.decode(self.encoding).encode('utf-8')
+
+
 class BaseCommand:
     def __init__(self, subparsers):
         """
@@ -31,7 +42,7 @@ class BaseCommand:
         raise NotImplementedError('commands must implement handle()')
 
     def items(self):
-        return ijson.common.items(ijson.parse(sys.stdin.buffer, multiple_values=True), '')
+        return ijson.common.items(ijson.parse(StandardInputReader(self.args.encoding), multiple_values=True), '')
 
     def print(self, data):
         """

@@ -29,6 +29,7 @@ COMMAND_MODULES = (
 
 def main():
     parser = argparse.ArgumentParser(description='Open Contracting Data Standard CLI')
+    parser.add_argument('--encoding', help='the file encoding')
     parser.add_argument('--ascii', help='print escape sequences instead of UTF-8 characters', action='store_true')
     parser.add_argument('--pretty', help='pretty print output', action='store_true')
 
@@ -54,7 +55,11 @@ def main():
             except ijson.common.IncompleteJSONError as e:
                 raise CommandError('JSON error: {}'.format(e))
             except UnicodeDecodeError as e:
-                raise CommandError('encoding error: {}\nTry saving the inputs as UTF-8?'.format(e))
+                if args.encoding and args.encoding.lower() == 'iso-8859-1':
+                    suggestion = 'utf-8'
+                else:
+                    suggestion = 'iso-8859-1'
+                raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
