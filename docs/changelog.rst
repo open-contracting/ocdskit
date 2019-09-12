@@ -47,6 +47,7 @@ Fixed
 
 -  ``mapping-sheet`` fills in the deprecated column if an object field uses ``$ref``.
 -  ``schema-strict`` no longer errors if a required field uses ``$ref``.
+-  ``upgrade`` no longer errors if ``awards`` or ``contracts`` is ``null``.
 
 .. _section-1:
 
