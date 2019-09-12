@@ -158,12 +158,12 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
+    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 83: " \
                                         "invalid continuation byte\nTry `--encoding iso-8859-1`?"
     assert excinfo.value.code == 1
 
 
-def test_command_multiline_input(monkeypatch, caplog):
+def test_command_multiline_input(monkeypatch):
     stdin = b'{\n  "releases": [\n    {\n      "ocid": "x",\n      "date": "2001-02-03T00:00:00Z"\n    }\n  ]\n}'
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -171,6 +171,16 @@ def test_command_multiline_input(monkeypatch, caplog):
         main()
 
     assert actual.getvalue() == '{"tag":["compiled"],"id":"x-2001-02-03T00:00:00Z","date":"2001-02-03T00:00:00Z","ocid":"x"}\n'  # noqa
+
+
+def test_command_array_input(monkeypatch, caplog):
+    stdin = read('release-packages.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+        main()
+
+    assert actual.getvalue() == '{"tag":["compiled"],"id":"ocds-213czf-1-2001-02-03T04:05:06Z","date":"2001-02-03T04:05:06Z","ocid":"ocds-213czf-1","initiationType":"tender"}\n'  # noqa
 
 
 def test_command_invalid_json(monkeypatch, caplog):

@@ -1,8 +1,8 @@
-from .base import BaseCommand
+from .base import OCDSCommand
 from ocdskit.combine import package_releases
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'package-releases'
     help = 'reads releases from standard input, and prints one release package'
 

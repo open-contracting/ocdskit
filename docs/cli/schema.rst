@@ -6,6 +6,7 @@ The following commands may be used when working with OCDS schema from extensions
 Optional arguments for all commands (if relevant) are:
 
 * ``--encoding ENCODING`` the file encoding
+* ``--ascii`` print escape sequences instead of UTF-8 characters
 * ``--pretty`` pretty print output
 
 mapping-sheet

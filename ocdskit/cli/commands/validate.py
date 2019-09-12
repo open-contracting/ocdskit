@@ -6,11 +6,11 @@ from jsonschema import FormatChecker
 from jsonschema.compat import str_types
 from jsonschema.validators import Draft4Validator as validator
 
-from .base import BaseCommand
+from .base import OCDSCommand
 from ocdskit.util import json_load
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'validate'
     help = 'reads JSON data from standard input, validates it against the schema, and prints errors'
 

@@ -1,7 +1,7 @@
-from .base import BaseCommand
+from .base import OCDSCommand
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'split-release-packages'
     help = 'reads release packages from standard input, and prints many release packages for each'
 

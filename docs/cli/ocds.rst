@@ -4,7 +4,10 @@ OCDS Commands
 Optional arguments for all commands are:
 
 * ``--encoding ENCODING`` the file encoding
+* ``--ascii`` print escape sequences instead of UTF-8 characters
 * ``--pretty`` pretty print output
+
+The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
 compile
 -------

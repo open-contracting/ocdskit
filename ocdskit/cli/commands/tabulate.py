@@ -2,11 +2,11 @@ import jsonref
 import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
-from .base import BaseCommand
+from .base import OCDSCommand
 from ocdskit.util import json_dumps
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'tabulate'
     help = 'load packages into a database'
 

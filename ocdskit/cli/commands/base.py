@@ -27,9 +27,19 @@ class BaseCommand:
         Initializes the subparser and adds arguments.
         """
         self.subparser = subparsers.add_parser(self.name, description=self.help)
+        self.add_base_arguments()
         self.add_arguments()
 
+    def add_base_arguments(self):
+        """
+        Adds default arguments to all commands.
+        """
+        pass
+
     def add_arguments(self):
+        """
+        Adds arguments specific to this command.
+        """
         pass
 
     def add_argument(self, *args, **kwargs):
@@ -39,10 +49,23 @@ class BaseCommand:
         self.subparser.add_argument(*args, **kwargs)
 
     def handle(self):
+        """
+        Runs the command.
+        """
         raise NotImplementedError('commands must implement handle()')
 
+    def prefix(self):
+        """
+        Returns the path to the items to process within each input.
+        """
+        return ''
+
     def items(self):
-        return ijson.common.items(ijson.parse(StandardInputReader(self.args.encoding), multiple_values=True), '')
+        """
+        Returns the items in the input.
+        """
+        file = StandardInputReader(self.args.encoding)
+        return ijson.common.items(ijson.parse(file, multiple_values=True), self.prefix())
 
     def print(self, data):
         """
@@ -57,6 +80,16 @@ class BaseCommand:
             kwargs['ensure_ascii'] = False
 
         print(json_dumps(data, **kwargs))
+
+
+class OCDSCommand(BaseCommand):
+    def items(self):
+        for item in super().items():
+            if isinstance(item, list):
+                for i in item:
+                    yield i
+            else:
+                yield item
 
     def add_package_arguments(self, infix, prefix=''):
         """

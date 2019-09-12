@@ -1,7 +1,7 @@
-from .base import BaseCommand
+from .base import OCDSCommand
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'split-record-packages'
     help = 'reads record packages from standard input, and prints many record packages for each'
 

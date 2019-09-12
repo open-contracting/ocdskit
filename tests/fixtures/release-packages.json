@@ -1,0 +1,4 @@
+[
+  {"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"},
+  {"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"}
+]

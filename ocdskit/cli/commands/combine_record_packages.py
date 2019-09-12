@@ -1,8 +1,8 @@
-from .base import BaseCommand
+from .base import OCDSCommand
 from ocdskit.combine import combine_record_packages
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'combine-record-packages'
     help = 'reads record packages from standard input, collects packages and records, and prints one record package'
 

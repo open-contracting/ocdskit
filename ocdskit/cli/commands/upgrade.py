@@ -1,9 +1,9 @@
+from .base import OCDSCommand
 from ocdskit import upgrade
-from ocdskit.cli.commands.base import BaseCommand
 from ocdskit.exceptions import CommandError
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'upgrade'
     help = 'upgrades packages and releases from an old version of OCDS to a new version'
 

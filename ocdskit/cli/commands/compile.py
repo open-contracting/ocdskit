@@ -1,14 +1,14 @@
 import logging
 import sys
 
-from .base import BaseCommand
+from .base import OCDSCommand
 from ocdskit.combine import compile_release_packages
 from ocdskit.exceptions import CommandError, InconsistentVersionError
 
 logger = logging.getLogger('ocdskit')
 
 
-class Command(BaseCommand):
+class Command(OCDSCommand):
     name = 'compile'
     help = 'reads release packages from standard input, merges the releases by OCID, and prints the compiled releases'
 

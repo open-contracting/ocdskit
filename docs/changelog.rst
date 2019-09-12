@@ -4,7 +4,7 @@ Changelog
 0.1.0
 -----
 
-Input can now be any JSON data, not only `line-delimited JSON data <https://en.wikipedia.org/wiki/JSON_streaming>`__.
+Inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON`__ or JSON arrays, not only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming#Line-delimited_JSON>`__.
 
 Added
 ~~~~~
