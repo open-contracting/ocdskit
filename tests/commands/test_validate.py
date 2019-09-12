@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
@@ -23,7 +24,7 @@ def test_command(monkeypatch):
 @pytest.mark.vcr()
 def test_command_invalid_json(monkeypatch, caplog):
     with caplog.at_level('INFO'):
-        stdin = b'{\n'
+        stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
         with pytest.raises(SystemExit) as excinfo:
             with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:  # noqa
@@ -34,8 +35,8 @@ def test_command_invalid_json(monkeypatch, caplog):
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
-        assert caplog.records[0].message == "item 0: JSON error: Expecting property name enclosed in double " \
-                                            "quotes: line 2 column 1 (char 2)"
+        assert re.search(r'^JSON error: parse error: premature EOF[ \n]+\(right here\) ------\^\n$',
+                         caplog.records[0].message)
         assert excinfo.value.code == 1
 
 

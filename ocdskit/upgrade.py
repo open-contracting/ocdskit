@@ -4,7 +4,8 @@ from collections import OrderedDict
 from copy import deepcopy
 from hashlib import md5
 
-from ocdskit.util import get_ocds_minor_version, is_package, is_record_package, is_release_package
+from ocdskit.util import (json_dumps, json_loads, get_ocds_minor_version, is_package, is_record_package,
+                          is_release_package)
 
 logger = logging.getLogger('ocdskit')
 
@@ -27,14 +28,14 @@ def upgrade_10_10(data):
     """
     Upgrades a record package, release package or release from 1.0 to 1.0 (no-op).
     """
-    pass
+    return data
 
 
 def upgrade_11_11(data):
     """
     Upgrades a record package, release package or release from 1.1 to 1.1 (no-op).
     """
-    pass
+    return data
 
 
 def upgrade_10_11(data):
@@ -45,7 +46,11 @@ def upgrade_10_11(data):
     """
     version = get_ocds_minor_version(data)
     if version != '1.0':
-        return
+        return data
+
+    # `move_to_end` is only defined on OrderedDict.
+    if not isinstance(data, OrderedDict):
+        data = json_loads(json_dumps(data))
 
     if is_package(data):
         data['version'] = '1.1'
@@ -63,6 +68,8 @@ def upgrade_10_11(data):
             upgrade_release_10_11(release)
     else:  # release
         upgrade_release_10_11(data)
+
+    return data
 
 
 def upgrade_release_10_11(release):

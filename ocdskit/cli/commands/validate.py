@@ -1,6 +1,6 @@
-import json
 from urllib.parse import urlparse
 
+import ijson
 import requests
 import rfc3987
 from jsonschema import FormatChecker
@@ -9,7 +9,7 @@ from jsonschema.validators import Draft4Validator as validator
 
 from .base import BaseCommand
 from ocdskit.exceptions import CommandError
-from ocdskit.util import json_load, json_loads
+from ocdskit.util import json_load
 
 
 class Command(BaseCommand):
@@ -50,14 +50,10 @@ class Command(BaseCommand):
 
             format_checker.checks('uri', raises=(ValueError))(check_url)
 
-        for i, line in enumerate(self.buffer()):
-            try:
-                data = json_loads(line)
-                errors = False
-                for error in validator(schema, format_checker=format_checker).iter_errors(data):
-                    print('item {}: {} ({})'.format(i, error.message, '/'.join(error.absolute_schema_path)))
-                    errors = True
-                if not errors and self.args.verbose:
-                    print('item {}: no errors'.format(i))
-            except json.decoder.JSONDecodeError as e:
-                raise CommandError('item {}: JSON error: {}'.format(i, e))
+        for i, data in enumerate(self.items()):
+            errors = False
+            for error in validator(schema, format_checker=format_checker).iter_errors(data):
+                print('item {}: {} ({})'.format(i, error.message, '/'.join(error.absolute_schema_path)))
+                errors = True
+            if not errors and self.args.verbose:
+                print('item {}: no errors'.format(i))

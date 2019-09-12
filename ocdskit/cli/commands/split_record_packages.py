@@ -1,5 +1,4 @@
 from .base import BaseCommand
-from ocdskit.util import json_loads
 
 
 class Command(BaseCommand):
@@ -11,9 +10,7 @@ class Command(BaseCommand):
                           help='the number of records per package')
 
     def handle(self):
-        for line in self.buffer():
-            package = json_loads(line)
-
+        for package in self.items():
             records = package['records']
 
             # We can't determine which records came from which packages.

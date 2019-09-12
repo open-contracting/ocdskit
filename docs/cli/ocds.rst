@@ -3,7 +3,6 @@ OCDS Commands
 
 Optional arguments for all commands are:
 
-* ``--encoding ENCODING`` the file encoding
 * ``--pretty`` pretty print output
 
 compile

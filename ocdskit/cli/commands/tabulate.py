@@ -1,10 +1,9 @@
-import json
-
 import jsonref
 import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 from .base import BaseCommand
+from ocdskit.util import json_dumps
 
 
 class Command(BaseCommand):
@@ -118,14 +117,13 @@ class Command(BaseCommand):
                     for item in value:
                         self.process_object(path + (current_name + key,), '', current_keys, flattened, item, None)
                 else:
-                    flat_obj[current_name + key] = json.dumps(value)
+                    flat_obj[current_name + key] = json_dumps(value)
             else:
                 flat_obj[current_name + key] = value
         return flattened
 
     def upload_files(self, metadata, engine, deref_schema):
-        for line in self.buffer():
-            package = json.loads(line)
+        for package in self.items():
             if 'releases' in package:
                 releases = package['releases']
             elif 'records' in package:
@@ -164,5 +162,5 @@ class Command(BaseCommand):
                 if 'postgresql' in engine.name:
                     row['extras'] = extras
                 else:
-                    row['extras'] = json.dumps(extras)
+                    row['extras'] = json_dumps(extras)
             conn.execute(table.insert(), rows)

@@ -1,7 +1,13 @@
-import io
-import json
 import sys
 from collections import OrderedDict
+
+from ocdskit.util import json_dumps
+
+try:
+    # ijson 2.4 has a bug in yajl2_c (fixed in HEAD).
+    import ijson.backends.yajl2_cffi as ijson
+except ijson.backends.YAJLImportError:
+    import ijson
 
 
 class BaseCommand:
@@ -24,8 +30,8 @@ class BaseCommand:
     def handle(self):
         raise NotImplementedError('commands must implement handle()')
 
-    def buffer(self):
-        return io.TextIOWrapper(sys.stdin.buffer, encoding=self.args.encoding)
+    def items(self):
+        return ijson.common.items(ijson.parse(sys.stdin.buffer, multiple_values=True), '')
 
     def print(self, data):
         """
@@ -39,7 +45,7 @@ class BaseCommand:
         if not self.args.ascii:
             kwargs['ensure_ascii'] = False
 
-        print(json.dumps(data, **kwargs))
+        print(json_dumps(data, **kwargs))
 
     def add_package_arguments(self, infix, prefix=''):
         """

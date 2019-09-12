@@ -1,7 +1,6 @@
 from ocdskit import upgrade
 from ocdskit.cli.commands.base import BaseCommand
 from ocdskit.exceptions import CommandError
-from ocdskit.util import json_loads
 
 
 class Command(BaseCommand):
@@ -25,7 +24,6 @@ class Command(BaseCommand):
         except AttributeError:
             raise CommandError('{}grade from {} is not supported'.format(direction, versions.replace(':', ' to ')))
 
-        for line in self.buffer():
-            data = json_loads(line)
-            upgrade_method(data)
+        for data in self.items():
+            data = upgrade_method(data)
             self.print(data)

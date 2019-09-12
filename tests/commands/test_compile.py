@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
@@ -135,17 +136,6 @@ def test_command_pretty(monkeypatch):
     assert actual.getvalue() == read('compile_pretty_minimal.json')
 
 
-@pytest.mark.vcr()
-def test_command_encoding(monkeypatch):
-    stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
-
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--encoding', 'iso-8859-1', '--ascii', 'compile'])
-        main()
-
-    assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
-
-
 def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
@@ -158,24 +148,34 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 592: " \
-                                        "invalid continuation byte\nTry `--encoding iso-8859-1`?"
+    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 83: " \
+                                        "invalid continuation byte\nTry saving the inputs as UTF-8?"
     assert excinfo.value.code == 1
 
 
-def test_command_bad_format(monkeypatch, caplog):
-    stdin = b'{\n}'
+def test_command_multiline_input(monkeypatch, caplog):
+    stdin = b'{\n  "releases": [\n    {\n      "ocid": "x",\n      "date": "2001-02-03T00:00:00Z"\n    }\n  ]\n}'
 
-    with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
-            main()
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+        main()
 
-    assert actual.getvalue() == ''
+    assert actual.getvalue() == '{"tag":["compiled"],"id":"x-2001-02-03T00:00:00Z","date":"2001-02-03T00:00:00Z","ocid":"x"}\n'  # noqa
 
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "JSON error: Expecting property name enclosed in double quotes: line 2 " \
-                                        "column 1 (char 2)\nIs the JSON data not line-delimited? Try piping it " \
-                                        "through `jq -crM .`"
-    assert excinfo.value.code == 1
+
+def test_command_invalid_json(monkeypatch, caplog):
+    with caplog.at_level('INFO'):
+        stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
+
+        with pytest.raises(SystemExit) as excinfo:
+            with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:  # noqa
+                monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+                main()
+
+        assert actual.getvalue() == ''
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'CRITICAL'
+        assert re.search(r'^JSON error: parse error: premature EOF[ \n]+\(right here\) ------\^\n$',
+                         caplog.records[0].message)
+        assert excinfo.value.code == 1

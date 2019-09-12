@@ -1,8 +1,9 @@
 import argparse
 import importlib
-import json
 import logging
 import sys
+
+import ijson
 
 from ocdskit.exceptions import CommandError
 
@@ -28,7 +29,6 @@ COMMAND_MODULES = (
 
 def main():
     parser = argparse.ArgumentParser(description='Open Contracting Data Standard CLI')
-    parser.add_argument('--encoding', help='the file encoding')
     parser.add_argument('--ascii', help='print escape sequences instead of UTF-8 characters', action='store_true')
     parser.add_argument('--pretty', help='pretty print output', action='store_true')
 
@@ -51,15 +51,10 @@ def main():
             command.args = args
             try:
                 command.handle()
-            except json.decoder.JSONDecodeError as e:
-                raise CommandError('JSON error: {}\nIs the JSON data not line-delimited? '
-                                   'Try piping it through `jq -crM .`'.format(e))
+            except ijson.common.IncompleteJSONError as e:
+                raise CommandError('JSON error: {}'.format(e))
             except UnicodeDecodeError as e:
-                if args.encoding and args.encoding.lower() == 'iso-8859-1':
-                    suggestion = 'utf-8'
-                else:
-                    suggestion = 'iso-8859-1'
-                raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
+                raise CommandError('encoding error: {}\nTry saving the inputs as UTF-8?'.format(e))
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
