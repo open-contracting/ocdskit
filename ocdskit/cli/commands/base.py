@@ -10,6 +10,41 @@ except ijson.backends.YAJLImportError:
     import ijson
 
 
+# Changes ijson.common.items to use different builder.
+def items(prefixed_events, prefix):
+    prefixed_events = iter(prefixed_events)
+    try:
+        while True:
+            current, event, value = next(prefixed_events)
+            if current == prefix:
+                if event in ('start_map', 'start_array'):
+                    builder = OrderedObjectBuilder()
+                    end_event = event.replace('start', 'end')
+                    while (current, event) != (prefix, end_event):
+                        builder.event(event, value)
+                        current, event, value = next(prefixed_events)
+                    del builder.containers[:]
+                    yield builder.value
+                else:
+                    yield value
+    except StopIteration:
+        pass
+
+
+# Uses OrderedDict instead of dict.
+class OrderedObjectBuilder(ijson.common.ObjectBuilder):
+    def event(self, event, value):
+        if event == 'start_map':
+            map = OrderedDict()
+            self.containers[-1](map)
+
+            def setter(value):
+                map[self.key] = value
+            self.containers.append(setter)
+        else:
+            super().event(event, value)
+
+
 class StandardInputReader:
     def __init__(self, encoding):
         self.encoding = encoding
@@ -65,7 +100,7 @@ class BaseCommand:
         Returns the items in the input.
         """
         file = StandardInputReader(self.args.encoding)
-        return ijson.common.items(ijson.parse(file, multiple_values=True), self.prefix())
+        return items(ijson.parse(file, multiple_values=True), self.prefix())
 
     def print(self, data):
         """
