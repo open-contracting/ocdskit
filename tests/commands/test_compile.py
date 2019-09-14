@@ -158,8 +158,8 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "encoding error: 'utf-8' codec can't decode byte 0xd3 in position 83: " \
-                                        "invalid continuation byte\nTry `--encoding iso-8859-1`?"
+    assert re.search(r"^encoding error: 'utf-8' codec can't decode byte 0xd3 in position \d+: invalid continuation "
+                     r"byte\nTry `--encoding iso-8859-1`\?$", caplog.records[0].message)
     assert excinfo.value.code == 1
 
 
@@ -196,6 +196,5 @@ def test_command_invalid_json(monkeypatch, caplog):
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
-        assert re.search(r'^JSON error: parse error: premature EOF[ \n]+\(right here\) ------\^\n$',
-                         caplog.records[0].message)
+        assert caplog.records[0].message.startswith('JSON error: ')
         assert excinfo.value.code == 1

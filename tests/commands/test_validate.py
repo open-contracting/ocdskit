@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
@@ -35,8 +34,7 @@ def test_command_invalid_json(monkeypatch, caplog):
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
-        assert re.search(r'^JSON error: parse error: premature EOF[ \n]+\(right here\) ------\^\n$',
-                         caplog.records[0].message)
+        assert caplog.records[0].message.startswith('JSON error: ')
         assert excinfo.value.code == 1
 
 
@@ -103,7 +101,6 @@ def test_command_no_check_urls(monkeypatch):
     assert actual.getvalue() == ''
 
 
-@pytest.mark.vcr()
 def test_command_check_urls(monkeypatch):
     stdin = read('release-package_urls.json', 'rb')
 
