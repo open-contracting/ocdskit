@@ -1,12 +1,14 @@
 import sys
 from collections import OrderedDict
 
+from ijson.backends import YAJLImportError
+
 from ocdskit.util import json_dumps
 
 try:
     # ijson 2.4 has a bug in yajl2_c (fixed in HEAD).
     import ijson.backends.yajl2_cffi as ijson
-except ijson.backends.YAJLImportError:
+except YAJLImportError:
     import ijson
 
 

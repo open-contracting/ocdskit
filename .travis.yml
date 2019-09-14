@@ -5,10 +5,14 @@ python:
   - "3.6"
 env:
   - BASEDIR="https://raw.githubusercontent.com/open-contracting/standard-maintenance-scripts/master"
-addons:
-  apt:
-    packages:
-    - libyajl-dev
+matrix:
+  include:
+    - name: Default
+    - name: YAJL
+      addons:
+        apt:
+          packages:
+          - libyajl-dev
 install:
   - curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
   - pip install .[test]
