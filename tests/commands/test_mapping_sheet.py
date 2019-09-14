@@ -26,6 +26,7 @@ def test_command_order_by(monkeypatch):
     assert actual.getvalue() == read('mapping-sheet_order-by.csv', newline='')
 
 
+@pytest.mark.vcr()
 def test_command_extension(monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
     with patch('sys.stdout', new_callable=StringIO) as actual:
@@ -45,6 +46,7 @@ def test_command_extension_field(monkeypatch):
     assert actual.getvalue() == read('mapping-sheet_extension-field.csv', newline='')
 
 
+@pytest.mark.vcr()
 def test_command_extension_and_extension_field(monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
     with patch('sys.stdout', new_callable=StringIO) as actual:
