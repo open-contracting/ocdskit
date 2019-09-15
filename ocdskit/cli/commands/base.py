@@ -9,10 +9,10 @@ try:
     # ijson 2.4 has a bug in yajl2_c (fixed in HEAD).
     import ijson.backends.yajl2_cffi as ijson
 except YAJLImportError:
-    import ijson
+    import ijson.backends.python as ijson
 
 
-# Changes ijson.common.items to use different builder.
+# Copy of ijson.common.items, using different builder.
 def items(prefixed_events, prefix):
     prefixed_events = iter(prefixed_events)
     try:
@@ -33,7 +33,7 @@ def items(prefixed_events, prefix):
         pass
 
 
-# Uses OrderedDict instead of dict.
+# Subclass of ObjectBuilder, using OrderedDict instead of dict.
 class OrderedObjectBuilder(ijson.common.ObjectBuilder):
     def event(self, event, value):
         if event == 'start_map':

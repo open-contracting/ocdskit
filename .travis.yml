@@ -16,6 +16,8 @@ matrix:
 install:
   - curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
   - pip install .[test]
+  # Install ijson until > 2.4 release.
+  - pip install -e git+https://github.com/ICRAR/ijson.git#egg=ijson
 script:
   - curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
   - pytest --cov ocdskit --vcr-record=none
