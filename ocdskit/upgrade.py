@@ -181,9 +181,8 @@ def upgrade_amendments_10_11(release):
     if 'tender' in release:
         _upgrade_amendment_10_11(release['tender'])
     for field in ('awards', 'contracts'):
-        if release.get(field):  # can be None
-            for block in release[field]:
-                _upgrade_amendment_10_11(block)
+        for block in release.get(field, []):  # can be None
+            _upgrade_amendment_10_11(block)
 
 
 def _upgrade_amendment_10_11(block):
