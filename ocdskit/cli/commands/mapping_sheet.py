@@ -16,16 +16,11 @@ class Command(BaseCommand):
     help = 'generates a spreadsheet with all field paths from an OCDS, OC4IDS or BODS schema'
 
     def add_arguments(self):
-        self.add_argument('file',
-                          help='the schema file')
-        self.add_argument('--order-by',
-                          help="sort the spreadsheet's rows by this column")
-        self.add_argument('--infer-required', action='store_true',
-                          help='infer whether fields are required')
-        self.add_argument('--extension', nargs='*',
-                          help='patch the release schema with this extension')
-        self.add_argument('--extension-field',
-                          help='add an "extension" column with values from this schema field')
+        self.add_argument('file', help='the schema file')
+        self.add_argument('--order-by', help="sort the spreadsheet's rows by this column")
+        self.add_argument('--infer-required', action='store_true', help='infer whether fields are required')
+        self.add_argument('--extension', nargs='*', help='patch the release schema with this extension')
+        self.add_argument('--extension-field', help='add an "extension" column with values from this schema field')
 
     def handle(self):
         with open(self.args.file) as f:

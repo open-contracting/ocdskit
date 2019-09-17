@@ -13,10 +13,8 @@ class Command(OCDSCommand):
     help = 'reads release packages from standard input, merges the releases by OCID, and prints the compiled releases'
 
     def add_arguments(self):
-        self.add_argument('--schema',
-                          help='the URL or path of the release schema to use')
-        self.add_argument('--package', action='store_true',
-                          help='wrap the compiled releases in a record package')
+        self.add_argument('--schema', help='the URL or path of the release schema to use')
+        self.add_argument('--package', action='store_true', help='wrap the compiled releases in a record package')
         self.add_argument('--linked-releases', action='store_true',
                           help='if --package is set, use linked releases instead of full releases')
         self.add_argument('--versioned', action='store_true',

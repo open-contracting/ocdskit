@@ -6,8 +6,7 @@ class Command(OCDSCommand):
     help = 'reads record packages from standard input, and prints many record packages for each'
 
     def add_arguments(self):
-        self.add_argument('size', type=int,
-                          help='the number of records per package')
+        self.add_argument('size', type=int, help='the number of records per package')
 
     def handle(self):
         for package in self.items():

@@ -16,8 +16,7 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument('file', help='the schema file')
-        self.add_argument('--no-codelists', action='store_true',
-                          help='skip reporting open and closed codelists')
+        self.add_argument('--no-codelists', action='store_true', help='skip reporting open and closed codelists')
         self.add_argument('--no-definitions', action='store_true',
                           help='skip reporting definitions that can use a common $ref in the versioned release schema')
         self.add_argument('--min-occurrences', type=int, default=5,

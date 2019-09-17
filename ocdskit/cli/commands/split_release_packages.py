@@ -6,8 +6,7 @@ class Command(OCDSCommand):
     help = 'reads release packages from standard input, and prints many release packages for each'
 
     def add_arguments(self):
-        self.add_argument('size', type=int,
-                          help='the number of releases per package')
+        self.add_argument('size', type=int, help='the number of releases per package')
 
     def handle(self):
         for package in self.items():
