@@ -50,12 +50,8 @@ Fixed
 -  ``schema-strict`` no longer errors if a required field uses ``$ref``.
 -  ``upgrade`` no longer errors if ``awards`` or ``contracts`` is ``null``.
 
-.. _section-1:
-
 0.0.5 (2019-01-11)
 ------------------
-
-.. _added-1:
 
 Added
 ~~~~~
@@ -77,8 +73,6 @@ New commands:
 
 -  upgrade
 
-.. _changed-1:
-
 Changed
 ~~~~~~~
 
@@ -87,20 +81,14 @@ Changed
 -  ``compile``, ``combine-record-packages`` and ``combine-release-packages`` have a predictable field order.
 -  ``measure`` is removed.
 
-.. _fixed-1:
-
 Fixed
 ~~~~~
 
 -  ``indent`` prints an error if a path doesn’t exist.
 -  ``compile``, ``combine-record-packages`` and ``combine-release-packages`` succeed if the required ``publisher`` field is missing.
 
-.. _section-2:
-
 0.0.4 (2018-11-23)
 ------------------
-
-.. _added-2:
 
 Added
 ~~~~~
@@ -109,20 +97,14 @@ New options:
 
 -  schema-report: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
 
-.. _changed-2:
-
 Changed
 ~~~~~~~
 
 -  ``schema-report`` reports definitions that can use a common ``$ref`` in the versioned release schema.
 -  ``schema-report`` reports open and closed codelists in CSV format.
 
-.. _section-3:
-
 0.0.3 (2018-11-01)
 ------------------
-
-.. _added-3:
 
 Added
 ~~~~~
@@ -137,8 +119,6 @@ New commands:
 -  split-record-packages
 -  split-release-packages
 
-.. _changed-3:
-
 Changed
 ~~~~~~~
 
@@ -151,12 +131,8 @@ Changed
 -  Add ``--ascii`` option to print escape sequences instead of UTF-8 characters.
 -  Rename base exception class from ``ReportError`` to ``OCDSKitError``.
 
-.. _section-4:
-
 0.0.2 (2018-03-14)
 ------------------
-
-.. _added-4:
 
 Added
 ~~~~~
@@ -172,12 +148,8 @@ New commands:
 -  schema-strict
 -  set-closed-codelist-enums
 
-.. _section-5:
-
 0.0.1 (2017-12-25)
 ------------------
-
-.. _added-5:
 
 Added
 ~~~~~
