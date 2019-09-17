@@ -99,10 +99,10 @@ class BaseCommand:
 
     def items(self):
         """
-        Returns the items in the input.
+        Yields the items in the input.
         """
         file = StandardInputReader(self.args.encoding)
-        return items(ijson.parse(file, multiple_values=True), self.prefix())
+        yield from items(ijson.parse(file, multiple_values=True), self.prefix())
 
     def print(self, data):
         """
@@ -120,7 +120,16 @@ class BaseCommand:
 
 
 class OCDSCommand(BaseCommand):
+    def add_base_arguments(self):
+        self.add_argument('--root-path', help='the path to the items to process within each input')
+
+    def prefix(self):
+        return self.args.root_path or ''
+
     def items(self):
+        """
+        Yields the items in the input. If an item is an array, yields each entry of the array.
+        """
         for item in super().items():
             if isinstance(item, list):
                 for i in item:

@@ -6,6 +6,7 @@ Optional arguments for all commands are:
 * ``--encoding ENCODING`` the file encoding
 * ``--ascii`` print escape sequences instead of UTF-8 characters
 * ``--pretty`` pretty print output
+* ``--root-path ROOT_PATH`` the path to the items to process within each input
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
@@ -65,11 +66,9 @@ Optional positional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to a release package, you can use :ref:`use jq <jq>` to get the releases from the record packages, along with the ``package-releases`` command.
+To convert record packages to a release package, you can use the ``--root-path`` option::
 
-::
-
-    cat tests/fixtures/realdata/record-package* | jq -crM .records[].releases[] | ocdskit package-releases
+    cat tests/fixtures/realdata/record-package* | ocdskit package-releases --root-path records.item.releases
 
 combine-record-packages
 -----------------------

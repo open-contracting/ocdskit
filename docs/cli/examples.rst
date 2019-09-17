@@ -23,7 +23,7 @@ Transform it to a stream of compiled releases::
 
     cat release_packages.json | ocdskit --encoding iso-8859-1 compile > compiled_releases.json
 
-Find a compiled release with a given ``ocid`` (replace the ``…``)::
+Find a compiled release with a given ``ocid`` (replace the ``ocid`` value)::
 
     jq 'select(.ocid == "OCDS-87SD3T-AD-SF-DRM-063-2015")' compiled_releases.json
 
@@ -70,21 +70,17 @@ Get an array of release packages::
 
 Get the first release package::
 
-    jq  '.[0]' release_packages.json
-
-Before passing the data to an OCDS Kit command, make jq's output compact, raw and monochrome::
-
-    jq --compact-output --raw-output --monochrome-output '.[0]' release_packages.json | ocdskit compile
-
-Or, with short options::
-
-    jq -crM '.[0]' release_packages.json | ocdskit compile
+    jq '.[0]' release_packages.json
 
 Get the release packages, one line per package::
 
     cat release_packages.json
 
 Get the second 10 release packages, one line per package::
+
+    jq --compact-output --raw-output --monochrome-output '.[10:20][]' release_packages.json
+
+Or, with short options::
 
     jq -crM '.[10:20][]' release_packages.json
 
@@ -105,16 +101,14 @@ Or, you can split the stream of release packages into individual files named ``x
 
     cat release_packages.json | split -l 1 -a 4
 
-If the file is large, the above commands will consume GBs of memory. Instead, you can run::
-
-    jq -cnM --stream 'fromstream(1|truncate_stream(inputs))' < release_packages.json | ocdskit compile
-
 Snippets
 ~~~~~~~~
 
-Get the compiled releases from a record package::
+Get the compiled releases from a record package, one line per release::
 
     jq -crM '.records[].compiledRelease' record_package.json
+
+If the file is large, ``jq`` commands can consume GBs of memory. `See this StackOverflow answer <https://stackoverflow.com/questions/39232060/process-large-json-stream-with-jq/48786559#48786559>`__.
 
 .. _command-line:
 

@@ -28,3 +28,23 @@ def test_command_extensions(monkeypatch):
         main()
 
     assert actual.getvalue() == read('release-package_minimal-1-2-extensions.json')
+
+
+def test_command_root_path_array(monkeypatch):
+    stdin = read('realdata/record-package-1.json', 'rb') + read('realdata/record-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'package-releases', '--root-path', 'records.item.releases'])
+        main()
+
+    assert actual.getvalue() == read('realdata/release-package_record-package.json')
+
+
+def test_command_root_path_item(monkeypatch):
+    stdin = read('realdata/record-package-1.json', 'rb') + read('realdata/record-package-2.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'package-releases', '--root-path', 'records.item.releases.item'])
+        main()
+
+    assert actual.getvalue() == read('realdata/release-package_record-package.json')

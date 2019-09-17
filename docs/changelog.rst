@@ -26,6 +26,8 @@ New options:
 -  combine-release-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
 -  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension``, ``--extension-field``
 
+The ``--root-path`` option is added to all OCDS commands.
+
 Changed
 ~~~~~~~
 
