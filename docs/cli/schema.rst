@@ -26,6 +26,8 @@ Optional arguments:
 * ``--extension`` patch the release schema with this extension
 * ``--extension-field`` add an "extension" column with values from this schema field
 
+For a description of the columns of the spreadsheet, see the :doc:`../api/mapping_sheet` module.
+
 ::
 
     ocdskit mapping-sheet path/to/project-schema.json > mapping-sheet.csv

@@ -10,7 +10,42 @@ from ocdskit.schema import get_schema_fields
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, output_stream, order_by=None, infer_required=False, extension_field=None):
+def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None):
+    """
+    Writes information about all field paths from a JSON Schema to a CSV file.
+
+    :param dict schema: a JSON schema
+    :param io: a file-like object to which to write the rows
+    :param str order_by: the column by which to sort the rows
+    :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
+    :param str extension_field: the field name in the JSON schema (if any) containing the names of extensions
+
+    The CSV's columns are:
+
+    :``section``: The first part of the JSON path to the field in the data, e.g. ``tender``
+    :``path``: The JSON path to the field in the data, e.g. ``tender/id``
+    :``title``: The field's ``title`` in the JSON schema.  If the field has no ``title``, defaults to the field's name
+      followed by "*".
+    :``description``: The field's ``description`` in the JSON schema. URLs are removed (see the ``links`` column).
+    :``type``: A comma-separated list of the field's ``type`` in the JSON schema, excluding "null". If the field has no
+      ``type``, defaults to "unknown".
+    :``range``: The field's allowed number of occurrences.
+
+      * "0..1" if the field defines an optional literal value.
+      * "0..n" if the field defines an optional array.
+      * "1..1" if the field defines a required literal value.
+      * "1..n" if the field defines a required array.
+    :``values``: If the field's schema sets:
+
+      * ``format``: the ``format``
+      * ``pattern``: the ``pattern``
+      * ``enum``: "Enum: " followed by the ``enum`` as a comma-separated list, excluding ``null``
+      * ``items/enum``: "Enum: " followed by the ``items/enum`` as a comma-separated list, excluding ``null``
+    :``links``: The URLs extracted from the field's ``description``
+    :``deprecated``: The OCDS minor version in which the field (or its parent) was deprecated
+    :``deprecationNotes``: The explanation for the deprecation of the field
+    :``extension``: The name of the extension in which the field was defined (see the ``extension_field`` parameter)
+    """
     rows = []
     for field in get_schema_fields(schema):
         if field.definition_pointer_components:
@@ -48,7 +83,7 @@ def mapping_sheet(schema, output_stream, order_by=None, infer_required=False, ex
     if extension_field:
         fieldnames.append(extension_field)
 
-    w = csv.DictWriter(output_stream, fieldnames)
+    w = csv.DictWriter(io, fieldnames)
     w.writeheader()
     w.writerows(rows)
 
@@ -97,6 +132,8 @@ def _make_row(field, schema, infer_required, extension_field):
 
     if 'format' in schema:
         row['values'] = schema['format']
+    elif 'pattern' in schema:
+        row['values'] = 'Pattern: ' + schema['pattern']
     elif 'enum' in schema:
         values = copy.copy(schema['enum'])
         if None in values:
@@ -107,8 +144,6 @@ def _make_row(field, schema, infer_required, extension_field):
         if None in values:
             values.remove(None)
         row['values'] = 'Enum: ' + ', '.join(values)
-    elif 'pattern' in schema:
-        row['values'] = 'Pattern: ' + schema['pattern']
     else:
         row['values'] = ''
 
