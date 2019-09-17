@@ -22,7 +22,8 @@ class Field:
         :param tuple definition_path: the path to the definition in which the field is defined, e.g.
                                       ``('Item')``
         :param bool required: whether the field is listed in the schema's ``required``
-        :param bool required: whether the field, or an ancestor of the field, sets ``deprecated``
+        :param dict deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated``
+                                object
         :param bool multilingual: whether the field has a corresponding field in the schema's ``patternProperties``
         :param str sep: the separator to use in string representations of paths
         """
@@ -112,6 +113,21 @@ class Field:
 
 # This code is similar to `add_versioned` in `make_versioned_release_schema.py` in the `standard` repository.
 def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, definition_path=None, deprecated=None):
+    """
+    Yields a ``Field`` object for each field (whether under ``properties`` or ``patternProperties``) in a JSON schema.
+
+    :param dict schema: a JSON schema
+    :param tuple pointer: the JSON pointer to the field in the schema, e.g.
+                          ``('properties', 'tender', 'properties', 'id')``
+    :param tuple path: the path to the field in data, e.g.
+                       ``('tender', 'id')``
+    :param tuple definition_pointer: the JSON pointer to the definition in which the field is defined, e.g.
+                                     ``('definitions', 'Item')``
+    :param tuple definition_path: the path to the definition in which the field is defined, e.g.
+                                  ``('Item')``
+    :param dict deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated``
+                            object
+    """
     if pointer is None:
         pointer = ()
     if path is None:
