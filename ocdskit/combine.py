@@ -1,5 +1,6 @@
 from collections import defaultdict, OrderedDict
 
+from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge.merge import merge, merge_versioned, get_tags, get_release_schema_url
 
 from ocdskit.exceptions import InconsistentVersionError
@@ -141,6 +142,11 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
             ('packages', []),
             ('records', []),
         ])
+    # To avoid duplicating code, we track extensions in the same place even if ``return_package`` is false.
+    else:
+        output = {
+            'extensions': OrderedDict(),
+        }
 
     version = None
     releases_by_ocid = defaultdict(list)
@@ -174,6 +180,12 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
             _update_package_metadata(output, package, publisher)
 
             output['packages'].append(package['uri'])
+        else:
+            _update_extensions_metadata(output, package)
+
+    if output['extensions']:
+        builder = ProfileBuilder(tag, list(output['extensions']))
+        schema = builder.patched_release_schema()
 
     if return_package:
         for ocid, releases in releases_by_ocid.items():
@@ -210,16 +222,20 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
 
 
 def _update_package_metadata(output, package, publisher):
+    _update_extensions_metadata(output, package)
+
     if not publisher and 'publisher' in package:
         output['publisher'] = package['publisher']
-
-    if 'extensions' in package:
-        # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
-        output['extensions'].update(OrderedDict.fromkeys(package['extensions']))
 
     for field in ('license', 'publicationPolicy', 'version'):
         if field in package:
             output[field] = package[field]
+
+
+def _update_extensions_metadata(output, package):
+    if 'extensions' in package:
+        # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
+        output['extensions'].update(OrderedDict.fromkeys(package['extensions']))
 
 
 def _set_extensions_metadata(output):

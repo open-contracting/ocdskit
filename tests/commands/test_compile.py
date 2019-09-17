@@ -22,6 +22,17 @@ def test_command(monkeypatch):
 
 
 @pytest.mark.vcr()
+def test_command_extensions(monkeypatch):
+    stdin = read('release-package_additional-contact-points.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
+        main()
+
+    assert actual.getvalue() == read('compile_extensions.json')
+
+
+@pytest.mark.vcr()
 def test_command_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
