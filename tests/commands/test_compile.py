@@ -169,8 +169,8 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert re.search(r"^encoding error: 'utf-8' codec can't decode byte 0xd3 in position \d+: invalid continuation "
-                     r"byte\nTry `--encoding iso-8859-1`\?$", caplog.records[0].message)
+    assert re.search(r"^encoding error: (?:'utf-8' codec can't decode byte 0xd3 in position \d+: invalid continuation "
+                     r"byte)?\nTry `--encoding iso-8859-1`\?$", caplog.records[0].message)
     assert excinfo.value.code == 1
 
 

@@ -10,6 +10,24 @@ Optional arguments for all commands are:
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
+detect-format
+-------------
+
+Reads OCDS files, and reports whether each is:
+
+* a release package
+* a record package
+* a release
+* a record
+* a compiled release
+* a versioned release
+* a JSON array of one of the above
+* `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ of one of the above
+
+::
+
+    ocdskit detect-format tests/fixtures/realdata/release-package-1.json tests/fixtures/realdata/record-package-1.json
+
 compile
 -------
 

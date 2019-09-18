@@ -13,6 +13,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.combine_record_packages',
     'ocdskit.cli.commands.combine_release_packages',
     'ocdskit.cli.commands.compile',
+    'ocdskit.cli.commands.detect_format',
     'ocdskit.cli.commands.indent',
     'ocdskit.cli.commands.mapping_sheet',
     'ocdskit.cli.commands.package_releases',
@@ -53,18 +54,24 @@ def main():
             try:
                 command.handle()
             except ijson.common.IncompleteJSONError as e:
-                raise CommandError('JSON error: {}'.format(e))
+                if str(e):
+                    raise CommandError('JSON error: {}'.format(e))
+                _raise_encoding_error(e, args.encoding)
             except UnicodeDecodeError as e:
-                if args.encoding and args.encoding.lower() == 'iso-8859-1':
-                    suggestion = 'utf-8'
-                else:
-                    suggestion = 'iso-8859-1'
-                raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
+                _raise_encoding_error(e, args.encoding)
         except CommandError as e:
             logger.critical(e)
             sys.exit(1)
     else:
         parser.print_help()
+
+
+def _raise_encoding_error(e, encoding):
+    if encoding and encoding.lower() == 'iso-8859-1':
+        suggestion = 'utf-8'
+    else:
+        suggestion = 'iso-8859-1'
+    raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
 
 
 if __name__ == '__main__':

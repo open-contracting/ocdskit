@@ -17,3 +17,7 @@ class InconsistentVersionError(OCDSKitError):
 
 class MissingColumnError(OCDSKitError):
     """Raised if the column to order by is missing"""
+
+
+class UnknownFormatError(OCDSKitError):
+    """Raised if the format of a file can't be determined"""

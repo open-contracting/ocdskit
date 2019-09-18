@@ -9,6 +9,10 @@ Inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streami
 Added
 ~~~~~
 
+New commands:
+
+-  detect-format
+
 New library methods:
 
 -  ``compile_release_packages``
