@@ -35,6 +35,8 @@ For a description of the columns of the spreadsheet, see the :doc:`../api/mappin
     ocdskit mapping-sheet --order-by path path/to/person-statement.json > mapping-sheet.csv
     ocdskit mapping-sheet --infer-required path/to/release-schema.json --extension https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip > mapping-sheet.csv
 
+For the Python API, see :meth:`ocdskit.mapping_sheet.mapping_sheet`.
+
 schema-report
 -------------
 

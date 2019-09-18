@@ -52,6 +52,8 @@ Optional arguments:
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
+For the Python API, see :meth:`ocdskit.combine.compile_release_packages`.
+
 upgrade
 -------
 
@@ -64,6 +66,8 @@ OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/referen
 ::
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
+
+For the Python API, see :doc:`../api/upgrade`.
 
 package-releases
 ----------------
@@ -88,6 +92,8 @@ To convert record packages to a release package, you can use the ``--root-path``
 
     cat tests/fixtures/realdata/record-package* | ocdskit package-releases --root-path records.item.releases
 
+For the Python API, see :meth:`ocdskit.combine.package_releases`.
+
 combine-record-packages
 -----------------------
 
@@ -108,6 +114,8 @@ Optional arguments:
 
     cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
 
+For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
+
 combine-release-packages
 ------------------------
 
@@ -127,6 +135,8 @@ Optional arguments:
 ::
 
     cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
+
+For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
 
 split-record-packages
 ---------------------
