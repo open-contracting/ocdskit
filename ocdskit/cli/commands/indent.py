@@ -3,7 +3,7 @@ import logging
 import os.path
 
 from .base import BaseCommand
-from ocdskit.util import json_load
+from ocdskit.util import json_load, json_dump
 
 logger = logging.getLogger('ocdskit')
 
@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 data = json_load(f)
 
             with open(path, 'w') as f:
-                json.dump(data, f, ensure_ascii=False, indent=self.args.indent, separators=(',', ': '))
+                json_dump(data, f, indent=self.args.indent)
                 f.write('\n')
         except json.decoder.JSONDecodeError as e:
             logger.error('{} is not valid JSON. (json.decoder.JSONDecodeError: {})'.format(path, e))

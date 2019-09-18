@@ -18,6 +18,10 @@ def json_loads(data):
     return json.loads(data, object_pairs_hook=OrderedDict)
 
 
+def json_dump(data, io, indent=2):
+    json.dump(data, io, ensure_ascii=False, indent=indent, separators=(',', ': '))
+
+
 def json_dumps(data, **kwargs):
     """
     Returns the data as JSON.

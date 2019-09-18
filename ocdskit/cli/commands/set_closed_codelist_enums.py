@@ -5,7 +5,7 @@ import os.path
 from copy import deepcopy
 
 from .base import BaseCommand
-from ocdskit.util import json_load
+from ocdskit.util import json_load, json_dump
 
 logger = logging.getLogger('ocdskit')
 
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
                             if expected != data:
                                 with open(path, 'w') as f:
-                                    json.dump(data, f, ensure_ascii=False, indent=2, separators=(',', ': '))
+                                    json_dump(data, f)
                                     f.write('\n')
 
         codelists = {}
