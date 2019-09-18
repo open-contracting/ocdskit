@@ -1,5 +1,7 @@
+import os.path
 import sys
 from io import StringIO
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 import pytest
@@ -28,6 +30,8 @@ test_command_unknown_format_argvalues = [
     ('object', 'non-OCDS object'),
 ]
 
+content = b'{"lorem":"ipsum"}'
+
 
 @pytest.mark.parametrize('basename,result', test_command_unknown_format_argvalues)
 def test_command_unknown_format(basename, result, monkeypatch, caplog):
@@ -51,3 +55,43 @@ def test_command(filename, result, monkeypatch):
         main()
 
     assert actual.getvalue() == 'tests/fixtures/{}: {}\n'.format(filename, result)
+
+
+def test_command_recursive(monkeypatch):
+    with TemporaryDirectory() as d:
+        with open(os.path.join(d, 'test.json'), 'wb') as f:
+            f.write(content)
+
+        with open(os.path.join(d, '.test.json'), 'wb') as f:
+            f.write(content)
+
+        with patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', '--recursive', d])
+            main()
+
+        assert actual.getvalue() == ''
+
+
+def test_command_directory(monkeypatch, caplog):
+    with TemporaryDirectory() as d:
+        with patch('sys.stdout', new_callable=StringIO) as actual:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', d])
+            main()
+
+        assert actual.getvalue() == ''
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'WARNING'
+        assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
+
+
+def test_command_nonexistent(monkeypatch, caplog):
+    with patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', 'nonexistent'])
+        main()
+
+    assert actual.getvalue() == ''
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'ERROR'
+    assert caplog.records[0].message == 'nonexistent: No such file or directory'
