@@ -13,13 +13,13 @@ class Command(OCDSCommand):
 
     def add_arguments(self):
         self.add_argument('file', help='OCDS files', nargs='+')
+        self.add_argument('-r', '--recursive', help='recursively indent JSON files', action='store_true')
 
     def handle(self):
         for file in self.args.file:
             if os.path.isfile(file):
                 try:
-                    result = self.detect_format(file)
-                    print('{}: {}'.format(file, result))
+                    print('{}: {}'.format(file, self.detect_format(file)))
                 except UnknownFormatError as e:
                     logger.warning('{}: unknown ({})'.format(file, e))
             elif self.args.recursive:
@@ -84,8 +84,14 @@ class Command(OCDSCommand):
             string = 'compiled release'
         elif has_tag:
             string = 'release'
-        else:
+        elif has_ocid:
             string = 'versioned release'
+        else:
+            if is_array:
+                infix = 'array'
+            else:
+                infix = 'object'
+            raise UnknownFormatError('top-level JSON value is a non-OCDS {}'.format(infix))
 
         if is_array:
             string = 'a JSON array of {}s'.format(string)
