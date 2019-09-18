@@ -1,5 +1,11 @@
 include *.md
 include LICENSE
 recursive-include docs *.md
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
 recursive-include tests *.csv
 recursive-include tests *.json
+recursive-include tests *.jsonl
+recursive-include tests *.py
+recursive-include tests *.yaml
