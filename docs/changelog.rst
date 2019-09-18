@@ -1,10 +1,10 @@
 Changelog
 =========
 
-0.1.0
------
+0.1.0 (2019-09-17)
+------------------
 
-Inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON`__ or JSON arrays, not only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming#Line-delimited_JSON>`__.
+Inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays, not only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming#Line-delimited_JSON>`__.
 
 Added
 ~~~~~
@@ -37,7 +37,7 @@ Changed
 
 -  **Backwards-incompatible**: ``upgrade_10_10``, ``upgrade_11_11`` and ``upgrade_10_11`` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: ``mapping-sheet`` and ``schema-report`` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
--  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), Social Investment Data Lab Specification (SEDL).
+-  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
 -  ``mapping-sheet`` outputs:
 
    -  ``enum`` values of ``items``

@@ -7,6 +7,12 @@ To install::
 
     pip install ocdskit
 
+Until `ijson 2.5 <https://pypi.org/project/ijson/>`__ is available, you must also:
+
+::
+
+    pip install -e git+https://github.com/ICRAR/ijson.git#egg=ijson
+
 Users with Python 2 as their default Python interpreter must either run ``pip3 install ocdskit``, set up a Python 3 virtual environment, or `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
 
 OCDS Kit can be used either via its :doc:`cli` or as a :doc:`library`.
