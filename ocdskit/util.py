@@ -6,7 +6,7 @@ from types import GeneratorType
 
 def json_load(io):
     """
-    Parses JSON from a stream.
+    Parses JSON from a file-like object.
     """
     return json.load(io, object_pairs_hook=OrderedDict)
 
@@ -19,12 +19,15 @@ def json_loads(data):
 
 
 def json_dump(data, io, indent=2):
+    """
+    Dumps JSON to a file-like object.
+    """
     json.dump(data, io, ensure_ascii=False, indent=indent, separators=(',', ': '))
 
 
 def json_dumps(data, **kwargs):
     """
-    Returns the data as JSON.
+    Dumps JSON to a string, and returns it.
     """
     def default(obj):
         if isinstance(obj, Decimal):
