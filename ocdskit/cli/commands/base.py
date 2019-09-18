@@ -6,46 +6,9 @@ from ijson.backends import YAJLImportError
 from ocdskit.util import json_dumps
 
 try:
-    # ijson 2.4 has a bug in yajl2_c (fixed in HEAD).
-    import ijson.backends.yajl2_cffi as ijson
+    import ijson
 except YAJLImportError:
     import ijson.backends.python as ijson
-
-
-# Copy of ijson.common.items, using different builder.
-# @see https://github.com/ICRAR/ijson/issues/7
-def items(prefixed_events, prefix):
-    prefixed_events = iter(prefixed_events)
-    try:
-        while True:
-            current, event, value = next(prefixed_events)
-            if current == prefix:
-                if event in ('start_map', 'start_array'):
-                    builder = OrderedObjectBuilder()
-                    end_event = event.replace('start', 'end')
-                    while (current, event) != (prefix, end_event):
-                        builder.event(event, value)
-                        current, event, value = next(prefixed_events)
-                    del builder.containers[:]
-                    yield builder.value
-                else:
-                    yield value
-    except StopIteration:
-        pass
-
-
-# Subclass of ObjectBuilder, using OrderedDict instead of dict.
-class OrderedObjectBuilder(ijson.common.ObjectBuilder):
-    def event(self, event, value):
-        if event == 'start_map':
-            map = OrderedDict()
-            self.containers[-1](map)
-
-            def setter(value):
-                map[self.key] = value
-            self.containers.append(setter)
-        else:
-            super().event(event, value)
 
 
 class StandardInputReader:
@@ -103,7 +66,7 @@ class BaseCommand:
         Yields the items in the input.
         """
         file = StandardInputReader(self.args.encoding)
-        yield from items(ijson.parse(file, multiple_values=True), self.prefix())
+        yield from ijson.items(file, self.prefix(), map_type=OrderedDict, multiple_values=True)
 
     def print(self, data):
         """
