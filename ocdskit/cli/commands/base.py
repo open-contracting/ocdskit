@@ -5,6 +5,7 @@ import ijson
 
 from ocdskit.util import json_dumps
 
+
 class StandardInputReader:
     def __init__(self, encoding):
         self.encoding = encoding
