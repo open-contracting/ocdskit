@@ -1,15 +1,9 @@
 import sys
 from collections import OrderedDict
 
-from ijson.backends import YAJLImportError
+import ijson
 
 from ocdskit.util import json_dumps
-
-try:
-    import ijson
-except YAJLImportError:
-    import ijson.backends.python as ijson
-
 
 class StandardInputReader:
     def __init__(self, encoding):
