@@ -13,6 +13,7 @@ except YAJLImportError:
 
 
 # Copy of ijson.common.items, using different builder.
+# @see https://github.com/ICRAR/ijson/issues/7
 def items(prefixed_events, prefix):
     prefixed_events = iter(prefixed_events)
     try:
