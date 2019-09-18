@@ -1,5 +1,4 @@
 import csv
-import json
 import logging
 import os.path
 from copy import deepcopy
