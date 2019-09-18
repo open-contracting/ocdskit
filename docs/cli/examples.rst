@@ -4,8 +4,8 @@ Examples
 OCDS Kit
 --------
 
-Example 1
-~~~~~~~~~
+OCDS example 1
+~~~~~~~~~~~~~~
 
 Download a list of release packages::
 
@@ -27,8 +27,8 @@ Find a compiled release with a given ``ocid`` (replace the ``ocid`` value)::
 
     jq 'select(.ocid == "OCDS-87SD3T-AD-SF-DRM-063-2015")' compiled_releases.json
 
-Example 2
-~~~~~~~~~
+OCDS example 2
+~~~~~~~~~~~~~~
 
 Download a list of record packages::
 
@@ -59,8 +59,8 @@ And so on::
 jq
 --
 
-Example 1
-~~~~~~~~~
+jq example
+~~~~~~~~~~
 
 `jq <https://stedolan.github.io/jq/>`__ has a very good tutorial and manual. We cover common operations here.
 
