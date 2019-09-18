@@ -12,7 +12,7 @@ INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None):
     """
-    Writes information about all field paths from a JSON Schema to a CSV file.
+    Writes information about all field paths in a JSON Schema to a CSV file.
 
     :param dict schema: a JSON schema
     :param io: a file-like object to which to write the rows
