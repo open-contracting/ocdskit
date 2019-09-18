@@ -13,7 +13,7 @@ from ocdskit.util import json_load
 
 class Command(BaseCommand):
     name = 'mapping-sheet'
-    help = 'generates a spreadsheet with all field paths from an OCDS, OC4IDS or BODS schema'
+    help = 'generates a spreadsheet with all field paths in a JSON Schema'
 
     def add_arguments(self):
         self.add_argument('file', help='the schema file')

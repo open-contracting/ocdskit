@@ -12,7 +12,7 @@ Optional arguments for all commands (if relevant) are:
 mapping-sheet
 -------------
 
-Generates a spreadsheet with all field paths from a schema from:
+Generates a spreadsheet with all field paths in a JSON Schema. It works with at least:
 
 * Open Contracting Data Standard (OCDS)
 * Open Contracting for Infrastructure Data Standard (OC4IDS)
