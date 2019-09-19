@@ -23,6 +23,10 @@ def _move_to_top(data, fields):
             data.move_to_end(field, last=False)
 
 
+def _in(obj, field):
+    return field in obj and obj[field] is not None
+
+
 def upgrade_10_10(data):
     """
     Upgrades a record package, release package or release from 1.0 to 1.0 (no-op).
@@ -82,19 +86,19 @@ def upgrade_parties_10_to_11(release):
     """
     parties = _get_parties(release)
 
-    if 'buyer' in release:
+    if _in(release, 'buyer'):
         release['buyer'] = _add_party(parties, release['buyer'], 'buyer')
 
-    if 'tender' in release:
-        if 'procuringEntity' in release['tender']:
+    if _in(release, 'tender'):
+        if _in(release['tender'], 'procuringEntity'):
             release['tender']['procuringEntity'] = _add_party(parties, release['tender']['procuringEntity'], 'procuringEntity')  # noqa: E501
-        if 'tenderers' in release['tender']:
+        if _in(release['tender'], 'tenderers'):
             for i, tenderer in enumerate(release['tender']['tenderers']):
                 release['tender']['tenderers'][i] = _add_party(parties, tenderer, 'tenderer')
 
-    if 'awards' in release:
+    if _in(release, 'awards'):
         for award in release['awards']:
-            if 'suppliers' in award:
+            if _in(award, 'suppliers'):
                 for i, supplier in enumerate(award['suppliers']):
                     award['suppliers'][i] = _add_party(parties, supplier, 'supplier')
 
@@ -126,16 +130,7 @@ def _add_party(parties, party, role):
     party = deepcopy(party)
 
     if 'id' not in party:
-        parts = []
-        for parent, fields in organization_identification_1_0:
-            if not parent:
-                for field in fields:
-                    parts.append(_get_bytes(party, field))
-            elif parent in party:
-                for field in fields:
-                    parts.append(_get_bytes(party[parent], field))
-
-        party['id'] = md5(b'-'.join(parts)).hexdigest()
+        party['id'] = _create_party_id(party)
         _move_to_top(party, ('id'))
 
     _id = party['id']
@@ -168,6 +163,19 @@ def _add_party(parties, party, role):
     return organization_reference
 
 
+def _create_party_id(party):
+    parts = []
+    for parent, fields in organization_identification_1_0:
+        if not parent:
+            for field in fields:
+                parts.append(_get_bytes(party, field))
+        elif parent in party:
+            for field in fields:
+                parts.append(_get_bytes(party[parent], field))
+
+    return md5(b'-'.join(parts)).hexdigest()
+
+
 def _get_bytes(obj, field):
     # Handle null and integers.
     return bytes(str(obj.get(field) or ''), 'utf-8')
@@ -178,11 +186,12 @@ def upgrade_amendments_10_11(release):
     Renames ``amendment`` to ``amendments`` under ``tender``, ``awards`` and ``contracts``. If ``amendments`` already
     exists, it appends the ``amendment`` value to the ``amendments`` array, unless it already contains it.
     """
-    if 'tender' in release:
+    if _in(release, 'tender'):
         _upgrade_amendment_10_11(release['tender'])
     for field in ('awards', 'contracts'):
-        for block in release.get(field, []):  # can be None
-            _upgrade_amendment_10_11(block)
+        if _in(release, field):
+            for block in release[field]:
+                _upgrade_amendment_10_11(block)
 
 
 def _upgrade_amendment_10_11(block):
@@ -204,9 +213,9 @@ def upgrade_transactions_10_11(release):
     """
     parties = _get_parties(release)
 
-    if 'contracts' in release:
+    if _in(release, 'contracts'):
         for contract in release['contracts']:
-            if 'implementation' in contract and 'transactions' in contract['implementation']:
+            if _in(contract, 'implementation') and _in(contract['implementation'], 'transactions'):
                 for transaction in contract['implementation']['transactions']:
                     if 'value' not in transaction:
                         transaction['value'] = transaction['amount']

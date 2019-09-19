@@ -27,6 +27,7 @@ setup(
     extras_require={
         'test': [
             'coveralls',
+            'jsonpointer',
             'pytest',
             'pytest-cov',
             'pytest-vcr',
