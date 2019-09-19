@@ -14,7 +14,7 @@ setup(
     packages=find_packages(exclude=['tests', 'tests.*']),
     long_description=long_description,
     install_requires=[
-        'ijson',
+        'ijson>=2.5',
         'jsonref',
         'jsonschema',
         'ocdsmerge>=0.5.2',
