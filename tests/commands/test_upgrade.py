@@ -78,7 +78,7 @@ def test_command_release_field_is_null(pointer, monkeypatch):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
         main()
 
@@ -92,7 +92,7 @@ def test_command_release_party_id_missing(monkeypatch):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
         main()
 
