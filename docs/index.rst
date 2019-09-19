@@ -13,7 +13,7 @@ Until `ijson 2.5 <https://pypi.org/project/ijson/>`__ is available, you must als
 
     pip install -e git+https://github.com/ICRAR/ijson.git#egg=ijson
 
-To significantly improve performance, install `YAJL <http://lloyd.github.io/yajl/>`__. For example, on macOS, run ``brew instal yajl``.
+To significantly improve performance, install `YAJL <http://lloyd.github.io/yajl/>`__. For example, on macOS, run ``brew install yajl``.
 
 Users with Python 2 as their default Python interpreter must either run ``pip3 install ocdskit``, set up a Python 3 virtual environment, or `use OCDS Kit within a Docker container <https://hub.docker.com/r/ricardoe/ocdskit/>`__.
 
