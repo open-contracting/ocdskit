@@ -117,7 +117,11 @@ def _get_parties(release):
 
     if 'parties' in release:
         for party in release['parties']:
-            parties[party['id']] = party
+            if 'id' in party:
+                _id = party['id']
+            else:
+                _id = _create_party_id(party)
+            parties[_id] = party
 
     return parties
 

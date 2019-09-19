@@ -83,6 +83,20 @@ def test_command_release_field_is_null(pointer, monkeypatch):
         main()
 
 
+def test_command_release_party_id_missing(monkeypatch):
+    data = json.loads(read('release-package_minimal.json'))
+
+    data['releases'][0]['parties'] = [{'name': 'Acme Inc.'}]
+    del data['version']
+
+    stdin = json.dumps(data).encode('utf-8')
+
+    # Should not raise an error.
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'upgrade', '1.0:1.1'])
+        main()
+
+
 def test_command_passthrough_package(monkeypatch, caplog):
     stdin = read('realdata/record-package_1.1.json', 'rb')
 

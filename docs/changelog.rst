@@ -7,7 +7,8 @@ Changelog
 Fixed
 ~~~~~
 
--  ``upgrade`` is robust to ``null`` values.
+-  ``upgrade`` no longer errors if specific fields are ``null``.
+-  ``upgrade`` no longer errors on packages that have ``parties`` without ``id`` fields and that declare no version or a version of "1.0".
 
 0.1.0 (2019-09-17)
 ------------------
