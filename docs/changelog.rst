@@ -13,14 +13,24 @@ Fixed
 0.1.0 (2019-09-17)
 ------------------
 
-Inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays, not only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming#Line-delimited_JSON>`__.
+Command-line inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays, not only `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming#Line-delimited_JSON>`__.
 
 Added
 ~~~~~
 
-New commands:
+New CLI commands:
 
 -  detect-format
+
+New CLI options:
+
+-  package-releases: ``--uri``, ``--published-date``, ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
+-  compile: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
+-  combine-record-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
+-  combine-release-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
+-  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension``, ``--extension-field``
+
+The ``--root-path`` option is added to all OCDS commands.
 
 New library methods:
 
@@ -30,16 +40,6 @@ New library methods:
 -  ``combine_release_packages``
 -  ``mapping_sheet``
 -  ``get_schema_fields``
-
-New options:
-
--  package-releases: ``--uri``, ``--published-date``, ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  compile: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  combine-record-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  combine-release-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension``, ``--extension-field``
-
-The ``--root-path`` option is added to all OCDS commands.
 
 Changed
 ~~~~~~~
@@ -70,7 +70,7 @@ Fixed
 Added
 ~~~~~
 
-New options:
+New CLI options:
 
 -  compile:
 
@@ -83,7 +83,7 @@ New options:
 -  combine-record-packages: ``--uri``, ``--published-date``
 -  combine-release-packages: ``--uri``, ``--published-date``
 
-New commands:
+New CLI commands:
 
 -  upgrade
 
@@ -107,7 +107,7 @@ Fixed
 Added
 ~~~~~
 
-New options:
+New CLI options:
 
 -  schema-report: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
 
@@ -123,11 +123,11 @@ Changed
 Added
 ~~~~~
 
-New options:
+New CLI options:
 
 -  compile: ``--package``, ``--versioned``
 
-New commands:
+New CLI commands:
 
 -  package-releases
 -  split-record-packages
@@ -151,11 +151,11 @@ Changed
 Added
 ~~~~~
 
-New options:
+New CLI options:
 
 -  validate: ``--check-urls`` and ``--timeout``
 
-New commands:
+New CLI commands:
 
 -  indent
 -  schema-report
@@ -168,7 +168,7 @@ New commands:
 Added
 ~~~~~
 
-New commands:
+New CLI commands:
 
 -  combine-record-packages
 -  combine-release-packages
