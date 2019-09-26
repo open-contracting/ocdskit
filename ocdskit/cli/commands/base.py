@@ -101,12 +101,12 @@ class OCDSCommand(BaseCommand):
         """
         template = "{prefix}set the {infix} package's {{}} to this value".format(infix=infix, prefix=prefix)
 
-        self.add_argument('--uri', type=str, help=template.format('uri'))
-        self.add_argument('--published-date', type=str, help=template.format('publishedDate'))
-        self.add_argument('--publisher-name', type=str, help=template.format("publisher's name"))
-        self.add_argument('--publisher-uri', type=str, help=template.format("publisher's uri"))
-        self.add_argument('--publisher-scheme', type=str, help=template.format("publisher's scheme"))
-        self.add_argument('--publisher-uid', type=str, help=template.format("publisher's uid"))
+        self.add_argument('--uri', type=str, default='', help=template.format('uri'))
+        self.add_argument('--published-date', type=str, default='', help=template.format('publishedDate'))
+        self.add_argument('--publisher-name', type=str, default='', help=template.format("publisher's name"))
+        self.add_argument('--publisher-uri', type=str, default='', help=template.format("publisher's uri"))
+        self.add_argument('--publisher-scheme', type=str, default='', help=template.format("publisher's scheme"))
+        self.add_argument('--publisher-uid', type=str, default='', help=template.format("publisher's uid"))
 
     def parse_package_arguments(self):
         """
@@ -120,7 +120,7 @@ class OCDSCommand(BaseCommand):
 
         for key in ('publisher_name', 'publisher_uri', 'publisher_scheme', 'publisher_uid'):
             value = getattr(self.args, key)
-            if value is not None:
+            if value:
                 metadata['publisher'][key[10:]] = value
 
         return metadata

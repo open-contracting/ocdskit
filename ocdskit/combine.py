@@ -19,6 +19,8 @@ def package_releases(releases, uri='', publisher=None, published_date='', extens
     """
     if publisher is None:
         publisher = OrderedDict()
+    if 'name' not in publisher:
+        publisher['name'] = ''
     if extensions is None:
         extensions = []
 

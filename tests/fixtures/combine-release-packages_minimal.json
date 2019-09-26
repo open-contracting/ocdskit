@@ -1,1 +1,1 @@
-{"uri":null,"publisher":{"name":"Acme"},"publishedDate":null,"version":"1.1","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}]}
+{"uri":"","publisher":{"name":"Acme"},"publishedDate":"","version":"1.1","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}]}
