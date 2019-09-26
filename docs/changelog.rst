@@ -6,7 +6,7 @@ Changelog
 Changed
 ~~~~~~~
 
--  Set missing package metadata to ``""`` instead of ``null`` in CLI, to mirror library methods
+-  Set missing package metadata to ``""`` instead of ``null`` in CLI commands, to mirror library methods
 
 0.1.2 (2019-09-25)
 
