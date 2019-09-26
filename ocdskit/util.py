@@ -25,7 +25,7 @@ def json_dump(data, io, indent=2):
     json.dump(data, io, ensure_ascii=False, indent=indent, separators=(',', ': '))
 
 
-def json_dumps(data, **kwargs):
+def json_dumps(data, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
@@ -36,7 +36,7 @@ def json_dumps(data, **kwargs):
             return list(obj)
         raise TypeError('%s is not JSON serializable' % repr(obj))
 
-    return json.dumps(data, default=default, **kwargs)
+    return json.dumps(data, ensure_ascii=ensure_ascii, default=default, **kwargs)
 
 
 def get_ocds_minor_version(data):

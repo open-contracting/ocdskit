@@ -69,11 +69,11 @@ class BaseCommand:
         """
         # See https://docs.python.org/2/library/json.html
         if self.args.pretty:
-            kwargs = {'indent': 2, 'separators': (',', ': ')}
+            kwargs = {'indent': 2}
         else:
             kwargs = {'separators': (',', ':')}
-        if not self.args.ascii:
-            kwargs['ensure_ascii'] = False
+        if self.args.ascii:
+            kwargs['ensure_ascii'] = True
 
         print(json_dumps(data, **kwargs))
 
