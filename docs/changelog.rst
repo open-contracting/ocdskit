@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.1.2 (2019-09-25)
+
+Changed
+~~~~~~~
+
+-  Align the library methods ``json_dump`` and ``json_dumps``
+
 0.1.1 (2019-09-19)
 ------------------
 

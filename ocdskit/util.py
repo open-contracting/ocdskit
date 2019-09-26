@@ -4,6 +4,14 @@ from decimal import Decimal
 from types import GeneratorType
 
 
+def _default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    elif isinstance(obj, GeneratorType):
+        return list(obj)
+    raise TypeError('%s is not JSON serializable' % repr(obj))
+
+
 def json_load(io):
     """
     Parses JSON from a file-like object.
@@ -18,28 +26,24 @@ def json_loads(data):
     return json.loads(data, object_pairs_hook=OrderedDict)
 
 
-def json_dump(data, io, indent=2):
+def json_dump(data, io, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a file-like object.
     """
-    json.dump(data, io, ensure_ascii=False, indent=indent, separators=(',', ': '))
+    if 'indent' not in kwargs:
+        kwargs['separators'] = (',', ':')
+
+    json.dump(data, io, ensure_ascii=ensure_ascii, default=_default, **kwargs)
 
 
 def json_dumps(data, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
-    def default(obj):
-        if isinstance(obj, Decimal):
-            return float(obj)
-        elif isinstance(obj, GeneratorType):
-            return list(obj)
-        raise TypeError('%s is not JSON serializable' % repr(obj))
-
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
 
-    return json.dumps(data, ensure_ascii=ensure_ascii, default=default, **kwargs)
+    return json.dumps(data, ensure_ascii=ensure_ascii, default=_default, **kwargs)
 
 
 def get_ocds_minor_version(data):

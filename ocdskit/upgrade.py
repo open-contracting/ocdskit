@@ -4,7 +4,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from hashlib import md5
 
-from ocdskit.util import json_dumps, get_ocds_minor_version, is_package, is_record_package, is_release_package
+from ocdskit.util import get_ocds_minor_version, is_package, is_record_package, is_release_package
 
 logger = logging.getLogger('ocdskit')
 
@@ -147,7 +147,7 @@ def _add_party(parties, party, role):
         roles = other.pop('roles')
         if dict(party) != dict(other):
             logger.warning('party differs in "{}" role than in "{}" roles:\n{}\n{}'.format(
-                role, ', '.join(roles), json_dumps(party), json_dumps(other)))
+                role, ', '.join(roles), json.dumps(party), json.dumps(other)))
 
     if 'roles' not in parties[_id]:
         parties[_id]['roles'] = []
