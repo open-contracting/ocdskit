@@ -2,18 +2,20 @@ Changelog
 =========
 
 0.1.3 (2019-09-26)
+------------------
 
 Changed
 ~~~~~~~
 
--  Set missing package metadata to ``""`` instead of ``null`` in CLI commands, to mirror library methods
+-  Set missing package metadata to ``""`` instead of ``null`` in CLI commands, to mirror library methods.
 
 0.1.2 (2019-09-25)
+------------------
 
 Changed
 ~~~~~~~
 
--  Align the library methods ``json_dump`` and ``json_dumps``
+-  Align the library methods ``json_dump`` and ``json_dumps``.
 
 0.1.1 (2019-09-19)
 ------------------
