@@ -67,11 +67,10 @@ class BaseCommand:
         """
         Prints JSON data.
         """
+        kwargs = {}
         # See https://docs.python.org/2/library/json.html
         if self.args.pretty:
-            kwargs = {'indent': 2}
-        else:
-            kwargs = {'separators': (',', ':')}
+            kwargs['indent'] = 2
         if self.args.ascii:
             kwargs['ensure_ascii'] = True
 

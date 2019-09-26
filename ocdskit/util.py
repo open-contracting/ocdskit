@@ -36,6 +36,9 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
             return list(obj)
         raise TypeError('%s is not JSON serializable' % repr(obj))
 
+    if 'indent' not in kwargs:
+        kwargs['separators'] = (',', ':')
+
     return json.dumps(data, ensure_ascii=ensure_ascii, default=default, **kwargs)
 
 
