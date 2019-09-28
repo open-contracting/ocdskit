@@ -34,60 +34,56 @@ class Command(OCDSCommand):
 
 def _detect_format(path):
     try:
-        _detect_format_inner(path)
+        with open(path, 'rb') as f:
+            events = iter(ijson.parse(f, multiple_values=True))
+
+            prefix, event, value = next(events)
+            if event == 'start_array':
+                is_array = True
+                prefix = 'item.'
+            elif event == 'start_map':
+                is_array = False
+                prefix = ''
+            else:
+                raise UnknownFormatError('top-level JSON value is a {}'.format(event))
+
+            records_prefix = '{}records'.format(prefix)
+            releases_prefix = '{}releases'.format(prefix)
+            ocid_prefix = '{}ocid'.format(prefix)
+            tag_item_prefix = '{}tag.item'.format(prefix)
+
+            has_records = False
+            has_releases = False
+            has_ocid = False
+            has_tag = False
+            is_compiled = False
+
+            for prefix, event, value in events:
+                if prefix == records_prefix:
+                    has_records = True
+                elif prefix == releases_prefix:
+                    has_releases = True
+                elif prefix == ocid_prefix:
+                    has_ocid = True
+                elif prefix == tag_item_prefix:
+                    has_tag = True
+                    if value == 'compiled':
+                        is_compiled = True
+                if not prefix and event not in ('end_array', 'end_map', 'map_key'):
+                    return _print(path, True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
+
+            return _print(path, False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
     except UnknownFormatError as e:
         logger.warning('{}: unknown ({})'.format(path, e))
-
-
-def _detect_format_inner(path):
-    with open(path, 'rb') as f:
-        events = iter(ijson.parse(f, multiple_values=True))
-
-        prefix, event, value = next(events)
-        if event == 'start_array':
-            is_array = True
-            prefix = 'item.'
-        elif event == 'start_map':
-            is_array = False
-            prefix = ''
-        else:
-            raise UnknownFormatError('top-level JSON value is a {}'.format(event))
-
-        records_prefix = '{}records'.format(prefix)
-        releases_prefix = '{}releases'.format(prefix)
-        ocid_prefix = '{}ocid'.format(prefix)
-        tag_item_prefix = '{}tag.item'.format(prefix)
-
-        has_records = False
-        has_releases = False
-        has_ocid = False
-        has_tag = False
-        is_compiled = False
-
-        for prefix, event, value in events:
-            if prefix == records_prefix:
-                has_records = True
-            elif prefix == releases_prefix:
-                has_releases = True
-            elif prefix == ocid_prefix:
-                has_ocid = True
-            elif prefix == tag_item_prefix:
-                has_tag = True
-                if value == 'compiled':
-                    is_compiled = True
-            if not prefix and event in ('start_array', 'start_map'):
-                return _print(path, True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
-
-        return _print(path, False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
 
 
 def _print(path, is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):
     if has_records:
         string = 'record package'
-    elif has_releases and not has_ocid:
-        string = 'release package'
-    elif has_releases:
+    elif has_releases and has_ocid:
         string = 'record'
+    elif has_releases:
+        string = 'release package'
     elif is_compiled:
         string = 'compiled release'
     elif has_tag:

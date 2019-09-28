@@ -30,6 +30,7 @@ These OCDS commands buffer (for now):
 
 These OCDS commands stream, using a read buffer of 64 kB:
 
+* ``detect-format``
 * ``upgrade``
 * ``split-record-packages``
 * ``split-release-packages``
@@ -38,8 +39,6 @@ These OCDS commands stream, using a read buffer of 64 kB:
 The ``tabulate`` command hasn't yet been reviewed.
 
 To test whether commands stream, you can run, for example::
-
-::
 
     echo 'cat tests/fixtures/realdata/record-package_versioned.json tests/fixtures/realdata/record-package_versioned.json; sleep 3; cat tests/fixtures/record-package_minimal.json' > input.sh
     sh input.sh | ocdskit upgrade 1.0:1.1

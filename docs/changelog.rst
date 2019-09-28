@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.1.4 (YYYY-MM-DD)
+------------------
+
+Fixed
+~~~~~
+
+-  ``detect-format`` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
+
 0.1.3 (2019-09-26)
 ------------------
 

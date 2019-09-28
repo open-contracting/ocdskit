@@ -18,6 +18,8 @@ test_command_argvalues = [
     ('realdata/versioned-release-1.json', 'versioned release'),
     ('release-packages.json', 'a JSON array of release packages'),
     ('release-packages.jsonl', 'concatenated JSON, starting with a JSON array of release packages'),
+    ('detect-format_mixed.json', 'concatenated JSON, starting with release'),
+    ('detect-format_whitespace.json', 'release'),
 ]
 
 test_command_unknown_format_argvalues = [
