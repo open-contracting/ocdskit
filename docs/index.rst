@@ -23,10 +23,3 @@ OCDS Kit can be used either via its :doc:`cli` or as a :doc:`library`.
    changelog
 
 Copyright (c) 2017 Open Contracting Partnership, released under the BSD license
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
