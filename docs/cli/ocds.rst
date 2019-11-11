@@ -94,6 +94,31 @@ To convert record packages to a release package, you can use the ``--root-path``
 
 For the Python API, see :meth:`ocdskit.combine.package_releases`.
 
+package-records
+----------------
+
+Reads records from standard input, and prints one record package.
+
+Optional positional arguments:
+
+* ``extension`` add this extension to the package
+* ``--uri URL`` set the record package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
+* ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
+* ``--publisher-uri PUBLISHER_URI`` set the record package's ``publisher``'s ``uri`` to this value
+* ``--publisher-scheme PUBLISHER_SCHEME`` set the record package's ``publisher``'s ``scheme`` to this value
+* ``--publisher-uid PUBLISHER_UID`` set the record package's ``publisher``'s ``uid`` to this value
+
+::
+
+    cat tests/fixtures/record_*.json | ocdskit package-records > out.json
+
+To convert record packages to a record package, you can use the ``--root-path`` option::
+
+    cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records.item.records
+
+For the Python API, see :meth:`ocdskit.combine.package_records`.
+
 combine-record-packages
 -----------------------
 

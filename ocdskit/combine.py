@@ -35,6 +35,33 @@ def package_releases(releases, uri='', publisher=None, published_date='', extens
 
     return output
 
+def package_records(records, uri='', publisher=None, published_date='', extensions=None):
+    """
+    Wraps records in a release package.
+
+    :param list records: a list of records
+    :param str uri: the record package's ``uri``
+    :param dict publisher: the record package's ``publisher``
+    :param str published_date: the record package's ``publishedDate``
+    :param list extensions: the record package's ``extensions``
+    """
+    if publisher is None:
+        publisher = OrderedDict()
+    if 'name' not in publisher:
+        publisher['name'] = ''
+    if extensions is None:
+        extensions = []
+
+    output = OrderedDict([
+        ('uri', uri),
+        ('publisher', publisher),
+        ('publishedDate', published_date),
+        ('version', '1.1'),
+        ('extensions', extensions),
+        ('records', records),
+    ])
+
+    return output
 
 def combine_record_packages(packages, uri='', publisher=None, published_date=''):
     """
