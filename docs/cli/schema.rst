@@ -19,12 +19,30 @@ Generates a spreadsheet with all field paths in a JSON Schema. It works with at 
 * Beneficial Ownership Data Standard (BODS)
 * Social Investment Data Lab Specification (SEDL)
 
+Required arguments:
+
+* ``file`` the schema file
+
 Optional arguments:
 
 * ``--order-by COLUMN`` sort the spreadsheet's rows by this column
 * ``--infer-required`` infer whether fields are required (use with OCDS schema)
 * ``--extension`` patch the release schema with this extension
-* ``--extension-field`` add an "extension" column with values from this schema field
+* ``--extension-field`` add an "extension" column for the name of the extension in which each field was defined
+
+The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example::
+
+    ocdskit mapping-sheet release-schema.json --extension \
+      https://raw.githubusercontent.com/open-contracting-extensions/ocds_coveredBy_extension/master/extension.json \
+      https://raw.githubusercontent.com/open-contracting-extensions/ocds_options_extension/master/ \
+      https://github.com/open-contracting-extensions/ocds_techniques_extension/archive/master.zip \
+      > mapping-sheet.csv
+
+The ``--extension-field`` option can be used with or without the ``--extension`` option.
+
+-  If the ``--extension`` option is set, then the ``--extension-field`` option may be set to any value. In all cases, the result is a mapping sheet with an "extension" column, containing the name of the extension in which each field was defined.
+
+-  If the ``--extension`` option is not set, then the ``--extension-field`` option must be set to the property in the JSON schema containing the name of the extension in which each field was defined. If there is no such property, then the result is a mapping sheet with no values in its "extension" column.
 
 For a description of the columns of the spreadsheet, see the :doc:`../api/mapping_sheet` module.
 

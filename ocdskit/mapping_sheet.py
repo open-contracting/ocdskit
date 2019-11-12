@@ -18,7 +18,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :param io: a file-like object to which to write the rows
     :param str order_by: the column by which to sort the rows
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
-    :param str extension_field: the field name in the JSON schema (if any) containing the names of extensions
+    :param str extension_field: the property in the JSON schema containing the name of the extension in which each
+                                field was defined
 
     The CSV's columns are:
 

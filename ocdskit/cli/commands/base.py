@@ -18,11 +18,13 @@ class StandardInputReader:
 
 
 class BaseCommand:
+    kwargs = {}
+
     def __init__(self, subparsers):
         """
         Initializes the subparser and adds arguments.
         """
-        self.subparser = subparsers.add_parser(self.name, description=self.help)
+        self.subparser = subparsers.add_parser(self.name, description=self.help, **self.kwargs)
         self.add_base_arguments()
         self.add_arguments()
 
