@@ -46,7 +46,7 @@ class Command(BaseCommand):
         self.add_argument('file', help='the schema file')
         self.add_argument('--order-by', help="sort the spreadsheet's rows by this column")
         self.add_argument('--infer-required', action='store_true', help='infer whether fields are required')
-        self.add_argument('--extension', nargs='*', help="patch the release schema with this extension")
+        self.add_argument('--extension', nargs='*', help='patch the release schema with this extension')
         self.add_argument('--extension-field', help='add an "extension" column for the name of the extension in which '
                           'each field was defined')
 
