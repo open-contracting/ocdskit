@@ -7,16 +7,7 @@ from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import get_ocds_minor_version
 
 
-def package_releases(releases, uri='', publisher=None, published_date='', extensions=None):
-    """
-    Wraps releases in a release package.
-
-    :param list releases: a list of releases
-    :param str uri: the release package's ``uri``
-    :param dict publisher: the release package's ``publisher``
-    :param str published_date: the release package's ``publishedDate``
-    :param list extensions: the release package's ``extensions``
-    """
+def _package(key, items, uri, publisher, published_date, extensions):
     if publisher is None:
         publisher = OrderedDict()
     if 'name' not in publisher:
@@ -30,10 +21,36 @@ def package_releases(releases, uri='', publisher=None, published_date='', extens
         ('publishedDate', published_date),
         ('version', '1.1'),
         ('extensions', extensions),
-        ('releases', releases),
+        (key, items),
     ])
 
     return output
+
+
+def package_records(records, uri='', publisher=None, published_date='', extensions=None):
+    """
+    Wraps records in a record package.
+
+    :param list records: a list of records
+    :param str uri: the record package's ``uri``
+    :param dict publisher: the record package's ``publisher``
+    :param str published_date: the record package's ``publishedDate``
+    :param list extensions: the record package's ``extensions``
+    """
+    return _package('records', records, uri, publisher, published_date, extensions)
+
+
+def package_releases(releases, uri='', publisher=None, published_date='', extensions=None):
+    """
+    Wraps releases in a release package.
+
+    :param list releases: a list of releases
+    :param str uri: the release package's ``uri``
+    :param dict publisher: the release package's ``publisher``
+    :param str published_date: the release package's ``publishedDate``
+    :param list extensions: the release package's ``extensions``
+    """
+    return _package('releases', releases, uri, publisher, published_date, extensions)
 
 
 def combine_record_packages(packages, uri='', publisher=None, published_date=''):

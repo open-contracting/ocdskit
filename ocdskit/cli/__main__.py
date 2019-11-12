@@ -16,6 +16,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.detect_format',
     'ocdskit.cli.commands.indent',
     'ocdskit.cli.commands.mapping_sheet',
+    'ocdskit.cli.commands.package_records',
     'ocdskit.cli.commands.package_releases',
     'ocdskit.cli.commands.schema_report',
     'ocdskit.cli.commands.schema_strict',
