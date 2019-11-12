@@ -20,6 +20,7 @@ These OCDS commands buffer, because they output one JSON file:
 
 * ``combine-record-packages``
 * ``combine-release-packages``
+* ``package-records``
 * ``package-releases``
 
 Python's standard ``json`` library requires an entire file's contents to be in memory before writing. If there is demand to stream output from these commands, we can instead use a custom writer to write iteratively.

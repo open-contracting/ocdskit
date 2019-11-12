@@ -7,6 +7,39 @@ from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import get_ocds_minor_version
 
 
+def _package(key, items, uri, publisher, published_date, extensions):
+    if publisher is None:
+        publisher = OrderedDict()
+    if 'name' not in publisher:
+        publisher['name'] = ''
+    if extensions is None:
+        extensions = []
+
+    output = OrderedDict([
+        ('uri', uri),
+        ('publisher', publisher),
+        ('publishedDate', published_date),
+        ('version', '1.1'),
+        ('extensions', extensions),
+        (key, items),
+    ])
+
+    return output
+
+
+def package_records(records, uri='', publisher=None, published_date='', extensions=None):
+    """
+    Wraps records in a record package.
+
+    :param list records: a list of records
+    :param str uri: the record package's ``uri``
+    :param dict publisher: the record package's ``publisher``
+    :param str published_date: the record package's ``publishedDate``
+    :param list extensions: the record package's ``extensions``
+    """
+    return _package('records', records, uri, publisher, published_date, extensions)
+
+
 def package_releases(releases, uri='', publisher=None, published_date='', extensions=None):
     """
     Wraps releases in a release package.
@@ -17,51 +50,8 @@ def package_releases(releases, uri='', publisher=None, published_date='', extens
     :param str published_date: the release package's ``publishedDate``
     :param list extensions: the release package's ``extensions``
     """
-    if publisher is None:
-        publisher = OrderedDict()
-    if 'name' not in publisher:
-        publisher['name'] = ''
-    if extensions is None:
-        extensions = []
+    return _package('releases', releases, uri, publisher, published_date, extensions)
 
-    output = OrderedDict([
-        ('uri', uri),
-        ('publisher', publisher),
-        ('publishedDate', published_date),
-        ('version', '1.1'),
-        ('extensions', extensions),
-        ('releases', releases),
-    ])
-
-    return output
-
-def package_records(records, uri='', publisher=None, published_date='', extensions=None):
-    """
-    Wraps records in a release package.
-
-    :param list records: a list of records
-    :param str uri: the record package's ``uri``
-    :param dict publisher: the record package's ``publisher``
-    :param str published_date: the record package's ``publishedDate``
-    :param list extensions: the record package's ``extensions``
-    """
-    if publisher is None:
-        publisher = OrderedDict()
-    if 'name' not in publisher:
-        publisher['name'] = ''
-    if extensions is None:
-        extensions = []
-
-    output = OrderedDict([
-        ('uri', uri),
-        ('publisher', publisher),
-        ('publishedDate', published_date),
-        ('version', '1.1'),
-        ('extensions', extensions),
-        ('records', records),
-    ])
-
-    return output
 
 def combine_record_packages(packages, uri='', publisher=None, published_date=''):
     """

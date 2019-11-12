@@ -1,13 +1,24 @@
 Changelog
 =========
 
-0.1.4 (YYYY-MM-DD)
+0.1.4 (Unreleased)
 ------------------
 
 Fixed
 ~~~~~
 
 -  ``detect-format`` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
+
+Added
+~~~~~
+
+New CLI commands:
+
+-  package-records
+
+New library methods:
+
+-  ``package_records``
 
 0.1.3 (2019-09-26)
 ------------------
