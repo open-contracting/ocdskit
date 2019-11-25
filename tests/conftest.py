@@ -1,5 +1,5 @@
-import os.path
 import logging
+import os.path
 
 import pytest
 

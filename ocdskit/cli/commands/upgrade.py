@@ -1,5 +1,5 @@
-from .base import OCDSCommand
 from ocdskit import upgrade
+from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.exceptions import CommandError
 
 

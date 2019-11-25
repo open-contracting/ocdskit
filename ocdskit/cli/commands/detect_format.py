@@ -3,7 +3,7 @@ import os.path
 
 import ijson
 
-from .base import OCDSCommand
+from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.exceptions import UnknownFormatError
 
 logger = logging.getLogger('ocdskit')

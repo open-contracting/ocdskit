@@ -2,12 +2,12 @@ import csv
 import os.path
 import pathlib
 import sys
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 from operator import itemgetter
 
 import jsonref
 
-from .base import BaseCommand
+from ocdskit.cli.commands.base import BaseCommand
 
 
 class Command(BaseCommand):

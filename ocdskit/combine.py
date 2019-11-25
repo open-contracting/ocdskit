@@ -1,7 +1,7 @@
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 
 from ocdsextensionregistry import ProfileBuilder
-from ocdsmerge.merge import merge, merge_versioned, get_tags, get_release_schema_url
+from ocdsmerge.merge import get_release_schema_url, get_tags, merge, merge_versioned
 
 from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import get_ocds_minor_version

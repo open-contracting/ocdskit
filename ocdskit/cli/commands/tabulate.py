@@ -2,7 +2,7 @@ import jsonref
 import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
-from .base import OCDSCommand
+from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.util import json_dumps
 
 

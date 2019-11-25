@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from .base import OCDSCommand
+from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.combine import compile_release_packages
 from ocdskit.exceptions import CommandError, InconsistentVersionError
 

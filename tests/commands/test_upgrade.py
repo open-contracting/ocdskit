@@ -1,6 +1,6 @@
 import json
 import sys
-from io import StringIO, TextIOWrapper, BytesIO
+from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
 
 import pytest

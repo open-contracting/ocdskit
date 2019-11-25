@@ -6,7 +6,7 @@ from jsonschema import FormatChecker
 from jsonschema.compat import str_types
 from jsonschema.validators import Draft4Validator as validator
 
-from .base import OCDSCommand
+from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.util import json_load
 
 

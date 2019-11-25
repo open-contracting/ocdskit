@@ -1,4 +1,4 @@
-from .base import BaseCommand
+from ocdskit.cli.commands.base import BaseCommand
 
 
 class Command(BaseCommand):

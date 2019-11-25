@@ -3,8 +3,8 @@ import logging
 import os.path
 from copy import deepcopy
 
-from .base import BaseCommand
-from ocdskit.util import json_load, json_dump
+from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.util import json_dump, json_load
 
 logger = logging.getLogger('ocdskit')
 
