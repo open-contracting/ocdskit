@@ -12,6 +12,14 @@ Fixed
 Added
 ~~~~~
 
+New CLI options:
+
+-  combine-record-packages: ``--fake``
+-  combine-release-packages: ``--fake``
+-  compile: ``--fake``
+-  package-records: ``--fake``
+-  package-releases: ``--fake``
+
 New CLI commands:
 
 -  package-records

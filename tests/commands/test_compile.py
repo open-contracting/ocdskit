@@ -73,11 +73,29 @@ def test_command_package_publisher(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--publisher-name', 'Acme Inc.'])
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--publisher-name', 'Acme Inc.',
+                                          '--publisher-uri', 'http://example.com/', '--publisher-scheme', 'scheme',
+                                          '--publisher-uid', '12345'])
         main()
 
     package = json.loads(actual.getvalue())
     assert package['publisher']['name'] == 'Acme Inc.'
+    assert package['publisher']['uri'] == 'http://example.com/'
+    assert package['publisher']['scheme'] == 'scheme'
+    assert package['publisher']['uid'] == '12345'
+
+
+@pytest.mark.vcr()
+def test_command_package_fake(monkeypatch):
+    stdin = read('release-package_minimal.json', 'rb')
+
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile', '--package', '--fake'])
+        main()
+
+    package = json.loads(actual.getvalue())
+    assert package['uri'] == 'placeholder:'
+    assert package['publishedDate'] == '9999-01-01T00:00:00Z'
 
 
 @pytest.mark.vcr()

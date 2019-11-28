@@ -101,7 +101,12 @@ class OCDSCommand(BaseCommand):
         """
         Adds arguments for setting package metadata to the subparser.
         """
-        template = "{prefix}set the {infix} package's {{}} to this value".format(infix=infix, prefix=prefix)
+        kwargs = {
+            'infix': infix,
+            'prefix': prefix,
+        }
+
+        template = "{prefix}set the {infix} package's {{}} to this value".format(**kwargs)
 
         self.add_argument('--uri', type=str, default='', help=template.format('uri'))
         self.add_argument('--published-date', type=str, default='', help=template.format('publishedDate'))
@@ -109,6 +114,8 @@ class OCDSCommand(BaseCommand):
         self.add_argument('--publisher-uri', type=str, default='', help=template.format("publisher's uri"))
         self.add_argument('--publisher-scheme', type=str, default='', help=template.format("publisher's scheme"))
         self.add_argument('--publisher-uid', type=str, default='', help=template.format("publisher's uid"))
+        self.add_argument('--fake', action='store_true',
+                          help="{prefix}set the {infix} package's required metadata to dummy values".format(**kwargs))
 
     def parse_package_arguments(self):
         """
@@ -119,6 +126,12 @@ class OCDSCommand(BaseCommand):
             'publisher': OrderedDict(),
             'published_date': self.args.published_date,
         }
+
+        if self.args.fake:
+            if not metadata['uri']:
+                metadata['uri'] = 'placeholder:'
+            if not metadata['published_date']:
+                metadata['published_date'] = '9999-01-01T00:00:00Z'
 
         for key in ('publisher_name', 'publisher_uri', 'publisher_scheme', 'publisher_uid'):
             value = getattr(self.args, key)
