@@ -2,7 +2,7 @@ import csv
 import os.path
 import pathlib
 import sys
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from operator import itemgetter
 
 import jsonref
@@ -64,8 +64,7 @@ class Command(BaseCommand):
                     recurse(value)
 
         with open(self.args.file) as f:
-            schema = jsonref.load(f, object_pairs_hook=OrderedDict,
-                                  base_uri=pathlib.Path(os.path.realpath(self.args.file)).as_uri())
+            schema = jsonref.load(f, base_uri=pathlib.Path(os.path.realpath(self.args.file)).as_uri())
 
         codelists = defaultdict(set)
         definitions = defaultdict(int)

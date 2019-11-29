@@ -113,7 +113,7 @@ def upgrade_parties_10_to_11(release):
 
 
 def _get_parties(release):
-    parties = OrderedDict()
+    parties = {}
 
     if 'parties' in release:
         for party in release['parties']:
@@ -158,9 +158,8 @@ def _add_party(parties, party, role):
         parties[_id]['roles'].append(role)
 
     # Create the OrganizationReference.
-    organization_reference = OrderedDict([
-        ('id', _id),
-    ])
+    organization_reference = {'id': _id}
+
     if 'name' in party:
         organization_reference['name'] = party['name']
 
@@ -227,9 +226,8 @@ def upgrade_transactions_10_11(release):
 
                     for old, new in (('providerOrganization', 'payer'), ('receiverOrganization', 'payee')):
                         if old in transaction and new not in transaction:
-                            party = OrderedDict([
-                                ('identifier', transaction[old]),
-                            ])
+                            party = OrderedDict([('identifier', transaction[old])])
+
                             if 'legalName' in transaction[old]:
                                 party['name'] = transaction[old]['legalName']
 

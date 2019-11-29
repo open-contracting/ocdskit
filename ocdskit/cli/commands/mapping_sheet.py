@@ -1,3 +1,4 @@
+import json
 import os.path
 import pathlib
 import sys
@@ -10,7 +11,6 @@ from ocdsextensionregistry import ProfileBuilder
 from ocdskit.cli.commands.base import BaseCommand
 from ocdskit.exceptions import CommandError, MissingColumnError
 from ocdskit.mapping_sheet import mapping_sheet
-from ocdskit.util import json_load
 
 
 class Command(BaseCommand):
@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
     def handle(self):
         with open(self.args.file) as f:
-            schema = json_load(f)
+            schema = json.load(f)
 
         if self.args.extension:
             builder = ProfileBuilder(None, self.args.extension)

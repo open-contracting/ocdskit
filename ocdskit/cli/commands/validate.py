@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urlparse
 
 import requests
@@ -7,7 +8,6 @@ from jsonschema.compat import str_types
 from jsonschema.validators import Draft4Validator as validator
 
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.util import json_load
 
 
 class Command(OCDSCommand):
@@ -25,7 +25,7 @@ class Command(OCDSCommand):
         components = urlparse(self.args.schema)
         if components.scheme == 'file':
             with open(self.args.schema[7:]) as f:
-                schema = json_load(f)
+                schema = json.load(f)
         else:
             schema = requests.get(self.args.schema).json()
 

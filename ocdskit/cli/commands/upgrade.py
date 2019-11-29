@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from ocdskit import upgrade
 from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.exceptions import CommandError
@@ -24,6 +26,6 @@ class Command(OCDSCommand):
         except AttributeError:
             raise CommandError('{}grade from {} is not supported'.format(direction, versions.replace(':', ' to ')))
 
-        for data in self.items():
+        for data in self.items(map_type=OrderedDict):
             data = upgrade_method(data)
             self.print(data)

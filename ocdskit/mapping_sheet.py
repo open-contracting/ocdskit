@@ -1,7 +1,6 @@
 import copy
 import csv
 import re
-from collections import OrderedDict
 
 from ocdskit.exceptions import MissingColumnError
 from ocdskit.schema import get_schema_fields
@@ -102,7 +101,7 @@ def _make_row(field, schema, infer_required, extension_field):
         row['section'] = ''
 
     if 'description' in schema:
-        links = OrderedDict(INLINE_LINK_RE.findall(schema['description']))
+        links = dict(INLINE_LINK_RE.findall(schema['description']))
         row['description'] = schema['description']
         for key, link in links.items():
             row['description'] = row['description'].replace('[' + key + '](' + link + ')', key)

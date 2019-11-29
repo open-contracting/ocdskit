@@ -1,5 +1,4 @@
 import sys
-from collections import OrderedDict
 
 import ijson
 
@@ -58,12 +57,12 @@ class BaseCommand:
         """
         return ''
 
-    def items(self):
+    def items(self, **kwargs):
         """
         Yields the items in the input.
         """
         file = StandardInputReader(self.args.encoding)
-        yield from ijson.items(file, self.prefix(), map_type=OrderedDict, multiple_values=True)
+        yield from ijson.items(file, self.prefix(), multiple_values=True, **kwargs)
 
     def print(self, data):
         """
@@ -86,11 +85,11 @@ class OCDSCommand(BaseCommand):
     def prefix(self):
         return self.args.root_path or ''
 
-    def items(self):
+    def items(self, **kwargs):
         """
         Yields the items in the input. If an item is an array, yields each entry of the array.
         """
-        for item in super().items():
+        for item in super().items(**kwargs):
             if isinstance(item, list):
                 for i in item:
                     yield i
@@ -123,7 +122,7 @@ class OCDSCommand(BaseCommand):
         """
         metadata = {
             'uri': self.args.uri,
-            'publisher': OrderedDict(),
+            'publisher': {},
             'published_date': self.args.published_date,
         }
 

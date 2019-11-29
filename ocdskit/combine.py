@@ -1,4 +1,4 @@
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 
 from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge.merge import get_release_schema_url, get_tags, merge, merge_versioned
@@ -9,20 +9,20 @@ from ocdskit.util import get_ocds_minor_version
 
 def _package(key, items, uri, publisher, published_date, extensions):
     if publisher is None:
-        publisher = OrderedDict()
+        publisher = {}
     if 'name' not in publisher:
         publisher['name'] = ''
     if extensions is None:
         extensions = []
 
-    output = OrderedDict([
-        ('uri', uri),
-        ('publisher', publisher),
-        ('publishedDate', published_date),
-        ('version', '1.1'),
-        ('extensions', extensions),
-        (key, items),
-    ])
+    output = {
+        'uri': uri,
+        'publisher': publisher,
+        'publishedDate': published_date,
+        'version': '1.1',
+        'extensions': extensions,
+        key: items,
+    }
 
     return output
 
@@ -63,19 +63,19 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     :param str published_date: the record package's ``publishedDate``
     """
     if publisher is None:
-        publisher = OrderedDict()
+        publisher = {}
 
-    output = OrderedDict([
-        ('uri', uri),
-        ('publisher', publisher),
-        ('publishedDate', published_date),
-        ('license', None),
-        ('publicationPolicy', None),
-        ('version', None),
-        ('extensions', OrderedDict()),
-        ('packages', []),
-        ('records', []),
-    ])
+    output = {
+        'uri': uri,
+        'publisher': publisher,
+        'publishedDate': published_date,
+        'license': None,
+        'publicationPolicy': None,
+        'version': None,
+        'extensions': {},
+        'packages': [],
+        'records': [],
+    }
 
     for package in packages:
         _update_package_metadata(output, package, publisher)
@@ -104,18 +104,18 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     :param str published_date: the release package's ``publishedDate``
     """
     if publisher is None:
-        publisher = OrderedDict()
+        publisher = {}
 
-    output = OrderedDict([
-        ('uri', uri),
-        ('publisher', publisher),
-        ('publishedDate', published_date),
-        ('license', None),
-        ('publicationPolicy', None),
-        ('version', None),
-        ('extensions', OrderedDict()),
-        ('releases', []),
-    ])
+    output = {
+        'uri': uri,
+        'publisher': publisher,
+        'publishedDate': published_date,
+        'license': None,
+        'publicationPolicy': None,
+        'version': None,
+        'extensions': {},
+        'releases': [],
+    }
 
     for package in packages:
         _update_package_metadata(output, package, publisher)
@@ -150,21 +150,21 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
         package; otherwise, yield versioned releases instead of compiled releases
     """
     if return_package:
-        output = OrderedDict([
-            ('uri', uri),
-            ('publisher', publisher),
-            ('publishedDate', published_date),
-            ('license', None),
-            ('publicationPolicy', None),
-            ('version', None),
-            ('extensions', OrderedDict()),
-            ('packages', []),
-            ('records', []),
-        ])
+        output = {
+            'uri': uri,
+            'publisher': publisher,
+            'publishedDate': published_date,
+            'license': None,
+            'publicationPolicy': None,
+            'version': None,
+            'extensions': {},
+            'packages': [],
+            'records': [],
+        }
     # To avoid duplicating code, we track extensions in the same place even if ``return_package`` is false.
     else:
         output = {
-            'extensions': OrderedDict(),
+            'extensions': {},
         }
 
     version = None
@@ -189,11 +189,11 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
             releases_by_ocid[release['ocid']].append(release)
 
             if return_package and use_linked_releases:
-                linked_releases.append(OrderedDict([
-                    ('url', package['uri'] + '#' + release['id']),
-                    ('date', release['date']),
-                    ('tag', release['tag']),
-                ]))
+                linked_releases.append({
+                    'url': package['uri'] + '#' + release['id'],
+                    'date': release['date'],
+                    'tag': release['tag'],
+                })
 
         if return_package:
             _update_package_metadata(output, package, publisher)
@@ -208,11 +208,11 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
 
     if return_package:
         for ocid, releases in releases_by_ocid.items():
-            record = OrderedDict([
-                ('ocid', ocid),
-                ('releases', []),
-                ('compiledRelease', merge(releases, schema)),
-            ])
+            record = {
+                'ocid': ocid,
+                'releases': [],
+                'compiledRelease': merge(releases, schema),
+            }
 
             if use_linked_releases:
                 record['releases'] = linked_releases
@@ -253,8 +253,8 @@ def _update_package_metadata(output, package, publisher):
 
 def _update_extensions_metadata(output, package):
     if 'extensions' in package:
-        # Python has no OrderedSet, so we use OrderedDict to keep extensions in order without duplication.
-        output['extensions'].update(OrderedDict.fromkeys(package['extensions']))
+        # We use an insertion-ordered dict to keep extensions in order without duplication.
+        output['extensions'].update(dict.fromkeys(package['extensions']))
 
 
 def _set_extensions_metadata(output):

@@ -1,5 +1,4 @@
 import json
-from collections import OrderedDict
 from decimal import Decimal
 from types import GeneratorType
 
@@ -10,20 +9,6 @@ def _default(obj):
     elif isinstance(obj, GeneratorType):
         return list(obj)
     raise TypeError('%s is not JSON serializable' % repr(obj))
-
-
-def json_load(io):
-    """
-    Parses JSON from a file-like object.
-    """
-    return json.load(io, object_pairs_hook=OrderedDict)
-
-
-def json_loads(data):
-    """
-    Parses JSON from a string.
-    """
-    return json.loads(data, object_pairs_hook=OrderedDict)
 
 
 def json_dump(data, io, ensure_ascii=False, **kwargs):
