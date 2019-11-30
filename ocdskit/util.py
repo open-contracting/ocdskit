@@ -6,7 +6,7 @@ from types import GeneratorType
 def _default(obj):
     if isinstance(obj, Decimal):
         return float(obj)
-    elif isinstance(obj, GeneratorType):
+    if isinstance(obj, GeneratorType):
         return list(obj)
     raise TypeError('%s is not JSON serializable' % repr(obj))
 
