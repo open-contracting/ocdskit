@@ -59,9 +59,22 @@ def is_record_package(data):
     return 'records' in data
 
 
+def is_record(data):
+    """
+    Returns whether the data is a record.
+    """
+    return 'releases' in data and 'ocid' in data
+
+
 def is_release_package(data):
     """
     Returns whether the data is a release package.
     """
-    # Disambiguate a release package from a record.
     return 'releases' in data and 'ocid' not in data
+
+
+def is_release(data):
+    """
+    Returns whether the data is a release.
+    """
+    return 'tag' in data
