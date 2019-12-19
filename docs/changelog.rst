@@ -12,6 +12,8 @@ New library methods:
 -  ``is_record``
 -  ``is_release``
 
+The internal methods ``json_load`` and ``json_loads`` are removed.
+
 0.1.4 (2019-11-28)
 ------------------
 
