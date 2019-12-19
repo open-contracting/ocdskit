@@ -44,7 +44,7 @@ New library methods:
 Changed
 ~~~~~~~
 
-- mapping-sheet: Improved documentation of ``--extension`` and ``--extension-field``.
+-  mapping-sheet: Improved documentation of ``--extension`` and ``--extension-field``.
 
 0.1.3 (2019-09-26)
 ------------------
