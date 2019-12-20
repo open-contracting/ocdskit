@@ -46,6 +46,10 @@ def upgrade_10_11(data):
     Upgrades a record package, release package or release from 1.0 to 1.1.
 
     Retains the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
+
+    ``data`` must be an ``OrderedDict``. If you have only the parsed JSON, re-parse it with:
+
+    ``upgrade_10_11(json.loads(json.dumps(data), object_pairs_hook=OrderedDict))``
     """
     version = get_ocds_minor_version(data)
     if version != '1.0':
