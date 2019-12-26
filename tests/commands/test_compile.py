@@ -133,10 +133,9 @@ def test_command_version_mismatch(monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "item 1: version error: this package uses version 1.0, but earlier packages " \
-                                        "used version 1.1\nTry first upgrading packages to the same version:\n  cat " \
-                                        "file [file ...] | ocdskit upgrade 1.0:1.1 | ocdskit compile --package " \
-                                        "--versioned"
+    assert caplog.records[0].message == "item 1: version error: this item uses version 1.0, but earlier items used " \
+                                        "version 1.1\nTry first upgrading items to the same version:\n  cat file " \
+                                        "[file ...] | ocdskit upgrade 1.0:1.1 | ocdskit compile --package --versioned"
     assert excinfo.value.code == 1
 
 

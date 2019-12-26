@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.1.6 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+-  ``compile`` accepts either release packages or individual releases
+-  ``compile`` is memory efficient if given a long list of inputs
+
 0.1.5 (2019-12-18)
 ------------------
 

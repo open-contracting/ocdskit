@@ -1,10 +1,28 @@
+import json
 from collections import defaultdict
+from itertools import groupby
+from tempfile import NamedTemporaryFile
 
 from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge.merge import get_release_schema_url, get_tags, merge, merge_versioned
 
 from ocdskit.exceptions import InconsistentVersionError
-from ocdskit.util import get_ocds_minor_version
+from ocdskit.util import get_ocds_minor_version, is_package, json_dumps
+
+try:
+    import sqlite3
+    using_sqlite = True
+
+    def adapt_json(d):
+        return json_dumps(d)
+
+    def convert_json(s):
+        return json.loads(s)
+
+    sqlite3.register_adapter(dict, adapt_json)
+    sqlite3.register_converter('json', convert_json)
+except ImportError:
+    using_sqlite = False
 
 
 def _package(key, items, uri, publisher, published_date, extensions):
@@ -128,7 +146,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     return output
 
 
-def compile_release_packages(packages, uri='', publisher=None, published_date='', schema=None,
+def compile_release_packages(data, uri='', publisher=None, published_date='', schema=None,
                              return_versioned_release=False, return_package=False, use_linked_releases=False):
     """
     Merges releases by OCID and yields compiled releases.
@@ -139,13 +157,14 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
     If ``return_package`` is set and ``publisher`` isn't set, the output record package will have the same publisher as
     the last input release package.
 
-    :param list packages: a list of release packages
+    :param list data: a list of release packages and individual releases
     :param str uri: if ``return_package`` is ``True``, the record package's ``uri``
     :param dict publisher: if ``return_package`` is ``True``, the record package's ``publisher``
     :param str published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
     :param dict schema: the URL or path of the release schema to use
     :param bool return_package: wrap the compiled releases in a record package
-    :param bool use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases
+    :param bool use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases if
+        the input is a release package
     :param bool return_versioned_release: if ``return_package`` is ``True``, include versioned releases in the record
         package; otherwise, yield versioned releases instead of compiled releases
     """
@@ -168,76 +187,132 @@ def compile_release_packages(packages, uri='', publisher=None, published_date=''
         }
 
     version = None
-    releases_by_ocid = defaultdict(list)
     linked_releases = []
 
-    for i, package in enumerate(packages):
-        if not version:
-            version = get_ocds_minor_version(package)
+    try:
+        if using_sqlite:
+            file = NamedTemporaryFile()
+
+            # "The sqlite3 module internally uses a statement cache to avoid SQL parsing overhead."
+            # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
+            # Note: We never commit changes. SQLite manages the memory usage of uncommitted changes.
+            # https://sqlite.org/atomiccommit.html#_cache_spill_prior_to_commit
+            conn = sqlite3.connect(file.name, detect_types=sqlite3.PARSE_DECLTYPES)
+
+            # Disable unnecessary, expensive features.
+            # https://www.sqlite.org/pragma.html#pragma_synchronous
+            # https://www.sqlite.org/pragma.html#pragma_journal_mode
+            conn.execute('PRAGMA synchronous=OFF')
+            conn.execute('PRAGMA journal_mode=OFF')
+
+            conn.execute("CREATE TABLE releases (ocid text, release json)")
         else:
-            v = get_ocds_minor_version(package)
-            if v != version:
-                raise InconsistentVersionError('item {}: version error: this package uses version {}, but earlier '
-                                               'packages used version {}'.format(i, v, version), version, v)
+            releases_by_ocid = defaultdict(list)
 
-        if not schema:
-            prefix = version.replace('.', '__') + '__'
-            tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
-            schema = get_release_schema_url(tag)
+        for i, item in enumerate(data):
+            packaged = is_package(item)
 
-        for release in package['releases']:
-            releases_by_ocid[release['ocid']].append(release)
+            if not version:
+                version = get_ocds_minor_version(item)
+            else:
+                v = get_ocds_minor_version(item)
+                if v != version:
+                    raise InconsistentVersionError('item {}: version error: this item uses version {}, but earlier '
+                                                   'items used version {}'.format(i, v, version), version, v)
 
-            if return_package and use_linked_releases:
-                linked_releases.append({
-                    'url': package['uri'] + '#' + release['id'],
-                    'date': release['date'],
-                    'tag': release['tag'],
-                })
+            if not schema:
+                prefix = version.replace('.', '__') + '__'
+                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+                schema = get_release_schema_url(tag)
+
+            if using_sqlite:
+                values = []
+
+            if packaged:
+                releases = item['releases']
+            else:
+                releases = [item]
+
+            for release in releases:
+                if using_sqlite:
+                    values.append((release['ocid'], release))
+                else:
+                    releases_by_ocid[release['ocid']].append(release)
+
+                if return_package and use_linked_releases:
+                    if packaged:
+                        release = {
+                            'url': item['uri'] + '#' + release['id'],
+                            'date': release['date'],
+                            'tag': release['tag'],
+                        }
+                    linked_releases.append(release)
+
+            if using_sqlite:
+                conn.executemany("INSERT INTO releases VALUES (?, ?)", values)
+
+            if packaged:
+                if return_package:
+                    _update_package_metadata(output, item, publisher)
+
+                    output['packages'].append(item['uri'])
+                else:
+                    _update_extensions_metadata(output, item)
+
+        if output['extensions']:
+            builder = ProfileBuilder(tag, list(output['extensions']))
+            schema = builder.patched_release_schema()
+
+        if using_sqlite:
+            # It is faster to insert the rows then create the index, than the reverse.
+            # https://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
+            conn.execute("CREATE INDEX ocid_idx ON releases(ocid)")
+
+            def iterator():
+                results = conn.execute("SELECT * FROM releases ORDER BY ocid")
+                for ocid, rows in groupby(results, lambda row: row[0]):
+                    yield ocid, [row[1] for row in rows]
+        else:
+            def iterator():
+                for ocid in sorted(releases_by_ocid):
+                    yield ocid, releases_by_ocid[ocid]
 
         if return_package:
-            _update_package_metadata(output, package, publisher)
+            for ocid, releases in iterator():
+                record = {
+                    'ocid': ocid,
+                    'releases': [],
+                    'compiledRelease': merge(releases, schema),
+                }
 
-            output['packages'].append(package['uri'])
+                if use_linked_releases:
+                    record['releases'] = linked_releases
+                else:
+                    record['releases'] = releases
+
+                if return_versioned_release:
+                    record['versionedRelease'] = merge_versioned(releases, schema)
+
+                output['records'].append(record)
+
+            _set_extensions_metadata(output)
+            _remove_empty_optional_metadata(output)
+
+            yield output
         else:
-            _update_extensions_metadata(output, package)
+            for ocid, releases in iterator():
+                if return_versioned_release:
+                    merge_method = merge_versioned
+                else:
+                    merge_method = merge
 
-    if output['extensions']:
-        builder = ProfileBuilder(tag, list(output['extensions']))
-        schema = builder.patched_release_schema()
+                merged_release = merge_method(releases, schema)
 
-    if return_package:
-        for ocid, releases in releases_by_ocid.items():
-            record = {
-                'ocid': ocid,
-                'releases': [],
-                'compiledRelease': merge(releases, schema),
-            }
-
-            if use_linked_releases:
-                record['releases'] = linked_releases
-            else:
-                record['releases'] = releases
-
-            if return_versioned_release:
-                record['versionedRelease'] = merge_versioned(releases, schema)
-
-            output['records'].append(record)
-
-        _set_extensions_metadata(output)
-        _remove_empty_optional_metadata(output)
-
-        yield output
-    else:
-        for releases in releases_by_ocid.values():
-            if return_versioned_release:
-                merge_method = merge_versioned
-            else:
-                merge_method = merge
-
-            merged_release = merge_method(releases, schema)
-
-            yield merged_release
+                yield merged_release
+    finally:
+        if using_sqlite:
+            file.close()
+            conn.close()
 
 
 def _update_package_metadata(output, package, publisher):
