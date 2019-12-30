@@ -13,7 +13,8 @@ from tests import read
 
 
 @pytest.mark.vcr()
-def test_command(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -24,7 +25,8 @@ def test_command(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_extensions(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_extensions(monkeypatch):
     stdin = read('release-package_additional-contact-points.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -35,7 +37,8 @@ def test_command_extensions(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_versioned(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -46,7 +49,8 @@ def test_command_versioned(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -57,7 +61,8 @@ def test_command_package(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package_uri_published_date(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_uri_published_date(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -71,7 +76,8 @@ def test_command_package_uri_published_date(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package_publisher(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_publisher(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -88,7 +94,8 @@ def test_command_package_publisher(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package_fake(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_fake(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -101,7 +108,8 @@ def test_command_package_fake(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package_linked_releases(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_linked_releases(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -112,7 +120,8 @@ def test_command_package_linked_releases(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_package_versioned(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_versioned(monkeypatch):
     stdin = read('realdata/release-package-1.json', 'rb') + read('realdata/release-package-2.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -123,7 +132,8 @@ def test_command_package_versioned(sqlite, monkeypatch):
 
 
 @pytest.mark.vcr()
-def test_command_version_mismatch(sqlite, monkeypatch, caplog):
+@pytest.mark.usefixtures('sqlite')
+def test_command_version_mismatch(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
         stdin = read('realdata/release-package_1.1-1.json', 'rb') + read('realdata/release-package_1.0-1.json', 'rb')
 
@@ -142,7 +152,8 @@ def test_command_version_mismatch(sqlite, monkeypatch, caplog):
         assert excinfo.value.code == 1
 
 
-def test_command_help(sqlite, monkeypatch, caplog):
+@pytest.mark.usefixtures('sqlite')
+def test_command_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
@@ -157,7 +168,8 @@ def test_command_help(sqlite, monkeypatch, caplog):
 
 
 @pytest.mark.vcr()
-def test_command_pretty(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_pretty(monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -167,7 +179,8 @@ def test_command_pretty(sqlite, monkeypatch):
     assert actual.getvalue() == read('compile_pretty_minimal.json')
 
 
-def test_command_encoding(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_encoding(monkeypatch):
     stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
@@ -177,7 +190,8 @@ def test_command_encoding(sqlite, monkeypatch):
     assert actual.getvalue() == read('realdata/compile_encoding_encoding.json')
 
 
-def test_command_bad_encoding_iso_8859_1(sqlite, monkeypatch, caplog):
+@pytest.mark.usefixtures('sqlite')
+def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
         stdin = read('realdata/release-package_encoding-iso-8859-1.json', 'rb')
 
@@ -195,27 +209,30 @@ def test_command_bad_encoding_iso_8859_1(sqlite, monkeypatch, caplog):
         assert excinfo.value.code == 1
 
 
-def test_command_multiline_input(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_multiline_input(monkeypatch):
     stdin = b'{\n  "releases": [\n    {\n      "ocid": "x",\n      "date": "2001-02-03T00:00:00Z"\n    }\n  ]\n}'
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
         main()
 
-    assert actual.getvalue() == '{"tag":["compiled"],"id":"x-2001-02-03T00:00:00Z","date":"2001-02-03T00:00:00Z","ocid":"x"}\n'  # noqa: E401
+    assert actual.getvalue() == '{"tag":["compiled"],"id":"x-2001-02-03T00:00:00Z","date":"2001-02-03T00:00:00Z","ocid":"x"}\n'  # noqa: E501
 
 
-def test_command_array_input(sqlite, monkeypatch):
+@pytest.mark.usefixtures('sqlite')
+def test_command_array_input(monkeypatch):
     stdin = read('release-packages.json', 'rb')
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'compile'])
         main()
 
-    assert actual.getvalue() == '{"tag":["compiled"],"id":"ocds-213czf-1-2001-02-03T04:05:06Z","date":"2001-02-03T04:05:06Z","ocid":"ocds-213czf-1","initiationType":"tender"}\n'  # noqa: E401
+    assert actual.getvalue() == '{"tag":["compiled"],"id":"ocds-213czf-1-2001-02-03T04:05:06Z","date":"2001-02-03T04:05:06Z","ocid":"ocds-213czf-1","initiationType":"tender"}\n'  # noqa: E501
 
 
-def test_command_invalid_json(sqlite, monkeypatch, caplog):
+@pytest.mark.usefixtures('sqlite')
+def test_command_invalid_json(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
         stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
