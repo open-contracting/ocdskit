@@ -24,13 +24,15 @@ def run_stdout(monkeypatch, main, args):
 
 
 # Similar to `stdout`, but with `pytest.raises` block.
-def run_stdout_error(monkeypatch, main, args, error=SystemExit):
+def assert_stdout_error(monkeypatch, main, args, error=SystemExit):
     with pytest.raises(error) as excinfo:
         with patch('sys.stdout', new_callable=StringIO) as stdout:
             monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
             main()
 
     assert stdout.getvalue() == ''
+    if error is SystemExit:
+        assert excinfo.value.code == 1
 
     return excinfo
 
@@ -56,7 +58,7 @@ def run_command(monkeypatch, main, args, stdin):
 
 
 # Similar to `run_command`, but with `pytest.raises` block.
-def run_command_error(monkeypatch, main, args, stdin, error=SystemExit):
+def assert_command_error(monkeypatch, main, args, stdin, error=SystemExit):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
@@ -66,6 +68,8 @@ def run_command_error(monkeypatch, main, args, stdin, error=SystemExit):
             main()
 
     assert stdout.getvalue() == ''
+    if error is SystemExit:
+        assert excinfo.value.code == 1
 
     return excinfo
 

@@ -4,7 +4,7 @@ import os.path
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import run_command_error, read, run_command
+from tests import assert_command_error, read, run_command
 
 
 @pytest.mark.vcr()
@@ -20,12 +20,11 @@ def test_command_invalid_json(monkeypatch, caplog):
     with caplog.at_level(logging.INFO):
         stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
-        excinfo = run_command_error(monkeypatch, main, ['validate'], stdin)
+        assert_command_error(monkeypatch, main, ['validate'], stdin)
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
         assert caplog.records[0].message.startswith('JSON error: ')
-        assert excinfo.value.code == 1
 
 
 @pytest.mark.vcr()

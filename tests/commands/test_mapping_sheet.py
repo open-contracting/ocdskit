@@ -1,7 +1,7 @@
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, path, run_stdout_error
+from tests import assert_stdout, path, assert_stdout_error
 
 
 def test_command(monkeypatch):
@@ -61,10 +61,8 @@ def test_command_sedl(monkeypatch):
 
 
 def test_command_order_by_nonexistent(monkeypatch, caplog):
-    excinfo = run_stdout_error(monkeypatch, main, ['mapping-sheet', '--order-by', 'nonexistent',
-                                                   path('release-schema.json')])
+    assert_stdout_error(monkeypatch, main, ['mapping-sheet', '--order-by', 'nonexistent', path('release-schema.json')])
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
     assert caplog.records[0].message == "the column 'nonexistent' doesn't exist – did you make a typo?"
-    assert excinfo.value.code == 1

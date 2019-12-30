@@ -2,7 +2,7 @@ import os.path
 from tempfile import TemporaryDirectory
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, read, run_stdout_error
+from tests import assert_stdout, read, assert_stdout_error
 
 schema = read('test-schema.json')
 
@@ -186,7 +186,7 @@ def test_missing_codelists(monkeypatch, caplog):
 
         os.mkdir(os.path.join(d, 'codelists'))
 
-        excinfo = run_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
+        excinfo = assert_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
 
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema
@@ -205,7 +205,7 @@ def test_missing_targets(monkeypatch, caplog):
             with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
                 f.write(codelist)
 
-        excinfo = run_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
+        excinfo = assert_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
 
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema

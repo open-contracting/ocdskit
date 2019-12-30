@@ -4,7 +4,7 @@ import pytest
 from jsonpointer import set_pointer
 
 from ocdskit.cli.__main__ import main
-from tests import assert_command, run_command_error, read, run_command
+from tests import assert_command, assert_command_error, read, run_command
 
 
 def test_command_record_package(monkeypatch):
@@ -98,9 +98,8 @@ def test_command_identity(versions, monkeypatch):
 def test_command_downgrade(monkeypatch, caplog):
     stdin = b'{}'
 
-    excinfo = run_command_error(monkeypatch, main, ['upgrade', '1.1:1.0'], stdin)
+    assert_command_error(monkeypatch, main, ['upgrade', '1.1:1.0'], stdin)
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
     assert caplog.records[0].message == 'downgrade from 1.1 to 1.0 is not supported'
-    assert excinfo.value.code == 1
