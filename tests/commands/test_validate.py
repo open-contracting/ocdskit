@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
@@ -22,7 +23,7 @@ def test_command(monkeypatch):
 
 @pytest.mark.vcr()
 def test_command_invalid_json(monkeypatch, caplog):
-    with caplog.at_level('INFO'):
+    with caplog.at_level(logging.INFO):
         stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
         with pytest.raises(SystemExit) as excinfo:
