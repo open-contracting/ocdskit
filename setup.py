@@ -17,7 +17,7 @@ setup(
         'ijson>=2.5',
         'jsonref',
         'jsonschema',
-        'ocdsmerge>=0.5.2',
+        'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.0.14',
         'requests',
         'rfc3987',

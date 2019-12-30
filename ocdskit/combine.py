@@ -4,7 +4,8 @@ from itertools import groupby
 from tempfile import NamedTemporaryFile
 
 from ocdsextensionregistry import ProfileBuilder
-from ocdsmerge.merge import get_release_schema_url, get_tags, merge, merge_versioned
+from ocdsmerge import Merger
+from ocdsmerge.util import get_release_schema_url, get_tags
 
 from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import get_ocds_minor_version, is_package, json_dumps
@@ -263,6 +264,8 @@ def compile_release_packages(data, uri='', publisher=None, published_date='', sc
             builder = ProfileBuilder(tag, list(output['extensions']))
             schema = builder.patched_release_schema()
 
+        merger = Merger(schema)
+
         if using_sqlite:
             # It is faster to insert the rows then create the index, than the reverse.
             # https://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
@@ -271,7 +274,7 @@ def compile_release_packages(data, uri='', publisher=None, published_date='', sc
             def iterator():
                 results = conn.execute("SELECT * FROM releases ORDER BY ocid")
                 for ocid, rows in groupby(results, lambda row: row[0]):
-                    yield ocid, [row[1] for row in rows]
+                    yield ocid, (row[1] for row in rows)
         else:
             def iterator():
                 for ocid in sorted(releases_by_ocid):
@@ -279,10 +282,12 @@ def compile_release_packages(data, uri='', publisher=None, published_date='', sc
 
         if return_package:
             for ocid, releases in iterator():
+                releases = list(releases)  # need a list, not a generator, as we'll iterate over it many times
+
                 record = {
                     'ocid': ocid,
                     'releases': [],
-                    'compiledRelease': merge(releases, schema),
+                    'compiledRelease': merger.create_compiled_release(releases),
                 }
 
                 if use_linked_releases:
@@ -291,7 +296,7 @@ def compile_release_packages(data, uri='', publisher=None, published_date='', sc
                     record['releases'] = releases
 
                 if return_versioned_release:
-                    record['versionedRelease'] = merge_versioned(releases, schema)
+                    record['versionedRelease'] = merger.create_versioned_release(releases)
 
                 output['records'].append(record)
 
@@ -302,13 +307,9 @@ def compile_release_packages(data, uri='', publisher=None, published_date='', sc
         else:
             for ocid, releases in iterator():
                 if return_versioned_release:
-                    merge_method = merge_versioned
+                    yield merger.create_versioned_release(releases)
                 else:
-                    merge_method = merge
-
-                merged_release = merge_method(releases, schema)
-
-                yield merged_release
+                    yield merger.create_compiled_release(releases)
     finally:
         if using_sqlite:
             file.close()
