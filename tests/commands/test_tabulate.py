@@ -1,58 +1,36 @@
-import sys
-from io import BytesIO, StringIO, TextIOWrapper
-from unittest.mock import patch
-
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import read
+from tests import run_command
 
 
 @pytest.mark.vcr()
 def test_command(monkeypatch):
-    stdin = read('realdata/release-package-1.json', 'rb')
+    actual = run_command(monkeypatch, main, ['tabulate', 'sqlite://'], ['realdata/release-package-1.json'])
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://'])
-        main()
-
-    assert actual.getvalue() == ''
+    assert actual == ''
 
 
 @pytest.mark.vcr()
 def test_command_release_package(monkeypatch):
-    stdin = read('release-package_minimal.json', 'rb')
+    actual = run_command(monkeypatch, main, ['tabulate', 'sqlite://'], ['release-package_minimal.json'])
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://'])
-        main()
-
-    assert actual.getvalue() == ''
+    assert actual == ''
 
 
 @pytest.mark.vcr()
 def test_command_record_package(monkeypatch):
-    stdin = read('record-package_minimal.json', 'rb')
+    actual = run_command(monkeypatch, main, ['tabulate', 'sqlite://'], ['record-package_minimal.json'])
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', 'sqlite://', '--drop'])
-        main()
-
-    assert actual.getvalue() == ''
+    assert actual == ''
 
 
 @pytest.mark.vcr()
 def test_command_drop(monkeypatch, tmpdir):
-    stdin = read('release-package_minimal.json', 'rb')
-
+    stdin = ['release-package_minimal.json']
     database_url = 'sqlite:///{}'.format(tmpdir.join('tmp.db'))
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', database_url])
-        main()
+    run_command(monkeypatch, main, ['tabulate', database_url], stdin)
+    actual = run_command(monkeypatch, main, ['tabulate', database_url, '--drop'], stdin)
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'tabulate', database_url, '--drop'])
-        main()
-
-    assert actual.getvalue() == ''
+    assert actual == ''
