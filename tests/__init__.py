@@ -15,6 +15,35 @@ def read(filename, mode='rt', encoding=None, **kwargs):
         return f.read()
 
 
+def run_stdout(monkeypatch, main, args):
+    with patch('sys.stdout', new_callable=StringIO) as stdout:
+        monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+        main()
+
+    return stdout.getvalue()
+
+
+# Similar to `stdout`, but with `pytest.raises` block.
+def run_stdout_error(monkeypatch, main, args, error=SystemExit):
+    with pytest.raises(error) as excinfo:
+        with patch('sys.stdout', new_callable=StringIO) as stdout:
+            monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+            main()
+
+    assert stdout.getvalue() == ''
+
+    return excinfo
+
+
+def assert_stdout(monkeypatch, main, args, expected):
+    actual = run_stdout(monkeypatch, main, args)
+
+    if os.path.isfile(path(expected)):
+        expected = read(expected, newline='')
+
+    assert actual == expected
+
+
 def run_command(monkeypatch, main, args, stdin):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
@@ -26,16 +55,19 @@ def run_command(monkeypatch, main, args, stdin):
     return stdout.getvalue()
 
 
-def assert_command_raises(monkeypatch, main, args, stdin):
+# Similar to `run_command`, but with `pytest.raises` block.
+def run_command_error(monkeypatch, main, args, stdin, error=SystemExit):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(error) as excinfo:
         with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as stdout:
             monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
             main()
 
-    return stdout.getvalue(), excinfo
+    assert stdout.getvalue() == ''
+
+    return excinfo
 
 
 def assert_command(monkeypatch, main, args, stdin, expected):

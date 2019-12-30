@@ -1,13 +1,10 @@
 import os.path
-import sys
-from io import StringIO
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
 
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import path
+from tests import path, assert_stdout
 
 test_command_argvalues = [
     ('record-package_minimal.json', 'record package'),
@@ -39,11 +36,7 @@ content = b'{"lorem":"ipsum"}'
 def test_command_unknown_format(basename, result, monkeypatch, caplog):
     filename = 'detect-format_{}.json'.format(basename)
 
-    with patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', path(filename)])
-        main()
-
-    assert actual.getvalue() == ''
+    assert_stdout(monkeypatch, main, ['detect-format', path(filename)], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
@@ -52,11 +45,8 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
 
 @pytest.mark.parametrize('filename,result', test_command_argvalues)
 def test_command(filename, result, monkeypatch):
-    with patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', path(filename)])
-        main()
-
-    assert actual.getvalue() == 'tests/fixtures/{}: {}\n'.format(filename, result)
+    expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
+    assert_stdout(monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
 def test_command_recursive(monkeypatch):
@@ -67,20 +57,12 @@ def test_command_recursive(monkeypatch):
         with open(os.path.join(d, '.test.json'), 'wb') as f:
             f.write(content)
 
-        with patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', '--recursive', d])
-            main()
-
-        assert actual.getvalue() == ''
+        assert_stdout(monkeypatch, main, ['detect-format', '--recursive', d], '')
 
 
 def test_command_directory(monkeypatch, caplog):
     with TemporaryDirectory() as d:
-        with patch('sys.stdout', new_callable=StringIO) as actual:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', d])
-            main()
-
-        assert actual.getvalue() == ''
+        assert_stdout(monkeypatch, main, ['detect-format', d], '')
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'WARNING'
@@ -88,11 +70,7 @@ def test_command_directory(monkeypatch, caplog):
 
 
 def test_command_nonexistent(monkeypatch, caplog):
-    with patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'detect-format', 'nonexistent'])
-        main()
-
-    assert actual.getvalue() == ''
+    assert_stdout(monkeypatch, main, ['detect-format', 'nonexistent'], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'ERROR'
