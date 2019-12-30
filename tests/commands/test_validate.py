@@ -101,6 +101,7 @@ def test_command_no_check_urls(monkeypatch):
     assert actual.getvalue() == ''
 
 
+@pytest.mark.vcr()
 def test_command_check_urls(monkeypatch):
     stdin = read('release-package_urls.json', 'rb')
 
