@@ -2,7 +2,7 @@ import os.path
 from tempfile import TemporaryDirectory
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, read, assert_stdout_error
+from tests import assert_stdout, assert_stdout_error, read
 
 schema = read('test-schema.json')
 

@@ -1,7 +1,7 @@
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, path, assert_stdout_error
+from tests import assert_stdout, assert_stdout_error, path
 
 
 def test_command(monkeypatch):

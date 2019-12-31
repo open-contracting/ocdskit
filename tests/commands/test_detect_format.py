@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import path, assert_stdout
+from tests import assert_stdout, path
 
 test_command_argvalues = [
     ('record-package_minimal.json', 'record package'),
