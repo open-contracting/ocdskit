@@ -1,8 +1,9 @@
 import logging
 import sys
 
-import ocdskit.combine
+import ocdskit.packager
 from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.combine import merge
 from ocdskit.exceptions import CommandError, InconsistentVersionError
 
 logger = logging.getLogger('ocdskit')
@@ -31,12 +32,12 @@ class Command(OCDSCommand):
         kwargs['use_linked_releases'] = self.args.linked_releases
         kwargs['return_versioned_release'] = self.args.versioned
 
-        if not ocdskit.combine.using_sqlite:
+        if not ocdskit.packager.using_sqlite:
             logger.warning('sqlite3 is unavailable, so the command will run in memory. If input files are too large, '
                            'the command might exceed available memory.')
 
         try:
-            for output in ocdskit.combine.compile_release_packages(self.items(), **kwargs):
+            for output in merge(self.items(), **kwargs):
                 self.print(output)
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]

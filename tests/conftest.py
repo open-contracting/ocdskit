@@ -3,7 +3,7 @@ import os.path
 
 import pytest
 
-import ocdskit.combine
+import ocdskit.packager
 
 logger = logging.getLogger('vcr')
 logger.setLevel(logging.WARNING)
@@ -16,4 +16,4 @@ def vcr_cassette_name(request):
 
 @pytest.fixture(params=[True, False])
 def sqlite(request, monkeypatch):
-    ocdskit.combine.using_sqlite = request.param
+    ocdskit.packager.using_sqlite = request.param

@@ -75,7 +75,6 @@ def test_command_no_check_urls(monkeypatch):
     assert actual == ''
 
 
-@pytest.mark.vcr()
 def test_command_check_urls(monkeypatch):
     actual = run_command(monkeypatch, main, ['validate', '--check-urls', '--timeout', '3'],
                          ['release-package_urls.json'])

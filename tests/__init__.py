@@ -43,7 +43,7 @@ def assert_stdout(monkeypatch, main, args, expected):
     if os.path.isfile(path(expected)):
         expected = read(expected, newline='')
 
-    assert actual == expected, '{}\n{}'.format(actual, expected)
+    assert actual == expected, '\n{}\n{}'.format(actual, expected)
 
 
 def run_command(monkeypatch, main, args, stdin):
@@ -80,4 +80,4 @@ def assert_command(monkeypatch, main, args, stdin, expected):
     if not isinstance(expected, str):
         expected = ''.join(read(filename) for filename in expected)
 
-    assert actual == expected, '{}\n{}'.format(actual, expected)
+    assert actual == expected, '\n{}\n{}'.format(actual, expected)

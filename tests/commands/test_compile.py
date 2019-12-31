@@ -9,39 +9,69 @@ import pytest
 
 import ocdskit.combine
 from ocdskit.cli.__main__ import main
-from tests import assert_command, read, run_command, assert_command_error
+from ocdskit.util import json_dumps
+from tests import assert_command, assert_command_error, read, run_command
+
+
+def _remove_package_metadata(filenames):
+    outputs = []
+    for filename in filenames:
+        data = json.loads(read(filename))
+        data['publisher'] = {}
+        data['packages'] = []
+        outputs.append(data)
+    return ''.join(json_dumps(data) + '\n')
+
+
+def assert_compile_command(monkeypatch, main, args, stdin, expected, encoding=None, remove_package_metadata=False):
+    assert_command(monkeypatch, main, args, stdin, expected)
+
+    args[args.index('compile') + 1:0] = ['--root-path', 'releases.item']
+    if remove_package_metadata:
+        expected = _remove_package_metadata(expected)
+    assert_command(monkeypatch, main, args, stdin, expected)
 
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command(monkeypatch):
-    assert_command(monkeypatch, main, ['--ascii', 'compile'],
-                   ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   ['realdata/compiled-release-1.json', 'realdata/compiled-release-2.json'])
+    assert_compile_command(monkeypatch, main, ['--ascii', 'compile'],
+                           ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                           ['realdata/compiled-release-1.json', 'realdata/compiled-release-2.json'])
 
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
-def test_command_extensions(monkeypatch):
+def test_command_extensions_with_packages(monkeypatch):
     assert_command(monkeypatch, main, ['compile'],
-                   ['release-package_additional-contact-points.json'],
-                   ['compile_extensions.json'])
+                   ['release-package_additional-contact-points.json'], ['compile_extensions.json'])
+
+
+@pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_extensions_with_releases(monkeypatch):
+    data = json.loads(read('compile_extensions.json'))
+    data['parties'][0]['additionalContactPoints'].insert(0, {'id': '1', 'name': 'John Doe'})
+    expected = json_dumps(data) + '\n'
+
+    assert_command(monkeypatch, main, ['compile', '--root-path', 'releases.item'],
+                   ['release-package_additional-contact-points.json'], expected)
 
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_versioned(monkeypatch):
-    assert_command(monkeypatch, main, ['--ascii', 'compile', '--versioned'],
-                   ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   ['realdata/versioned-release-1.json', 'realdata/versioned-release-2.json'])
+    assert_compile_command(monkeypatch, main, ['--ascii', 'compile', '--versioned'],
+                           ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                           ['realdata/versioned-release-1.json', 'realdata/versioned-release-2.json'])
 
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package(monkeypatch):
-    assert_command(monkeypatch, main, ['compile', '--package'],
-                   ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   ['realdata/record-package_package.json'])
+    assert_compile_command(monkeypatch, main, ['compile', '--package'],
+                           ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                           ['realdata/record-package_package.json'], remove_package_metadata=True)
 
 
 @pytest.mark.vcr()
@@ -83,7 +113,7 @@ def test_command_package_fake(monkeypatch):
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
-def test_command_package_linked_releases(monkeypatch):
+def test_command_package_linked_releases_with_packages(monkeypatch):
     assert_command(monkeypatch, main, ['compile', '--package', '--linked-releases'],
                    ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
                    ['realdata/record-package_linked-releases.json'])
@@ -91,10 +121,18 @@ def test_command_package_linked_releases(monkeypatch):
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
-def test_command_package_versioned(monkeypatch):
-    assert_command(monkeypatch, main, ['compile', '--package', '--versioned'],
+def test_command_package_linked_releases_with_releases(monkeypatch):
+    assert_command(monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path', 'releases.item'],
                    ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   ['realdata/record-package_versioned.json'])
+                   _remove_package_metadata(['realdata/record-package_package.json']))
+
+
+@pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_versioned(monkeypatch):
+    assert_compile_command(monkeypatch, main, ['compile', '--package', '--versioned'],
+                           ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                           ['realdata/record-package_versioned.json'], remove_package_metadata=True)
 
 
 @pytest.mark.vcr()
@@ -129,16 +167,16 @@ def test_command_help(monkeypatch, caplog):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_pretty(monkeypatch):
-    assert_command(monkeypatch, main, ['--pretty', 'compile'],
-                   ['release-package_minimal.json'],
-                   ['compile_pretty_minimal.json'])
+    assert_compile_command(monkeypatch, main, ['--pretty', 'compile'],
+                           ['release-package_minimal.json'],
+                           ['compile_pretty_minimal.json'])
 
 
 @pytest.mark.usefixtures('sqlite')
 def test_command_encoding(monkeypatch):
-    assert_command(monkeypatch, main, ['--encoding', 'iso-8859-1', '--ascii', 'compile'],
-                   ['realdata/release-package_encoding-iso-8859-1.json'],
-                   ['realdata/compile_encoding_encoding.json'])
+    assert_compile_command(monkeypatch, main, ['--encoding', 'iso-8859-1', '--ascii', 'compile'],
+                           ['realdata/release-package_encoding-iso-8859-1.json'],
+                           ['realdata/compile_encoding_encoding.json'], encoding='iso-8859-1')
 
 
 @pytest.mark.usefixtures('sqlite')
