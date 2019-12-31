@@ -23,6 +23,7 @@ def _remove_package_metadata(filenames):
     return ''.join(json_dumps(data) + '\n')
 
 
+# Test with packages and with releases.
 def assert_compile_command(monkeypatch, main, args, stdin, expected, encoding=None, remove_package_metadata=False):
     assert_streaming(monkeypatch, main, args, stdin, expected)
 
