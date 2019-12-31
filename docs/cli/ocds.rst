@@ -31,15 +31,13 @@ Reads OCDS files, and reports whether each is:
 compile
 -------
 
-Reads release packages from standard input, merges the releases by OCID, and prints the compiled releases.
-
-If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+Reads release packages and individual releases from standard input, merges the releases by OCID, and prints the compiled releases.
 
 Optional arguments:
 
 * ``--schema SCHEMA`` the URL or path of the release schema to use
 * ``--package`` wrap the compiled releases in a record package
-* ``--linked-releases`` if ``--package`` is set, use linked releases instead of full releases
+* ``--linked-releases`` if ``--package`` is set, use linked releases instead of full releases, if the input is a release package
 * ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
 * ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
@@ -49,11 +47,13 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the record package's ``publisher``'s ``uid`` to this value
 * ``--fake`` if ``--package`` is set, set the record package's required metadata to dummy values
 
+If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+
 ::
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
-For the Python API, see :meth:`ocdskit.combine.compile_release_packages`.
+For the Python API, see :meth:`ocdskit.combine.merge`.
 
 upgrade
 -------

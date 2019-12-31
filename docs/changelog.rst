@@ -1,6 +1,27 @@
 Changelog
 =========
 
+0.2.0 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+CLI:
+
+-  ``compile`` accepts either release packages or individual releases
+-  ``compile`` is memory efficient if given a long list of inputs
+
+Library:
+
+-  Rename ``compile_release_packages`` to ``merge``
+-  Add ``packager`` module with ``Packager`` class
+
+Fixed
+~~~~~
+
+-  ``--linked-releases`` no longer uses the same linked releases for all records
+
 0.1.5 (2019-12-18)
 ------------------
 

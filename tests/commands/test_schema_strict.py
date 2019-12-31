@@ -1,9 +1,7 @@
 import json
-import sys
-from io import BytesIO, StringIO, TextIOWrapper
-from unittest.mock import patch
 
 from ocdskit.cli.__main__ import main
+from tests import run_streaming
 
 stdin = b'''{
   "required": [
@@ -66,13 +64,7 @@ stdin = b'''{
 }
 '''
 
-
-def test_command(monkeypatch):
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', '--pretty', 'schema-strict'])
-        main()
-
-    assert actual.getvalue() == '''{
+expected = '''{
   "required": [
     "array",
     "minItemsArray",
@@ -140,9 +132,13 @@ def test_command(monkeypatch):
 '''
 
 
-def test_command_no_unique_items(monkeypatch):
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit', 'schema-strict', '--no-unique-items'])
-        main()
+def test_command(monkeypatch):
+    actual = run_streaming(monkeypatch, main, ['--pretty', 'schema-strict'], stdin)
 
-    assert 'uniqueItems' not in json.loads(actual.getvalue())['properties']['array']
+    assert actual == expected
+
+
+def test_command_no_unique_items(monkeypatch):
+    actual = run_streaming(monkeypatch, main, ['schema-strict', '--no-unique-items'], stdin)
+
+    assert 'uniqueItems' not in json.loads(actual)['properties']['array']

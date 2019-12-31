@@ -127,4 +127,8 @@ Add newlines to ends of files (Fish shell)::
 
     for i in *.json; echo >> $i; end
 
+Read line 10,000 of a file::
+
+    sed -n '10000 p' < filename.json
+
 On Windows, you may need to install `Cygwin <http://cygwin.com>`__ to use some command-line tools. PowerShell has `some corresponding tools <http://xahlee.info/powershell/PowerShell_for_unixer.html>`__.

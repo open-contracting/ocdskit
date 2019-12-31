@@ -78,3 +78,54 @@ def is_release(data):
     Returns whether the data is a release.
     """
     return 'tag' in data
+
+
+def _empty_package(uri, publisher, published_date):
+    if publisher is None:
+        publisher = {}
+
+    return {
+        'uri': uri,
+        'publisher': publisher,
+        'publishedDate': published_date,
+        'license': None,
+        'publicationPolicy': None,
+        'version': None,
+        'extensions': {},
+    }
+
+
+def _empty_record_package(uri='', publisher=None, published_date=''):
+    package = _empty_package(uri, publisher, published_date)
+    package['packages'] = []
+    package['records'] = []
+    return package
+
+
+def _empty_release_package(uri='', publisher=None, published_date=''):
+    package = _empty_package(uri, publisher, published_date)
+    package['releases'] = []
+    return package
+
+
+def _update_package_metadata(output, package):
+    for field in ('publisher', 'license', 'publicationPolicy', 'version'):
+        if field in package:
+            output[field] = package[field]
+
+    if 'extensions' in package:
+        # We use an insertion-ordered dict to keep extensions in order without duplication.
+        output['extensions'].update(dict.fromkeys(package['extensions']))
+
+
+def _set_extensions_metadata(output):
+    if output['extensions']:
+        output['extensions'] = list(output['extensions'])
+    else:
+        del output['extensions']
+
+
+def _remove_empty_optional_metadata(output):
+    for field in ('license', 'publicationPolicy', 'version'):
+        if output[field] is None:
+            del output[field]

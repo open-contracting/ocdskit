@@ -1,8 +1,9 @@
 import logging
 import sys
 
+import ocdskit.packager
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.combine import compile_release_packages
+from ocdskit.combine import merge
 from ocdskit.exceptions import CommandError, InconsistentVersionError
 
 logger = logging.getLogger('ocdskit')
@@ -10,7 +11,8 @@ logger = logging.getLogger('ocdskit')
 
 class Command(OCDSCommand):
     name = 'compile'
-    help = 'reads release packages from standard input, merges the releases by OCID, and prints the compiled releases'
+    help = 'reads release packages and individual releases from standard input, merges the releases by OCID, and ' \
+           'prints the compiled releases'
 
     def add_arguments(self):
         self.add_argument('--schema', help='the URL or path of the release schema to use')
@@ -30,13 +32,17 @@ class Command(OCDSCommand):
         kwargs['use_linked_releases'] = self.args.linked_releases
         kwargs['return_versioned_release'] = self.args.versioned
 
+        if not ocdskit.packager.using_sqlite:
+            logger.warning('sqlite3 is unavailable, so the command will run in memory. If input files are too large, '
+                           'the command might exceed available memory.')
+
         try:
-            for output in compile_release_packages(self.items(), **kwargs):
+            for output in merge(self.items(), **kwargs):
                 self.print(output)
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]
             if versions[1] < versions[0]:
                 versions.reverse()
 
-            raise CommandError('{}\nTry first upgrading packages to the same version:\n  cat file [file ...] | ocdskit'
-                               ' upgrade {}:{} | ocdskit compile {}'.format(str(e), *versions, ' '.join(sys.argv[2:])))
+            raise CommandError('{}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit '
+                               'upgrade {}:{} | ocdskit compile {}'.format(str(e), *versions, ' '.join(sys.argv[2:])))
