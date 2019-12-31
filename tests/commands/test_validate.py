@@ -75,6 +75,7 @@ def test_command_no_check_urls(monkeypatch):
     assert actual == ''
 
 
+# Can't record delay endpoint with VCR.
 def test_command_check_urls(monkeypatch):
     actual = run_streaming(monkeypatch, main, ['validate', '--check-urls', '--timeout', '3'],
                            ['release-package_urls.json'])
