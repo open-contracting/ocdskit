@@ -50,12 +50,8 @@ def test_command_extensions_with_packages(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_extensions_with_releases(monkeypatch):
-    data = json.loads(read('compile_extensions.json'))
-    data['parties'][0]['additionalContactPoints'].insert(0, {'id': '1', 'name': 'John Doe'})
-    expected = json_dumps(data) + '\n'
-
     assert_streaming(monkeypatch, main, ['compile', '--root-path', 'releases.item'],
-                     ['release-package_additional-contact-points.json'], expected)
+                     ['release-package_additional-contact-points.json'], ['compile_no-extensions.json'])
 
 
 @pytest.mark.vcr()
@@ -90,8 +86,8 @@ def test_command_package_uri_published_date(monkeypatch):
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_publisher(monkeypatch):
     actual = run_streaming(monkeypatch, main, ['compile', '--package', '--publisher-name', 'Acme Inc.',
-                                               '--publisher-uri', 'http://example.com/', '--publisher-scheme', 'scheme',
-                                               '--publisher-uid', '12345'],
+                                               '--publisher-uri', 'http://example.com/', '--publisher-scheme',
+                                               'scheme', '--publisher-uid', '12345'],
                            ['release-package_minimal.json'])
 
     package = json.loads(actual)

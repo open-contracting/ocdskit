@@ -6,7 +6,8 @@ from tests import assert_streaming, run_streaming
 
 def test_command(monkeypatch):
     assert_streaming(monkeypatch, main, ['combine-release-packages'],
-                     ['release-package_minimal.json', 'release-package_maximal.json', 'release-package_extensions.json'],
+                     ['release-package_minimal.json', 'release-package_maximal.json',
+                      'release-package_extensions.json'],
                      ['combine-release-packages_minimal-maximal-extensions.json'])
 
 
