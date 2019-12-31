@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, path
+from tests import assert_command, path
 
 test_command_argvalues = [
     ('record-package_minimal.json', 'record package'),
@@ -36,7 +36,7 @@ content = b'{"lorem":"ipsum"}'
 def test_command_unknown_format(basename, result, monkeypatch, caplog):
     filename = 'detect-format_{}.json'.format(basename)
 
-    assert_stdout(monkeypatch, main, ['detect-format', path(filename)], '')
+    assert_command(monkeypatch, main, ['detect-format', path(filename)], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
@@ -46,7 +46,7 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
 @pytest.mark.parametrize('filename,result', test_command_argvalues)
 def test_command(filename, result, monkeypatch):
     expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
-    assert_stdout(monkeypatch, main, ['detect-format', path(filename)], expected)
+    assert_command(monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
 def test_command_recursive(monkeypatch):
@@ -57,12 +57,12 @@ def test_command_recursive(monkeypatch):
         with open(os.path.join(d, '.test.json'), 'wb') as f:
             f.write(content)
 
-        assert_stdout(monkeypatch, main, ['detect-format', '--recursive', d], '')
+        assert_command(monkeypatch, main, ['detect-format', '--recursive', d], '')
 
 
 def test_command_directory(monkeypatch, caplog):
     with TemporaryDirectory() as d:
-        assert_stdout(monkeypatch, main, ['detect-format', d], '')
+        assert_command(monkeypatch, main, ['detect-format', d], '')
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'WARNING'
@@ -70,7 +70,7 @@ def test_command_directory(monkeypatch, caplog):
 
 
 def test_command_nonexistent(monkeypatch, caplog):
-    assert_stdout(monkeypatch, main, ['detect-format', 'nonexistent'], '')
+    assert_command(monkeypatch, main, ['detect-format', 'nonexistent'], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'ERROR'

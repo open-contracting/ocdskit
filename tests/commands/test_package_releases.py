@@ -1,29 +1,29 @@
 from ocdskit.cli.__main__ import main
-from tests import assert_command
+from tests import assert_streaming
 
 
 def test_command(monkeypatch):
-    assert_command(monkeypatch, main, ['package-releases', '--uri', 'http://example.com', '--published-date',
-                                       '9999-01-01T00:00:00Z', '--publisher-name', ''],
-                   ['release_minimal-1.json', 'release_minimal-2.json'],
-                   ['release-package_minimal-1-2.json'])
+    assert_streaming(monkeypatch, main, ['package-releases', '--uri', 'http://example.com', '--published-date',
+                                         '9999-01-01T00:00:00Z', '--publisher-name', ''],
+                     ['release_minimal-1.json', 'release_minimal-2.json'],
+                     ['release-package_minimal-1-2.json'])
 
 
 def test_command_extensions(monkeypatch):
-    assert_command(monkeypatch, main, ['package-releases', '--uri', 'http://example.com', '--published-date',
-                                       '9999-01-01T00:00:00Z', '--publisher-name', '',
-                                       'http://example.com/a/extension.json', 'http://example.com/b/extension.json'],
-                   ['release_minimal-1.json', 'release_minimal-2.json'],
-                   ['release-package_minimal-1-2-extensions.json'])
+    assert_streaming(monkeypatch, main, ['package-releases', '--uri', 'http://example.com', '--published-date',
+                                         '9999-01-01T00:00:00Z', '--publisher-name', '',
+                                         'http://example.com/a/extension.json', 'http://example.com/b/extension.json'],
+                     ['release_minimal-1.json', 'release_minimal-2.json'],
+                     ['release-package_minimal-1-2-extensions.json'])
 
 
 def test_command_root_path_array(monkeypatch):
-    assert_command(monkeypatch, main, ['package-releases', '--root-path', 'records.item.releases'],
-                   ['realdata/record-package-1.json', 'realdata/record-package-2.json'],
-                   ['realdata/release-package_record-package.json'])
+    assert_streaming(monkeypatch, main, ['package-releases', '--root-path', 'records.item.releases'],
+                     ['realdata/record-package-1.json', 'realdata/record-package-2.json'],
+                     ['realdata/release-package_record-package.json'])
 
 
 def test_command_root_path_item(monkeypatch):
-    assert_command(monkeypatch, main, ['package-releases', '--root-path', 'records.item.releases.item'],
-                   ['realdata/record-package-1.json', 'realdata/record-package-2.json'],
-                   ['realdata/release-package_record-package.json'])
+    assert_streaming(monkeypatch, main, ['package-releases', '--root-path', 'records.item.releases.item'],
+                     ['realdata/record-package-1.json', 'realdata/record-package-2.json'],
+                     ['realdata/release-package_record-package.json'])

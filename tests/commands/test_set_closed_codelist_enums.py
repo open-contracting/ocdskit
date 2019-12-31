@@ -2,7 +2,7 @@ import os.path
 from tempfile import TemporaryDirectory
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout, assert_stdout_error, read
+from tests import assert_command, assert_command_error, read
 
 schema = read('test-schema.json')
 
@@ -155,7 +155,7 @@ def test_command(monkeypatch):
             with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
                 f.write(codelist)
 
-        assert_stdout(monkeypatch, main, ['set-closed-codelist-enums', d], '')
+        assert_command(monkeypatch, main, ['set-closed-codelist-enums', d], '')
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema_with_enum
 
@@ -170,7 +170,7 @@ def test_unused_codelists(monkeypatch, caplog):
             with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
                 f.write(codelist)
 
-        assert_stdout(monkeypatch, main, ['set-closed-codelist-enums', d], '')
+        assert_command(monkeypatch, main, ['set-closed-codelist-enums', d], '')
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema_with_enum
 
@@ -186,7 +186,7 @@ def test_missing_codelists(monkeypatch, caplog):
 
         os.mkdir(os.path.join(d, 'codelists'))
 
-        excinfo = assert_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
+        excinfo = assert_command_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
 
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema
@@ -205,7 +205,7 @@ def test_missing_targets(monkeypatch, caplog):
             with open(os.path.join(d, 'codelists', '{}.csv'.format(basename)), 'w') as f:
                 f.write(codelist)
 
-        excinfo = assert_stdout_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
+        excinfo = assert_command_error(monkeypatch, main, ['set-closed-codelist-enums', d], error=KeyError)
 
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema
@@ -230,7 +230,7 @@ def test_conflicting_codelists(monkeypatch, caplog):
             with open(os.path.join(e, 'codelists', 'a.csv'), 'w') as f:
                 f.write('Code\nbaz\n')
 
-            assert_stdout(monkeypatch, main, ['set-closed-codelist-enums', d, e], '')
+            assert_command(monkeypatch, main, ['set-closed-codelist-enums', d, e], '')
             with open(os.path.join(e, 'release-schema.json')) as f:
                 assert f.read() == schema_with_enum
 
@@ -258,6 +258,6 @@ def test_modified_codelists(monkeypatch):
             with open(os.path.join(e, 'codelists', '-b.csv'), 'w') as f:
                 f.write('Code,Description\nbar,bzz\n')
 
-            assert_stdout(monkeypatch, main, ['set-closed-codelist-enums', d, e], '')
+            assert_command(monkeypatch, main, ['set-closed-codelist-enums', d, e], '')
             with open(os.path.join(e, 'release-schema.json')) as f:
                 assert f.read() == schema_with_modification

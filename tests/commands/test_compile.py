@@ -10,7 +10,7 @@ import pytest
 import ocdskit.combine
 from ocdskit.cli.__main__ import main
 from ocdskit.util import json_dumps
-from tests import assert_command, assert_command_error, read, run_command
+from tests import assert_streaming, assert_streaming_error, read, run_streaming
 
 
 def _remove_package_metadata(filenames):
@@ -24,12 +24,12 @@ def _remove_package_metadata(filenames):
 
 
 def assert_compile_command(monkeypatch, main, args, stdin, expected, encoding=None, remove_package_metadata=False):
-    assert_command(monkeypatch, main, args, stdin, expected)
+    assert_streaming(monkeypatch, main, args, stdin, expected)
 
     args[args.index('compile') + 1:0] = ['--root-path', 'releases.item']
     if remove_package_metadata:
         expected = _remove_package_metadata(expected)
-    assert_command(monkeypatch, main, args, stdin, expected)
+    assert_streaming(monkeypatch, main, args, stdin, expected)
 
 
 @pytest.mark.vcr()
@@ -43,8 +43,8 @@ def test_command(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_extensions_with_packages(monkeypatch):
-    assert_command(monkeypatch, main, ['compile'],
-                   ['release-package_additional-contact-points.json'], ['compile_extensions.json'])
+    assert_streaming(monkeypatch, main, ['compile'],
+                     ['release-package_additional-contact-points.json'], ['compile_extensions.json'])
 
 
 @pytest.mark.vcr()
@@ -54,8 +54,8 @@ def test_command_extensions_with_releases(monkeypatch):
     data['parties'][0]['additionalContactPoints'].insert(0, {'id': '1', 'name': 'John Doe'})
     expected = json_dumps(data) + '\n'
 
-    assert_command(monkeypatch, main, ['compile', '--root-path', 'releases.item'],
-                   ['release-package_additional-contact-points.json'], expected)
+    assert_streaming(monkeypatch, main, ['compile', '--root-path', 'releases.item'],
+                     ['release-package_additional-contact-points.json'], expected)
 
 
 @pytest.mark.vcr()
@@ -77,9 +77,9 @@ def test_command_package(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_uri_published_date(monkeypatch):
-    actual = run_command(monkeypatch, main, ['compile', '--package', '--uri', 'http://example.com/x.json',
-                                             '--published-date', '2010-01-01T00:00:00Z'],
-                                            ['release-package_minimal.json'])
+    actual = run_streaming(monkeypatch, main, ['compile', '--package', '--uri', 'http://example.com/x.json',
+                                               '--published-date', '2010-01-01T00:00:00Z'],
+                           ['release-package_minimal.json'])
 
     package = json.loads(actual)
     assert package['uri'] == 'http://example.com/x.json'
@@ -89,10 +89,10 @@ def test_command_package_uri_published_date(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_publisher(monkeypatch):
-    actual = run_command(monkeypatch, main, ['compile', '--package', '--publisher-name', 'Acme Inc.',
-                                             '--publisher-uri', 'http://example.com/', '--publisher-scheme', 'scheme',
-                                             '--publisher-uid', '12345'],
-                                            ['release-package_minimal.json'])
+    actual = run_streaming(monkeypatch, main, ['compile', '--package', '--publisher-name', 'Acme Inc.',
+                                               '--publisher-uri', 'http://example.com/', '--publisher-scheme', 'scheme',
+                                               '--publisher-uid', '12345'],
+                           ['release-package_minimal.json'])
 
     package = json.loads(actual)
     assert package['publisher']['name'] == 'Acme Inc.'
@@ -104,7 +104,7 @@ def test_command_package_publisher(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_fake(monkeypatch):
-    actual = run_command(monkeypatch, main, ['compile', '--package', '--fake'], ['release-package_minimal.json'])
+    actual = run_streaming(monkeypatch, main, ['compile', '--package', '--fake'], ['release-package_minimal.json'])
 
     package = json.loads(actual)
     assert package['uri'] == 'placeholder:'
@@ -114,17 +114,17 @@ def test_command_package_fake(monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_linked_releases_with_packages(monkeypatch):
-    assert_command(monkeypatch, main, ['compile', '--package', '--linked-releases'],
-                   ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   ['realdata/record-package_linked-releases.json'])
+    assert_streaming(monkeypatch, main, ['compile', '--package', '--linked-releases'],
+                     ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                     ['realdata/record-package_linked-releases.json'])
 
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_linked_releases_with_releases(monkeypatch):
-    assert_command(monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path', 'releases.item'],
-                   ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
-                   _remove_package_metadata(['realdata/record-package_package.json']))
+    assert_streaming(monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path', 'releases.item'],
+                     ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
+                     _remove_package_metadata(['realdata/record-package_package.json']))
 
 
 @pytest.mark.vcr()
@@ -139,8 +139,8 @@ def test_command_package_versioned(monkeypatch):
 @pytest.mark.usefixtures('sqlite')
 def test_command_version_mismatch(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
-        assert_command_error(monkeypatch, main, ['compile', '--package', '--versioned'],
-                             ['realdata/release-package_1.1-1.json', 'realdata/release-package_1.0-1.json'])
+        assert_streaming_error(monkeypatch, main, ['compile', '--package', '--versioned'],
+                               ['realdata/release-package_1.1-1.json', 'realdata/release-package_1.0-1.json'])
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
@@ -182,8 +182,8 @@ def test_command_encoding(monkeypatch):
 @pytest.mark.usefixtures('sqlite')
 def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
-        assert_command_error(monkeypatch, main, ['compile'],
-                             ['realdata/release-package_encoding-iso-8859-1.json'])
+        assert_streaming_error(monkeypatch, main, ['compile'],
+                               ['realdata/release-package_encoding-iso-8859-1.json'])
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
@@ -195,14 +195,14 @@ def test_command_bad_encoding_iso_8859_1(monkeypatch, caplog):
 def test_command_multiline_input(monkeypatch):
     stdin = b'{\n  "releases": [\n    {\n      "ocid": "x",\n      "date": "2001-02-03T00:00:00Z"\n    }\n  ]\n}'
 
-    actual = run_command(monkeypatch, main, ['compile'], stdin)
+    actual = run_streaming(monkeypatch, main, ['compile'], stdin)
 
     assert actual == '{"tag":["compiled"],"id":"x-2001-02-03T00:00:00Z","date":"2001-02-03T00:00:00Z","ocid":"x"}\n'  # noqa: E501
 
 
 @pytest.mark.usefixtures('sqlite')
 def test_command_array_input(monkeypatch):
-    actual = run_command(monkeypatch, main, ['compile'], ['release-packages.json'])
+    actual = run_streaming(monkeypatch, main, ['compile'], ['release-packages.json'])
 
     assert actual == '{"tag":["compiled"],"id":"ocds-213czf-1-2001-02-03T04:05:06Z","date":"2001-02-03T04:05:06Z","ocid":"ocds-213czf-1","initiationType":"tender"}\n'  # noqa: E501
 
@@ -212,7 +212,7 @@ def test_command_invalid_json(monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
         stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
-        assert_command_error(monkeypatch, main, ['compile'], stdin)
+        assert_streaming_error(monkeypatch, main, ['compile'], stdin)
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
@@ -223,8 +223,8 @@ def test_command_invalid_json(monkeypatch, caplog):
 def test_command_without_sqlite(monkeypatch, caplog):
     ocdskit.combine.sqlite = False
 
-    run_command(monkeypatch, main, ['--pretty', 'compile'],
-                ['release-package_minimal.json'])
+    run_streaming(monkeypatch, main, ['--pretty', 'compile'],
+                  ['release-package_minimal.json'])
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'

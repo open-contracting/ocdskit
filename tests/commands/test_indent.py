@@ -2,7 +2,7 @@ import os.path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 from ocdskit.cli.__main__ import main
-from tests import assert_stdout
+from tests import assert_command
 
 content = b'{"lorem":"ipsum"}'
 invalid = b'{"lorem":"ipsum"'
@@ -13,7 +13,7 @@ def test_command(monkeypatch):
         f.write(content)
         f.flush()
 
-        assert_stdout(monkeypatch, main, ['indent', f.name], '')
+        assert_command(monkeypatch, main, ['indent', f.name], '')
         f.seek(0)
 
         assert f.read() == b'{\n  "lorem": "ipsum"\n}\n'
@@ -24,7 +24,7 @@ def test_indent(monkeypatch):
         f.write(content)
         f.flush()
 
-        assert_stdout(monkeypatch, main, ['indent', '--indent', '4', f.name], '')
+        assert_command(monkeypatch, main, ['indent', '--indent', '4', f.name], '')
         f.seek(0)
 
         assert f.read() == b'{\n    "lorem": "ipsum"\n}\n'
@@ -37,7 +37,7 @@ def test_command_recursive(monkeypatch):
         with open(os.path.join(d, 'test.txt'), 'wb') as f:
             f.write(content)
 
-        assert_stdout(monkeypatch, main, ['indent', '--recursive', d], '')
+        assert_command(monkeypatch, main, ['indent', '--recursive', d], '')
 
         with open(os.path.join(d, 'test.json'), 'rb') as f:
             assert f.read() == b'{\n  "lorem": "ipsum"\n}\n'
@@ -47,7 +47,7 @@ def test_command_recursive(monkeypatch):
 
 def test_command_directory(monkeypatch, caplog):
     with TemporaryDirectory() as d:
-        assert_stdout(monkeypatch, main, ['indent', d], '')
+        assert_command(monkeypatch, main, ['indent', d], '')
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'WARNING'
@@ -55,7 +55,7 @@ def test_command_directory(monkeypatch, caplog):
 
 
 def test_command_nonexistent(monkeypatch, caplog):
-    assert_stdout(monkeypatch, main, ['indent', 'nonexistent'], '')
+    assert_command(monkeypatch, main, ['indent', 'nonexistent'], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'ERROR'
@@ -67,7 +67,7 @@ def test_command_invalid_json(monkeypatch, caplog):
         f.write(invalid)
         f.flush()
 
-        assert_stdout(monkeypatch, main, ['indent', f.name], '')
+        assert_command(monkeypatch, main, ['indent', f.name], '')
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'ERROR'
