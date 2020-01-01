@@ -8,7 +8,7 @@ def _default(obj):
         return float(obj)
     if isinstance(obj, GeneratorType):
         return list(obj)
-    raise TypeError('%s is not JSON serializable' % repr(obj))
+    raise TypeError('%r is not JSON serializable' % obj)
 
 
 def json_dump(data, io, ensure_ascii=False, **kwargs):
