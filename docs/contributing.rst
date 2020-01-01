@@ -25,10 +25,6 @@ These OCDS commands buffer, because they output one JSON file:
 
 Python's standard ``json`` library requires an entire file's contents to be in memory before writing. If there is demand to stream output from these commands, we can instead use a custom writer to write iteratively.
 
-These OCDS commands buffer (for now):
-
-* ``compile`` (see `#83 <https://github.com/open-contracting/ocdskit/issues/83>`__)
-
 These OCDS commands stream, using a read buffer of 64 kB:
 
 * ``detect-format``
@@ -36,6 +32,8 @@ These OCDS commands stream, using a read buffer of 64 kB:
 * ``split-record-packages``
 * ``split-release-packages``
 * ``validate``
+
+``compile`` must read all input before writing any output, to be sure it has all releases for each OCID. Instead of buffering all inputs into memory, however, it buffers into SQLite (if available), which writes to a temporary file on disk as needed.
 
 The ``tabulate`` command hasn't yet been reviewed.
 
