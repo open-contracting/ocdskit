@@ -2,8 +2,20 @@ import json
 from decimal import Decimal
 from types import GeneratorType
 
+from ocdsmerge.flatten import IdDict
+
+try:
+    import orjson
+    jsonlib = orjson
+    using_orjson = True
+except ImportError:
+    jsonlib = json
+    using_orjson = False
+
 
 def _default(obj):
+    if type(obj) is IdDict:  # needed by orjson, but not json
+        return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
     if isinstance(obj, GeneratorType):
@@ -17,7 +29,6 @@ def json_dump(data, io, ensure_ascii=False, **kwargs):
     """
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
-
     json.dump(data, io, ensure_ascii=ensure_ascii, default=_default, **kwargs)
 
 
@@ -25,10 +36,19 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
-    if 'indent' not in kwargs:
-        kwargs['separators'] = (',', ':')
+    # orjson doesn't support `ensure_ascii`, `indent` or `separators`.
+    # https://github.com/ijl/orjson#readme
+    if ensure_ascii or kwargs:
+        if 'indent' not in kwargs:
+            kwargs['separators'] = (',', ':')
+        return json.dumps(data, default=_default, **kwargs)
 
-    return json.dumps(data, ensure_ascii=ensure_ascii, default=_default, **kwargs)
+    if not using_orjson:
+        # The standard library defaults to `ensure_ascii=True`.
+        # https://docs.python.org/3/library/json.html#json.dump
+        kwargs['ensure_ascii'] = False
+
+    return jsonlib.dumps(data, default=_default, **kwargs)
 
 
 def get_ocds_minor_version(data):

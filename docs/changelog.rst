@@ -7,6 +7,8 @@ Changelog
 Changed
 ~~~~~~~
 
+-  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command.
+
 CLI:
 
 -  ``compile`` accepts either release packages or individual releases

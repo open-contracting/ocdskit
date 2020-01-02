@@ -1,11 +1,10 @@
-import json
 from collections import defaultdict
 from itertools import groupby
 from tempfile import NamedTemporaryFile
 
 from ocdskit.exceptions import InconsistentVersionError
 from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata, _set_extensions_metadata,
-                          _update_package_metadata, get_ocds_minor_version, is_release, json_dumps)
+                          _update_package_metadata, get_ocds_minor_version, is_release, json_dumps, jsonlib)
 
 try:
     import sqlite3
@@ -15,7 +14,7 @@ try:
         return json_dumps(d)
 
     def convert_json(s):
-        return json.loads(s)
+        return jsonlib.loads(s)
 
     sqlite3.register_adapter(dict, adapt_json)
     sqlite3.register_converter('json', convert_json)
@@ -93,7 +92,7 @@ class Packager:
             }
 
             releases = []
-            for ocid, uri, release in rows:
+            for _, uri, release in rows:
                 releases.append(release)
 
                 if use_linked_releases and uri:
@@ -126,7 +125,7 @@ class Packager:
         :param bool return_versioned_release: whether to yield versioned releases instead of compiled releases
         """
         for ocid, rows in self.backend.get_releases_by_ocid():
-            releases = (row[2] for row in rows)
+            releases = (row[-1] for row in rows)
 
             if return_versioned_release:
                 yield merger.create_versioned_release(releases)
@@ -176,8 +175,8 @@ class PythonBackend(AbstractBackend):
     def __init__(self):
         self.groups = defaultdict(list)
 
-    def add_release(self, ocid, uri, release):
-        self.groups[ocid].append((ocid, uri, release))
+    def add_release(self, ocid, package_uri, release):
+        self.groups[ocid].append((ocid, package_uri, release))
 
     def get_releases_by_ocid(self):
         for ocid in sorted(self.groups):
@@ -200,8 +199,8 @@ class SQLiteBackend(AbstractBackend):
 
         self.buffer = []
 
-    def add_release(self, ocid, uri, release):
-        self.buffer.append((ocid, uri, release))
+    def add_release(self, ocid, package_uri, release):
+        self.buffer.append((ocid, package_uri, release))
 
     def flush(self):
         # https://docs.python.org/3.8/library/sqlite3.html#sqlite3.Connection.executemany
