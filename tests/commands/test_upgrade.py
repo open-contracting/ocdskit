@@ -10,25 +10,25 @@ from tests import assert_streaming, assert_streaming_error, read, run_streaming
 def test_command_record_package(monkeypatch):
     assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/record-package_1.0.json'],
-                     ['realdata/record-package_1.1.json'])
+                     ['realdata/record-package_1.1.json'], ordered=False)
 
 
 def test_command_release_package_buyer_procuring_entity_suppliers(monkeypatch):
     assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/release-package_1.0-1.json'],
-                     ['realdata/release-package_1.1-1.json'])
+                     ['realdata/release-package_1.1-1.json'], ordered=False)
 
 
 def test_command_release_package_transactions(monkeypatch):
     assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/release-package_1.0-2.json'],
-                     ['realdata/release-package_1.1-2.json'])
+                     ['realdata/release-package_1.1-2.json'], ordered=False)
 
 
 def test_command_release_tenderers_amendment(monkeypatch, caplog):
     assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['release_1.0.json'],
-                     ['release_1.1.json'])
+                     ['release_1.1.json'], ordered=False)
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'

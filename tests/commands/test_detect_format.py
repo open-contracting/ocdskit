@@ -52,6 +52,7 @@ def test_command_recursive(monkeypatch, caplog):
         assert '.test.json' not in actual
         assert len(caplog.records) == 0
 
+
 @pytest.mark.parametrize('basename,result', test_command_unknown_format_argvalues)
 def test_command_unknown_format(basename, result, monkeypatch, caplog):
     filename = 'detect-format_{}.json'.format(basename)
