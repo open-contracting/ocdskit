@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from decimal import Decimal
 from types import GeneratorType
 
@@ -14,13 +15,14 @@ except ImportError:
 
 
 def _default(obj):
-    if type(obj) is IdDict:  # needed by orjson, but not json
+    if type(obj) in (IdDict, OrderedDict):  # needed by orjson, but not json
         return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
     if isinstance(obj, GeneratorType):
         return list(obj)
-    raise TypeError('%r is not JSON serializable' % obj)
+    # https://docs.python.org/3.8/library/json.html#json.JSONEncoder.default
+    return json.JSONEncoder().default(obj)
 
 
 def json_dump(data, io, ensure_ascii=False, **kwargs):
@@ -43,12 +45,13 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
             kwargs['separators'] = (',', ':')
         return json.dumps(data, default=_default, **kwargs)
 
-    if not using_orjson:
-        # The standard library defaults to `ensure_ascii=True`.
-        # https://docs.python.org/3/library/json.html#json.dump
-        kwargs['ensure_ascii'] = False
+    if using_orjson:
+        # orjson dumps to bytes.
+        return jsonlib.dumps(data, default=_default).decode()
 
-    return jsonlib.dumps(data, default=_default, **kwargs)
+    if 'indent' not in kwargs:
+        kwargs['separators'] = (',', ':')
+    return jsonlib.dumps(data, default=_default, ensure_ascii=False, **kwargs)
 
 
 def get_ocds_minor_version(data):
