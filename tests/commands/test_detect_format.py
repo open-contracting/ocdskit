@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import assert_command, path
+from tests import assert_command, path, run_command
 
 test_command_argvalues = [
     ('record-package_minimal.json', 'record package'),
@@ -29,8 +29,28 @@ test_command_unknown_format_argvalues = [
     ('object', 'non-OCDS object'),
 ]
 
-content = b'{"lorem":"ipsum"}'
+content = b'{"records":[]}'
 
+
+@pytest.mark.parametrize('filename,result', test_command_argvalues)
+def test_command(filename, result, monkeypatch):
+    expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
+    assert_command(monkeypatch, main, ['detect-format', path(filename)], expected)
+
+
+def test_command_recursive(monkeypatch, caplog):
+    with TemporaryDirectory() as d:
+        with open(os.path.join(d, 'test.json'), 'wb') as f:
+            f.write(content)
+
+        with open(os.path.join(d, '.test.json'), 'wb') as f:
+            f.write(content)
+
+        actual = run_command(monkeypatch, main, ['detect-format', '--recursive', d])
+
+        assert '/test.json: record package' in actual
+        assert '.test.json' not in actual
+        assert len(caplog.records) == 0
 
 @pytest.mark.parametrize('basename,result', test_command_unknown_format_argvalues)
 def test_command_unknown_format(basename, result, monkeypatch, caplog):
@@ -40,24 +60,7 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == 'tests/fixtures/{}: unknown (top-level JSON value is a {})'.format(filename, result)  # noqa
-
-
-@pytest.mark.parametrize('filename,result', test_command_argvalues)
-def test_command(filename, result, monkeypatch):
-    expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
-    assert_command(monkeypatch, main, ['detect-format', path(filename)], expected)
-
-
-def test_command_recursive(monkeypatch):
-    with TemporaryDirectory() as d:
-        with open(os.path.join(d, 'test.json'), 'wb') as f:
-            f.write(content)
-
-        with open(os.path.join(d, '.test.json'), 'wb') as f:
-            f.write(content)
-
-        assert_command(monkeypatch, main, ['detect-format', '--recursive', d], '')
+    assert caplog.records[0].message == 'tests/fixtures/{}: unknown (top-level JSON value is a {})'.format(filename, result)  # noqa: E501
 
 
 def test_command_directory(monkeypatch, caplog):
