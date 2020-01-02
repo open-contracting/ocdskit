@@ -192,15 +192,11 @@ class SQLiteBackend(AbstractBackend):
     def __init__(self):
         self.file = NamedTemporaryFile()
 
+        # https://docs.python.org/3.8/library/sqlite3.html#sqlite3.PARSE_DECLTYPES
         self.connection = sqlite3.connect(self.file.name, detect_types=sqlite3.PARSE_DECLTYPES)
 
-        # Disable unnecessary, expensive features.
-        # https://www.sqlite.org/pragma.html#pragma_synchronous
-        # https://www.sqlite.org/pragma.html#pragma_journal_mode
-        self.connection.execute('PRAGMA synchronous=OFF')
-        self.connection.execute('PRAGMA journal_mode=OFF')
-
-        self.connection.execute("CREATE TABLE releases (ocid text, uri text, release json)")
+        # https://sqlite.org/tempfiles.html#temp_databases
+        self.connection.execute("CREATE TEMP TABLE releases (ocid text, uri text, release json)")
 
         self.buffer = []
 
@@ -208,14 +204,13 @@ class SQLiteBackend(AbstractBackend):
         self.buffer.append((ocid, uri, release))
 
     def flush(self):
+        # https://docs.python.org/3.8/library/sqlite3.html#sqlite3.Connection.executemany
         self.connection.executemany("INSERT INTO releases VALUES (?, ?, ?)", self.buffer)
 
         self.buffer = []
 
     def get_releases_by_ocid(self):
-        # It is faster to insert the rows then create the index, than the reverse.
-        # https://stackoverflow.com/questions/1711631/improve-insert-per-second-performance-of-sqlite
-        self.connection.execute("CREATE INDEX ocid_idx ON releases(ocid)")
+        self.connection.execute("CREATE INDEX IF NOT EXISTS ocid_idx ON releases(ocid)")
 
         results = self.connection.execute("SELECT * FROM releases ORDER BY ocid")
         for ocid, rows in groupby(results, lambda row: row[0]):
