@@ -82,10 +82,11 @@ class BaseCommand:
 
 class OCDSCommand(BaseCommand):
     def add_base_arguments(self):
-        self.add_argument('--root-path', help='the path to the items to process within each input')
+        self.add_argument('--root-path', type=str, default='',
+                          help='the path to the items to process within each input')
 
     def prefix(self):
-        return self.args.root_path or ''
+        return self.args.root_path
 
     def items(self, **kwargs):
         """
