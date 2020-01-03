@@ -15,6 +15,6 @@ class Command(OCDSCommand):
         kwargs = self.parse_package_arguments()
         kwargs['extensions'] = self.args.extension
 
-        output = package_releases(list(self.items()), **kwargs)
+        output = package_releases(self.items(), **kwargs)
 
         self.print(output)

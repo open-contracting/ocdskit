@@ -1,3 +1,4 @@
+import itertools
 import json
 from collections import OrderedDict
 from decimal import Decimal
@@ -14,13 +15,31 @@ except ImportError:
     using_orjson = False
 
 
+# https://stackoverflow.com/questions/21663800/python-make-a-list-generator-json-serializable/46841935#46841935
+class SerializableGenerator(list):
+    def __init__(self, iterable):
+        iterator = iter(iterable)
+        try:
+            # If `iter()` is omitted, then `__iter__` won't exhaust `head`.
+            self.head = iter([next(iterator)])
+            # Adding an item to the list ensures `__bool__` and `__len__` work.
+            self.append(iterator)
+        except StopIteration:
+            # `__iter__` requires `head` to be set.
+            self.head = []
+
+    def __iter__(self):
+        # `*self[:1]` is used, because `self[0]` raises IndexError when `iterable` is empty.
+        return itertools.chain(self.head, *self[:1])
+
+
 def _default(obj):
     if type(obj) in (IdDict, OrderedDict):  # needed by orjson, but not json
         return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
     if isinstance(obj, GeneratorType):
-        return list(obj)
+        return SerializableGenerator(obj)
     # https://docs.python.org/3.8/library/json.html#json.JSONEncoder.default
     return json.JSONEncoder().default(obj)
 
@@ -52,6 +71,14 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
     return jsonlib.dumps(data, default=_default, ensure_ascii=False, **kwargs)
+
+
+def iterencode(data, ensure_ascii=False, **kwargs):
+    """
+    """
+    if 'indent' not in kwargs:
+        kwargs['separators'] = (',', ':')
+    return json.JSONEncoder(ensure_ascii=ensure_ascii, default=_default, **kwargs).iterencode(data)
 
 
 def get_ocds_minor_version(data):

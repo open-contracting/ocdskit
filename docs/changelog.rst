@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.1 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+-  Implement iterative JSON writer.
+
 0.2.0 (2019-12-31)
 ------------------
 

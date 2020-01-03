@@ -2,7 +2,7 @@ import sys
 
 import ijson
 
-from ocdskit.util import json_dumps
+from ocdskit.util import iterencode
 
 
 class StandardInputReader:
@@ -75,7 +75,9 @@ class BaseCommand:
         if self.args.ascii:
             kwargs['ensure_ascii'] = True
 
-        print(json_dumps(data, **kwargs))
+        for chunk in iterencode(data, **kwargs):
+            print(chunk, end='')
+        print()
 
 
 class OCDSCommand(BaseCommand):
