@@ -40,7 +40,7 @@ def _default(obj):
         return float(obj)
     if isinstance(obj, GeneratorType):
         return SerializableGenerator(obj)
-    # https://docs.python.org/3.8/library/json.html#json.JSONEncoder.default
+    # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
     return json.JSONEncoder().default(obj)
 
 
