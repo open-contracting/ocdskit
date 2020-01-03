@@ -38,9 +38,13 @@ def _default(obj):
         return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
-    if isinstance(obj, GeneratorType):
-        return SerializableGenerator(obj)
     # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
+    try:
+        iter(obj)
+    except TypeError:
+        pass
+    else:
+        return SerializableGenerator(obj)
     return json.JSONEncoder().default(obj)
 
 
