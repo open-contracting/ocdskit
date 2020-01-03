@@ -62,11 +62,34 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     :param dict publisher: the record package's ``publisher``
     :param str published_date: the record package's ``publishedDate``
     """
+    # We can postpone the aggregation of records by putting the for-loop in a function that yields each package's
+    # records instead of extending the output's records:
+    #
+    #     output['records'] = itertools.chain.from_iterable(func())
+    #
+    # This works with simple inputs like:
+    #
+    #     python -c 'import json; print("\n".join(json.dumps({"records": list(range(1000))}) for x in range(10000)))' |
+    #     ocdskit combine-record-packages > /dev/null
+    #
+    # However, this loop also serves to deduplicate packages and extensions. (It also has logic to replace package
+    # metadata, but we can change the logic to use the first package's metadata.)
+    #
+    # One way to postpone the evaluation of packages, extensions and records is to collect the packages and extensions
+    # in a first read of the input, while streaming the records into SQLite – and then streaming them out of SQLite.
+    # This effectively reads the inputs twice.
+    #
+    # Another way is to deduplicate the packages and extensions while yielding the records to a JSON writer that won't
+    # yield a closing "}" until the packages and extensions are written. This moves packages and extensions to the end.
+    # However, this would require copying and patching the long `_make_iterencode` function from the json module.
+    #
+    # For now, we are assuming that users aren't attempting to combine so many small packages that they exhaust memory.
+    #
+    # https://github.com/python/cpython/blob/v3.8.1/Lib/json/encoder.py#L259
     output = _empty_record_package(uri, publisher, published_date)
 
     for package in packages:
         _update_package_metadata(output, package)
-
         output['records'].extend(package['records'])
 
         if 'packages' in package:
@@ -93,11 +116,11 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     :param dict publisher: the release package's ``publisher``
     :param str published_date: the release package's ``publishedDate``
     """
+    # See comment in combine_record_packages regarding streaming.
     output = _empty_release_package(uri, publisher, published_date)
 
     for package in packages:
         _update_package_metadata(output, package)
-
         output['releases'].extend(package['releases'])
 
     if publisher:
