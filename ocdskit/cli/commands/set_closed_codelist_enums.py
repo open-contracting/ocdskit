@@ -1,4 +1,5 @@
 import csv
+import itertools
 import json
 import logging
 import os.path
@@ -24,10 +25,14 @@ class Command(BaseCommand):
                 for name in files:
                     if name.endswith('.csv'):
                         with open(os.path.join(root, name)) as f:
-                            rows = [row for row in csv.DictReader(f)]
+                            reader = csv.DictReader(f)
+                            row = next(reader)
+                            if 'Code' in row:
+                                codes = [row['Code'] for row in itertools.chain([row], reader)]
+                            else:
+                                codes = []
 
-                        if 'Code' in rows[0]:
-                            codes = [row['Code'] for row in rows]
+                        if codes:
                             if name.startswith('+'):
                                 # KeyError if codelist doesn't exist.
                                 codelists[name[1:]] += codes
