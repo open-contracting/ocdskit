@@ -47,6 +47,15 @@ def _default(obj):
     return json.JSONEncoder().default(obj)
 
 
+def iterencode(data, ensure_ascii=False, **kwargs):
+    """
+    Returns a generator that yields each string representation as available.
+    """
+    if 'indent' not in kwargs:
+        kwargs['separators'] = (',', ':')
+    return json.JSONEncoder(ensure_ascii=ensure_ascii, default=_default, **kwargs).iterencode(data)
+
+
 def json_dump(data, io, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a file-like object.
@@ -61,27 +70,13 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
     Dumps JSON to a string, and returns it.
     """
     # orjson doesn't support `ensure_ascii`, `indent` or `separators`.
-    # https://github.com/ijl/orjson#readme
-    if ensure_ascii or kwargs:
+    if not using_orjson or ensure_ascii or kwargs:
         if 'indent' not in kwargs:
             kwargs['separators'] = (',', ':')
-        return json.dumps(data, default=_default, **kwargs)
+        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, **kwargs)
 
-    if using_orjson:
-        # orjson dumps to bytes.
-        return jsonlib.dumps(data, default=_default).decode()
-
-    if 'indent' not in kwargs:
-        kwargs['separators'] = (',', ':')
-    return jsonlib.dumps(data, default=_default, ensure_ascii=False, **kwargs)
-
-
-def iterencode(data, ensure_ascii=False, **kwargs):
-    """
-    """
-    if 'indent' not in kwargs:
-        kwargs['separators'] = (',', ':')
-    return json.JSONEncoder(ensure_ascii=ensure_ascii, default=_default, **kwargs).iterencode(data)
+    # orjson dumps to bytes.
+    return orjson.dumps(data, default=_default).decode()
 
 
 def get_ocds_minor_version(data):
