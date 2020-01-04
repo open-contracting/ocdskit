@@ -77,9 +77,31 @@ class Packager:
 
             self.backend.flush()
 
-    def output_package(self, merger, return_versioned_release=False, use_linked_releases=False):
+    def output_package(self, merger, return_versioned_release=False, use_linked_releases=False, streaming=False):
         """
         Yields a record package.
+
+        :param ocdsmerge.merge.Merger merger: a merger
+        :param bool return_versioned_release: whether to include versioned releases in the record package
+        :param bool use_linked_releases: whether to use linked releases instead of full releases, if possible
+        :param bool streaming: whether to set the package's records to a generator instead of a list
+        """
+        records = self.output_records(merger, return_versioned_release=return_versioned_release,
+                                      use_linked_releases=use_linked_releases)
+
+        if not streaming:
+            records = list(records)
+
+        self.package['records'] = records
+
+        _set_extensions_metadata(self.package)
+        _remove_empty_optional_metadata(self.package)
+
+        yield self.package
+
+    def output_records(self, merger, return_versioned_release=False, use_linked_releases=False):
+        """
+        Yields records, ordered by OCID.
 
         :param ocdsmerge.merge.Merger merger: a merger
         :param bool return_versioned_release: whether to include versioned releases in the record package
@@ -110,12 +132,7 @@ class Packager:
             if return_versioned_release:
                 record['versionedRelease'] = merger.create_versioned_release(releases)
 
-            self.package['records'].append(record)
-
-        _set_extensions_metadata(self.package)
-        _remove_empty_optional_metadata(self.package)
-
-        yield self.package
+            yield record
 
     def output_releases(self, merger, return_versioned_release=False):
         """
@@ -187,13 +204,13 @@ class PythonBackend(AbstractBackend):
 
 class SQLiteBackend(AbstractBackend):
     # "The sqlite3 module internally uses a statement cache to avoid SQL parsing overhead."
-    # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
+    # https://docs.python.org/3/library/sqlite3.html#sqlite3.connect
     # Note: We never commit changes. SQLite manages the memory usage of uncommitted changes.
     # https://sqlite.org/atomiccommit.html#_cache_spill_prior_to_commit
     def __init__(self):
         self.file = NamedTemporaryFile()
 
-        # https://docs.python.org/3.8/library/sqlite3.html#sqlite3.PARSE_DECLTYPES
+        # https://docs.python.org/3/library/sqlite3.html#sqlite3.PARSE_DECLTYPES
         self.connection = sqlite3.connect(self.file.name, detect_types=sqlite3.PARSE_DECLTYPES)
 
         # https://sqlite.org/tempfiles.html#temp_databases
@@ -205,7 +222,7 @@ class SQLiteBackend(AbstractBackend):
         self.buffer.append((ocid, package_uri, release))
 
     def flush(self):
-        # https://docs.python.org/3.8/library/sqlite3.html#sqlite3.Connection.executemany
+        # https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.executemany
         self.connection.executemany("INSERT INTO releases VALUES (?, ?, ?)", self.buffer)
 
         self.buffer = []

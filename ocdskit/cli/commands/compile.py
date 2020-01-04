@@ -37,7 +37,7 @@ class Command(OCDSCommand):
                            'the command might exceed available memory.')
 
         try:
-            for output in merge(self.items(), **kwargs):
+            for output in merge(self.items(), streaming=True, **kwargs):
                 self.print(output)
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]

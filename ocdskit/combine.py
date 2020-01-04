@@ -110,7 +110,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 
 
 def merge(data, uri='', publisher=None, published_date='', schema=None, return_versioned_release=False,
-          return_package=False, use_linked_releases=False):
+          return_package=False, use_linked_releases=False, streaming=False):
     """
     Merges release packages and individual releases.
 
@@ -131,6 +131,8 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
         if the input is a release package
     :param bool return_versioned_release: if ``return_package`` is ``True``, include versioned releases in the record
         package; otherwise, yield versioned releases instead of compiled releases
+    :param bool streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
+        if the calling code exhausts the generator before ``merge`` returns)
     """
     with Packager() as packager:
         packager.add(data)
@@ -153,6 +155,6 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
                 packager.package['publisher'] = publisher
 
             yield from packager.output_package(merger, return_versioned_release=return_versioned_release,
-                                               use_linked_releases=use_linked_releases)
+                                               use_linked_releases=use_linked_releases, streaming=streaming)
         else:
             yield from packager.output_releases(merger, return_versioned_release=return_versioned_release)
