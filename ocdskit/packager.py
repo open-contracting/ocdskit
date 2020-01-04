@@ -137,6 +137,8 @@ class Packager:
 #
 # * Group releases by OCID
 # * Store each release's package URI
+#
+# For a PostgreSQL backend, see https://github.com/open-contracting/ocdskit/issues/116
 class AbstractBackend:
     def __init__(self):
         """
