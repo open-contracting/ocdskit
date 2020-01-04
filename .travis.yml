@@ -21,6 +21,6 @@ script:
   - pytest --cov ocdskit --vcr-record=none
   - pip install orjson
   - pytest ocdskit
-  - pip uninstall orjson
+  - pip uninstall -y orjson
 after_success:
   coveralls
