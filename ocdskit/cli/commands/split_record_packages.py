@@ -9,6 +9,7 @@ class Command(OCDSCommand):
         self.add_argument('size', type=int, help='the number of records per package')
 
     def handle(self):
+        # See exploration of not reading each input into memory: https://github.com/open-contracting/ocdskit/issues/118
         for package in self.items():
             records = package['records']
 
