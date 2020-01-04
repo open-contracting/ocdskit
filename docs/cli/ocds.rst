@@ -96,6 +96,8 @@ To convert record packages to a record package, you can use the ``--root-path`` 
 
     cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records.item.records
 
+If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
+
 For the Python API, see :meth:`ocdskit.combine.package_records`.
 
 package-releases
@@ -121,6 +123,8 @@ Optional positional arguments:
 To convert record packages to a release package, you can use the ``--root-path`` option::
 
     cat tests/fixtures/realdata/record-package* | ocdskit package-releases --root-path records.item.releases
+
+If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
 For the Python API, see :meth:`ocdskit.combine.package_releases`.
 
