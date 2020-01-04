@@ -8,14 +8,18 @@ Changed
 ~~~~~~~
 
 -  Implement iterative JSON writer.
+-  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command.
+
+Fixed
+~~~~~
+
+-  ``combine-record-packages`` no longer duplicates release package URLs in ``packages``
 
 0.2.0 (2019-12-31)
 ------------------
 
 Changed
 ~~~~~~~
-
--  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command.
 
 CLI:
 

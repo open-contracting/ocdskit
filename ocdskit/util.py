@@ -161,16 +161,16 @@ def _update_package_metadata(output, package):
         if field in package:
             output[field] = package[field]
 
+    # We use an insertion-ordered dict to keep extensions in order without duplication.
     if 'extensions' in package:
-        # We use an insertion-ordered dict to keep extensions in order without duplication.
         output['extensions'].update(dict.fromkeys(package['extensions']))
 
 
-def _set_extensions_metadata(output):
-    if output['extensions']:
-        output['extensions'] = list(output['extensions'])
+def _resolve_metadata(output, field):
+    if output[field]:
+        output[field] = list(output[field])
     else:
-        del output['extensions']
+        del output[field]
 
 
 def _remove_empty_optional_metadata(output):

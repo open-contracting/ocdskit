@@ -3,7 +3,7 @@ from itertools import groupby
 from tempfile import NamedTemporaryFile
 
 from ocdskit.exceptions import InconsistentVersionError
-from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata, _set_extensions_metadata,
+from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata, _resolve_metadata,
                           _update_package_metadata, get_ocds_minor_version, is_release, json_dumps, jsonlib)
 
 try:
@@ -94,7 +94,7 @@ class Packager:
 
         self.package['records'] = records
 
-        _set_extensions_metadata(self.package)
+        _resolve_metadata(self.package, 'extensions')
         _remove_empty_optional_metadata(self.package)
 
         yield self.package

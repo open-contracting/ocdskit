@@ -21,12 +21,12 @@ All OCDS commands stream input, using ``ijson`` to iteratively parse the JSON in
 The streaming behavior of each command is:
 
 -  ``detect-format``: streams, by discarding input as it's read
--  ``compile`` reads all inputs before writing any outputs, to be sure it has all releases for each OCID. Instead of buffering all inputs into memory, however, it buffers into SQLite (if available), which writes to a temporary file as needed.
+-  ``compile`` reads all inputs before writing any outputs, to be sure it has all releases for each OCID. Instead of buffering all inputs into memory, however, it reads each input into SQLite (if available), which writes to a temporary file as needed.
 -  ``upgrade``: reads each input into memory, and processes one at a time
 -  ``package-records``: streams, by holding the inputs in an iterator
 -  ``package-releases``: streams, by holding the inputs in an iterator
--  ``combine-record-packages``:  buffers all inputs into memory (see details in code)
--  ``combine-release-packages``:  buffers all inputs into memory (see details in code)
+-  ``combine-record-packages``:  buffers all inputs into memory (see comment in code)
+-  ``combine-release-packages``:  buffers all inputs into memory (see comment in code)
 -  ``split-record-packages``: reads each input into memory, and processes one at a time
 -  ``split-release-packages``: reads each input into memory, and processes one at a time
 -  ``validate``: reads each input into memory, and processes one at a time

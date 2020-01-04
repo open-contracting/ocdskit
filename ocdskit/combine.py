@@ -4,7 +4,7 @@ from ocdsmerge.util import get_release_schema_url, get_tags
 
 from ocdskit.packager import Packager
 from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
-                          _set_extensions_metadata, _update_package_metadata)
+                          _resolve_metadata, _update_package_metadata)
 
 
 def _package(key, items, uri, publisher, published_date, extensions):
@@ -64,21 +64,19 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     """
     # See options for not buffering all inputs into memory: https://github.com/open-contracting/ocdskit/issues/119
     output = _empty_record_package(uri, publisher, published_date)
+    output['packages'] = {}
 
     for package in packages:
         _update_package_metadata(output, package)
         output['records'].extend(package['records'])
-
         if 'packages' in package:
-            output['packages'].extend(package['packages'])
-
-    if not output['packages']:
-        del output['packages']
+            output['packages'].update(dict.fromkeys(package['packages']))
 
     if publisher:
         output['publisher'] = publisher
 
-    _set_extensions_metadata(output)
+    _resolve_metadata(output, 'packages')
+    _resolve_metadata(output, 'extensions')
     _remove_empty_optional_metadata(output)
 
     return output
@@ -103,7 +101,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     if publisher:
         output['publisher'] = publisher
 
-    _set_extensions_metadata(output)
+    _resolve_metadata(output, 'extensions')
     _remove_empty_optional_metadata(output)
 
     return output

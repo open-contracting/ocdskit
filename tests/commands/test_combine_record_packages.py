@@ -32,3 +32,14 @@ def test_command_publisher(monkeypatch):
 
     package = json.loads(actual)
     assert package['publisher']['name'] == 'Acme Inc.'
+
+
+def test_command_packages(monkeypatch):
+    actual = run_streaming(monkeypatch, main, ['combine-record-packages'],
+                           ['realdata/record-package_package.json', 'realdata/record-package_package.json'])
+
+    package = json.loads(actual)
+    assert package['packages'] == [
+        'http://www.contratosabiertos.cdmx.gob.mx/api/contrato/OCDS-87SD3T-AD-SF-DRM-063-2015',
+        'http://www.contratosabiertos.cdmx.gob.mx/api/contrato/OCDS-87SD3T-AD-SF-DRM-065-2015',
+    ]
