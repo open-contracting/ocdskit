@@ -32,7 +32,7 @@ OCDS example 2
 
 Download a list of record packages::
 
-    curl https://drive.google.com/uc?export=download&id=1HzVMdv9bryEw6pg80RwmJd3Le31SY1TI > record_packages.json
+    curl 'https://drive.google.com/uc?export=download&id=1HzVMdv9bryEw6pg80RwmJd3Le31SY1TI' > record_packages.json
 
 Combine it into a single record package::
 

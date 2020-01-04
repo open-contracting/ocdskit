@@ -70,6 +70,8 @@ OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/referen
 
 For the Python API, see :doc:`../api/upgrade`.
 
+If a single package is too large to hold in memory, use ``split-record-packages`` or ``split-release-packages`` to make it smaller. If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+
 package-records
 ---------------
 
@@ -175,7 +177,7 @@ Reads record packages from standard input, and prints smaller record packages fo
 
 ::
 
-    cat tests/fixtures/realdata/record-package-1.json | ocdskit split-record-packages 2 | split -l 1 -a 4
+    cat tests/fixtures/realdata/record-package-1-2.json | ocdskit split-record-packages 2 | split -l 1 -a 4
 
 The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
@@ -186,7 +188,7 @@ Reads release packages from standard input, and prints smaller release packages 
 
 ::
 
-    cat tests/fixtures/realdata/release-package-1.json | ocdskit split-release-packages 2 | split -l 1 -a 4
+    cat tests/fixtures/realdata/release-package-1-2.json | ocdskit split-release-packages 2 | split -l 1 -a 4
 
 The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
@@ -221,3 +223,5 @@ Optional arguments:
 ::
 
     cat tests/fixtures/* | ocdskit validate
+
+If a single package is too large to hold in memory, use ``split-record-packages`` or ``split-release-packages`` to make it smaller.

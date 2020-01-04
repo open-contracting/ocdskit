@@ -16,7 +16,7 @@ Streaming
 
 A naive program buffers all inputs into memory before writing any outputs. Since OCDS files can be very large, all OCDS commands read inputs and write outputs progressively or one-at-a-time (that is, they "stream"), as much as possible. Streaming writes outputs faster and requires less memory than buffering.
 
-All OCDS commands stream input, using ``ijson`` to iteratively parse the JSON inputs with a read buffer of 64 kB, and stream output, using `json.JSONDecoder.iterencode() <https://docs.python.org/3/library/json.html#json.JSONEncoder.iterencode>`___ with a `default <https://docs.python.org/3/library/json.html#json.JSONEncoder.default>`__ function that postpones the evaluation of iterators. OCDS commands otherwise avoid buffering by using iterators instead of lists (for example, ``package-releases`` sets the package's ``releases`` to an iterator), using the `itertools <https://docs.python.org/2/library/itertools.html>`__ module.
+All OCDS commands stream input, using ``ijson`` to iteratively parse the JSON inputs with a read buffer of 64 kB, and stream output, using `json.JSONDecoder.iterencode() <https://docs.python.org/3/library/json.html#json.JSONEncoder.iterencode>`___ with a `default <https://docs.python.org/3/library/json.html#json.JSONEncoder.default>`__ method that postpones the evaluation of iterators. OCDS commands otherwise postpone the evaluation of the input stream by using iterators instead of lists (for example, ``package-releases`` sets the package's ``releases`` to an iterator), using the `itertools <https://docs.python.org/2/library/itertools.html>`__ module.
 
 The streaming behavior of each command is:
 
@@ -32,13 +32,11 @@ The streaming behavior of each command is:
 -  ``validate``: reads each input into memory, and processes one at a time
 -  ``tabulate``: not yet reviewed
 
-For ``upgrade`` and ``validate``, if a single package is very large, a workaround is to use ``split-record-packages`` or ``split-release-packages`` to make it smaller. For ``upgrade``, specifically, if a release package is very large, a workaround is to upgrade its individual releases using ``--root-path releases.item``.
-
-You can append these lines to ``BaseCommand.print()`` to see if memory usage increases with input size:
+You can append these lines to the end of a ``handle()`` method to see if memory usage increases with input size:
 
 .. code:: python
 
-   import resource
+   import resource, sys
    sys.stderr.write(str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024))
 
 And run, for example::
