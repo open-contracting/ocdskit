@@ -129,7 +129,6 @@ class Packager:
                     package_release = release
                 record['releases'].append(package_release)
 
-            # Note: An optimization would be for OCDS Merge to create both merged releases at once (i.e. flatten once).
             record['compiledRelease'] = merger.create_compiled_release(releases)
             if return_versioned_release:
                 record['versionedRelease'] = merger.create_versioned_release(releases)
