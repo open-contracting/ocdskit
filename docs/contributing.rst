@@ -14,19 +14,21 @@ Adding a command
 Streaming
 ---------
 
-A naive program buffers all inputs into memory before writing any outputs. Since OCDS files can be very large, all OCDS commands read inputs and write outputs progressively or one-at-a-time (that is, they "stream"), as much as possible. Streaming writes outputs faster and requires less memory than buffering.
+A naive program buffers all inputs into memory before writing any outputs. Since OCDS files can be very large, all OCDS commands read inputs and write outputs progressively or one-at-a-time (that is, they "stream"), as much as possible. Streaming writes outputs faster and requires less memory than buffering. All OCDS commands:
 
-All OCDS commands stream input, using ``ijson`` to iteratively parse the JSON inputs with a read buffer of 64 kB, and stream output, using `json.JSONDecoder.iterencode() <https://docs.python.org/3/library/json.html#json.JSONEncoder.iterencode>`___ with a `default <https://docs.python.org/3/library/json.html#json.JSONEncoder.default>`__ method that postpones the evaluation of iterators. OCDS commands otherwise postpone the evaluation of the input stream by using iterators instead of lists (for example, ``package-releases`` sets the package's ``releases`` to an iterator), using the `itertools <https://docs.python.org/2/library/itertools.html>`__ module.
+-  stream input, using ``ijson`` to iteratively parse the JSON inputs with a read buffer of 64 kB
+-  stream output, using `json.JSONDecoder.iterencode() <https://docs.python.org/3/library/json.html#json.JSONEncoder.iterencode>`__ with a `default <https://docs.python.org/3/library/json.html#json.JSONEncoder.default>`__ method that postpones the evaluation of iterators
+-  postpone the evaluation of inputs by using iterators instead of lists (for example, ``package-releases`` sets the package's ``releases`` to an iterator), using the `itertools <https://docs.python.org/2/library/itertools.html>`__ module
 
 The streaming behavior of each command is:
 
 -  ``detect-format``: streams, by discarding input as it's read
 -  ``compile`` reads all inputs before writing any outputs, to be sure it has all releases for each OCID. Instead of buffering all inputs into memory, however, it reads each input into SQLite (if available), which writes to a temporary file as needed.
 -  ``upgrade``: reads each input into memory, and processes one at a time
--  ``package-records``: streams, by holding the inputs in an iterator
--  ``package-releases``: streams, by holding the inputs in an iterator
--  ``combine-record-packages``:  buffers all inputs into memory (see comment in code)
--  ``combine-release-packages``:  buffers all inputs into memory (see comment in code)
+-  ``package-records``: streams, by using an iterator to postpone the evaluation of inputs
+-  ``package-releases``: streams, by using an iterator to postpone the evaluation of inputs
+-  ``combine-record-packages``:  buffers all inputs into memory (`see issue <https://github.com/open-contracting/ocdskit/issues/119>`__)
+-  ``combine-release-packages``:  buffers all inputs into memory (`see issue <https://github.com/open-contracting/ocdskit/issues/119>`__)
 -  ``split-record-packages``: reads each input into memory, and processes one at a time
 -  ``split-release-packages``: reads each input into memory, and processes one at a time
 -  ``validate``: reads each input into memory, and processes one at a time
@@ -41,6 +43,7 @@ You can append these lines to the end of a ``handle()`` method to see if memory 
 
 And run, for example::
 
+    python -c 'import json; print("\n".join(json.dumps({"releases": [{"ocid": str(y), "date": ""} for x in range(100)]}) for y in range(10000)))' | ocdskit compile --package > /dev/null
     python -c 'print("\n".join(map(str, range(5000000))))' | ocdskit package-records > /dev/null
     python -c 'print("\n".join(map(str, range(5000000))))' | ocdskit package-releases > /dev/null
 
