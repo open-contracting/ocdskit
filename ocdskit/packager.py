@@ -89,6 +89,8 @@ class Packager:
         records = self.output_records(merger, return_versioned_release=return_versioned_release,
                                       use_linked_releases=use_linked_releases)
 
+        # If a user wants to stream data but can’t exhaust records right away, we can add an `autoclose=True` argument.
+        # If set to `False`, `__exit__` will do nothing, and the user will need to call `packager.backend.close()`.
         if not streaming:
             records = list(records)
 
