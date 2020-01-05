@@ -1,8 +1,9 @@
 import json
 
+import pytest
 from ocdsextensionregistry import ProfileBuilder
 
-from ocdskit.combine import merge
+from ocdskit.combine import merge, compile_release_packages
 from tests import read
 
 
@@ -27,3 +28,12 @@ def test_merge_without_schema():
     compiled_release = list(merge(data))[0]
 
     assert compiled_release == json.loads(read('compile_no-extensions.json'))
+
+
+def test_compile_release_packages():
+    with pytest.warns(DeprecationWarning) as records:
+        compiled_releases = list(compile_release_packages([]))
+
+    assert compiled_releases == []
+    assert len(records) == 1
+    assert str(records[0].message) == 'compile_release_packages() is deprecated. Use merge() instead.'

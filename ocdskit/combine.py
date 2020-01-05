@@ -1,3 +1,5 @@
+import warnings
+
 from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge import Merger
 from ocdsmerge.util import get_release_schema_url, get_tags
@@ -156,3 +158,8 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
                                                use_linked_releases=use_linked_releases, streaming=streaming)
         else:
             yield from packager.output_releases(merger, return_versioned_release=return_versioned_release)
+
+
+def compile_release_packages(*args, **kwargs):
+    warnings.warn('compile_release_packages() is deprecated. Use merge() instead.', DeprecationWarning, stacklevel=2)
+    yield from merge(*args, **kwargs)
