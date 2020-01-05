@@ -149,6 +149,8 @@ Optional arguments:
 
     cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
 
+If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
+
 For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
 
 combine-release-packages
@@ -171,6 +173,8 @@ Optional arguments:
 ::
 
     cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
+
+If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
 
 For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
 
