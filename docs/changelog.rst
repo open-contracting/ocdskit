@@ -7,8 +7,8 @@ Changelog
 Changed
 ~~~~~~~
 
--  Implement iterative JSON writer.
--  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command.
+-  Implement iterative JSON writer
+-  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command
 
 Fixed
 ~~~~~
@@ -52,11 +52,6 @@ The internal methods ``json_load`` and ``json_loads`` are removed.
 0.1.4 (2019-11-28)
 ------------------
 
-Fixed
-~~~~~
-
--  ``detect-format`` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
-
 Added
 ~~~~~
 
@@ -79,7 +74,12 @@ New library methods:
 Changed
 ~~~~~~~
 
--  mapping-sheet: Improved documentation of ``--extension`` and ``--extension-field``.
+-  mapping-sheet: Improve documentation of ``--extension`` and ``--extension-field``.
+
+Fixed
+~~~~~
+
+-  ``detect-format`` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
 
 0.1.3 (2019-09-26)
 ------------------
