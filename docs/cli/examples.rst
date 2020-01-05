@@ -102,7 +102,7 @@ Or, you can split the stream of release packages into individual files named ``x
     cat release_packages.json | split -l 1 -a 4
 
 jq snippets
-~~~~~~~~
+~~~~~~~~~~~
 
 Get the compiled releases from a record package, one line per release::
 
