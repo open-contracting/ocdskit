@@ -25,6 +25,9 @@ setup(
         'strict-rfc3339',
     ],
     extras_require={
+        'perf': [
+            'orjson',
+        ],
         'test': [
             'coveralls',
             'jsonpointer',
