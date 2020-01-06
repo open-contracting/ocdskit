@@ -14,6 +14,12 @@ except ImportError:
     using_orjson = False
 
 
+# See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
+def grouper(iterable, n, fillvalue=None):
+    args = [iter(iterable)] * n
+    return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+
 # https://stackoverflow.com/questions/21663800/python-make-a-list-generator-json-serializable/46841935#46841935
 class SerializableGenerator(list):
     def __init__(self, iterable):

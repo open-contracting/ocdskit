@@ -7,6 +7,11 @@ Changelog
 Added
 ~~~~~
 
+New CLI options:
+
+-  package-records: ``--size``
+-  package-releases: ``--size``
+
 New CLI commands:
 
 -  echo

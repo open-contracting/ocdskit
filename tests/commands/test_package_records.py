@@ -9,6 +9,12 @@ def test_command(monkeypatch):
                      ['record-package_minimal-1-2.json'])
 
 
+def test_command(monkeypatch):
+    assert_streaming(monkeypatch, main, ['package-records', '--size', '2'],
+                     ['record_minimal-1.json', 'record_minimal-2.json', 'record_minimal.json'],
+                     ['record-package_minimal-1-2-no-metadata.json', 'record-package_minimal-no-metadata.json'])
+
+
 def test_command_extensions(monkeypatch):
     assert_streaming(monkeypatch, main, ['package-records', '--uri', 'http://example.com', '--published-date',
                                          '9999-01-01T00:00:00Z', '--publisher-name', '',

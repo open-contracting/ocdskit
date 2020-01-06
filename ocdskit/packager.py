@@ -1,5 +1,5 @@
+import itertools
 from collections import defaultdict
-from itertools import groupby
 from tempfile import NamedTemporaryFile
 
 from ocdskit.exceptions import InconsistentVersionError
@@ -232,7 +232,7 @@ class SQLiteBackend(AbstractBackend):
         self.connection.execute("CREATE INDEX IF NOT EXISTS ocid_idx ON releases(ocid)")
 
         results = self.connection.execute("SELECT * FROM releases ORDER BY ocid")
-        for ocid, rows in groupby(results, lambda row: row[0]):
+        for ocid, rows in itertools.groupby(results, lambda row: row[0]):
             yield ocid, rows
 
     def close(self):
