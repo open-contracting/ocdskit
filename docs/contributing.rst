@@ -6,7 +6,7 @@ Adding a command
 
 #. Create a file matching the command's name in ``ocdskit/cli/commands``, replacing hyphens with underscores.
 #. Add the command's module to ``COMMAND_MODULES`` in ``ocdskit/__main__.py``, in alphabetical order.
-#. Fill in the command's file (see ``ocdskit/cli/commands/compile.py`` for a brief file).
+#. Fill in the command's file (see ``ocdskit/cli/commands/package_records.py`` for a brief file).
 #. Add documentation for the command and any new library methods.
 #. Add tests for the command.
 #. Update the changelog.
@@ -33,6 +33,7 @@ The streaming behavior of each command is:
 -  ``split-release-packages``: reads each input into memory, and processes one at a time
 -  ``validate``: reads each input into memory, and processes one at a time
 -  ``tabulate``: not yet reviewed
+-  ``echo``: streams, by using an iterator to postpone the evaluation of inputs
 
 You can append these lines to the end of a ``handle()`` method to see if memory usage increases with input size:
 

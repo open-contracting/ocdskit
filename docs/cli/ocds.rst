@@ -10,6 +10,55 @@ Optional arguments for all commands are:
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
+Handling edge cases
+-------------------
+
+Large packages
+~~~~~~~~~~~~~~
+
+If you are working with individual packages that are too large to hold in memory, use the :ref:`echo` command to reduce their size.
+
+Embedded data
+~~~~~~~~~~~~~
+
+If you are working with files that embed OCDS data, use the ``--root-path ROOT_PATH`` option to indicate the path to the items to process within each input. For example, if release packages are in an array under a ``results`` key, like so:
+
+.. code:: json
+
+   {
+     "results": [
+       {
+         "uri": "placeholder:",
+         "publisher": {"name": ""},
+         "publishedDate": "9999-01-01T00:00:00Z",
+         "version": "1.1",
+         "releases": []
+       }
+     ]
+   }
+
+You can run ``ocdskit <command> --root-path results.items`` to process the release packages. To build the root path, in this case, you join the ``results`` key to the ``item`` literal by a period (the ``item`` literal indicates that the items to process are in an array).
+
+For this next example, you can run ``ocdskit <command> --root-path results.item.ocdsReleasePackage``:
+
+.. code:: json
+
+   {
+     "results": [
+       {
+         "ocdsReleasePackage": {
+           {
+             "uri": "placeholder:",
+             "publisher": {"name": ""},
+             "publishedDate": "9999-01-01T00:00:00Z",
+             "version": "1.1",
+             "releases": []
+           }
+         }
+       }
+     ]
+   }
+
 detect-format
 -------------
 
@@ -70,7 +119,9 @@ OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/referen
 
 For the Python API, see :doc:`../api/upgrade`.
 
-If a single package is too large to hold in memory, use ``split-record-packages`` or ``split-release-packages`` to make it smaller. If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+
+.. _package-records:
 
 package-records
 ---------------
@@ -99,6 +150,8 @@ To convert record packages to a record package, you can use the ``--root-path`` 
 If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
 For the Python API, see :meth:`ocdskit.combine.package_records`.
+
+.. _package-releases:
 
 package-releases
 ----------------
@@ -178,6 +231,8 @@ If you need to create a single package that is too large to hold in your system'
 
 For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
 
+.. _split-record-packages:
+
 split-record-packages
 ---------------------
 
@@ -188,6 +243,8 @@ Reads record packages from standard input, and prints smaller record packages fo
     cat tests/fixtures/realdata/record-package-1-2.json | ocdskit split-record-packages 2 | split -l 1 -a 4
 
 The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+
+.. _split-release-packages:
 
 split-release-packages
 ----------------------
@@ -232,4 +289,45 @@ Optional arguments:
 
     cat tests/fixtures/* | ocdskit validate
 
-If a single package is too large to hold in memory, use ``split-record-packages`` or ``split-release-packages`` to make it smaller.
+.. _echo:
+
+echo
+----
+
+Repeats the input, applying ``--encoding``, ``--ascii``, ``--pretty`` and ``--root-path``, and using the UTF-8 encoding.
+
+You can use this command to reformat data:
+
+-  Use UTF-8 encoding::
+
+      cat iso-8859-1.json | ocdskit --encoding iso-8859-1 echo > utf-8.json
+
+-  Use ASCII characters only::
+
+      cat unicode.json | ocdskit --ascii echo > ascii.json
+
+-  Use UTF-8 characters where possible::
+
+      cat ascii.json | ocdskitecho > unicode.json
+
+-  Pretty print::
+
+      cat compact.json | ocdskit --pretty echo > pretty.json
+
+-  Make compact::
+
+      cat pretty.json | ocdskit echo > compact.json
+
+You can also use this command to extract releases from release packages, and records from record packages. This is especially useful if a single package is too large to hold in memory.
+
+-  Split a large record package into smaller packages of 100 records each::
+
+      cat large-record-package.json | ocdskit echo --root-path records.item | ocdskit package-records --size 100
+
+-  Split a large release package into smaller packages of 1,000 releases each::
+
+      cat large-release-package.json | ocdskit echo --root-path releases.item | ocdskit package-releases --size 1000
+
+Note that the package metadata from the large package won't be retained in the smaller packages; you can use the optional arguments of the :ref:`package-records` and :ref:`package-releases` commands to set the package metadata.
+
+If the single package is small enough to hold in memory, you can use the :ref:`split-record-packages` and :ref:`split-release-packages` commands instead, which retain the package metadata.

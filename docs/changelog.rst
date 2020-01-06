@@ -4,6 +4,13 @@ Changelog
 0.2.1 (Unreleased)
 ------------------
 
+Added
+~~~~~
+
+New CLI commands:
+
+-  echo
+
 Changed
 ~~~~~~~
 
