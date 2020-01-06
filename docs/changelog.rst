@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.1 (Unreleased)
+0.2.1 (2020-01-06)
 ------------------
 
 Added
@@ -40,7 +40,7 @@ CLI:
 
 Library:
 
--  Rename ``compile_release_packages`` to ``merge``
+-  **Backwards-incompatible**: Rename ``compile_release_packages`` to ``merge``
 -  Add ``packager`` module with ``Packager`` class
 
 Fixed
