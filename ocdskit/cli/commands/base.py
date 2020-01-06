@@ -2,7 +2,7 @@ import sys
 
 import ijson
 
-from ocdskit.util import iterencode
+from ocdskit.util import iterencode, json_dumps
 
 
 class StandardInputReader:
@@ -64,9 +64,12 @@ class BaseCommand:
         file = StandardInputReader(self.args.encoding)
         yield from ijson.items(file, self.prefix(), multiple_values=True, **kwargs)
 
-    def print(self, data):
+    def print(self, data, streaming=False):
         """
         Prints JSON data.
+
+        :param bool streaming: whether to stream output using ``json.JSONEncoder().iterencode()`` (it is only more
+            memory efficient if ``data`` contains iterators)
         """
         kwargs = {}
         # See https://docs.python.org/2/library/json.html
@@ -75,9 +78,12 @@ class BaseCommand:
         if self.args.ascii:
             kwargs['ensure_ascii'] = True
 
-        for chunk in iterencode(data, **kwargs):
-            print(chunk, end='')
-        print()
+        if streaming:
+            for chunk in iterencode(data, **kwargs):
+                print(chunk, end='')
+            print()
+        else:
+            print(json_dumps(data, **kwargs))
 
 
 class OCDSCommand(BaseCommand):

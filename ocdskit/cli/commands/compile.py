@@ -38,7 +38,7 @@ class Command(OCDSCommand):
 
         try:
             for output in merge(self.items(), streaming=True, **kwargs):
-                self.print(output)
+                self.print(output, streaming=self.args.package)
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]
             if versions[1] < versions[0]:

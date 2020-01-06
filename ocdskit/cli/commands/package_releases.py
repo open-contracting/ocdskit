@@ -17,4 +17,4 @@ class Command(OCDSCommand):
 
         output = package_releases(self.items(), **kwargs)
 
-        self.print(output)
+        self.print(output, streaming=True)
