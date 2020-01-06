@@ -7,12 +7,14 @@ from ocdskit.combine import merge, compile_release_packages
 from tests import read
 
 
+@pytest.mark.vcr()
 def test_merge_empty():
     compiled_releases = list(merge([]))
 
     assert compiled_releases == []
 
 
+@pytest.mark.vcr()
 def test_merge_with_schema():
     builder = ProfileBuilder('1__1__4', {'additionalContactPoint': 'master'})
     schema = builder.patched_release_schema()
@@ -23,6 +25,7 @@ def test_merge_with_schema():
     assert compiled_release == json.loads(read('compile_extensions.json'))
 
 
+@pytest.mark.vcr()
 def test_merge_without_schema():
     data = json.loads(read('release-package_additional-contact-points.json'))['releases']
     compiled_release = list(merge(data))[0]
@@ -30,6 +33,7 @@ def test_merge_without_schema():
     assert compiled_release == json.loads(read('compile_no-extensions.json'))
 
 
+@pytest.mark.vcr()
 def test_compile_release_packages():
     with pytest.warns(DeprecationWarning) as records:
         compiled_releases = list(compile_release_packages([]))
