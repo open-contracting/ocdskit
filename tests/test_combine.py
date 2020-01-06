@@ -3,8 +3,17 @@ import json
 import pytest
 from ocdsextensionregistry import ProfileBuilder
 
-from ocdskit.combine import merge, compile_release_packages
+from ocdskit.combine import package_records, merge, compile_release_packages
 from tests import read
+
+
+def test_package_default_arguments():
+    data = [item for filename in ('realdata/record-package-1.json', 'realdata/record-package-2.json')
+            for item in json.loads(read(filename))['records']]
+
+    actual = package_records(data)
+
+    assert actual == json.loads(read('realdata/record-package_record-package.json'))
 
 
 @pytest.mark.vcr()
