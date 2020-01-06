@@ -3,7 +3,7 @@ import json
 import pytest
 from ocdsextensionregistry import ProfileBuilder
 
-from ocdskit.combine import package_records, merge, compile_release_packages
+from ocdskit.combine import compile_release_packages, merge, package_records
 from tests import read
 
 
