@@ -9,7 +9,7 @@ def test_command(monkeypatch):
                      ['record-package_minimal-1-2.json'])
 
 
-def test_command(monkeypatch):
+def test_command_size(monkeypatch):
     assert_streaming(monkeypatch, main, ['package-records', '--size', '2'],
                      ['record_minimal-1.json', 'record_minimal-2.json', 'record_minimal.json'],
                      ['record-package_minimal-1-2-no-metadata.json', 'record-package_minimal-no-metadata.json'])
