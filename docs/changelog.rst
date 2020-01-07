@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.2 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+-  Avoid exception when piping output to tools like ``head``.
+
 0.2.1 (2020-01-06)
 ------------------
 

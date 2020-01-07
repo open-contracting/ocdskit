@@ -1,3 +1,4 @@
+import os
 import sys
 
 import ijson
@@ -72,19 +73,24 @@ class BaseCommand:
             memory efficient if ``data`` contains iterators)
         """
         kwargs = {}
-        # See https://docs.python.org/2/library/json.html
         if self.args.pretty:
             kwargs['indent'] = 2
         if self.args.ascii:
             kwargs['ensure_ascii'] = True
 
-        if streaming:
-            for chunk in iterencode(data, **kwargs):
-                print(chunk, end='')
-            print()
-        else:
-            print(json_dumps(data, **kwargs))
-
+        try:
+            if streaming:
+                for chunk in iterencode(data, **kwargs):
+                    print(chunk, end='')
+                print()
+            else:
+                print(json_dumps(data, **kwargs))
+            sys.stdout.flush()
+        # https://docs.python.org/3/library/signal.html#note-on-sigpipe
+        except BrokenPipeError:
+            devnull = os.open(os.devnull, os.O_WRONLY)
+            os.dup2(devnull, sys.stdout.fileno())
+            sys.exit(1)
 
 class OCDSCommand(BaseCommand):
     def add_base_arguments(self):
