@@ -92,6 +92,7 @@ class BaseCommand:
             os.dup2(devnull, sys.stdout.fileno())
             sys.exit(1)
 
+
 class OCDSCommand(BaseCommand):
     def add_base_arguments(self):
         self.add_argument('--root-path', type=str, default='',
