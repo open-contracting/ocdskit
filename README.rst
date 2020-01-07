@@ -2,11 +2,10 @@
 
 A suite of command-line tools for working with OCDS data to:
 
-* create release packages from releases
-* create record packages from release packages
-* create compiled releases and versioned releases from release packages
+* create compiled releases, versioned releases and record packages
 * upgrade from an old version of OCDS to a new version
-* detect the format of a file
+* detect the format of an OCDS file
+* wrap releases in a release package, or records in a record package
 * combine small packages into large packages
 * split large packages into small packages
 * load packages into a database

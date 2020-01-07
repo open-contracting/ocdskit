@@ -47,6 +47,8 @@ And run, for example::
     python -c 'import json; print("\n".join(json.dumps({"releases": [{"ocid": str(y), "date": ""} for x in range(100)]}) for y in range(10000)))' | ocdskit compile --package > /dev/null
     python -c 'print("\n".join(map(str, range(5000000))))' | ocdskit package-records > /dev/null
     python -c 'print("\n".join(map(str, range(5000000))))' | ocdskit package-releases > /dev/null
+    python -c 'import json; print("\n".join(json.dumps({"records": list(range(500))}) for x in range(10000)))' | ocdskit echo --root-path records.item | ocdskit package-records --size 999 > /dev/null
+    python -c 'import json; print("\n".join(json.dumps({"releases": list(range(500))}) for x in range(10000)))' | ocdskit echo --root-path releases.item | ocdskit package-releases --size 999 > /dev/null
 
 To test whether commands stream input, you can run, for example::
 
