@@ -7,4 +7,4 @@ class Command(OCDSCommand):
 
     def handle(self):
         for data in self.items():
-            self.print(data, streaming=True)
+            self.print(data)

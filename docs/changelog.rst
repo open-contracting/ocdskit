@@ -7,7 +7,9 @@ Changelog
 Changed
 ~~~~~~~
 
--  Avoid exception when piping output to tools like ``head``.
+-  Avoid exception when piping output to tools like ``head``
+-  package-records, package-releases: Use fast writer if ``--size`` is set
+-  echo: Use fast writer (assuming ``--root-path`` is set anytime input is too large)
 
 0.2.1 (2020-01-06)
 ------------------

@@ -17,10 +17,10 @@ class Command(OCDSCommand):
         kwargs = self.parse_package_arguments()
         kwargs['extensions'] = self.args.extension
 
-        if self.args.size:
+        if self.args.size:  # assume `--size` is reasonable
             for data in grouper(self.items(), self.args.size):
-                output = package_records(filter(None, data), **kwargs)
-                self.print(output, streaming=True)
+                output = package_records(list(filter(None, data)), **kwargs)
+                self.print(output)
         else:
             output = package_records(self.items(), **kwargs)
             self.print(output, streaming=True)
