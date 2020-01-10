@@ -10,11 +10,12 @@ from ocdskit.cli.__main__ import main
 from tests import assert_streaming, assert_streaming_error, read, run_streaming
 
 
-def test_help(monkeypatch, caplog):
+@patch('sys.stdout', new_callable=StringIO)
+def test_help(stdout, monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as stdout:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
             monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
             main()
 
