@@ -24,20 +24,20 @@ def assert_equal(actual, expected, ordered=True):
         assert ocdskit.util.jsonlib.loads(actual) == ocdskit.util.jsonlib.loads(expected)
 
 
-def run_command(monkeypatch, main, args):
-    with patch('sys.stdout', new_callable=StringIO) as stdout:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
-        main()
+@patch('sys.stdout', new_callable=StringIO)
+def run_command(monkeypatch, main, args, stdout):
+    monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+    main()
 
     return stdout.getvalue()
 
 
 # Similar to `run_command`, but with `pytest.raises` block.
-def assert_command_error(monkeypatch, main, args, expected='', error=SystemExit):
+@patch('sys.stdout', new_callable=StringIO)
+def assert_command_error(monkeypatch, main, args, stdout, expected='', error=SystemExit):
     with pytest.raises(error) as excinfo:
-        with patch('sys.stdout', new_callable=StringIO) as stdout:
-            monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
-            main()
+        monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+        main()
 
     actual = stdout.getvalue()
 
@@ -57,11 +57,12 @@ def assert_command(monkeypatch, main, args, expected, ordered=True):
     assert_equal(actual, expected, ordered=ordered)
 
 
-def run_streaming(monkeypatch, main, args, stdin):
+@patch('sys.stdout', new_callable=StringIO)
+def run_streaming(monkeypatch, main, args, stdin, stdout):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
-    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as stdout:
+    with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
         monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
         main()
 
@@ -69,12 +70,13 @@ def run_streaming(monkeypatch, main, args, stdin):
 
 
 # Similar to `run_streaming`, but with `pytest.raises` block.
-def assert_streaming_error(monkeypatch, main, args, stdin, expected='', error=SystemExit):
+@patch('sys.stdout', new_callable=StringIO)
+def assert_streaming_error(monkeypatch, main, args, stdin, stdout, expected='', error=SystemExit):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
     with pytest.raises(error) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as stdout:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
             monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
             main()
 

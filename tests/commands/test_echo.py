@@ -14,11 +14,11 @@ def test_help(monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
     with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as actual:
+        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))), patch('sys.stdout', new_callable=StringIO) as stdout:
             monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
             main()
 
-    assert actual.getvalue().startswith('usage: ocdskit [-h] ')
+    assert stdout.getvalue().startswith('usage: ocdskit [-h] ')
 
     assert len(caplog.records) == 0
     assert excinfo.value.code == 0
