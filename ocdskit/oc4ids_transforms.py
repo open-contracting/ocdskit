@@ -5,6 +5,27 @@ import jsonpointer
 from ocdskit.combine import merge
 
 
+def run_transforms(config, releases, project_id=None, compiled_releases=None, output=None):
+
+    """
+    Transforms a list of OCDS releases into a OC4IDS project.
+
+    :param dict config: contains optional tranform options.
+    :param list releases: list of OCDS releases
+    :param string project_id: project ID of resulting project
+    :param list compiled_releases: pre computed list of compiled releases
+    :param dict output: initial project output template project where transformed data will be added
+    """
+
+
+    transforms = [InitialTransformState(config, releases, project_id, compiled_releases, output)]
+    for transform_cls in transform_cls_list:
+        transform = transform_cls(transforms)
+        transforms.append(transform)
+
+    return transform.output
+
+
 class InitialTransformState:
 
     def __init__(self, config, releases, project_id=None, compiled_releases=None, output=None):
@@ -115,3 +136,14 @@ class TitleFromTender(BaseTransform):
                 self.output['title'] = title
                 self.success = True
                 break
+
+
+
+transform_cls_list = [
+    PublicAuthorityRole,
+    BuyerRole,
+    Sector,
+    AdditionalClassifications,
+    Title,
+    TitleFromTender
+]

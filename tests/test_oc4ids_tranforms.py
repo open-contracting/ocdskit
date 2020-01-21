@@ -11,6 +11,19 @@ def test_initial_tranform_state():
     assert len(initial_transform.compiled_releases) == 1
 
 
+def test_run_all():
+    releases = [
+        {"ocid":"ocds-213czf-1",
+         "id":"1",
+         "tag":"planning",
+         "date":"2001-02-03T04:05:06Z",
+         "parties":[{"id": "1", "roles": ["publicAuthority"]}]
+        }
+    ]
+    output = transforms.run_transforms({}, releases, '1')
+    assert output == {'id': '1', 'parties': [{'id': '1', 'roles': ['publicAuthority']}]}
+
+
 def test_public_authority_role():
     releases = [
         {"ocid":"ocds-213czf-1",
