@@ -28,12 +28,28 @@ def run_transforms(config, releases, project_id=None, compiled_releases=None, ou
 
 class InitialTransformState:
 
-    def __init__(self, config, releases, project_id=None, compiled_releases=None, output=None):
+    def __init__(self, config, releases, project_id=None, compiled_releases=None, records=None, output=None):
         self.config = config
         self.releases = releases
         self.project_id = project_id
-        if not compiled_releases:
-            compiled_releases = [compiled_release for compiled_release in merge(self.releases)]
+        self.records = records
+
+        if not records:
+            self.records = next(merge(self.releases, return_package=True, use_linked_releases=True)).get('records', [])
+
+        compiled_releases = []
+        for record in self.records:
+            compiled_release = record.get('compiledRelease', {})
+            # projects only have linked releases 'uri' is a good proxy for that.
+            linked_releases = [release for release in record.get('releases', []) if release.get('uri')]
+            embeded_releases = [release for release in record.get('releases', []) if not release.get('uri')]
+
+            compiled_release['releases'] = linked_releases
+            compiled_release['embededReleases'] = embeded_releases
+
+            compiled_releases.append(compiled_release)
+
+
         self.compiled_releases = compiled_releases
         self.output = output or {}
         if project_id and 'id' not in self.output:
@@ -104,7 +120,9 @@ class Sector(BaseTransform):
 class AdditionalClassifications(BaseTransform):
     def run(self):
         for compiled_release in self.compiled_releases:
-            additionalClassifications = jsonpointer.resolve_pointer(compiled_release, '/planning/project/additionalClassifications', None)
+            additionalClassifications = jsonpointer.resolve_pointer(
+                compiled_release, '/planning/project/additionalClassifications', None
+            )
             if additionalClassifications:
                 self.output['additionalClassifications'] = additionalClassifications
                 self.success = True
