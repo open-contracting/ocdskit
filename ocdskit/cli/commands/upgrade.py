@@ -7,7 +7,7 @@ from ocdskit.exceptions import CommandError
 
 class Command(OCDSCommand):
     name = 'upgrade'
-    help = 'upgrades packages and releases from an old version of OCDS to a new version'
+    help = 'upgrades packages, records and releases from an old version of OCDS to a new version'
 
     def add_arguments(self):
         self.add_argument('versions', help='the colon-separated old and new versions')

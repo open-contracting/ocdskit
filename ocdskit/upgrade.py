@@ -4,7 +4,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from hashlib import md5
 
-from ocdskit.util import get_ocds_minor_version, is_package, is_record_package, is_release_package
+from ocdskit.util import get_ocds_minor_version, is_package, is_record, is_record_package, is_release_package
 
 logger = logging.getLogger('ocdskit')
 
@@ -29,21 +29,21 @@ def _in(obj, field):
 
 def upgrade_10_10(data):
     """
-    Upgrades a record package, release package or release from 1.0 to 1.0 (no-op).
+    Upgrades a record package, release package, record or release from 1.0 to 1.0 (no-op).
     """
     return data
 
 
 def upgrade_11_11(data):
     """
-    Upgrades a record package, release package or release from 1.1 to 1.1 (no-op).
+    Upgrades a record package, release package, record or release from 1.1 to 1.1 (no-op).
     """
     return data
 
 
 def upgrade_10_11(data):
     """
-    Upgrades a record package, release package or release from 1.0 to 1.1.
+    Upgrades a record package, release package, record or release from 1.0 to 1.1.
 
     Retains the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
 
@@ -61,18 +61,27 @@ def upgrade_10_11(data):
 
     if is_record_package(data):
         for record in data['records']:
-            if 'releases' in record:
-                for release in record['releases']:
-                    upgrade_release_10_11(release)
-            if 'compiledRelease' in record:
-                upgrade_release_10_11(record['compiledRelease'])
+            upgrade_record_10_11(record)
     elif is_release_package(data):
         for release in data['releases']:
             upgrade_release_10_11(release)
+    elif is_record(data):
+        upgrade_record_10_11(data)
     else:  # release
         upgrade_release_10_11(data)
 
     return data
+
+
+def upgrade_record_10_11(record):
+    """
+    Upgrades a record from 1.0 to 1.1.
+    """
+    if 'releases' in record:
+        for release in record['releases']:
+            upgrade_release_10_11(release)
+    if 'compiledRelease' in record:
+        upgrade_release_10_11(record['compiledRelease'])
 
 
 def upgrade_release_10_11(release):
