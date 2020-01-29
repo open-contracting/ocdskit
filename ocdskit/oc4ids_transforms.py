@@ -374,6 +374,33 @@ class LocationFromItems(BaseTransform):
                 break
 
 
+class Budget(BaseTransform):
+    def run(self):
+        if len(self.compiled_releases) == 1:
+            budget_value = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/budget/amount", None)
+            self.output["budget"] = {"amount": budget_value}
+            self.success = True
+        else:
+            budget_currencies = set()
+            budget_amounts = []
+
+            for compiled_release in self.compiled_releases:
+                budget_amounts.append(
+                    float(jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
+                )
+                budget_currencies.add(
+                    jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
+                )
+
+            if len(budget_currencies) > 1:
+                logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
+            else:
+                self.output["budget"] = {
+                    "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
+                }
+                self.success = True
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -388,4 +415,5 @@ transform_cls_list = [
     ProcurementProcess,
     Location,
     LocationFromItems,
+    Budget,
 ]

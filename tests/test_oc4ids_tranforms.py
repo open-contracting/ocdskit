@@ -778,3 +778,73 @@ def test_location_not_inferred():
     )
 
     assert "locations" not in output
+
+
+def test_budget():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "1000", "currency": "USD"}}},
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    assert output["budget"]["amount"] == releases[0]["planning"]["budget"]["amount"]
+
+
+def test_budget_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "1000", "currency": "USD"}}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T06:07:08Z",
+            "planning": {"budget": {"amount": {"amount": "1234", "currency": "USD"}}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    total = float(releases[0]["planning"]["budget"]["amount"]["amount"]) + float(
+        releases[1]["planning"]["budget"]["amount"]["amount"]
+    )
+    assert output["budget"]["amount"]["amount"] == total
+    assert output["budget"]["amount"]["currency"] == releases[0]["planning"]["budget"]["amount"]["currency"]
+
+
+def test_budget_fail():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "999", "currency": "USD"}}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T06:07:08Z",
+            "planning": {"budget": {"amount": {"amount": "6464", "currency": "EUR"}}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    # Different currencies could not be totalled
+    assert "budget" not in output
