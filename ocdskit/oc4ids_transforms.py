@@ -328,7 +328,7 @@ class ProcurementProcess(BaseTransform):
 class Location(BaseTransform):
     def run(self):
         for compiled_release in self.compiled_releases:
-            locations = jsonpointer.resolve_pointer(compiled_release, '/planning/project/locations', None)
+            locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
             if locations:
                 self.output["locations"] = locations
                 self.success = True
@@ -353,11 +353,11 @@ class LocationFromItems(BaseTransform):
                 delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
                 if delivery_location:
                     locations.append(delivery_location)
-                
+
                 delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
                 if delivery_address:
                     locations.append({"address": delivery_address})
-            
+
             if len(locations) > 0:
                 self.output["locations"] = locations
                 self.success = True
@@ -376,5 +376,5 @@ transform_cls_list = [
     AdministrativeEntity,
     ContractStatus,
     Location,
-    LocationFromItems
+    LocationFromItems,
 ]

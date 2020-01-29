@@ -613,20 +613,17 @@ def test_procurment_process():
 
 def test_location():
     releases = [
-        {"ocid":"ocds-213czf-1",
-         "id":"1",
-         "tag":"planning",
-         "date":"2001-02-03T04:05:06Z",
-         "planning": { "project": { "locations": [{"description": "Mars"}] } },
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"locations": [{"description": "Mars"}]}},
         }
     ]
 
     output = transforms.run_transforms(
-        {},
-        copy.deepcopy(releases),
-        "1",
-        dict_cls=dict,
-        transform_list=[transforms.Location],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Location],
     )
 
     assert output["locations"] == [{"description": "Mars"}]
@@ -634,27 +631,25 @@ def test_location():
 
 def test_location_from_item_location():
     releases = [
-        {"ocid":"ocds-213czf-1",
-         "id":"1",
-         "tag":"planning",
-         "date":"2001-02-03T04:05:06Z",
-         "items": [
-            {
-              "id": "item1",
-              "deliveryLocation": {
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [51.751944, -1.257778]
-                },
-                "uri": "http://www.geonames.org/2640729/oxford.html"
-              }
-            }
-         ]
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "items": [
+                {
+                    "id": "item1",
+                    "deliveryLocation": {
+                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                        "uri": "http://www.geonames.org/2640729/oxford.html",
+                    },
+                }
+            ],
         }
     ]
 
     output = transforms.run_transforms(
-        {'infer_location': True},
+        {"infer_location": True},
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
@@ -665,103 +660,100 @@ def test_location_from_item_location():
 
 def test_location_from_delivery_address():
     releases = [
-        {"ocid":"ocds-213czf-1",
-         "id":"1",
-         "tag":"planning",
-         "date":"2001-02-03T04:05:06Z",
-         "items": [
-            {
-              "id": "item2",
-              "deliveryAddress": {
-                "postalCode": "OX1 1BX",
-                "countryName": "United Kingdom",
-                "streetAddress": "Town Hall, St Aldate's",
-                "region": "Oxfordshire",
-                "locality": "Oxford"
-              }
-            }
-         ]
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "items": [
+                {
+                    "id": "item2",
+                    "deliveryAddress": {
+                        "postalCode": "OX1 1BX",
+                        "countryName": "United Kingdom",
+                        "streetAddress": "Town Hall, St Aldate's",
+                        "region": "Oxfordshire",
+                        "locality": "Oxford",
+                    },
+                }
+            ],
         }
     ]
 
     output = transforms.run_transforms(
-        {'infer_location': True},
+        {"infer_location": True},
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
-    
-    assert output["locations"] == [{"address": releases[0]["items"][0]["deliveryAddress"] }]
+
+    assert output["locations"] == [{"address": releases[0]["items"][0]["deliveryAddress"]}]
 
 
 def test_location_multiple():
     releases = [
-        {"ocid":"ocds-213czf-1",
-         "id":"1",
-         "tag":"planning",
-         "date":"2001-02-03T04:05:06Z",
-         "items": [
-            {
-              "id": "item1",
-              "deliveryLocation": {
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [51.751944, -1.257778]
-                },
-                "uri": "http://www.geonames.org/2640729/oxford.html"
-              },
-              "deliveryAddress": {
-                "postalCode": "OX1 1BX",
-                "countryName": "United Kingdom",
-                "streetAddress": "Town Hall, St Aldate's",
-                "region": "Oxfordshire",
-                "locality": "Oxford"
-              }
-            }
-         ]
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "items": [
+                {
+                    "id": "item1",
+                    "deliveryLocation": {
+                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                        "uri": "http://www.geonames.org/2640729/oxford.html",
+                    },
+                    "deliveryAddress": {
+                        "postalCode": "OX1 1BX",
+                        "countryName": "United Kingdom",
+                        "streetAddress": "Town Hall, St Aldate's",
+                        "region": "Oxfordshire",
+                        "locality": "Oxford",
+                    },
+                }
+            ],
         }
     ]
 
     output = transforms.run_transforms(
-        {'infer_location': True},
+        {"infer_location": True},
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
 
-    assert output['locations'] == [
+    assert output["locations"] == [
         releases[0]["items"][0]["deliveryLocation"],
-        { "address": releases[0]["items"][0]["deliveryAddress"] }
-        ]
+        {"address": releases[0]["items"][0]["deliveryAddress"]},
+    ]
 
 
 def test_location_not_inferred():
     releases = [
-        {"ocid":"ocds-213czf-1",
-         "id":"1",
-         "tag":"planning",
-         "date":"2001-02-03T04:05:06Z",
-         "items": [
-            {
-              "id": "item1",
-              "deliveryLocation": {
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [51.751944, -1.257778]
-                },
-                "uri": "http://www.geonames.org/2640729/oxford.html"
-              },
-              "deliveryAddress": {
-                "postalCode": "OX1 1BX",
-                "countryName": "United Kingdom",
-                "streetAddress": "Town Hall, St Aldate's",
-                "region": "Oxfordshire",
-                "locality": "Oxford"
-              }
-            }
-         ]
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "items": [
+                {
+                    "id": "item1",
+                    "deliveryLocation": {
+                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                        "uri": "http://www.geonames.org/2640729/oxford.html",
+                    },
+                    "deliveryAddress": {
+                        "postalCode": "OX1 1BX",
+                        "countryName": "United Kingdom",
+                        "streetAddress": "Town Hall, St Aldate's",
+                        "region": "Oxfordshire",
+                        "locality": "Oxford",
+                    },
+                }
+            ],
         }
     ]
 
@@ -773,5 +765,4 @@ def test_location_not_inferred():
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
 
-    assert 'locations' not in output
-
+    assert "locations" not in output
