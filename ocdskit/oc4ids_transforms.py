@@ -11,9 +11,7 @@ from ocdskit.combine import merge
 logger = logging.getLogger("ocdskit")
 
 
-def run_transforms(
-    config, releases, project_id=None, dict_cls=None, records=None, output=None, transform_list=None
-):
+def run_transforms(config, releases, project_id=None, dict_cls=None, records=None, output=None, transform_list=None):
 
     """
     Transforms a list of OCDS releases into a OC4IDS project.
@@ -39,9 +37,7 @@ def run_transforms(
 
 
 class InitialTransformState:
-    def __init__(
-        self, config, releases, project_id=None, dict_cls=None, records=None, output=None
-    ):
+    def __init__(self, config, releases, project_id=None, dict_cls=None, records=None, output=None):
         self.config = config
         self.dict_cls = dict_cls or OrderedDict
         self.releases = sorted_releases(releases)
@@ -339,6 +335,44 @@ class NumberOfTenderers(BaseTransform):
                     contracting_process["summary"]["tender"] = tender
 
 
+class Location(BaseTransform):
+    def run(self):
+        for compiled_release in self.compiled_releases:
+            locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
+            if locations:
+                self.output["locations"] = locations
+                self.success = True
+                break
+
+
+class LocationFromItems(BaseTransform):
+    def run(self):
+        if not self.config.get("infer_location"):
+            self.success = True
+            return
+        if self.last_transforms[-1].success:
+            self.success = True
+            return
+
+        locations = []
+        for compiled_release in self.compiled_releases:
+
+            items = jsonpointer.resolve_pointer(compiled_release, "/items", None)
+            for item in items:
+
+                delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
+                if delivery_location:
+                    locations.append(delivery_location)
+
+                delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
+                if delivery_address:
+                    locations.append({"address": delivery_address})
+
+            if len(locations) > 0:
+                self.output["locations"] = locations
+                self.success = True
+                break
+
 
 transform_cls_list = [
     ContractingProcessSetup,
@@ -352,4 +386,6 @@ transform_cls_list = [
     AdministrativeEntity,
     ContractStatus,
     ProcurementProcess,
+    Location,
+    LocationFromItems,
 ]
