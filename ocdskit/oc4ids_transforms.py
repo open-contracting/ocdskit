@@ -325,6 +325,45 @@ class ProcurementProcess(BaseTransform):
                     contracting_process["summary"]["tender"] = tender
 
 
+class Location(BaseTransform):
+    def run(self):
+        for compiled_release in self.compiled_releases:
+            locations = jsonpointer.resolve_pointer(compiled_release, '/planning/project/locations', None)
+            if locations:
+                self.output["locations"] = locations
+                self.success = True
+                break
+
+
+class LocationFromItems(BaseTransform):
+    def run(self):
+        if not self.config.get("infer_location"):
+            self.success = True
+            return
+        if self.last_transforms[-1].success:
+            self.success = True
+            return
+
+        locations = []
+        for compiled_release in self.compiled_releases:
+
+            items = jsonpointer.resolve_pointer(compiled_release, "/items", None)
+            for item in items:
+
+                delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
+                if delivery_location:
+                    locations.append(delivery_location)
+                
+                delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
+                if delivery_address:
+                    locations.append({"address": delivery_address})
+            
+            if len(locations) > 0:
+                self.output["locations"] = locations
+                self.success = True
+                break
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -336,4 +375,6 @@ transform_cls_list = [
     ProcuringEntity,
     AdministrativeEntity,
     ContractStatus,
+    Location,
+    LocationFromItems
 ]
