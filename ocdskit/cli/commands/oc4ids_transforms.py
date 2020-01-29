@@ -1,9 +1,6 @@
 import logging
-import sys
 
-import ocdskit.packager
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.exceptions import CommandError, InconsistentVersionError
 import ocdskit.oc4ids_transforms as transforms
 
 logger = logging.getLogger("ocdskit")
