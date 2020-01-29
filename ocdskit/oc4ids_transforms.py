@@ -2,6 +2,7 @@ import copy
 import logging
 from collections import OrderedDict
 import datetime
+from ocdsmerge.util import sorted_releases
 
 import jsonpointer
 
@@ -11,7 +12,7 @@ logger = logging.getLogger("ocdskit")
 
 
 def run_transforms(
-    config, releases, project_id=None, dict_cls=None, compiled_releases=None, output=None, transform_list=None
+    config, releases, project_id=None, dict_cls=None, records=None, output=None, transform_list=None
 ):
 
     """
@@ -21,12 +22,12 @@ def run_transforms(
     :param list releases: list of OCDS releases
     :param string project_id: project ID of resulting project
     :param cls dict_cls: dict class you want to use in output default OrderedDict
-    :param list compiled_releases: pre computed list of compiled releases
+    :param list records: pre computed list of records
     :param dict output: initial project output template project where transformed data will be added
     :param list tranform_list: list of tranform classes, defaults to all classes
     """
 
-    transforms = [InitialTransformState(config, releases, project_id, dict_cls, compiled_releases, output)]
+    transforms = [InitialTransformState(config, releases, project_id, dict_cls, records, output)]
     if not transform_list:
         transform_list = transform_cls_list
 
@@ -39,11 +40,12 @@ def run_transforms(
 
 class InitialTransformState:
     def __init__(
-        self, config, releases, project_id=None, dict_cls=None, compiled_releases=None, records=None, output=None
+        self, config, releases, project_id=None, dict_cls=None, records=None, output=None
     ):
         self.config = config
         self.dict_cls = dict_cls or OrderedDict
-        self.releases = releases
+        self.releases = sorted_releases(releases)
+
         self.project_id = project_id
         self.records = records
 
@@ -325,6 +327,19 @@ class ProcurementProcess(BaseTransform):
                     contracting_process["summary"]["tender"] = tender
 
 
+class NumberOfTenderers(BaseTransform):
+    def run(self):
+        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
+            input_tender = compiled_release.get("tender", {})
+            if input_tender:
+                number_of_tenderers = input_tender.get("numberOfTenderers")
+                if number_of_tenderers:
+                    tender = contracting_process["summary"].get("tender", self.dict_cls())
+                    tender["numberOfTenderers"] = number_of_tenderers
+                    contracting_process["summary"]["tender"] = tender
+
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -336,4 +351,5 @@ transform_cls_list = [
     ProcuringEntity,
     AdministrativeEntity,
     ContractStatus,
+    ProcurementProcess,
 ]

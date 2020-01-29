@@ -7,7 +7,7 @@ from tests import read
 
 def test_initial_tranform_state():
     releases = json.loads(read("release-package_additional-contact-points.json"))["releases"]
-    initial_transform = transforms.InitialTransformState({}, releases, "1", compiled_releases=None)
+    initial_transform = transforms.InitialTransformState({}, releases, "1")
     assert len(initial_transform.compiled_releases) == 1
 
 
@@ -64,7 +64,7 @@ def test_buyer_role():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1", compiled_releases=None)
+    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
     transform = transforms.BuyerRole([initial_transform])
 
     # No config to say to convert buyers
@@ -72,7 +72,7 @@ def test_buyer_role():
     assert transform.success
 
     initial_transform = transforms.InitialTransformState(
-        {"copy_buyer_role": True}, copy.deepcopy(releases), "1", compiled_releases=None
+        {"copy_buyer_role": True}, copy.deepcopy(releases), "1"
     )
     transform = transforms.BuyerRole([initial_transform])
 
@@ -92,7 +92,7 @@ def test_sector():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1", compiled_releases=None)
+    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
     transform = transforms.Sector([initial_transform])
     assert transform.success
     assert transform.output["sector"] == "a"
@@ -109,7 +109,7 @@ def test_additional_classifications():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1", compiled_releases=None)
+    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
     transform = transforms.AdditionalClassifications([initial_transform])
     assert transform.success
     assert transform.output["additionalClassifications"] == [{"scheme": "a", "id": "1"}]
@@ -126,7 +126,7 @@ def test_title():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1", compiled_releases=None)
+    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
     transform = transforms.Title([initial_transform])
     assert transform.success
     assert transform.output["title"] == "a title"
@@ -144,7 +144,7 @@ def test_title_from_tender():
     ]
 
     initial_transform = transforms.InitialTransformState(
-        {"use_tender_title": True}, copy.deepcopy(releases), "1", compiled_releases=None
+        {"use_tender_title": True}, copy.deepcopy(releases), "1"
     )
     title_transform = transforms.Title([initial_transform])
     transform = transforms.TitleFromTender([initial_transform, title_transform])
@@ -163,7 +163,7 @@ def test_title_from_tender():
     ]
 
     initial_transform = transforms.InitialTransformState(
-        {"use_tender_title": True}, copy.deepcopy(releases), "1", compiled_releases=None
+        {"use_tender_title": True}, copy.deepcopy(releases), "1"
     )
     title_transform = transforms.Title([initial_transform])
     transform = transforms.TitleFromTender([initial_transform, title_transform])
@@ -367,7 +367,6 @@ def test_multiple_administrative_entity_in_process():
         {},
         copy.deepcopy(releases),
         "1",
-        dict_cls=dict,
         transform_list=[transforms.ContractingProcessSetup, transforms.AdministrativeEntity],
     )
 
@@ -429,7 +428,6 @@ def test_contract_status_pre_award():
         {},
         copy.deepcopy(releases),
         "1",
-        dict_cls=dict,
         transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
     )
 
@@ -493,7 +491,6 @@ def test_contract_status_active():
         {},
         copy.deepcopy(releases),
         "1",
-        dict_cls=dict,
         transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
     )
 
@@ -575,7 +572,6 @@ def test_contract_status_closed():
         {},
         copy.deepcopy(releases),
         "1",
-        dict_cls=dict,
         transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
     )
 
@@ -604,8 +600,30 @@ def test_procurment_process():
         {},
         copy.deepcopy(releases),
         "1",
-        dict_cls=dict,
         transform_list=[transforms.ContractingProcessSetup, transforms.ProcurementProcess],
     )
 
     assert output["contractingProcesses"][0]["summary"]["tender"] == releases[0]["tender"]
+
+
+def test_number_of_tenderers():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"numberOfTenderers": 123},
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.ContractingProcessSetup, transforms.NumberOfTenderers],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["tender"]["numberOfTenderers"] == 123
