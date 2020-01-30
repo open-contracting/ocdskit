@@ -104,7 +104,7 @@ class BaseTransform:
                     output_parties.append(output_party)
                     self.success = True
 
-    def copy_document_by_type(self, documentType):
+    def copy_document_by_type(self, document_type):
 
         if not self.output.get("documents"):
             self.output["documents"] = []
@@ -112,9 +112,22 @@ class BaseTransform:
         for compiled_release in self.compiled_releases:
             documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
             for document in documents:
-                if documentType in document.get("documentType", []):
+                if document_type in document.get("documentType", []):
                     self.output["documents"].append(document)
                     self.success = True
+
+    def concat_ocid_and_string(self, path_to_string):
+
+        strings = ""
+        for compiled_release in self.compiled_releases:
+
+            ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
+            a_string = jsonpointer.resolve_pointer(compiled_release, path_to_string, None)
+
+            concat = "<{}> {}\n".format(ocid, a_string)
+            strings = strings + concat
+
+        return strings
 
 
 class PublicAuthorityRole(BaseTransform):
@@ -429,15 +442,7 @@ class Purpose(BaseTransform):
                 self.success = True
 
         else:
-            purposes = ""
-            for compiled_release in self.compiled_releases:
-
-                ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
-                rationale = jsonpointer.resolve_pointer(compiled_release, "/planning/rationale", None)
-
-                purpose = "<{}> {}\n".format(ocid, rationale)
-                purposes = purposes + purpose
-
+            purposes = self.concat_ocid_and_string("/planning/rationale")
             if purposes is not "":
                 self.output["purpose"] = purposes
 
