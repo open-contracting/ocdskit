@@ -939,3 +939,110 @@ def test_needs_assessment():
         transform_list=[transforms.PurposeNeedsAssessment],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
+
+
+def test_description_one():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "A project description"}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+    )
+    assert output["description"] == releases[0]["planning"]["project"]["description"]
+
+
+def test_description_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "A project description"}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "2",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "Another project description"}},
+        },
+    ]
+
+    rationales = "<ocds-213czf-1> A project description\n<ocds-213czf-2> Another project description\n"
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+    )
+    assert output["description"] == rationales
+
+
+def test_description_tender():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"description_from_tender": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert output["description"] == releases[0]["tender"]["description"]
+
+
+def test_description_not_tender():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "Another project description"}},
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"description_from_tender": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert output["description"] == releases[0]["planning"]["project"]["description"]
+
+
+def test_description_not_project():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert "description" not in output

@@ -456,6 +456,43 @@ class PurposeNeedsAssessment(BaseTransform):
         self.copy_document_by_type("needsAssessment")
 
 
+class Description(BaseTransform):
+    def run(self):
+
+        if len(self.compiled_releases) == 1:
+            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/project/description", None)
+            if description:
+                self.output["description"] = description
+                self.success = True
+
+        else:
+            descriptions = self.concat_ocid_and_string("/planning/project/description")
+            if descriptions is not "":
+                self.output["description"] = descriptions
+
+
+class DescriptionTender(BaseTransform):
+    def run(self):
+        if not self.config.get("description_from_tender"):
+            self.success = True
+            return
+
+        if self.last_transforms[-1].success:
+            self.success = True
+            return
+
+        if len(self.compiled_releases) == 1:
+            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/tender/description", None)
+            if description:
+                self.output["description"] = description
+                self.success = True
+
+        else:
+            descriptions = self.concat_ocid_and_string("/tender/description")
+            if descriptions is not "":
+                self.output["description"] = descriptions
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -474,4 +511,6 @@ transform_cls_list = [
     BudgetApproval,
     Purpose,
     PurposeNeedsAssessment,
+    Description,
+    DescriptionTender,
 ]
