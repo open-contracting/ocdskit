@@ -432,6 +432,16 @@ class BudgetApproval(BaseTransform):
         self.copy_document_by_type("budgetApproval")
 
 
+class EnvironmentalImpact(BaseTransform):
+    def run(self):
+        self.copy_document_by_type("environmentalImpact")
+
+
+class LandAndSettlementImpact(BaseTransform):
+    def run(self):
+        self.copy_document_by_type("landAndSettlementImpact")
+
+
 class Purpose(BaseTransform):
     def run(self):
 
@@ -513,4 +523,6 @@ transform_cls_list = [
     PurposeNeedsAssessment,
     Description,
     DescriptionTender,
+    EnvironmentalImpact,
+    LandAndSettlementImpact,
 ]
