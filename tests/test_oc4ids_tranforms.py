@@ -1090,3 +1090,89 @@ def test_environmental_impact():
         {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.LandAndSettlementImpact],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
+
+
+def test_funders_budget():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [
+                {
+                    "id": "GB-LAC-E09000003-557",
+                    "name": "London Borough of Barnet - Transport Services",
+                    "details": "This is just a test.",
+                },
+                {"id": "GB-GOV-23", "name": "Department for Transport", "details": "This is also a test."},
+            ],
+            "planning": {
+                "budget": {
+                    "id": "1",
+                    "description": "Multi-source budget, see budget breakdown for details.",
+                    "amount": {"amount": 300000, "currency": "GBP"},
+                    "budgetBreakdown": [
+                        {
+                            "sourceParty": {
+                                "id": "GB-LAC-E09000003-557",
+                                "name": "London Borough of Barnet - Transport Services",
+                            },
+                            "period": {"startDate": "2016-01-01T00:00:00Z", "endDate": "2016-12-31T23:59:59Z"},
+                            "id": "001",
+                            "description": "Budget contribution from the local government",
+                            "amount": {"amount": 150000, "currency": "GBP"},
+                        },
+                        {
+                            "sourceParty": {"id": "GB-GOV-23", "name": "Department for Transport"},
+                            "period": {"startDate": "2016-01-01T00:00:00Z", "endDate": "2016-12-31T23:59:59Z"},
+                            "id": "002",
+                            "description": "Budget contribution from the national government",
+                            "amount": {"amount": 150000, "currency": "GBP"},
+                        },
+                    ],
+                }
+            },
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+    )
+
+    assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
+    assert output["parties"][0]["details"] == "This is just a test."
+    assert "funder" in output["parties"][0]["roles"]
+
+
+def test_funders():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [
+                {
+                    "id": "GB-LAC-E09000003-557",
+                    "name": "London Borough of Barnet - Transport Services",
+                    "details": "This is just a test.",
+                    "roles": ["funder"],
+                },
+                {
+                    "id": "GB-GOV-23",
+                    "name": "Department for Transport",
+                    "details": "This is also a test.",
+                    "roles": ["funder"],
+                },
+            ],
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+    )
+
+    assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
+    assert output["parties"][0]["details"] == "This is just a test."
+    assert "funder" in output["parties"][0]["roles"]

@@ -501,6 +501,41 @@ class DescriptionTender(BaseTransform):
             descriptions = self.concat_ocid_and_string("/tender/description")
             if descriptions is not "":
                 self.output["description"] = descriptions
+                self.success = True
+
+
+class FundingSources(BaseTransform):
+    def run(self):
+
+        if not self.output.get("parties"):
+            self.output["parties"] = []
+
+        for compiled_release in self.compiled_releases:
+
+            parties = jsonpointer.resolve_pointer(compiled_release, "/parties", None)
+
+            # Get parties from budgetBreakdown.sourceParty
+            breakdowns = jsonpointer.resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None)
+            if breakdowns:
+                for breakdown in breakdowns:
+                    source_party = jsonpointer.resolve_pointer(breakdown, "/sourceParty", None)
+                    party_id = source_party.get("id")
+                    # Look up party data by id in parties
+                    if parties and party_id:
+                        for party in parties:
+                            if party.get("id") == party_id:
+                                # Add to parties and set funder in roles
+                                if party.get("roles"):
+                                    party["roles"].append("funder")
+                                else:
+                                    party["roles"] = ["funder"]
+                                self.output["parties"].append(party)
+                                self.success = True
+
+            # If no parties from the budget breakdown, copy from top level with 'funder' roles
+            if len(self.output["parties"]) == 0:
+                self.copy_party_by_role("funder")
+                self.success = True
 
 
 transform_cls_list = [
@@ -525,4 +560,5 @@ transform_cls_list = [
     DescriptionTender,
     EnvironmentalImpact,
     LandAndSettlementImpact,
+    FundingSources,
 ]
