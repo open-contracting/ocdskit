@@ -104,6 +104,18 @@ class BaseTransform:
                     output_parties.append(output_party)
                     self.success = True
 
+    def copy_document_by_type(self, documentType):
+
+        if not self.output.get("documents"):
+            self.output["documents"] = []
+
+        for compiled_release in self.compiled_releases:
+            documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
+            for document in documents:
+                if documentType in document.get("documentType", []):
+                    self.output["documents"].append(document)
+                    self.success = True
+
 
 class PublicAuthorityRole(BaseTransform):
     def run(self):
@@ -403,15 +415,7 @@ class Budget(BaseTransform):
 
 class BudgetApproval(BaseTransform):
     def run(self):
-        if "documents" not in self.output:
-            self.output["documents"] = []
-
-        for compiled_release in self.compiled_releases:
-            documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
-            for document in documents:
-                if document.get("documentType") == "budgetApproval":
-                    self.output["documents"].append(document)
-                    self.success = True
+        self.copy_document_by_type("budgetApproval")
 
 
 transform_cls_list = [
