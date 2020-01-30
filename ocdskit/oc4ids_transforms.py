@@ -390,8 +390,9 @@ class Budget(BaseTransform):
     def run(self):
         if len(self.compiled_releases) == 1:
             budget_value = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/budget/amount", None)
-            self.output["budget"] = {"amount": budget_value}
-            self.success = True
+            if budget_value:
+                self.output["budget"] = {"amount": budget_value}
+                self.success = True
         else:
             budget_currencies = set()
             budget_amounts = []
@@ -418,6 +419,38 @@ class BudgetApproval(BaseTransform):
         self.copy_document_by_type("budgetApproval")
 
 
+class Purpose(BaseTransform):
+    def run(self):
+
+        if len(self.compiled_releases) == 1:
+            rationale = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/rationale", None)
+            if rationale:
+                self.output["purpose"] = rationale
+                self.success = True
+
+        else:
+            purposes = ""
+            for compiled_release in self.compiled_releases:
+
+                ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
+                rationale = jsonpointer.resolve_pointer(compiled_release, "/planning/rationale", None)
+
+                purpose = "<{}> {}\n".format(ocid, rationale)
+                purposes = purposes + purpose
+
+            if purposes is not "":
+                self.output["purpose"] = purposes
+
+
+class PurposeNeedsAssessment(BaseTransform):
+    def run(self):
+        if not self.config.get("copy_documents_needsassessment"):
+            self.success = True
+            return
+
+        self.copy_document_by_type("needsAssessment")
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -434,4 +467,6 @@ transform_cls_list = [
     LocationFromItems,
     Budget,
     BudgetApproval,
+    Purpose,
+    PurposeNeedsAssessment,
 ]

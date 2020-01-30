@@ -870,3 +870,72 @@ def test_budget_approval():
         {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.BudgetApproval],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
+
+
+def test_purpose_one():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "We were hungry."},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+    )
+    assert output["purpose"] == releases[0]["planning"]["rationale"]
+
+
+def test_purpose_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "We were hungry."},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "2",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "There are never enough post-its."},
+        },
+    ]
+
+    rationales = "<ocds-213czf-1> We were hungry.\n<ocds-213czf-2> There are never enough post-its.\n"
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+    )
+    assert output["purpose"] == rationales
+
+
+def test_needs_assessment():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "needsAssessment", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"copy_documents_needsassessment": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.PurposeNeedsAssessment],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][0]]
