@@ -848,3 +848,25 @@ def test_budget_fail():
     )
     # Different currencies could not be totalled
     assert "budget" not in output
+
+
+def test_budget_approval():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "projectPlan", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.BudgetApproval],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][1]]

@@ -401,6 +401,19 @@ class Budget(BaseTransform):
                 self.success = True
 
 
+class BudgetApproval(BaseTransform):
+    def run(self):
+        if "documents" not in self.output:
+            self.output["documents"] = []
+
+        for compiled_release in self.compiled_releases:
+            documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
+            for document in documents:
+                if document.get("documentType") == "budgetApproval":
+                    self.output["documents"].append(document)
+                    self.success = True
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -416,4 +429,5 @@ transform_cls_list = [
     Location,
     LocationFromItems,
     Budget,
+    BudgetApproval,
 ]
