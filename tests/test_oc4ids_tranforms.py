@@ -648,15 +648,17 @@ def test_location_from_item_location():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -667,7 +669,7 @@ def test_location_from_item_location():
         dict_cls=dict,
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
-    assert output["locations"] == [releases[0]["items"][0]["deliveryLocation"]]
+    assert output["locations"] == [releases[0]["tender"]["items"][0]["deliveryLocation"]]
 
 
 def test_location_from_delivery_address():
@@ -677,18 +679,20 @@ def test_location_from_delivery_address():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item2",
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item2",
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -700,7 +704,7 @@ def test_location_from_delivery_address():
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
 
-    assert output["locations"] == [{"address": releases[0]["items"][0]["deliveryAddress"]}]
+    assert output["locations"] == [{"address": releases[0]["tender"]["items"][0]["deliveryAddress"]}]
 
 
 def test_location_multiple():
@@ -710,22 +714,24 @@ def test_location_multiple():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -738,8 +744,8 @@ def test_location_multiple():
     )
 
     assert output["locations"] == [
-        releases[0]["items"][0]["deliveryLocation"],
-        {"address": releases[0]["items"][0]["deliveryAddress"]},
+        releases[0]["tender"]["items"][0]["deliveryLocation"],
+        {"address": releases[0]["tender"]["items"][0]["deliveryAddress"]},
     ]
 
 
@@ -750,22 +756,24 @@ def test_location_not_inferred():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 

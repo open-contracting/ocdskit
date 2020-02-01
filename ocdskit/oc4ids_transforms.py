@@ -382,7 +382,7 @@ class LocationFromItems(BaseTransform):
         locations = []
         for compiled_release in self.compiled_releases:
 
-            items = jsonpointer.resolve_pointer(compiled_release, "/items", None)
+            items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", None)
             for item in items:
 
                 delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
