@@ -176,7 +176,7 @@ def test_contracting_process_setup_releases():
           "summary": {
             "ocid": "ocds-213czf-1"
           },
-          "embededReleases": [
+          "embeddedReleases": [
             {
               "ocid": "ocds-213czf-1",
               "id": "1",
@@ -193,7 +193,7 @@ def test_contracting_process_setup_releases():
           "summary": {
             "ocid": "ocds-213czf-2"
           },
-          "embededReleases": [
+          "embeddedReleases": [
             {
               "ocid": "ocds-213czf-2",
               "id": "1",

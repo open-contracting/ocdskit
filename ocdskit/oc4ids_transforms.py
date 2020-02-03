@@ -60,10 +60,10 @@ class InitialTransformState:
             compiled_release = record.get("compiledRelease", {})
             # projects only have linked releases 'uri' is a good proxy for that.
             linked_releases = [release for release in record.get("releases", []) if release.get("url")]
-            embeded_releases = [release for release in record.get("releases", []) if not release.get("url")]
+            embedded_releases = [release for release in record.get("releases", []) if not release.get("url")]
 
             compiled_release["releases"] = linked_releases
-            compiled_release["embededReleases"] = embeded_releases
+            compiled_release["embeddedReleases"] = embedded_releases
 
             compiled_releases.append(compiled_release)
 
@@ -200,9 +200,9 @@ def contracting_process_setup(state):
         if releases:
             contracting_process["releases"] = releases
 
-        embeded_releases = compiled_release.get("embededReleases")
-        if embeded_releases:
-            contracting_process["embededReleases"] = embeded_releases
+        embedded_releases = compiled_release.get("embeddedReleases")
+        if embedded_releases:
+            contracting_process["embeddedReleases"] = embedded_releases
 
         state.output["contractingProcesses"].append(contracting_process)
 
