@@ -13,7 +13,7 @@ class Command(OCDSCommand):
     def add_arguments(self):
         self.add_argument("--id", help="Project ID of the created project", default=None)
         self.add_argument("--package", action="store_true", help="wrap the project in a package")
-        self.add_argument("--options", help="comma seperated list of tranform options", default="")
+        self.add_argument("--options", help="comma seperated list of optional tranforms", default="")
 
         self.add_package_arguments("project", "if --package is set, ")
 

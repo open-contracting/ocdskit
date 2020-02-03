@@ -11,7 +11,7 @@ from ocdskit.combine import merge
 logger = logging.getLogger("ocdskit")
 
 
-def run_transforms(config, releases, project_id=None, dict_cls=None, records=None, output=None, transforms=None):
+def run_transforms(config, releases, project_id=None, records=None, output=None):
 
     """
     Transforms a list of OCDS releases into a OC4IDS project.
@@ -19,26 +19,34 @@ def run_transforms(config, releases, project_id=None, dict_cls=None, records=Non
     :param dict config: contains optional tranform options.
     :param list releases: list of OCDS releases
     :param string project_id: project ID of resulting project
-    :param cls dict_cls: dict class you want to use in output default OrderedDict
     :param list records: pre computed list of records
     :param dict output: initial project output template project where transformed data will be added
-    :param list tranform_list: list of tranform classes, defaults to all classes
     """
+    transforms_to_run = []
 
-    state = InitialTransformState(config, releases, project_id, dict_cls, records, output)
+    for transform in transform_list:
+        transform_docstring = getattr(transform, '__doc__')
+        if transform_docstring and transform_docstring.startswith('Optional') and not config.get(transform.__name__):
+            continue
+        transforms_to_run.append(transform)
+
+    return _run_transforms(releases, project_id, records, output, transforms_to_run)
+
+
+def _run_transforms(releases, project_id=None, records=None, output=None, transforms=None):
+
+    state = InitialTransformState(releases, project_id, records, output)
     if not transforms:
         transforms = transform_list
 
     for transform in transforms:
-        state.success_list.append(transform(state))
+        transform(state)
 
     return state.output
 
 
 class InitialTransformState:
-    def __init__(self, config, releases, project_id=None, dict_cls=None, records=None, output=None):
-        self.config = config
-        self.dict_cls = dict_cls or OrderedDict
+    def __init__(self, releases, project_id=None, records=None, output=None):
         self.releases = sorted_releases(releases)
 
         self.project_id = project_id
@@ -49,7 +57,7 @@ class InitialTransformState:
 
         compiled_releases = []
         for record in records:
-            compiled_release = record.get("compiledRelease", self.dict_cls())
+            compiled_release = record.get("compiledRelease", {})
             # projects only have linked releases 'uri' is a good proxy for that.
             linked_releases = [release for release in record.get("releases", []) if release.get("url")]
             embeded_releases = [release for release in record.get("releases", []) if not release.get("url")]
@@ -60,13 +68,9 @@ class InitialTransformState:
             compiled_releases.append(compiled_release)
 
         self.compiled_releases = compiled_releases
-        self.output = output or self.dict_cls()
+        self.output = output or {}
         if project_id and "id" not in self.output:
             self.output["id"] = project_id
-
-        self.success_list = []
-
-
 
 
 def copy_party_by_role(state, role, new_roles=None):
@@ -126,10 +130,8 @@ def public_authority_role(state):
 
 
 def buyer_role(state):
-    if state.config.get("copy_buyer_role"):
-        return copy_party_by_role(state, "buyer", ["publicAuthority"])
-    else:
-        return True
+    '''Optional'''
+    return copy_party_by_role(state, "buyer", ["publicAuthority"])
 
 
 def sector(state):
@@ -168,9 +170,8 @@ def title(state):
 
 
 def title_from_tender(state):
-    if not state.config.get("use_tender_title"):
-        return True
-    if state.success_list[-1]:
+    '''Optional'''
+    if state.output.get("title"):
         return True
 
     success = False
@@ -190,9 +191,9 @@ def contracting_process_setup(state):
     state.output["contractingProcesses"] = []
 
     for compiled_release in state.compiled_releases:
-        contracting_process = state.dict_cls()
+        contracting_process = {}
         contracting_process["id"] = compiled_release.get("ocid")
-        contracting_process["summary"] = state.dict_cls()
+        contracting_process["summary"] = {}
         contracting_process["summary"]["ocid"] = compiled_release.get("ocid")
 
         releases = compiled_release.get("releases")
@@ -214,7 +215,7 @@ def procuring_entity(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         procuring_entity = jsonpointer.resolve_pointer(compiled_release, "/tender/procuringEntity", None)
         if procuring_entity:
-            tender = contracting_process["summary"].get("tender", state.dict_cls())
+            tender = contracting_process["summary"].get("tender", {})
             tender["procuringEntity"] = procuring_entity
             contracting_process["summary"]["tender"] = tender
 
@@ -237,8 +238,8 @@ def administrative_entity(state):
             )
             continue
         if administrative_entities:
-            tender = contracting_process["summary"].get("tender", state.dict_cls())
-            administrative_entity = state.dict_cls()
+            tender = contracting_process["summary"].get("tender", {})
+            administrative_entity = {}
             administrative_entity["id"] = administrative_entities[0].get("id")
             administrative_entity["name"] = administrative_entities[0].get("name")
             tender["administrativeEntity"] = administrative_entity
@@ -328,13 +329,13 @@ def procurement_process(state):
         if input_tender:
             procurement_method = input_tender.get("procurementMethod")
             if procurement_method:
-                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender = contracting_process["summary"].get("tender", {})
                 tender["procurementMethod"] = procurement_method
                 contracting_process["summary"]["tender"] = tender
 
             procurement_method_details = input_tender.get("procurementMethodDetails")
             if procurement_method_details:
-                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender = contracting_process["summary"].get("tender", {})
                 tender["procurementMethodDetails"] = procurement_method_details
                 contracting_process["summary"]["tender"] = tender
 
@@ -345,24 +346,25 @@ def number_of_tenderers(state):
         if input_tender:
             number_of_tenderers = input_tender.get("numberOfTenderers")
             if number_of_tenderers:
-                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender = contracting_process["summary"].get("tender", {})
                 tender["numberOfTenderers"] = number_of_tenderers
                 contracting_process["summary"]["tender"] = tender
 
 
 def location(state):
+    success = False
     for compiled_release in state.compiled_releases:
         locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
         if locations:
             state.output["locations"] = locations
-            state.success = True
+            success = True
             break
+    return success
 
 
 def location_from_items(state):
-    if not state.config.get("infer_location"):
-        return True
-    if state.success_list[-1]:
+    '''Optional'''
+    if state.output.get("locations"):
         return True
 
     success = False
@@ -449,9 +451,7 @@ def purpose(state):
 
 
 def purpose_needs_assessment(state):
-    if not state.config.get("copy_documents_needsassessment"):
-        return True
-
+    '''Optional'''
     return copy_document_by_type(state, "needsAssessment")
 
 
@@ -472,10 +472,8 @@ def description(state):
 
 
 def description_tender(state):
-    if not state.config.get("description_from_tender"):
-        return True
-
-    if state.success_list[-1]:
+    '''Optional'''
+    if state.output.get("description"):
         return True
 
     if len(state.compiled_releases) == 1:
