@@ -36,7 +36,7 @@ def test_public_authority_role():
         }
     ]
 
-    output = transforms.run_transforms({}, releases, "1", transform_list=[transforms.PublicAuthorityRole])
+    output = transforms.run_transforms({}, releases, "1", transforms=[transforms.public_authority_role])
     assert output["parties"] == releases[0]["parties"]
 
     releases = [
@@ -49,7 +49,7 @@ def test_public_authority_role():
         }
     ]
 
-    output = transforms.run_transforms({}, releases, "1", transform_list=[transforms.PublicAuthorityRole])
+    output = transforms.run_transforms({}, releases, "1", transforms=[transforms.public_authority_role])
     assert len(output["parties"]) == 1
 
 
@@ -64,19 +64,17 @@ def test_buyer_role():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
-    transform = transforms.BuyerRole([initial_transform])
+    output = transforms.run_transforms({}, copy.deepcopy(releases), "1", transforms=[transforms.buyer_role])
 
     # No config to say to convert buyers
-    assert "parties" not in transform.output
-    assert transform.success
+    assert "parties" not in output
 
-    initial_transform = transforms.InitialTransformState({"copy_buyer_role": True}, copy.deepcopy(releases), "1")
-    transform = transforms.BuyerRole([initial_transform])
+    output = transforms.run_transforms(
+        {"copy_buyer_role": True}, copy.deepcopy(releases), "1", transforms=[transforms.buyer_role]
+    )
 
-    assert transform.success
-    assert "publicAuthority" in transform.output["parties"][0]["roles"]
-    assert "buyer" in transform.output["parties"][0]["roles"]
+    assert "publicAuthority" in output["parties"][0]["roles"]
+    assert "buyer" in output["parties"][0]["roles"]
 
 
 def test_sector():
@@ -90,10 +88,8 @@ def test_sector():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
-    transform = transforms.Sector([initial_transform])
-    assert transform.success
-    assert transform.output["sector"] == "a"
+    output = transforms.run_transforms({}, releases, "1", transforms=[transforms.sector])
+    assert output["sector"] == "a"
 
 
 def test_additional_classifications():
@@ -107,10 +103,8 @@ def test_additional_classifications():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
-    transform = transforms.AdditionalClassifications([initial_transform])
-    assert transform.success
-    assert transform.output["additionalClassifications"] == [{"scheme": "a", "id": "1"}]
+    output = transforms.run_transforms({}, releases, "1", transforms=[transforms.additional_classifications])
+    assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"}]
 
 
 def test_title():
@@ -124,10 +118,8 @@ def test_title():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({}, copy.deepcopy(releases), "1")
-    transform = transforms.Title([initial_transform])
-    assert transform.success
-    assert transform.output["title"] == "a title"
+    output = transforms.run_transforms({}, releases, "1", transforms=[transforms.title])
+    assert output["title"] == "a title"
 
 
 def test_title_from_tender():
@@ -141,11 +133,10 @@ def test_title_from_tender():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({"use_tender_title": True}, copy.deepcopy(releases), "1")
-    title_transform = transforms.Title([initial_transform])
-    transform = transforms.TitleFromTender([initial_transform, title_transform])
-    assert transform.success
-    assert transform.output["title"] == "a title"
+    output = transforms.run_transforms(
+        {"use_tender_title": True}, releases, "1", transforms=[transforms.title, transforms.title_from_tender]
+    )
+    assert output["title"] == "a title"
 
     releases = [
         {
@@ -158,11 +149,11 @@ def test_title_from_tender():
         }
     ]
 
-    initial_transform = transforms.InitialTransformState({"use_tender_title": True}, copy.deepcopy(releases), "1")
-    title_transform = transforms.Title([initial_transform])
-    transform = transforms.TitleFromTender([initial_transform, title_transform])
-    assert transform.success
-    assert transform.output["title"] == "a title"
+    output = transforms.run_transforms(
+        {"use_tender_title": True}, releases, "1", transforms=[transforms.title, transforms.title_from_tender]
+    )
+
+    assert output["title"] == "a title"
 
 
 def test_contracting_process_setup_releases():
@@ -184,7 +175,7 @@ def test_contracting_process_setup_releases():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.ContractingProcessSetup]
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.contracting_process_setup]
     )
 
     expected = """
@@ -254,7 +245,7 @@ def test_contracting_process_setup_release_packages():
     release_packages = [{"uri": "example.com", "releases": releases}]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(release_packages), "1", dict_cls=dict, transform_list=[transforms.ContractingProcessSetup]
+        {}, copy.deepcopy(release_packages), "1", dict_cls=dict, transforms=[transforms.contracting_process_setup]
     )
 
     expected = """
@@ -312,7 +303,7 @@ def test_procuring_entity():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.ContractingProcessSetup, transforms.ProcuringEntity],
+        transforms=[transforms.contracting_process_setup, transforms.procuring_entity],
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -336,7 +327,7 @@ def test_administrative_entity():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.ContractingProcessSetup, transforms.AdministrativeEntity],
+        transforms=[transforms.contracting_process_setup, transforms.administrative_entity],
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -361,7 +352,7 @@ def test_multiple_administrative_entity_in_process():
         {},
         copy.deepcopy(releases),
         "1",
-        transform_list=[transforms.ContractingProcessSetup, transforms.AdministrativeEntity],
+        transforms=[transforms.contracting_process_setup, transforms.administrative_entity],
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -422,7 +413,7 @@ def test_contract_status_pre_award():
         {},
         copy.deepcopy(releases),
         "1",
-        transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
+        transforms=[transforms.contracting_process_setup, transforms.contract_status],
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "pre-award"
@@ -485,7 +476,7 @@ def test_contract_status_active():
         {},
         copy.deepcopy(releases),
         "1",
-        transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
+        transforms=[transforms.contracting_process_setup, transforms.contract_status],
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "active"
@@ -566,7 +557,7 @@ def test_contract_status_closed():
         {},
         copy.deepcopy(releases),
         "1",
-        transform_list=[transforms.ContractingProcessSetup, transforms.ContractStatus],
+        transforms=[transforms.contracting_process_setup, transforms.contract_status],
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "closed"
@@ -594,7 +585,7 @@ def test_procurment_process():
         {},
         copy.deepcopy(releases),
         "1",
-        transform_list=[transforms.ContractingProcessSetup, transforms.ProcurementProcess],
+        transforms=[transforms.contracting_process_setup, transforms.procurement_process],
     )
 
     assert output["contractingProcesses"][0]["summary"]["tender"] == releases[0]["tender"]
@@ -617,7 +608,7 @@ def test_number_of_tenderers():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.ContractingProcessSetup, transforms.NumberOfTenderers],
+        transforms=[transforms.contracting_process_setup, transforms.number_of_tenderers],
     )
 
     assert output["contractingProcesses"][0]["summary"]["tender"]["numberOfTenderers"] == 123
@@ -635,7 +626,7 @@ def test_location():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Location],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.location],
     )
 
     assert output["locations"] == [{"description": "Mars"}]
@@ -658,7 +649,7 @@ def test_location_from_item_location():
                         },
                     }
                 ],
-            }
+            },
         }
     ]
 
@@ -667,7 +658,7 @@ def test_location_from_item_location():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Location, transforms.LocationFromItems],
+        transforms=[transforms.location, transforms.location_from_items],
     )
     assert output["locations"] == [releases[0]["tender"]["items"][0]["deliveryLocation"]]
 
@@ -692,7 +683,7 @@ def test_location_from_delivery_address():
                         },
                     }
                 ],
-            }
+            },
         }
     ]
 
@@ -701,7 +692,7 @@ def test_location_from_delivery_address():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Location, transforms.LocationFromItems],
+        transforms=[transforms.location, transforms.location_from_items],
     )
 
     assert output["locations"] == [{"address": releases[0]["tender"]["items"][0]["deliveryAddress"]}]
@@ -731,7 +722,7 @@ def test_location_multiple():
                         },
                     }
                 ],
-            }
+            },
         }
     ]
 
@@ -740,7 +731,7 @@ def test_location_multiple():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Location, transforms.LocationFromItems],
+        transforms=[transforms.location, transforms.location_from_items],
     )
 
     assert output["locations"] == [
@@ -773,7 +764,7 @@ def test_location_not_inferred():
                         },
                     }
                 ],
-            }
+            },
         }
     ]
 
@@ -782,7 +773,7 @@ def test_location_not_inferred():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Location, transforms.LocationFromItems],
+        transforms=[transforms.location, transforms.location_from_items],
     )
 
     assert "locations" not in output
@@ -800,7 +791,7 @@ def test_budget():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.budget],
     )
     assert output["budget"]["amount"] == releases[0]["planning"]["budget"]["amount"]
 
@@ -824,7 +815,7 @@ def test_budget_multiple():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.budget],
     )
     total = float(releases[0]["planning"]["budget"]["amount"]["amount"]) + float(
         releases[1]["planning"]["budget"]["amount"]["amount"]
@@ -852,7 +843,7 @@ def test_budget_fail():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.budget],
     )
     # Different currencies could not be totalled
     assert "budget" not in output
@@ -875,7 +866,7 @@ def test_budget_approval():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.BudgetApproval],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.budget_approval],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
@@ -892,7 +883,7 @@ def test_purpose_one():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.purpose],
     )
     assert output["purpose"] == releases[0]["planning"]["rationale"]
 
@@ -918,7 +909,7 @@ def test_purpose_multiple():
     rationales = "<ocds-213czf-1> We were hungry.\n<ocds-213czf-2> There are never enough post-its.\n"
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.purpose],
     )
     assert output["purpose"] == rationales
 
@@ -944,7 +935,7 @@ def test_needs_assessment():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.PurposeNeedsAssessment],
+        transforms=[transforms.purpose_needs_assessment],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
@@ -961,7 +952,7 @@ def test_description_one():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.description],
     )
     assert output["description"] == releases[0]["planning"]["project"]["description"]
 
@@ -987,7 +978,7 @@ def test_description_multiple():
     rationales = "<ocds-213czf-1> A project description\n<ocds-213czf-2> Another project description\n"
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.description],
     )
     assert output["description"] == rationales
 
@@ -1008,7 +999,7 @@ def test_description_tender():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Description, transforms.DescriptionTender],
+        transforms=[transforms.description, transforms.description_tender],
     )
     assert output["description"] == releases[0]["tender"]["description"]
 
@@ -1030,7 +1021,7 @@ def test_description_not_tender():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Description, transforms.DescriptionTender],
+        transforms=[transforms.description, transforms.description_tender],
     )
     assert output["description"] == releases[0]["planning"]["project"]["description"]
 
@@ -1051,7 +1042,7 @@ def test_description_not_project():
         copy.deepcopy(releases),
         "1",
         dict_cls=dict,
-        transform_list=[transforms.Description, transforms.DescriptionTender],
+        transforms=[transforms.description, transforms.description_tender],
     )
     assert "description" not in output
 
@@ -1073,12 +1064,12 @@ def test_environmental_impact():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.EnvironmentalImpact],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.environmental_impact],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
 
-def test_environmental_impact():
+def test_land_and_settlement_impact():
     releases = [
         {
             "ocid": "ocds-213czf-1",
@@ -1095,7 +1086,7 @@ def test_environmental_impact():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.LandAndSettlementImpact],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.land_and_settlement_impact],
     )
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
@@ -1145,7 +1136,7 @@ def test_funders_budget():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.funding_sources],
     )
 
     assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
@@ -1178,7 +1169,7 @@ def test_funders():
     ]
 
     output = transforms.run_transforms(
-        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transforms=[transforms.funding_sources],
     )
 
     assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"

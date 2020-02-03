@@ -11,7 +11,7 @@ from ocdskit.combine import merge
 logger = logging.getLogger("ocdskit")
 
 
-def run_transforms(config, releases, project_id=None, dict_cls=None, records=None, output=None, transform_list=None):
+def run_transforms(config, releases, project_id=None, dict_cls=None, records=None, output=None, transforms=None):
 
     """
     Transforms a list of OCDS releases into a OC4IDS project.
@@ -25,15 +25,14 @@ def run_transforms(config, releases, project_id=None, dict_cls=None, records=Non
     :param list tranform_list: list of tranform classes, defaults to all classes
     """
 
-    transforms = [InitialTransformState(config, releases, project_id, dict_cls, records, output)]
-    if not transform_list:
-        transform_list = transform_cls_list
+    state = InitialTransformState(config, releases, project_id, dict_cls, records, output)
+    if not transforms:
+        transforms = transform_list
 
-    for transform_cls in transform_list:
-        transform = transform_cls(transforms)
-        transforms.append(transform)
+    for transform in transforms:
+        state.success_list.append(transform(state))
 
-    return transform.output
+    return state.output
 
 
 class InitialTransformState:
@@ -43,13 +42,13 @@ class InitialTransformState:
         self.releases = sorted_releases(releases)
 
         self.project_id = project_id
-        self.records = records
+        records = records
 
         if not records:
-            self.records = next(merge(self.releases, return_package=True, use_linked_releases=True)).get("records", [])
+            records = next(merge(self.releases, return_package=True, use_linked_releases=True)).get("records", [])
 
         compiled_releases = []
-        for record in self.records:
+        for record in records:
             compiled_release = record.get("compiledRelease", self.dict_cls())
             # projects only have linked releases 'uri' is a good proxy for that.
             linked_releases = [release for release in record.get("releases", []) if release.get("url")]
@@ -64,501 +63,492 @@ class InitialTransformState:
         self.output = output or self.dict_cls()
         if project_id and "id" not in self.output:
             self.output["id"] = project_id
-        self.success = True
+
+        self.success_list = []
 
 
-class BaseTransform:
-    def __init__(self, last_transforms):
-        last_transform = last_transforms[-1]
-        self.last_transforms = last_transforms
-        self.config = last_transform.config
-        self.dict_cls = last_transform.dict_cls
-        self.releases = last_transform.releases
-        self.compiled_releases = last_transform.compiled_releases
-        self.records = last_transform.records
-        self.output = last_transform.output
-        self.last_transform_success = last_transform.success
-        self.success = False
-
-        self.run()
-
-    def run(self):
-        pass
-
-    def copy_party_by_role(self, role, new_roles=None):
-
-        for compiled_release in self.compiled_releases:
-            parties = compiled_release.get("parties", [])
-            if not isinstance(parties, list):
-                continue
-            for party in compiled_release.get("parties", []):
-                if role in party.get("roles", []):
-                    output_parties = self.output.get("parties", [])
-                    if not output_parties:
-                        self.output["parties"] = output_parties
-                    output_party = copy.deepcopy(party)
-                    if new_roles:
-                        output_roles = output_party.get("roles", [])
-                        output_roles.extend(new_roles)
-                        output_party["roles"] = output_roles
-                    output_parties.append(output_party)
-                    self.success = True
-
-    def copy_document_by_type(self, document_type):
-
-        if not self.output.get("documents"):
-            self.output["documents"] = []
-
-        for compiled_release in self.compiled_releases:
-            documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
-            for document in documents:
-                if document_type in document.get("documentType", []):
-                    self.output["documents"].append(document)
-                    self.success = True
-
-    def concat_ocid_and_string(self, path_to_string):
-
-        strings = ""
-        for compiled_release in self.compiled_releases:
-
-            ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
-            a_string = jsonpointer.resolve_pointer(compiled_release, path_to_string, None)
-
-            concat = "<{}> {}\n".format(ocid, a_string)
-            strings = strings + concat
-
-        return strings
 
 
-class PublicAuthorityRole(BaseTransform):
-    def run(self):
-        self.copy_party_by_role("publicAuthority")
+def copy_party_by_role(state, role, new_roles=None):
+
+    success = False
+
+    for compiled_release in state.compiled_releases:
+        parties = compiled_release.get("parties", [])
+        if not isinstance(parties, list):
+            continue
+        for party in compiled_release.get("parties", []):
+            if role in party.get("roles", []):
+                output_parties = state.output.get("parties", [])
+                if not output_parties:
+                    state.output["parties"] = output_parties
+                output_party = copy.deepcopy(party)
+                if new_roles:
+                    output_roles = output_party.get("roles", [])
+                    output_roles.extend(new_roles)
+                    output_party["roles"] = output_roles
+                output_parties.append(output_party)
+                success = True
+
+    return success
+
+def copy_document_by_type(state, document_type):
+
+    success = False
+
+    if not state.output.get("documents"):
+        state.output["documents"] = []
+
+    for compiled_release in state.compiled_releases:
+        documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
+        for document in documents:
+            if document_type in document.get("documentType", []):
+                state.output["documents"].append(document)
+                success = True
+    return success
+
+def concat_ocid_and_string(state, path_to_string):
+
+    strings = ""
+    for compiled_release in state.compiled_releases:
+
+        ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
+        a_string = jsonpointer.resolve_pointer(compiled_release, path_to_string, None)
+
+        concat = "<{}> {}\n".format(ocid, a_string)
+        strings = strings + concat
+
+    return strings
 
 
-class BuyerRole(BaseTransform):
-    def run(self):
-        if self.config.get("copy_buyer_role"):
-            self.copy_party_by_role("buyer", ["publicAuthority"])
-        else:
-            self.success = True
+def public_authority_role(state):
+    return copy_party_by_role(state, "publicAuthority")
 
 
-class Sector(BaseTransform):
-    def run(self):
-        for compiled_release in self.compiled_releases:
-            sector = jsonpointer.resolve_pointer(compiled_release, "/planning/project/sector", None)
-            if sector:
-                self.output["sector"] = sector
-                self.success = True
-                break
+def buyer_role(state):
+    if state.config.get("copy_buyer_role"):
+        return copy_party_by_role(state, "buyer", ["publicAuthority"])
+    else:
+        return True
 
 
-class AdditionalClassifications(BaseTransform):
-    def run(self):
-        for compiled_release in self.compiled_releases:
-            additionalClassifications = jsonpointer.resolve_pointer(
-                compiled_release, "/planning/project/additionalClassifications", None
-            )
-            if additionalClassifications:
-                self.output["additionalClassifications"] = additionalClassifications
-                self.success = True
-                break
+def sector(state):
+    success = False
+    for compiled_release in state.compiled_releases:
+        sector = jsonpointer.resolve_pointer(compiled_release, "/planning/project/sector", None)
+        if sector:
+            state.output["sector"] = sector
+            success = True
+            break
+    return success
 
 
-class Title(BaseTransform):
-    def run(self):
-        for compiled_release in self.compiled_releases:
-            title = jsonpointer.resolve_pointer(compiled_release, "/planning/project/title", None)
-            if title:
-                self.output["title"] = title
-                self.success = True
-                break
+def additional_classifications(state):
+    success = False
+    for compiled_release in state.compiled_releases:
+        additionalClassifications = jsonpointer.resolve_pointer(
+            compiled_release, "/planning/project/additionalClassifications", None
+        )
+        if additionalClassifications:
+            state.output["additionalClassifications"] = additionalClassifications
+            success = True
+            break
+    return success
 
 
-class TitleFromTender(BaseTransform):
-    def run(self):
-        if not self.config.get("use_tender_title"):
-            self.success = True
-            return
-        if self.last_transforms[-1].success:
-            self.success = True
-            return
-
-        for compiled_release in self.compiled_releases:
-            title = jsonpointer.resolve_pointer(compiled_release, "/tender/title", None)
-            if title:
-                self.output["title"] = title
-                self.success = True
-                break
+def title(state):
+    success = False
+    for compiled_release in state.compiled_releases:
+        title = jsonpointer.resolve_pointer(compiled_release, "/planning/project/title", None)
+        if title:
+            state.output["title"] = title
+            success = True
+            break
+    return success
 
 
-class ContractingProcessSetup(BaseTransform):
+def title_from_tender(state):
+    if not state.config.get("use_tender_title"):
+        return True
+    if state.success_list[-1]:
+        return True
+
+    success = False
+    for compiled_release in state.compiled_releases:
+        title = jsonpointer.resolve_pointer(compiled_release, "/tender/title", None)
+        if title:
+            state.output["title"] = title
+            success = True
+            break
+    return success
+
+
+def contracting_process_setup(state):
     """ This will initailly create the contracting process objects and the summary object
     within.  All transforms that use contracting processes need to run this tranform first."""
 
-    def run(self):
+    state.output["contractingProcesses"] = []
 
-        self.output["contractingProcesses"] = []
+    for compiled_release in state.compiled_releases:
+        contracting_process = state.dict_cls()
+        contracting_process["id"] = compiled_release.get("ocid")
+        contracting_process["summary"] = state.dict_cls()
+        contracting_process["summary"]["ocid"] = compiled_release.get("ocid")
 
-        for compiled_release in self.compiled_releases:
-            contracting_process = self.dict_cls()
-            contracting_process["id"] = compiled_release.get("ocid")
-            contracting_process["summary"] = self.dict_cls()
-            contracting_process["summary"]["ocid"] = compiled_release.get("ocid")
+        releases = compiled_release.get("releases")
+        if releases:
+            contracting_process["releases"] = releases
 
-            releases = compiled_release.get("releases")
-            if releases:
-                contracting_process["releases"] = releases
+        embeded_releases = compiled_release.get("embededReleases")
+        if embeded_releases:
+            contracting_process["embededReleases"] = embeded_releases
 
-            embeded_releases = compiled_release.get("embededReleases")
-            if embeded_releases:
-                contracting_process["embededReleases"] = embeded_releases
+        state.output["contractingProcesses"].append(contracting_process)
 
-            self.output["contractingProcesses"].append(contracting_process)
-
-
-class ProcuringEntity(BaseTransform):
-    def run(self):
-        self.copy_party_by_role("procuringEntity")
-
-        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
-            procuring_entity = jsonpointer.resolve_pointer(compiled_release, "/tender/procuringEntity", None)
-            if procuring_entity:
-                tender = contracting_process["summary"].get("tender", self.dict_cls())
-                tender["procuringEntity"] = procuring_entity
-                contracting_process["summary"]["tender"] = tender
+    return True
 
 
-class AdministrativeEntity(BaseTransform):
-    def run(self):
-        self.copy_party_by_role("administrativeEntity")
+def procuring_entity(state):
+    success = copy_party_by_role(state, "procuringEntity")
 
-        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
-            administrative_entities = []
-            for party in compiled_release.get("parties", []):
-                if "administrativeEntity" in party.get("roles", []):
-                    administrative_entities.append(party)
-            if len(administrative_entities) > 1:
-                logger.warning(
-                    "More than one administrativeEntity in contractingProcesses with ocid {} skipping tranform".format(
-                        compiled_release.get("ocid")
-                    )
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        procuring_entity = jsonpointer.resolve_pointer(compiled_release, "/tender/procuringEntity", None)
+        if procuring_entity:
+            tender = contracting_process["summary"].get("tender", state.dict_cls())
+            tender["procuringEntity"] = procuring_entity
+            contracting_process["summary"]["tender"] = tender
+
+    return success
+
+
+def administrative_entity(state):
+    success = copy_party_by_role(state, "administrativeEntity")
+
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        administrative_entities = []
+        for party in compiled_release.get("parties", []):
+            if "administrativeEntity" in party.get("roles", []):
+                administrative_entities.append(party)
+        if len(administrative_entities) > 1:
+            logger.warning(
+                "More than one administrativeEntity in contractingProcesses with ocid {} skipping tranform".format(
+                    compiled_release.get("ocid")
                 )
-                continue
-            if administrative_entities:
-                tender = contracting_process["summary"].get("tender", self.dict_cls())
-                administrative_entity = self.dict_cls()
-                administrative_entity["id"] = administrative_entities[0].get("id")
-                administrative_entity["name"] = administrative_entities[0].get("name")
-                tender["administrativeEntity"] = administrative_entity
-                contracting_process["summary"]["tender"] = tender
+            )
+            continue
+        if administrative_entities:
+            tender = contracting_process["summary"].get("tender", state.dict_cls())
+            administrative_entity = state.dict_cls()
+            administrative_entity["id"] = administrative_entities[0].get("id")
+            administrative_entity["name"] = administrative_entities[0].get("name")
+            tender["administrativeEntity"] = administrative_entity
+            contracting_process["summary"]["tender"] = tender
+
+    return success
 
 
-class ContractStatus(BaseTransform):
-    def run(self):
+def contract_status(state):
 
-        current_iso_datetime = datetime.datetime.now().isoformat()
+    current_iso_datetime = datetime.datetime.now().isoformat()
 
-        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
-            tender = compiled_release.get("tender", {})
-            tender_status = tender.get("status")
-            closed_tender = tender_status in ("cancelled", "unsuccessful", "withdrawn")
-            contracts = compiled_release.get("contracts", [])
-            awards = compiled_release.get("awards", [])
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        tender = compiled_release.get("tender", {})
+        tender_status = tender.get("status")
+        closed_tender = tender_status in ("cancelled", "unsuccessful", "withdrawn")
+        contracts = compiled_release.get("contracts", [])
+        awards = compiled_release.get("awards", [])
 
-            contract_periods = []
-            if tender:
-                contract_periods.append(tender.get("contractPeriod", {}))
-            for contract in contracts:
-                contract_periods.append(contract.get("period", {}))
-            for award in awards:
-                contract_periods.append(award.get("contractPeriod", {}))
+        contract_periods = []
+        if tender:
+            contract_periods.append(tender.get("contractPeriod", {}))
+        for contract in contracts:
+            contract_periods.append(contract.get("period", {}))
+        for award in awards:
+            contract_periods.append(award.get("contractPeriod", {}))
 
-            # pre-award
-            if tender and not closed_tender:
-                if not compiled_release.get("awards") and not compiled_release.get("contracts"):
-                    contracting_process["summary"]["status"] = "pre-award"
-                    continue
-
-                all_contracts_pending = all((contract.get("status") == "pending") for contract in contracts)
-                all_awards_pending = all(award.get("status") == "pending" for award in awards)
-
-                if all_contracts_pending and all_awards_pending:
-                    contracting_process["summary"]["status"] = "pre-award"
-                    continue
-
-                all_awards_in_future = all(award.get("date", "") > current_iso_datetime for award in awards)
-
-                award_period_in_future = tender.get("awardPeriod", {}).get("startDate", "") > current_iso_datetime
-
-                if all_awards_in_future and award_period_in_future:
-                    contracting_process["summary"]["status"] = "pre-award"
-                    continue
-
-            # active
-
-            if any(contract.get("status") == "active" for contract in contracts):
-                contracting_process["summary"]["status"] = "active"
+        # pre-award
+        if tender and not closed_tender:
+            if not compiled_release.get("awards") and not compiled_release.get("contracts"):
+                contracting_process["summary"]["status"] = "pre-award"
                 continue
 
-            if any(
-                period.get("startDate", "") < current_iso_datetime < period.get("endDate", "9999-12-31")
-                for period in contract_periods
-                if period
-            ):
-                contracting_process["summary"]["status"] = "active"
+            all_contracts_pending = all((contract.get("status") == "pending") for contract in contracts)
+            all_awards_pending = all(award.get("status") == "pending" for award in awards)
+
+            if all_contracts_pending and all_awards_pending:
+                contracting_process["summary"]["status"] = "pre-award"
                 continue
 
-            # closed
+            all_awards_in_future = all(award.get("date", "") > current_iso_datetime for award in awards)
 
-            if closed_tender:
+            award_period_in_future = tender.get("awardPeriod", {}).get("startDate", "") > current_iso_datetime
+
+            if all_awards_in_future and award_period_in_future:
+                contracting_process["summary"]["status"] = "pre-award"
+                continue
+
+        # active
+
+        if any(contract.get("status") == "active" for contract in contracts):
+            contracting_process["summary"]["status"] = "active"
+            continue
+
+        if any(
+            period.get("startDate", "") < current_iso_datetime < period.get("endDate", "9999-12-31")
+            for period in contract_periods
+            if period
+        ):
+            contracting_process["summary"]["status"] = "active"
+            continue
+
+        # closed
+
+        if closed_tender:
+            contracting_process["summary"]["status"] = "closed"
+            continue
+
+        if awards:
+            if all(award.get("status") in ("cancelled", "withdrawn") for award in awards):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
-            if awards:
-                if all(award.get("status") in ("cancelled", "withdrawn") for award in awards):
-                    contracting_process["summary"]["status"] = "closed"
-                    continue
-
-            if contracts:
-                if all(contract.get("status") in ("cancelled", "terminated") for contract in contracts):
-                    contracting_process["summary"]["status"] = "closed"
-                    continue
-
-            if all(current_iso_datetime > period.get("endDate", "9999-12-31") for period in contract_periods):
+        if contracts:
+            if all(contract.get("status") in ("cancelled", "terminated") for contract in contracts):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
-
-class ProcurementProcess(BaseTransform):
-    def run(self):
-        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
-            input_tender = compiled_release.get("tender", {})
-            if input_tender:
-                procurement_method = input_tender.get("procurementMethod")
-                if procurement_method:
-                    tender = contracting_process["summary"].get("tender", self.dict_cls())
-                    tender["procurementMethod"] = procurement_method
-                    contracting_process["summary"]["tender"] = tender
-
-                procurement_method_details = input_tender.get("procurementMethodDetails")
-                if procurement_method_details:
-                    tender = contracting_process["summary"].get("tender", self.dict_cls())
-                    tender["procurementMethodDetails"] = procurement_method_details
-                    contracting_process["summary"]["tender"] = tender
+        if all(current_iso_datetime > period.get("endDate", "9999-12-31") for period in contract_periods):
+            contracting_process["summary"]["status"] = "closed"
+            continue
 
 
-class NumberOfTenderers(BaseTransform):
-    def run(self):
-        for compiled_release, contracting_process in zip(self.compiled_releases, self.output["contractingProcesses"]):
-            input_tender = compiled_release.get("tender", {})
-            if input_tender:
-                number_of_tenderers = input_tender.get("numberOfTenderers")
-                if number_of_tenderers:
-                    tender = contracting_process["summary"].get("tender", self.dict_cls())
-                    tender["numberOfTenderers"] = number_of_tenderers
-                    contracting_process["summary"]["tender"] = tender
+def procurement_process(state):
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        input_tender = compiled_release.get("tender", {})
+        if input_tender:
+            procurement_method = input_tender.get("procurementMethod")
+            if procurement_method:
+                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender["procurementMethod"] = procurement_method
+                contracting_process["summary"]["tender"] = tender
+
+            procurement_method_details = input_tender.get("procurementMethodDetails")
+            if procurement_method_details:
+                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender["procurementMethodDetails"] = procurement_method_details
+                contracting_process["summary"]["tender"] = tender
 
 
-class Location(BaseTransform):
-    def run(self):
-        for compiled_release in self.compiled_releases:
-            locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
-            if locations:
-                self.output["locations"] = locations
-                self.success = True
-                break
+def number_of_tenderers(state):
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        input_tender = compiled_release.get("tender", {})
+        if input_tender:
+            number_of_tenderers = input_tender.get("numberOfTenderers")
+            if number_of_tenderers:
+                tender = contracting_process["summary"].get("tender", state.dict_cls())
+                tender["numberOfTenderers"] = number_of_tenderers
+                contracting_process["summary"]["tender"] = tender
 
 
-class LocationFromItems(BaseTransform):
-    def run(self):
-        if not self.config.get("infer_location"):
-            self.success = True
-            return
-        if self.last_transforms[-1].success:
-            self.success = True
-            return
-
-        locations = []
-        for compiled_release in self.compiled_releases:
-
-            items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", None)
-            for item in items:
-
-                delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
-                if delivery_location:
-                    locations.append(delivery_location)
-
-                delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
-                if delivery_address:
-                    locations.append({"address": delivery_address})
-
-            if len(locations) > 0:
-                self.output["locations"] = locations
-                self.success = True
-                break
+def location(state):
+    for compiled_release in state.compiled_releases:
+        locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
+        if locations:
+            state.output["locations"] = locations
+            state.success = True
+            break
 
 
-class Budget(BaseTransform):
-    def run(self):
-        if len(self.compiled_releases) == 1:
-            budget_value = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/budget/amount", None)
-            if budget_value:
-                self.output["budget"] = {"amount": budget_value}
-                self.success = True
+def location_from_items(state):
+    if not state.config.get("infer_location"):
+        return True
+    if state.success_list[-1]:
+        return True
+
+    success = False
+
+    locations = []
+    for compiled_release in state.compiled_releases:
+
+        items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", None)
+        for item in items:
+
+            delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
+            if delivery_location:
+                locations.append(delivery_location)
+
+            delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
+            if delivery_address:
+                locations.append({"address": delivery_address})
+
+        if len(locations) > 0:
+            state.output["locations"] = locations
+            success = True
+            break
+
+    return success
+
+
+def budget(state):
+
+    success = False
+
+    if len(state.compiled_releases) == 1:
+        budget_value = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
+        if budget_value:
+            state.output["budget"] = {"amount": budget_value}
+            success = True
+    else:
+        budget_currencies = set()
+        budget_amounts = []
+
+        for compiled_release in state.compiled_releases:
+            budget_amounts.append(
+                float(jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
+            )
+            budget_currencies.add(
+                jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
+            )
+
+        if len(budget_currencies) > 1:
+            logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
         else:
-            budget_currencies = set()
-            budget_amounts = []
-
-            for compiled_release in self.compiled_releases:
-                budget_amounts.append(
-                    float(jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
-                )
-                budget_currencies.add(
-                    jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
-                )
-
-            if len(budget_currencies) > 1:
-                logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
-            else:
-                self.output["budget"] = {
-                    "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
-                }
-                self.success = True
+            state.output["budget"] = {
+                "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
+            }
+            success = True
+    return success
 
 
-class BudgetApproval(BaseTransform):
-    def run(self):
-        self.copy_document_by_type("budgetApproval")
+def budget_approval(state):
+    return copy_document_by_type(state, "budgetApproval")
 
 
-class EnvironmentalImpact(BaseTransform):
-    def run(self):
-        self.copy_document_by_type("environmentalImpact")
+def environmental_impact(state):
+    return copy_document_by_type(state, "environmentalImpact")
 
 
-class LandAndSettlementImpact(BaseTransform):
-    def run(self):
-        self.copy_document_by_type("landAndSettlementImpact")
+def land_and_settlement_impact(state):
+    return copy_document_by_type(state, "landAndSettlementImpact")
 
 
-class Purpose(BaseTransform):
-    def run(self):
+def purpose(state):
+    if len(state.compiled_releases) == 1:
+        rationale = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
+        if rationale:
+            state.output["purpose"] = rationale
+            return True
 
-        if len(self.compiled_releases) == 1:
-            rationale = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/rationale", None)
-            if rationale:
-                self.output["purpose"] = rationale
-                self.success = True
+    else:
+        purposes = concat_ocid_and_string(state, "/planning/rationale")
+        if purposes is not "":
+            state.output["purpose"] = purposes
+            return True
 
-        else:
-            purposes = self.concat_ocid_and_string("/planning/rationale")
-            if purposes is not "":
-                self.output["purpose"] = purposes
-
-
-class PurposeNeedsAssessment(BaseTransform):
-    def run(self):
-        if not self.config.get("copy_documents_needsassessment"):
-            self.success = True
-            return
-
-        self.copy_document_by_type("needsAssessment")
+    return False
 
 
-class Description(BaseTransform):
-    def run(self):
+def purpose_needs_assessment(state):
+    if not state.config.get("copy_documents_needsassessment"):
+        return True
 
-        if len(self.compiled_releases) == 1:
-            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/project/description", None)
-            if description:
-                self.output["description"] = description
-                self.success = True
-
-        else:
-            descriptions = self.concat_ocid_and_string("/planning/project/description")
-            if descriptions is not "":
-                self.output["description"] = descriptions
+    return copy_document_by_type(state, "needsAssessment")
 
 
-class DescriptionTender(BaseTransform):
-    def run(self):
-        if not self.config.get("description_from_tender"):
-            self.success = True
-            return
+def description(state):
 
-        if self.last_transforms[-1].success:
-            self.success = True
-            return
+    if len(state.compiled_releases) == 1:
+        description = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/project/description", None)
+        if description:
+            state.output["description"] = description
+            return True
 
-        if len(self.compiled_releases) == 1:
-            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/tender/description", None)
-            if description:
-                self.output["description"] = description
-                self.success = True
-
-        else:
-            descriptions = self.concat_ocid_and_string("/tender/description")
-            if descriptions is not "":
-                self.output["description"] = descriptions
-                self.success = True
+    else:
+        descriptions = concat_ocid_and_string(state, "/planning/project/description")
+        if descriptions is not "":
+            state.output["description"] = descriptions
+            return True
+    return False
 
 
-class FundingSources(BaseTransform):
-    def run(self):
+def description_tender(state):
+    if not state.config.get("description_from_tender"):
+        return True
 
-        if not self.output.get("parties"):
-            self.output["parties"] = []
+    if state.success_list[-1]:
+        return True
 
-        for compiled_release in self.compiled_releases:
+    if len(state.compiled_releases) == 1:
+        description = jsonpointer.resolve_pointer(state.compiled_releases[0], "/tender/description", None)
+        if description:
+            state.output["description"] = description
+            return True
 
-            parties = jsonpointer.resolve_pointer(compiled_release, "/parties", None)
+    else:
+        descriptions = concat_ocid_and_string(state, "/tender/description")
+        if descriptions is not "":
+            state.output["description"] = descriptions
+            return True
 
-            # Get parties from budgetBreakdown.sourceParty
-            breakdowns = jsonpointer.resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None)
-            if breakdowns:
-                for breakdown in breakdowns:
-                    source_party = jsonpointer.resolve_pointer(breakdown, "/sourceParty", None)
-                    party_id = source_party.get("id")
-                    # Look up party data by id in parties
-                    if parties and party_id:
-                        for party in parties:
-                            if party.get("id") == party_id:
-                                # Add to parties and set funder in roles
-                                if party.get("roles"):
-                                    party["roles"].append("funder")
-                                else:
-                                    party["roles"] = ["funder"]
-                                self.output["parties"].append(party)
-                                self.success = True
-
-            # If no parties from the budget breakdown, copy from top level with 'funder' roles
-            if len(self.output["parties"]) == 0:
-                self.copy_party_by_role("funder")
-                self.success = True
+    return False
 
 
-transform_cls_list = [
-    ContractingProcessSetup,
-    PublicAuthorityRole,
-    BuyerRole,
-    Sector,
-    AdditionalClassifications,
-    Title,
-    TitleFromTender,
-    ProcuringEntity,
-    AdministrativeEntity,
-    ContractStatus,
-    ProcurementProcess,
-    Location,
-    LocationFromItems,
-    Budget,
-    BudgetApproval,
-    Purpose,
-    PurposeNeedsAssessment,
-    Description,
-    DescriptionTender,
-    EnvironmentalImpact,
-    LandAndSettlementImpact,
-    FundingSources,
+def funding_sources(state):
+    success = False
+
+    if not state.output.get("parties"):
+        state.output["parties"] = []
+
+    for compiled_release in state.compiled_releases:
+
+        parties = jsonpointer.resolve_pointer(compiled_release, "/parties", None)
+
+        # Get parties from budgetBreakdown.sourceParty
+        breakdowns = jsonpointer.resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None)
+        if breakdowns:
+            for breakdown in breakdowns:
+                source_party = jsonpointer.resolve_pointer(breakdown, "/sourceParty", None)
+                party_id = source_party.get("id")
+                # Look up party data by id in parties
+                if parties and party_id:
+                    for party in parties:
+                        if party.get("id") == party_id:
+                            # Add to parties and set funder in roles
+                            if party.get("roles"):
+                                party["roles"].append("funder")
+                            else:
+                                party["roles"] = ["funder"]
+                            state.output["parties"].append(party)
+                            success = True
+
+        # If no parties from the budget breakdown, copy from top level with 'funder' roles
+        if len(state.output["parties"]) == 0:
+            copy_party_by_role(state, "funder")
+            success = True
+    return success
+
+
+transform_list = [
+    contracting_process_setup,
+    public_authority_role,
+    buyer_role,
+    sector,
+    additional_classifications,
+    title,
+    title_from_tender,
+    procuring_entity,
+    administrative_entity,
+    contract_status,
+    procurement_process,
+    location,
+    location_from_items,
+    budget,
+    budget_approval,
+    purpose,
+    purpose_needs_assessment,
+    description,
+    description_tender,
+    environmental_impact,
+    land_and_settlement_impact,
+    funding_sources,
 ]
