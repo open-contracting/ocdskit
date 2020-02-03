@@ -104,6 +104,31 @@ class BaseTransform:
                     output_parties.append(output_party)
                     self.success = True
 
+    def copy_document_by_type(self, document_type):
+
+        if not self.output.get("documents"):
+            self.output["documents"] = []
+
+        for compiled_release in self.compiled_releases:
+            documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
+            for document in documents:
+                if document_type in document.get("documentType", []):
+                    self.output["documents"].append(document)
+                    self.success = True
+
+    def concat_ocid_and_string(self, path_to_string):
+
+        strings = ""
+        for compiled_release in self.compiled_releases:
+
+            ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
+            a_string = jsonpointer.resolve_pointer(compiled_release, path_to_string, None)
+
+            concat = "<{}> {}\n".format(ocid, a_string)
+            strings = strings + concat
+
+        return strings
+
 
 class PublicAuthorityRole(BaseTransform):
     def run(self):
@@ -357,7 +382,7 @@ class LocationFromItems(BaseTransform):
         locations = []
         for compiled_release in self.compiled_releases:
 
-            items = jsonpointer.resolve_pointer(compiled_release, "/items", None)
+            items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", None)
             for item in items:
 
                 delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
@@ -374,6 +399,145 @@ class LocationFromItems(BaseTransform):
                 break
 
 
+class Budget(BaseTransform):
+    def run(self):
+        if len(self.compiled_releases) == 1:
+            budget_value = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/budget/amount", None)
+            if budget_value:
+                self.output["budget"] = {"amount": budget_value}
+                self.success = True
+        else:
+            budget_currencies = set()
+            budget_amounts = []
+
+            for compiled_release in self.compiled_releases:
+                budget_amounts.append(
+                    float(jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
+                )
+                budget_currencies.add(
+                    jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
+                )
+
+            if len(budget_currencies) > 1:
+                logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
+            else:
+                self.output["budget"] = {
+                    "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
+                }
+                self.success = True
+
+
+class BudgetApproval(BaseTransform):
+    def run(self):
+        self.copy_document_by_type("budgetApproval")
+
+
+class EnvironmentalImpact(BaseTransform):
+    def run(self):
+        self.copy_document_by_type("environmentalImpact")
+
+
+class LandAndSettlementImpact(BaseTransform):
+    def run(self):
+        self.copy_document_by_type("landAndSettlementImpact")
+
+
+class Purpose(BaseTransform):
+    def run(self):
+
+        if len(self.compiled_releases) == 1:
+            rationale = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/rationale", None)
+            if rationale:
+                self.output["purpose"] = rationale
+                self.success = True
+
+        else:
+            purposes = self.concat_ocid_and_string("/planning/rationale")
+            if purposes is not "":
+                self.output["purpose"] = purposes
+
+
+class PurposeNeedsAssessment(BaseTransform):
+    def run(self):
+        if not self.config.get("copy_documents_needsassessment"):
+            self.success = True
+            return
+
+        self.copy_document_by_type("needsAssessment")
+
+
+class Description(BaseTransform):
+    def run(self):
+
+        if len(self.compiled_releases) == 1:
+            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/planning/project/description", None)
+            if description:
+                self.output["description"] = description
+                self.success = True
+
+        else:
+            descriptions = self.concat_ocid_and_string("/planning/project/description")
+            if descriptions is not "":
+                self.output["description"] = descriptions
+
+
+class DescriptionTender(BaseTransform):
+    def run(self):
+        if not self.config.get("description_from_tender"):
+            self.success = True
+            return
+
+        if self.last_transforms[-1].success:
+            self.success = True
+            return
+
+        if len(self.compiled_releases) == 1:
+            description = jsonpointer.resolve_pointer(self.compiled_releases[0], "/tender/description", None)
+            if description:
+                self.output["description"] = description
+                self.success = True
+
+        else:
+            descriptions = self.concat_ocid_and_string("/tender/description")
+            if descriptions is not "":
+                self.output["description"] = descriptions
+                self.success = True
+
+
+class FundingSources(BaseTransform):
+    def run(self):
+
+        if not self.output.get("parties"):
+            self.output["parties"] = []
+
+        for compiled_release in self.compiled_releases:
+
+            parties = jsonpointer.resolve_pointer(compiled_release, "/parties", None)
+
+            # Get parties from budgetBreakdown.sourceParty
+            breakdowns = jsonpointer.resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None)
+            if breakdowns:
+                for breakdown in breakdowns:
+                    source_party = jsonpointer.resolve_pointer(breakdown, "/sourceParty", None)
+                    party_id = source_party.get("id")
+                    # Look up party data by id in parties
+                    if parties and party_id:
+                        for party in parties:
+                            if party.get("id") == party_id:
+                                # Add to parties and set funder in roles
+                                if party.get("roles"):
+                                    party["roles"].append("funder")
+                                else:
+                                    party["roles"] = ["funder"]
+                                self.output["parties"].append(party)
+                                self.success = True
+
+            # If no parties from the budget breakdown, copy from top level with 'funder' roles
+            if len(self.output["parties"]) == 0:
+                self.copy_party_by_role("funder")
+                self.success = True
+
+
 transform_cls_list = [
     ContractingProcessSetup,
     PublicAuthorityRole,
@@ -388,4 +552,13 @@ transform_cls_list = [
     ProcurementProcess,
     Location,
     LocationFromItems,
+    Budget,
+    BudgetApproval,
+    Purpose,
+    PurposeNeedsAssessment,
+    Description,
+    DescriptionTender,
+    EnvironmentalImpact,
+    LandAndSettlementImpact,
+    FundingSources,
 ]

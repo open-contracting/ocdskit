@@ -648,15 +648,17 @@ def test_location_from_item_location():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -667,7 +669,7 @@ def test_location_from_item_location():
         dict_cls=dict,
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
-    assert output["locations"] == [releases[0]["items"][0]["deliveryLocation"]]
+    assert output["locations"] == [releases[0]["tender"]["items"][0]["deliveryLocation"]]
 
 
 def test_location_from_delivery_address():
@@ -677,18 +679,20 @@ def test_location_from_delivery_address():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item2",
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item2",
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -700,7 +704,7 @@ def test_location_from_delivery_address():
         transform_list=[transforms.Location, transforms.LocationFromItems],
     )
 
-    assert output["locations"] == [{"address": releases[0]["items"][0]["deliveryAddress"]}]
+    assert output["locations"] == [{"address": releases[0]["tender"]["items"][0]["deliveryAddress"]}]
 
 
 def test_location_multiple():
@@ -710,22 +714,24 @@ def test_location_multiple():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -738,8 +744,8 @@ def test_location_multiple():
     )
 
     assert output["locations"] == [
-        releases[0]["items"][0]["deliveryLocation"],
-        {"address": releases[0]["items"][0]["deliveryAddress"]},
+        releases[0]["tender"]["items"][0]["deliveryLocation"],
+        {"address": releases[0]["tender"]["items"][0]["deliveryAddress"]},
     ]
 
 
@@ -750,22 +756,24 @@ def test_location_not_inferred():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "items": [
-                {
-                    "id": "item1",
-                    "deliveryLocation": {
-                        "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
-                        "uri": "http://www.geonames.org/2640729/oxford.html",
-                    },
-                    "deliveryAddress": {
-                        "postalCode": "OX1 1BX",
-                        "countryName": "United Kingdom",
-                        "streetAddress": "Town Hall, St Aldate's",
-                        "region": "Oxfordshire",
-                        "locality": "Oxford",
-                    },
-                }
-            ],
+            "tender": {
+                "items": [
+                    {
+                        "id": "item1",
+                        "deliveryLocation": {
+                            "geometry": {"type": "Point", "coordinates": [51.751944, -1.257778]},
+                            "uri": "http://www.geonames.org/2640729/oxford.html",
+                        },
+                        "deliveryAddress": {
+                            "postalCode": "OX1 1BX",
+                            "countryName": "United Kingdom",
+                            "streetAddress": "Town Hall, St Aldate's",
+                            "region": "Oxfordshire",
+                            "locality": "Oxford",
+                        },
+                    }
+                ],
+            }
         }
     ]
 
@@ -778,3 +786,401 @@ def test_location_not_inferred():
     )
 
     assert "locations" not in output
+
+
+def test_budget():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "1000", "currency": "USD"}}},
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    assert output["budget"]["amount"] == releases[0]["planning"]["budget"]["amount"]
+
+
+def test_budget_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "1000", "currency": "USD"}}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T06:07:08Z",
+            "planning": {"budget": {"amount": {"amount": "1234", "currency": "USD"}}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    total = float(releases[0]["planning"]["budget"]["amount"]["amount"]) + float(
+        releases[1]["planning"]["budget"]["amount"]["amount"]
+    )
+    assert output["budget"]["amount"]["amount"] == total
+    assert output["budget"]["amount"]["currency"] == releases[0]["planning"]["budget"]["amount"]["currency"]
+
+
+def test_budget_fail():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"budget": {"amount": {"amount": "999", "currency": "USD"}}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T06:07:08Z",
+            "planning": {"budget": {"amount": {"amount": "6464", "currency": "EUR"}}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Budget],
+    )
+    # Different currencies could not be totalled
+    assert "budget" not in output
+
+
+def test_budget_approval():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "projectPlan", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.BudgetApproval],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][1]]
+
+
+def test_purpose_one():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "We were hungry."},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+    )
+    assert output["purpose"] == releases[0]["planning"]["rationale"]
+
+
+def test_purpose_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "We were hungry."},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "2",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"rationale": "There are never enough post-its."},
+        },
+    ]
+
+    rationales = "<ocds-213czf-1> We were hungry.\n<ocds-213czf-2> There are never enough post-its.\n"
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Purpose],
+    )
+    assert output["purpose"] == rationales
+
+
+def test_needs_assessment():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "needsAssessment", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"copy_documents_needsassessment": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.PurposeNeedsAssessment],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][0]]
+
+
+def test_description_one():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "A project description"}},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+    )
+    assert output["description"] == releases[0]["planning"]["project"]["description"]
+
+
+def test_description_multiple():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "A project description"}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "2",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "Another project description"}},
+        },
+    ]
+
+    rationales = "<ocds-213czf-1> A project description\n<ocds-213czf-2> Another project description\n"
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.Description],
+    )
+    assert output["description"] == rationales
+
+
+def test_description_tender():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"description_from_tender": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert output["description"] == releases[0]["tender"]["description"]
+
+
+def test_description_not_tender():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"description": "Another project description"}},
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {"description_from_tender": True},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert output["description"] == releases[0]["planning"]["project"]["description"]
+
+
+def test_description_not_project():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"description": "A project description"},
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {},
+        copy.deepcopy(releases),
+        "1",
+        dict_cls=dict,
+        transform_list=[transforms.Description, transforms.DescriptionTender],
+    )
+    assert "description" not in output
+
+
+def test_environmental_impact():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "environmentalImpact", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.EnvironmentalImpact],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][0]]
+
+
+def test_environmental_impact():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "environmentalImpact", "title": "A Document"},
+                    {"id": "doc2", "documentType": "landAndSettlementImpact", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.LandAndSettlementImpact],
+    )
+    assert output["documents"] == [releases[0]["planning"]["documents"][1]]
+
+
+def test_funders_budget():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [
+                {
+                    "id": "GB-LAC-E09000003-557",
+                    "name": "London Borough of Barnet - Transport Services",
+                    "details": "This is just a test.",
+                },
+                {"id": "GB-GOV-23", "name": "Department for Transport", "details": "This is also a test."},
+            ],
+            "planning": {
+                "budget": {
+                    "id": "1",
+                    "description": "Multi-source budget, see budget breakdown for details.",
+                    "amount": {"amount": 300000, "currency": "GBP"},
+                    "budgetBreakdown": [
+                        {
+                            "sourceParty": {
+                                "id": "GB-LAC-E09000003-557",
+                                "name": "London Borough of Barnet - Transport Services",
+                            },
+                            "period": {"startDate": "2016-01-01T00:00:00Z", "endDate": "2016-12-31T23:59:59Z"},
+                            "id": "001",
+                            "description": "Budget contribution from the local government",
+                            "amount": {"amount": 150000, "currency": "GBP"},
+                        },
+                        {
+                            "sourceParty": {"id": "GB-GOV-23", "name": "Department for Transport"},
+                            "period": {"startDate": "2016-01-01T00:00:00Z", "endDate": "2016-12-31T23:59:59Z"},
+                            "id": "002",
+                            "description": "Budget contribution from the national government",
+                            "amount": {"amount": 150000, "currency": "GBP"},
+                        },
+                    ],
+                }
+            },
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+    )
+
+    assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
+    assert output["parties"][0]["details"] == "This is just a test."
+    assert "funder" in output["parties"][0]["roles"]
+
+
+def test_funders():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [
+                {
+                    "id": "GB-LAC-E09000003-557",
+                    "name": "London Borough of Barnet - Transport Services",
+                    "details": "This is just a test.",
+                    "roles": ["funder"],
+                },
+                {
+                    "id": "GB-GOV-23",
+                    "name": "Department for Transport",
+                    "details": "This is also a test.",
+                    "roles": ["funder"],
+                },
+            ],
+        }
+    ]
+
+    output = transforms.run_transforms(
+        {}, copy.deepcopy(releases), "1", dict_cls=dict, transform_list=[transforms.FundingSources],
+    )
+
+    assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
+    assert output["parties"][0]["details"] == "This is just a test."
+    assert "funder" in output["parties"][0]["roles"]
