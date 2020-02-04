@@ -24,9 +24,9 @@ def run_transforms(config, releases, project_id=None, records=None, output=None)
     """
     transforms_to_run = []
 
-    for transform in transform_list:
-        transform_docstring = getattr(transform, '__doc__')
-        if transform_docstring and transform_docstring.startswith('Optional') and not config.get(transform.__name__):
+    for transform in TRANSFORM_LIST:
+        transform_name = transform.__name__
+        if not config.get(transform_name) and transform_name in OPTIONAL_TRANSFORMS:
             continue
         transforms_to_run.append(transform)
 
@@ -37,7 +37,7 @@ def _run_transforms(releases, project_id=None, records=None, output=None, transf
 
     state = InitialTransformState(releases, project_id, records, output)
     if not transforms:
-        transforms = transform_list
+        transforms = TRANSFORM_LIST
 
     for transform in transforms:
         transform(state)
@@ -130,7 +130,6 @@ def public_authority_role(state):
 
 
 def buyer_role(state):
-    '''Optional'''
     return copy_party_by_role(state, "buyer", ["publicAuthority"])
 
 
@@ -170,7 +169,6 @@ def title(state):
 
 
 def title_from_tender(state):
-    '''Optional'''
     if state.output.get("title"):
         return True
 
@@ -363,7 +361,6 @@ def location(state):
 
 
 def location_from_items(state):
-    '''Optional'''
     if state.output.get("locations"):
         return True
 
@@ -451,7 +448,6 @@ def purpose(state):
 
 
 def purpose_needs_assessment(state):
-    '''Optional'''
     return copy_document_by_type(state, "needsAssessment")
 
 
@@ -472,7 +468,6 @@ def description(state):
 
 
 def description_tender(state):
-    '''Optional'''
     if state.output.get("description"):
         return True
 
@@ -526,7 +521,7 @@ def funding_sources(state):
     return success
 
 
-transform_list = [
+TRANSFORM_LIST = [
     contracting_process_setup,
     public_authority_role,
     buyer_role,
@@ -549,4 +544,12 @@ transform_list = [
     environmental_impact,
     land_and_settlement_impact,
     funding_sources,
+]
+
+OPTIONAL_TRANSFORMS = [
+    'buyer_role',
+    'title_from_tender',
+    'location_from_items',
+    'purpose_needs_assessment',
+    'description_tender',
 ]
