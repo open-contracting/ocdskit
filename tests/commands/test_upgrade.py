@@ -16,7 +16,7 @@ def test_command_record_package(monkeypatch):
 def test_command_record(monkeypatch):
     assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1', '--root-path', 'records.item'],
                      ['realdata/record-package_package.json'],
-                     ['realdata/record-package_package_1.1.json'])
+                     ['realdata/record-package_package_1.1.json'], ordered=False)
 
 
 def test_command_release_package_buyer_procuring_entity_suppliers(monkeypatch):
