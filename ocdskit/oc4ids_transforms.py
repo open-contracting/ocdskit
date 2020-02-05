@@ -3,12 +3,27 @@ import logging
 import datetime
 from ocdsmerge.util import sorted_releases
 from collections import defaultdict
-
-import jsonpointer
+from jsonpointer import resolve_pointer
 
 from ocdskit.combine import merge
 
 logger = logging.getLogger("ocdskit")
+
+
+def check_type(item, item_type):
+    ''' Check type and if incorrect return empty version of type so that future processing works '''
+    if not isinstance(item, item_type):
+        if item:
+            logger.warn('item {} is not of type {} so skipping'.format(item, item_type.__name__))
+        return item_type()
+    return item
+
+
+def cast(item, item_type):
+    try:
+        return item_type(item)
+    except ValueError:
+        return item_type()
 
 
 def run_transforms(config, releases, project_id=None, records=None, output=None):
@@ -50,7 +65,7 @@ class InitialTransformState:
         self.releases = sorted_releases(releases)
         self.releases_by_ocid = defaultdict(list)
         for release in self.releases:
-            ocid = release.get('ocid')
+            ocid = check_type(release.get('ocid'), str)
             if ocid:
                 self.releases_by_ocid[ocid].append(release)
 
@@ -58,14 +73,16 @@ class InitialTransformState:
         records = records
 
         if not records:
-            records = next(merge(self.releases, return_package=True, use_linked_releases=True)).get("records", [])
+            record_package = next(merge(self.releases, return_package=True, use_linked_releases=True))
+            records = check_type(record_package.get("records"), list)
 
         compiled_releases = []
         for record in records:
-            compiled_release = record.get("compiledRelease", {})
+            compiled_release = check_type(record.get("compiledRelease"), dict)
             # projects only have linked releases 'uri' is a good proxy for that.
-            linked_releases = [release for release in record.get("releases", []) if release.get("url")]
-            embedded_releases = [release for release in record.get("releases", []) if not release.get("url")]
+            record_releases = check_type(record.get("releases"), list)
+            linked_releases = [release for release in record_releases if release.get("url")]
+            embedded_releases = [release for release in record_releases if not release.get("url")]
 
             compiled_release["releases"] = linked_releases
             compiled_release["embeddedReleases"] = embedded_releases
@@ -83,11 +100,10 @@ def copy_party_by_role(state, role, new_roles=None):
     success = False
 
     for compiled_release in state.compiled_releases:
-        parties = compiled_release.get("parties", [])
-        if not isinstance(parties, list):
-            continue
-        for party in compiled_release.get("parties", []):
-            if role in party.get("roles", []):
+        parties = check_type(compiled_release.get("parties"), list)
+
+        for party in parties:
+            if role in check_type(party.get("roles"), list):
                 output_parties = state.output.get("parties", [])
                 if not output_parties:
                     state.output["parties"] = output_parties
@@ -110,9 +126,10 @@ def copy_document_by_type(state, document_type):
         state.output["documents"] = []
 
     for compiled_release in state.compiled_releases:
-        documents = jsonpointer.resolve_pointer(compiled_release, "/planning/documents", [])
-        for document in documents:
-            if document_type in document.get("documentType", []):
+        documents = resolve_pointer(compiled_release, "/planning/documents", [])
+        for document in check_type(documents, list):
+            document = check_type(document, dict)
+            if document_type == document.get("documentType"):
                 state.output["documents"].append(document)
                 success = True
     return success
@@ -123,8 +140,8 @@ def concat_ocid_and_string(state, path_to_string):
     strings = ""
     for compiled_release in state.compiled_releases:
 
-        ocid = jsonpointer.resolve_pointer(compiled_release, "/ocid")
-        a_string = jsonpointer.resolve_pointer(compiled_release, path_to_string, None)
+        ocid = check_type(resolve_pointer(compiled_release, "/ocid", None), str)
+        a_string = check_type(resolve_pointer(compiled_release, path_to_string, None), str)
 
         concat = "<{}> {}\n".format(ocid, a_string)
         strings = strings + concat
@@ -143,7 +160,7 @@ def buyer_role(state):
 def sector(state):
     success = False
     for compiled_release in state.compiled_releases:
-        sector = jsonpointer.resolve_pointer(compiled_release, "/planning/project/sector", None)
+        sector = resolve_pointer(compiled_release, "/planning/project/sector", None)
         if sector:
             state.output["sector"] = sector
             success = True
@@ -154,7 +171,7 @@ def sector(state):
 def additional_classifications(state):
     success = False
     for compiled_release in state.compiled_releases:
-        additionalClassifications = jsonpointer.resolve_pointer(
+        additionalClassifications = resolve_pointer(
             compiled_release, "/planning/project/additionalClassifications", None
         )
         if additionalClassifications:
@@ -167,7 +184,7 @@ def additional_classifications(state):
 def title(state):
     success = False
     for compiled_release in state.compiled_releases:
-        title = jsonpointer.resolve_pointer(compiled_release, "/planning/project/title", None)
+        title = resolve_pointer(compiled_release, "/planning/project/title", None)
         if title:
             state.output["title"] = title
             success = True
@@ -181,7 +198,7 @@ def title_from_tender(state):
 
     success = False
     for compiled_release in state.compiled_releases:
-        title = jsonpointer.resolve_pointer(compiled_release, "/tender/title", None)
+        title = resolve_pointer(compiled_release, "/tender/title", None)
         if title:
             state.output["title"] = title
             success = True
@@ -218,9 +235,9 @@ def procuring_entity(state):
     success = copy_party_by_role(state, "procuringEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        procuring_entity = jsonpointer.resolve_pointer(compiled_release, "/tender/procuringEntity", None)
+        procuring_entity = resolve_pointer(compiled_release, "/tender/procuringEntity", None)
         if procuring_entity:
-            tender = contracting_process["summary"].get("tender", {})
+            tender = check_type(contracting_process["summary"].get("tender"), dict)
             tender["procuringEntity"] = procuring_entity
             contracting_process["summary"]["tender"] = tender
 
@@ -232,8 +249,8 @@ def administrative_entity(state):
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         administrative_entities = []
-        for party in compiled_release.get("parties", []):
-            if "administrativeEntity" in party.get("roles", []):
+        for party in check_type(compiled_release.get("parties"), list):
+            if "administrativeEntity" in check_type(party.get("roles"), list):
                 administrative_entities.append(party)
         if len(administrative_entities) > 1:
             logger.warning(
@@ -243,7 +260,7 @@ def administrative_entity(state):
             )
             continue
         if administrative_entities:
-            tender = contracting_process["summary"].get("tender", {})
+            tender = check_type(contracting_process["summary"].get("tender"), dict)
             administrative_entity = {}
             administrative_entity["id"] = administrative_entities[0].get("id")
             administrative_entity["name"] = administrative_entities[0].get("name")
@@ -258,19 +275,19 @@ def contract_status(state):
     current_iso_datetime = datetime.datetime.now().isoformat()
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        tender = compiled_release.get("tender", {})
+        tender = check_type(compiled_release.get("tender"), dict)
         tender_status = tender.get("status")
         closed_tender = tender_status in ("cancelled", "unsuccessful", "withdrawn")
-        contracts = compiled_release.get("contracts", [])
-        awards = compiled_release.get("awards", [])
+        contracts = check_type(compiled_release.get("contracts"), list)
+        awards = check_type(compiled_release.get("awards"), list)
 
         contract_periods = []
         if tender:
-            contract_periods.append(tender.get("contractPeriod", {}))
+            contract_periods.append(check_type(tender.get("contractPeriod"), dict))
         for contract in contracts:
-            contract_periods.append(contract.get("period", {}))
+            contract_periods.append(check_type(contract.get("period"), dict))
         for award in awards:
-            contract_periods.append(award.get("contractPeriod", {}))
+            contract_periods.append(check_type(award.get("contractPeriod"), dict))
 
         # pre-award
         if tender and not closed_tender:
@@ -285,9 +302,10 @@ def contract_status(state):
                 contracting_process["summary"]["status"] = "pre-award"
                 continue
 
-            all_awards_in_future = all(award.get("date", "") > current_iso_datetime for award in awards)
+            all_awards_in_future = all(check_type(award.get("date"), str) > current_iso_datetime for award in awards)
 
-            award_period_in_future = tender.get("awardPeriod", {}).get("startDate", "") > current_iso_datetime
+            award_period_start_date = check_type(resolve_pointer(tender, '/awardPeriod/startDate', ''), str)
+            award_period_in_future = (award_period_start_date > current_iso_datetime)
 
             if all_awards_in_future and award_period_in_future:
                 contracting_process["summary"]["status"] = "pre-award"
@@ -300,7 +318,8 @@ def contract_status(state):
             continue
 
         if any(
-            period.get("startDate", "") < current_iso_datetime < period.get("endDate", "9999-12-31")
+            (check_type(period.get("startDate"), str) < current_iso_datetime) and
+            (current_iso_datetime < check_type(period.get("endDate", "9999-12-31"), str))
             for period in contract_periods
             if period
         ):
@@ -314,23 +333,24 @@ def contract_status(state):
             continue
 
         if awards:
-            if all(award.get("status") in ("cancelled", "withdrawn") for award in awards):
+            if all(check_type(award, dict).get("status") in ("cancelled", "withdrawn") for award in awards):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
         if contracts:
-            if all(contract.get("status") in ("cancelled", "terminated") for contract in contracts):
+            if all(check_type(contract, dict).get("status") in ("cancelled", "terminated") for contract in contracts):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
-        if all(current_iso_datetime > period.get("endDate", "9999-12-31") for period in contract_periods):
+        if all(current_iso_datetime > check_type(period.get("endDate", "9999-12-31"), str)
+               for period in contract_periods):
             contracting_process["summary"]["status"] = "closed"
             continue
 
 
 def procurement_process(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        input_tender = compiled_release.get("tender", {})
+        input_tender = check_type(compiled_release.get("tender"), dict)
         if input_tender:
             procurement_method = input_tender.get("procurementMethod")
             if procurement_method:
@@ -347,7 +367,7 @@ def procurement_process(state):
 
 def number_of_tenderers(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        input_tender = compiled_release.get("tender", {})
+        input_tender = check_type(compiled_release.get("tender"), dict)
         if input_tender:
             number_of_tenderers = input_tender.get("numberOfTenderers")
             if number_of_tenderers:
@@ -359,7 +379,7 @@ def number_of_tenderers(state):
 def location(state):
     success = False
     for compiled_release in state.compiled_releases:
-        locations = jsonpointer.resolve_pointer(compiled_release, "/planning/project/locations", None)
+        locations = resolve_pointer(compiled_release, "/planning/project/locations", None)
         if locations:
             state.output["locations"] = locations
             success = True
@@ -376,14 +396,14 @@ def location_from_items(state):
     locations = []
     for compiled_release in state.compiled_releases:
 
-        items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", [])
-        for item in items:
+        items = resolve_pointer(compiled_release, "/tender/items", [])
+        for item in check_type(items, list):
 
-            delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)
+            delivery_location = resolve_pointer(item, "/deliveryLocation", None)
             if delivery_location:
                 locations.append(delivery_location)
 
-            delivery_address = jsonpointer.resolve_pointer(item, "/deliveryAddress", None)
+            delivery_address = resolve_pointer(item, "/deliveryAddress", None)
             if delivery_address:
                 locations.append({"address": delivery_address})
 
@@ -400,7 +420,7 @@ def budget(state):
     success = False
 
     if len(state.compiled_releases) == 1:
-        budget_value = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
+        budget_value = resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
         if budget_value:
             state.output["budget"] = {"amount": budget_value}
             success = True
@@ -410,10 +430,10 @@ def budget(state):
 
         for compiled_release in state.compiled_releases:
             budget_amounts.append(
-                float(jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
+                cast(resolve_pointer(compiled_release, "/planning/budget/amount/amount", None), float)
             )
             budget_currencies.add(
-                jsonpointer.resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
+                resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
             )
 
         if len(budget_currencies) > 1:
@@ -440,7 +460,7 @@ def land_and_settlement_impact(state):
 
 def purpose(state):
     if len(state.compiled_releases) == 1:
-        rationale = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
+        rationale = resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
         if rationale:
             state.output["purpose"] = rationale
             return True
@@ -461,7 +481,7 @@ def purpose_needs_assessment(state):
 def description(state):
 
     if len(state.compiled_releases) == 1:
-        description = jsonpointer.resolve_pointer(state.compiled_releases[0], "/planning/project/description", None)
+        description = resolve_pointer(state.compiled_releases[0], "/planning/project/description", None)
         if description:
             state.output["description"] = description
             return True
@@ -479,7 +499,7 @@ def description_tender(state):
         return True
 
     if len(state.compiled_releases) == 1:
-        description = jsonpointer.resolve_pointer(state.compiled_releases[0], "/tender/description", None)
+        description = resolve_pointer(state.compiled_releases[0], "/tender/description", None)
         if description:
             state.output["description"] = description
             return True
@@ -501,20 +521,21 @@ def funding_sources(state):
 
     for compiled_release in state.compiled_releases:
 
-        parties = jsonpointer.resolve_pointer(compiled_release, "/parties", None)
+        parties = check_type(resolve_pointer(compiled_release, "/parties", None), list)
 
         # Get parties from budgetBreakdown.sourceParty
-        breakdowns = jsonpointer.resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None)
+        breakdowns = check_type(resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None), list)
         if breakdowns:
             for breakdown in breakdowns:
-                source_party = jsonpointer.resolve_pointer(breakdown, "/sourceParty", None)
+                source_party = check_type(resolve_pointer(breakdown, "/sourceParty", None), dict)
                 party_id = source_party.get("id")
                 # Look up party data by id in parties
                 if parties and party_id:
                     for party in parties:
+                        party = check_type(party, dict)
                         if party.get("id") == party_id:
                             # Add to parties and set funder in roles
-                            if party.get("roles"):
+                            if check_type(party.get("roles"), list):
                                 party["roles"].append("funder")
                             else:
                                 party["roles"] = ["funder"]
@@ -534,8 +555,8 @@ def cost_estimate(state):
         ocid = contracting_process.get('id')
         latest_planning_value = None
         for release in state.releases_by_ocid.get(ocid, []):
-            tender_status = jsonpointer.resolve_pointer(release, "/tender/status", None)
-            tender_value = jsonpointer.resolve_pointer(release, "/tender/value", None)
+            tender_status = resolve_pointer(release, "/tender/status", None)
+            tender_value = resolve_pointer(release, "/tender/value", None)
             if tender_status == 'planning' and tender_value:
                 latest_planning_value = tender_value
 
@@ -548,7 +569,8 @@ def cost_estimate(state):
 def contract_title(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         contract_titles = []
-        for contract in compiled_release.get('contracts', []):
+        for contract in check_type(compiled_release.get('contracts'), list):
+            contract = check_type(contract, dict)
             contract_title = contract.get('title')
             contract_titles.append(contract_title)
 
@@ -557,7 +579,8 @@ def contract_title(state):
             continue
 
         award_titles = []
-        for award in compiled_release.get('awards', []):
+        for award in check_type(compiled_release.get('awards', []), list):
+            award = check_type(award, dict)
             award_title = award.get('title')
             award_titles.append(award_title)
 
@@ -565,7 +588,7 @@ def contract_title(state):
             contracting_process['summary']['title'] = award_titles[0]
             continue
 
-        tender_title = jsonpointer.resolve_pointer(compiled_release, "/tender/title", None)
+        tender_title = resolve_pointer(compiled_release, "/tender/title", None)
 
         if tender_title:
             contracting_process['summary']['title'] = tender_title
@@ -575,12 +598,10 @@ def suppliers(state):
     copy_party_by_role(state, "supplier")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        parties = compiled_release.get("parties", [])
-        if not isinstance(parties, list):
-            continue
+        parties = check_type(compiled_release.get("parties"), list)
         suppliers = []
-        for party in compiled_release.get("parties", []):
-            if 'supplier' in party.get("roles", []):
+        for party in parties:
+            if 'supplier' in check_type(party.get("roles"), list):
                 suppliers.append({"id": party.get("id"), "name": party.get("name")})
 
         if suppliers:
@@ -589,20 +610,15 @@ def suppliers(state):
 
 def contract_price(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        awards = compiled_release.get("awards", [])
+        awards = check_type(compiled_release.get("awards"), list)
         award_currency = None
         award_amount = 0
         for award in awards:
-            amount = jsonpointer.resolve_pointer(award, "/value/amount", None)
-            currency = jsonpointer.resolve_pointer(award, "/value/currency", None)
-            if amount:
-                try:
-                    amount = float(amount)
-                    award_amount += amount
-                except ValueError:
-                    logger.warning(
-                        "Value does not look like a number {}".format(amount)
-                    )
+            award = check_type(award, dict)
+            amount = cast(resolve_pointer(award, "/value/amount", None), float)
+            award_amount += amount
+
+            currency = check_type(resolve_pointer(award, "/value/currency", None), str)
             if currency:
                 if award_currency is None:
                     award_currency = currency
@@ -611,7 +627,7 @@ def contract_price(state):
                         logger.warning(
                             "Multiple currencies not supported {}, {}".format(award_currency, currency)
                         )
-                        award_amount = None
+                        award_amount = 0
                         break
 
         if award_amount:
