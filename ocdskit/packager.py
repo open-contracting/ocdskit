@@ -2,7 +2,7 @@ import itertools
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 
-from ocdskit.exceptions import InconsistentVersionError
+from ocdskit.exceptions import InconsistentVersionError, MissingOcidKeyError
 from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata, _resolve_metadata,
                           _update_package_metadata, get_ocds_minor_version, is_release, json_dumps, jsonlib)
 
@@ -62,7 +62,7 @@ class Packager:
                 self.version = version
 
             if is_release(item):
-                self.backend.add_release(item['ocid'], '', item)
+                self.backend.add_release(item, '')
             else:  # release package
                 uri = item.get('uri', '')
 
@@ -73,7 +73,7 @@ class Packager:
                     self.package['packages'].append(uri)
 
                 for release in item['releases']:
-                    self.backend.add_release(release['ocid'], uri, release)
+                    self.backend.add_release(release, uri)
 
             self.backend.flush()
 
@@ -164,10 +164,18 @@ class AbstractBackend:
         """
         raise NotImplementedError
 
-    def add_release(self, ocid, package_uri, release):
+    def add_release(self, release, package_uri):
         """
         Adds a release to the backend. (The release might be added to an internal buffer.)
+
+        Raises ``ocdskit.exceptions.MissingOcidKeyError`` if the release is missing an ``ocid`` key.
         """
+        try:
+            self._add_release(release['ocid'], package_uri, release)
+        except KeyError:
+            raise MissingOcidKeyError('ocid')
+
+    def _add_release(self, ocid, package_uri, release):
         raise NotImplementedError
 
     def get_releases_by_ocid(self):
@@ -195,7 +203,7 @@ class PythonBackend(AbstractBackend):
     def __init__(self):
         self.groups = defaultdict(list)
 
-    def add_release(self, ocid, package_uri, release):
+    def _add_release(self, ocid, package_uri, release):
         self.groups[ocid].append((ocid, package_uri, release))
 
     def get_releases_by_ocid(self):
@@ -219,7 +227,7 @@ class SQLiteBackend(AbstractBackend):
 
         self.buffer = []
 
-    def add_release(self, ocid, package_uri, release):
+    def _add_release(self, ocid, package_uri, release):
         self.buffer.append((ocid, package_uri, release))
 
     def flush(self):

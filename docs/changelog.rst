@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.4 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+- ``compile`` errors if an ``ocid`` field is missing from a release.
+
 0.2.3 (2020-01-27)
 ------------------
 

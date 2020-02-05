@@ -21,3 +21,7 @@ class MissingColumnError(OCDSKitError):
 
 class UnknownFormatError(OCDSKitError):
     """Raised if the format of a file can't be determined"""
+
+
+class MissingOcidKeyError(OCDSKitError, KeyError):
+    """Raised if a release to be merged is missing an ``ocid`` key"""

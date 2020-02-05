@@ -143,11 +143,24 @@ def test_command_version_mismatch(monkeypatch, caplog):
 
 
 @pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_missing_ocid(monkeypatch, caplog):
+    stdin = b'{"id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}'
+
+    with caplog.at_level(logging.ERROR):
+        assert_streaming_error(monkeypatch, main, ['compile'], stdin)
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'CRITICAL'
+        assert caplog.records[0].message == 'The `ocid` field of at least one release is missing.'
+
+
+@pytest.mark.vcr()
 def test_command_without_sqlite(monkeypatch, caplog):
     ocdskit.combine.sqlite = False
 
-    run_streaming(monkeypatch, main, ['--pretty', 'compile'],
-                  ['release-package_minimal.json'])
+    # To check the warning, not the output.
+    run_streaming(monkeypatch, main, ['compile'], ['release-package_minimal.json'])
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
