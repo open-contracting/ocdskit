@@ -11,7 +11,7 @@ logger = logging.getLogger("ocdskit")
 
 
 def check_type(item, item_type):
-    ''' Check type and if incorrect return empty version of type so that future processing works '''
+    ''' Check type and if incorrect return empty version of type so that future processing works with bad data'''
     if not isinstance(item, item_type):
         if item:
             logger.warn('item {} is not of type {} so skipping'.format(item, item_type.__name__))
@@ -20,6 +20,7 @@ def check_type(item, item_type):
 
 
 def cast(item, item_type):
+    ''' Cast to type and if casting fails return empty version of type '''
     try:
         return item_type(item)
     except ValueError:
@@ -636,6 +637,90 @@ def contract_price(state):
             }
 
 
+def contract_process_description(state):
+
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        contract_descriptions = []
+        contract_items_descriptions = []
+        for contract in check_type(compiled_release.get('contracts'), list):
+            contract = check_type(contract, dict)
+            contract_description = contract.get('description')
+            if contract_description:
+                contract_descriptions.append(contract_description)
+            for contract_item in check_type(contract.get('items'), list):
+                contract_item = check_type(contract_item, dict)
+                contract_item_description = contract_item.get('description')
+                if contract_item_description:
+                    contract_items_descriptions.append(contract_item_description)
+        if len(contract_descriptions) == 1:
+            contracting_process['summary']['description'] = contract_descriptions[0]
+            continue
+        if len(contract_items_descriptions) == 1:
+            contracting_process['summary']['description'] = contract_items_descriptions[0]
+            continue
+
+        award_descriptions = []
+        award_items_descriptions = []
+        for award in check_type(compiled_release.get('awards'), list):
+            award = check_type(award, dict)
+            award_description = award.get('description')
+            if award_description:
+                award_descriptions.append(award_description)
+            for award_item in check_type(award.get('items'), list):
+                award_item = check_type(award_item, dict)
+                award_item_description = award_item.get('description')
+                if award_item_description:
+                    award_items_descriptions.append(award_item_description)
+        if len(award_descriptions) == 1:
+            contracting_process['summary']['description'] = award_descriptions[0]
+            continue
+        if len(award_items_descriptions) == 1:
+            contracting_process['summary']['description'] = award_items_descriptions[0]
+            continue
+
+        tender = check_type(compiled_release.get('tender'), dict)
+        tender_description = tender.get('description')
+        if tender_description:
+            contracting_process['summary']['description'] = tender_description
+            continue
+
+        tender_items_descriptions = []
+        for tender_item in check_type(tender.get('items'), list):
+            tender_item = check_type(tender_item, dict)
+            tender_item_description = tender_item.get('description')
+            if tender_item_description:
+                tender_items_descriptions.append(tender_item_description)
+
+        if len(tender_items_descriptions) == 1:
+            contracting_process['summary']['description'] = tender_items_descriptions[0]
+            continue
+
+
+def contract_period(state):
+
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        awards = check_type(compiled_release.get("awards"), list)
+        start_dates = []
+        end_dates = []
+        for award in awards:
+            contract_period = check_type(award.get("contractPeriod"), dict)
+            start_date = check_type(contract_period.get("startDate"), str)
+            if start_date:
+                start_dates.append(start_date)
+            end_date = check_type(contract_period.get("endDate"), str)
+            if end_date:
+                end_dates.append(start_date)
+        if start_dates and end_dates:
+            contracting_process['summary']['contractPeriod'] = {"startDate": min(start_dates),
+                                                                "endDate": max(end_dates)}
+            continue
+
+        tender = check_type(compiled_release.get('tender'), dict)
+        contract_period = tender.get('contractPeriod')
+        if contract_period:
+            contracting_process['summary']['contractPeriod'] = contract_period
+
+
 TRANSFORM_LIST = [
     contracting_process_setup,
     public_authority_role,
@@ -663,6 +748,8 @@ TRANSFORM_LIST = [
     contract_title,
     suppliers,
     contract_price,
+    contract_process_description,
+    contract_period,
 ]
 
 

@@ -1220,3 +1220,113 @@ def test_contract_value():
     )
 
     assert "contractValue" not in output["contractingProcesses"][0]["summary"]
+
+
+def test_contracting_process_description():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "contracts": [{"description": "a", "items": [{"description": "item_a"}]}],
+            "awards": [{"description": "b", "items": [{"description": "item_b"}]}],
+            "tender": {"description": "c", "items": [{"description": "item_c"}]},
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "a"
+
+    # with second contract we do not use contract description but item description
+    releases[0]["contracts"].append({"description": "a"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "item_a"
+
+    # with second contract item we do not use contract item description but award description
+    releases[0]["contracts"][0]["items"].append({"description": "item_b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "b"
+
+    # with second award we do not use award description but award item description
+    releases[0]["awards"].append({"description": "b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "item_b"
+
+    # with second award item we do not use award item description but tender description
+    releases[0]["awards"][0]["items"].append({"description": "item_b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "c"
+
+    # with a tender without a description we look in tender items
+    releases[0]["tender"].pop("description")
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["description"] == "item_c"
+
+    # with second tender item we do not have a viable description
+    releases[0]["tender"]["items"].append({"description": "item_b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert "description" not in output["contractingProcesses"][0]["summary"]
+
+
+def test_contracting_period():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-4",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "awards": [
+                {"contractPeriod": {"startDate": "2000-01-01", "endDate": "3000-02-01"}},
+                {"contractPeriod": {"startDate": "1999-01-01", "endDate": "3000-01-01"}},
+            ],
+            "tender": {"contractPeriod": {"startDate": "2100-01-01", "endDate": "2200-01-01"}},
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_period],
+    )
+
+    output["contractingProcesses"][0]["summary"]["contractPeriod"] = {
+        "startDate": "2000-01-01",
+        "endDate": "3000-02-01",
+    }
+
+    # remove awards so we get tender contract period
+    releases[0].pop("awards")
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_period],
+    )
+
+    output["contractingProcesses"][0]["summary"]["contractPeriod"] = releases[0]["tender"]["contractPeriod"]
