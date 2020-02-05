@@ -1,7 +1,7 @@
 import logging
 
-from ocdskit.cli.commands.base import OCDSCommand
 import ocdskit.oc4ids_transforms as transforms
+from ocdskit.cli.commands.base import OCDSCommand
 
 logger = logging.getLogger("ocdskit")
 

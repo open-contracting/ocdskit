@@ -1,9 +1,10 @@
 import copy
-import logging
 import datetime
-from ocdsmerge.util import sorted_releases
+import logging
 from collections import defaultdict
+
 from jsonpointer import resolve_pointer
+from ocdsmerge.util import sorted_releases
 
 from ocdskit.combine import merge
 

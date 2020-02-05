@@ -1,5 +1,5 @@
-import json
 import copy
+import json
 
 import ocdskit.oc4ids_transforms as transforms
 from tests import read
