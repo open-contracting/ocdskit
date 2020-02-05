@@ -308,7 +308,7 @@ You can use this command to reformat data:
 
 -  Use UTF-8 characters where possible::
 
-      cat ascii.json | ocdskitecho > unicode.json
+      cat ascii.json | ocdskit echo > unicode.json
 
 -  Pretty print::
 

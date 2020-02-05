@@ -1,6 +1,7 @@
 import os.path
 import sys
 from io import BytesIO, StringIO, TextIOWrapper
+from itertools import zip_longest
 from unittest.mock import patch
 
 import pytest
@@ -21,7 +22,9 @@ def assert_equal(actual, expected, ordered=True):
     if ordered:
         assert actual == expected, '\n{}\n{}'.format(actual, expected)
     else:
-        assert ocdskit.util.jsonlib.loads(actual) == ocdskit.util.jsonlib.loads(expected)
+        for a, b in zip_longest(actual.split('\n'), expected.split('\n'), fillvalue='{}'):
+            if a != b != '':
+                assert ocdskit.util.jsonlib.loads(a) == ocdskit.util.jsonlib.loads(b), '\n{}\n{}'.format(a, b)
 
 
 @patch('sys.stdout', new_callable=StringIO)
