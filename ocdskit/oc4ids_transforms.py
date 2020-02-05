@@ -26,7 +26,7 @@ def run_transforms(config, releases, project_id=None, records=None, output=None)
 
     for transform in TRANSFORM_LIST:
         transform_name = transform.__name__
-        if not config.get(transform_name) and transform_name in OPTIONAL_TRANSFORMS:
+        if not config.get('all') and not config.get(transform_name) and transform_name in OPTIONAL_TRANSFORMS:
             continue
         transforms_to_run.append(transform)
 
@@ -376,7 +376,7 @@ def location_from_items(state):
     locations = []
     for compiled_release in state.compiled_releases:
 
-        items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", None)
+        items = jsonpointer.resolve_pointer(compiled_release, "/tender/items", [])
         for item in items:
 
             delivery_location = jsonpointer.resolve_pointer(item, "/deliveryLocation", None)

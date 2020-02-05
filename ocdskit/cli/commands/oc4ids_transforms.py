@@ -14,6 +14,7 @@ class Command(OCDSCommand):
         self.add_argument("--id", help="Project ID of the created project", default=None)
         self.add_argument("--package", action="store_true", help="wrap the project in a package")
         self.add_argument("--options", help="comma seperated list of optional tranforms", default="")
+        self.add_argument("--all", help="run all optional transforms", action='store_true')
 
         self.add_package_arguments("project", "if --package is set, ")
 
@@ -21,8 +22,11 @@ class Command(OCDSCommand):
         project_id = self.args.id
         config = {}
 
-        for option in self.args.options.split(","):
-            config[option.strip()] = True
+        if self.args.all:
+            config['all'] = True
+        else:
+            for option in self.args.options.split(","):
+                config[option.strip()] = True
 
         project = transforms.run_transforms(config, self.items(), project_id=project_id)
 
