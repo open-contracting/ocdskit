@@ -1,8 +1,8 @@
 import copy
 import logging
-from collections import OrderedDict
 import datetime
 from ocdsmerge.util import sorted_releases
+from collections import defaultdict
 
 import jsonpointer
 
@@ -48,6 +48,11 @@ def _run_transforms(releases, project_id=None, records=None, output=None, transf
 class InitialTransformState:
     def __init__(self, releases, project_id=None, records=None, output=None):
         self.releases = sorted_releases(releases)
+        self.releases_by_ocid = defaultdict(list)
+        for release in self.releases:
+            ocid = release.get('ocid')
+            if ocid:
+                self.releases_by_ocid[ocid].append(release)
 
         self.project_id = project_id
         records = records
@@ -96,6 +101,7 @@ def copy_party_by_role(state, role, new_roles=None):
 
     return success
 
+
 def copy_document_by_type(state, document_type):
 
     success = False
@@ -110,6 +116,7 @@ def copy_document_by_type(state, document_type):
                 state.output["documents"].append(document)
                 success = True
     return success
+
 
 def concat_ocid_and_string(state, path_to_string):
 
@@ -440,7 +447,7 @@ def purpose(state):
 
     else:
         purposes = concat_ocid_and_string(state, "/planning/rationale")
-        if purposes is not "":
+        if purposes != "":
             state.output["purpose"] = purposes
             return True
 
@@ -461,7 +468,7 @@ def description(state):
 
     else:
         descriptions = concat_ocid_and_string(state, "/planning/project/description")
-        if descriptions is not "":
+        if descriptions != "":
             state.output["description"] = descriptions
             return True
     return False
@@ -479,7 +486,7 @@ def description_tender(state):
 
     else:
         descriptions = concat_ocid_and_string(state, "/tender/description")
-        if descriptions is not "":
+        if descriptions != "":
             state.output["description"] = descriptions
             return True
 
@@ -521,6 +528,98 @@ def funding_sources(state):
     return success
 
 
+def cost_estimate(state):
+
+    for contracting_process in state.output["contractingProcesses"]:
+        ocid = contracting_process.get('id')
+        latest_planning_value = None
+        for release in state.releases_by_ocid.get(ocid, []):
+            tender_status = jsonpointer.resolve_pointer(release, "/tender/status", None)
+            tender_value = jsonpointer.resolve_pointer(release, "/tender/value", None)
+            if tender_status == 'planning' and tender_value:
+                latest_planning_value = tender_value
+
+        if latest_planning_value:
+            tender = contracting_process["summary"].get("tender", {})
+            tender['costEstimate'] = latest_planning_value
+            contracting_process["summary"]['tender'] = tender
+
+
+def contract_title(state):
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        contract_titles = []
+        for contract in compiled_release.get('contracts', []):
+            contract_title = contract.get('title')
+            contract_titles.append(contract_title)
+
+        if len(contract_titles) == 1:
+            contracting_process['summary']['title'] = contract_titles[0]
+            continue
+
+        award_titles = []
+        for award in compiled_release.get('awards', []):
+            award_title = award.get('title')
+            award_titles.append(award_title)
+
+        if len(award_titles) == 1:
+            contracting_process['summary']['title'] = award_titles[0]
+            continue
+
+        tender_title = jsonpointer.resolve_pointer(compiled_release, "/tender/title", None)
+
+        if tender_title:
+            contracting_process['summary']['title'] = tender_title
+
+
+def suppliers(state):
+    copy_party_by_role(state, "supplier")
+
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        parties = compiled_release.get("parties", [])
+        if not isinstance(parties, list):
+            continue
+        suppliers = []
+        for party in compiled_release.get("parties", []):
+            if 'supplier' in party.get("roles", []):
+                suppliers.append({"id": party.get("id"), "name": party.get("name")})
+
+        if suppliers:
+            contracting_process['summary']['suppliers'] = suppliers
+
+
+def contract_price(state):
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        awards = compiled_release.get("awards", [])
+        award_currency = None
+        award_amount = 0
+        for award in awards:
+            amount = jsonpointer.resolve_pointer(award, "/value/amount", None)
+            currency = jsonpointer.resolve_pointer(award, "/value/currency", None)
+            if amount:
+                try:
+                    amount = float(amount)
+                    award_amount += amount
+                except ValueError:
+                    logger.warning(
+                        "Value does not look like a number {}".format(amount)
+                    )
+            if currency:
+                if award_currency is None:
+                    award_currency = currency
+                else:
+                    if currency != award_currency:
+                        logger.warning(
+                            "Multiple currencies not supported {}, {}".format(award_currency, currency)
+                        )
+                        award_amount = None
+                        break
+
+        if award_amount:
+            contracting_process['summary']['contractValue'] = {
+                "amount": award_amount, "currency": award_currency
+            }
+
+
 TRANSFORM_LIST = [
     contracting_process_setup,
     public_authority_role,
@@ -544,7 +643,12 @@ TRANSFORM_LIST = [
     environmental_impact,
     land_and_settlement_impact,
     funding_sources,
+    cost_estimate,
+    contract_title,
+    suppliers,
+    contract_price,
 ]
+
 
 OPTIONAL_TRANSFORMS = [
     'buyer_role',

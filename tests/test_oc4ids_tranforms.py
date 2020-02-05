@@ -7,8 +7,9 @@ from tests import read
 
 def test_initial_tranform_state():
     releases = json.loads(read("release-package_additional-contact-points.json"))["releases"]
-    initial_transform = transforms.InitialTransformState(releases, "1")
-    assert len(initial_transform.compiled_releases) == 1
+    transform_state = transforms.InitialTransformState(releases, "1")
+    assert len(transform_state.compiled_releases) == 1
+    assert len(transform_state.releases_by_ocid["ocds-213czf-1"]) == 2
 
 
 def test_run_all():
@@ -1070,3 +1071,152 @@ def test_funders():
     assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
     assert output["parties"][0]["details"] == "This is just a test."
     assert "funder" in output["parties"][0]["roles"]
+
+
+def test_cost_estimate():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"status": "planning", "value": {"amount": 1}},
+        },
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"status": "planning", "value": {"amount": 10}},
+        },
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.cost_estimate],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 10}
+
+    # reverse releases
+    releases = releases[::-1]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.cost_estimate],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 1}
+
+    releases.append(
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"value": {"amount": 100}},
+        }
+    )
+
+    # last releases is not planning
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.cost_estimate],
+    )
+    assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 1}
+
+
+def test_contract_title():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "contracts": [{"title": "a"}],
+            "awards": [{"title": "b"}],
+            "tender": {"title": "c"},
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_title],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["title"] == "a"
+
+    # with second contract we do not use contract title
+    releases[0]["contracts"].append({"title": "a"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_title],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["title"] == "b"
+
+    # with second awards we also do not use award title
+    releases[0]["awards"].append({"title": "b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_title],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["title"] == "c"
+
+
+def test_supplier():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [
+                {"id": "a", "name": "A", "roles": ["supplier"]},
+                {"id": "b", "name": "B", "roles": ["supplier"]},
+            ],
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.suppliers],
+    )
+
+    assert output["parties"] == releases[0]["parties"]
+
+    assert output["contractingProcesses"][0]["summary"]["suppliers"] == [
+        {"id": "a", "name": "A"},
+        {"id": "b", "name": "B"},
+    ]
+
+
+def test_contract_value():
+
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "awards": [
+                {"value": {"amount": 10, "currency": "USD"}},
+                {"value": {"amount": 10, "currency": "USD"}},
+                {"value": {"amount": 10, "currency": "USD"}},
+            ],
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_price],
+    )
+
+    assert output["contractingProcesses"][0]["summary"]["contractValue"] == {"amount": 30, "currency": "USD"}
+
+    # change an currency
+    releases[0]["awards"][1]["value"]["currency"] = "CAD"
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_price],
+    )
+
+    assert "contractValue" not in output["contractingProcesses"][0]["summary"]
