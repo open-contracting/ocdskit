@@ -616,7 +616,7 @@ def test_location_multiple_releases():
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
             "planning": {"project": {"locations": [{"description": "Earth"}]}},
-        }
+        },
     ]
 
     output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.location],)

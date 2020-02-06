@@ -12,16 +12,16 @@ logger = logging.getLogger("ocdskit")
 
 
 def check_type(item, item_type):
-    ''' Check type and if incorrect return empty version of type so that future processing works with bad data'''
+    """ Check type and if incorrect return empty version of type so that future processing works with bad data"""
     if not isinstance(item, item_type):
         if item:
-            logger.warn('item {} is not of type {} so skipping'.format(item, item_type.__name__))
+            logger.warn("item {} is not of type {} so skipping".format(item, item_type.__name__))
         return item_type()
     return item
 
 
 def cast(item, item_type):
-    ''' Cast to type and if casting fails return empty version of type '''
+    """ Cast to type and if casting fails return empty version of type """
     try:
         return item_type(item)
     except ValueError:
@@ -43,7 +43,7 @@ def run_transforms(config, releases, project_id=None, records=None, output=None)
 
     for transform in TRANSFORM_LIST:
         transform_name = transform.__name__
-        if not config.get('all') and not config.get(transform_name) and transform_name in OPTIONAL_TRANSFORMS:
+        if not config.get("all") and not config.get(transform_name) and transform_name in OPTIONAL_TRANSFORMS:
             continue
         transforms_to_run.append(transform)
 
@@ -67,7 +67,7 @@ class InitialTransformState:
         self.releases = sorted_releases(releases)
         self.releases_by_ocid = defaultdict(list)
         for release in self.releases:
-            ocid = check_type(release.get('ocid'), str)
+            ocid = check_type(release.get("ocid"), str)
             if ocid:
                 self.releases_by_ocid[ocid].append(release)
 
@@ -306,8 +306,8 @@ def contract_status(state):
 
             all_awards_in_future = all(check_type(award.get("date"), str) > current_iso_datetime for award in awards)
 
-            award_period_start_date = check_type(resolve_pointer(tender, '/awardPeriod/startDate', ''), str)
-            award_period_in_future = (award_period_start_date > current_iso_datetime)
+            award_period_start_date = check_type(resolve_pointer(tender, "/awardPeriod/startDate", ""), str)
+            award_period_in_future = award_period_start_date > current_iso_datetime
 
             if all_awards_in_future and award_period_in_future:
                 contracting_process["summary"]["status"] = "pre-award"
@@ -320,8 +320,8 @@ def contract_status(state):
             continue
 
         if any(
-            (check_type(period.get("startDate"), str) < current_iso_datetime) and
-            (current_iso_datetime < check_type(period.get("endDate", "9999-12-31"), str))
+            (check_type(period.get("startDate"), str) < current_iso_datetime)
+            and (current_iso_datetime < check_type(period.get("endDate", "9999-12-31"), str))
             for period in contract_periods
             if period
         ):
@@ -344,8 +344,9 @@ def contract_status(state):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
-        if all(current_iso_datetime > check_type(period.get("endDate", "9999-12-31"), str)
-               for period in contract_periods):
+        if all(
+            current_iso_datetime > check_type(period.get("endDate", "9999-12-31"), str) for period in contract_periods
+        ):
             contracting_process["summary"]["status"] = "closed"
             continue
 
@@ -389,7 +390,7 @@ def location(state):
 
     if all_locations:
         state.output["locations"] = all_locations
-    
+
     return success
 
 
@@ -438,9 +439,7 @@ def budget(state):
             budget_amounts.append(
                 cast(resolve_pointer(compiled_release, "/planning/budget/amount/amount", None), float)
             )
-            budget_currencies.add(
-                resolve_pointer(compiled_release, "/planning/budget/amount/currency", None)
-            )
+            budget_currencies.add(resolve_pointer(compiled_release, "/planning/budget/amount/currency", None))
 
         if len(budget_currencies) > 1:
             logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
@@ -558,46 +557,46 @@ def funding_sources(state):
 def cost_estimate(state):
 
     for contracting_process in state.output["contractingProcesses"]:
-        ocid = contracting_process.get('id')
+        ocid = contracting_process.get("id")
         latest_planning_value = None
         for release in state.releases_by_ocid.get(ocid, []):
             tender_status = resolve_pointer(release, "/tender/status", None)
             tender_value = resolve_pointer(release, "/tender/value", None)
-            if tender_status == 'planning' and tender_value:
+            if tender_status == "planning" and tender_value:
                 latest_planning_value = tender_value
 
         if latest_planning_value:
             tender = contracting_process["summary"].get("tender", {})
-            tender['costEstimate'] = latest_planning_value
-            contracting_process["summary"]['tender'] = tender
+            tender["costEstimate"] = latest_planning_value
+            contracting_process["summary"]["tender"] = tender
 
 
 def contract_title(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         contract_titles = []
-        for contract in check_type(compiled_release.get('contracts'), list):
+        for contract in check_type(compiled_release.get("contracts"), list):
             contract = check_type(contract, dict)
-            contract_title = contract.get('title')
+            contract_title = contract.get("title")
             contract_titles.append(contract_title)
 
         if len(contract_titles) == 1:
-            contracting_process['summary']['title'] = contract_titles[0]
+            contracting_process["summary"]["title"] = contract_titles[0]
             continue
 
         award_titles = []
-        for award in check_type(compiled_release.get('awards', []), list):
+        for award in check_type(compiled_release.get("awards", []), list):
             award = check_type(award, dict)
-            award_title = award.get('title')
+            award_title = award.get("title")
             award_titles.append(award_title)
 
         if len(award_titles) == 1:
-            contracting_process['summary']['title'] = award_titles[0]
+            contracting_process["summary"]["title"] = award_titles[0]
             continue
 
         tender_title = resolve_pointer(compiled_release, "/tender/title", None)
 
         if tender_title:
-            contracting_process['summary']['title'] = tender_title
+            contracting_process["summary"]["title"] = tender_title
 
 
 def suppliers(state):
@@ -607,11 +606,11 @@ def suppliers(state):
         parties = check_type(compiled_release.get("parties"), list)
         suppliers = []
         for party in parties:
-            if 'supplier' in check_type(party.get("roles"), list):
+            if "supplier" in check_type(party.get("roles"), list):
                 suppliers.append({"id": party.get("id"), "name": party.get("name")})
 
         if suppliers:
-            contracting_process['summary']['suppliers'] = suppliers
+            contracting_process["summary"]["suppliers"] = suppliers
 
 
 def contract_price(state):
@@ -630,16 +629,12 @@ def contract_price(state):
                     award_currency = currency
                 else:
                     if currency != award_currency:
-                        logger.warning(
-                            "Multiple currencies not supported {}, {}".format(award_currency, currency)
-                        )
+                        logger.warning("Multiple currencies not supported {}, {}".format(award_currency, currency))
                         award_amount = 0
                         break
 
         if award_amount:
-            contracting_process['summary']['contractValue'] = {
-                "amount": award_amount, "currency": award_currency
-            }
+            contracting_process["summary"]["contractValue"] = {"amount": award_amount, "currency": award_currency}
 
 
 def contract_process_description(state):
@@ -647,57 +642,57 @@ def contract_process_description(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         contract_descriptions = []
         contract_items_descriptions = []
-        for contract in check_type(compiled_release.get('contracts'), list):
+        for contract in check_type(compiled_release.get("contracts"), list):
             contract = check_type(contract, dict)
-            contract_description = contract.get('description')
+            contract_description = contract.get("description")
             if contract_description:
                 contract_descriptions.append(contract_description)
-            for contract_item in check_type(contract.get('items'), list):
+            for contract_item in check_type(contract.get("items"), list):
                 contract_item = check_type(contract_item, dict)
-                contract_item_description = contract_item.get('description')
+                contract_item_description = contract_item.get("description")
                 if contract_item_description:
                     contract_items_descriptions.append(contract_item_description)
         if len(contract_descriptions) == 1:
-            contracting_process['summary']['description'] = contract_descriptions[0]
+            contracting_process["summary"]["description"] = contract_descriptions[0]
             continue
         if len(contract_items_descriptions) == 1:
-            contracting_process['summary']['description'] = contract_items_descriptions[0]
+            contracting_process["summary"]["description"] = contract_items_descriptions[0]
             continue
 
         award_descriptions = []
         award_items_descriptions = []
-        for award in check_type(compiled_release.get('awards'), list):
+        for award in check_type(compiled_release.get("awards"), list):
             award = check_type(award, dict)
-            award_description = award.get('description')
+            award_description = award.get("description")
             if award_description:
                 award_descriptions.append(award_description)
-            for award_item in check_type(award.get('items'), list):
+            for award_item in check_type(award.get("items"), list):
                 award_item = check_type(award_item, dict)
-                award_item_description = award_item.get('description')
+                award_item_description = award_item.get("description")
                 if award_item_description:
                     award_items_descriptions.append(award_item_description)
         if len(award_descriptions) == 1:
-            contracting_process['summary']['description'] = award_descriptions[0]
+            contracting_process["summary"]["description"] = award_descriptions[0]
             continue
         if len(award_items_descriptions) == 1:
-            contracting_process['summary']['description'] = award_items_descriptions[0]
+            contracting_process["summary"]["description"] = award_items_descriptions[0]
             continue
 
-        tender = check_type(compiled_release.get('tender'), dict)
-        tender_description = tender.get('description')
+        tender = check_type(compiled_release.get("tender"), dict)
+        tender_description = tender.get("description")
         if tender_description:
-            contracting_process['summary']['description'] = tender_description
+            contracting_process["summary"]["description"] = tender_description
             continue
 
         tender_items_descriptions = []
-        for tender_item in check_type(tender.get('items'), list):
+        for tender_item in check_type(tender.get("items"), list):
             tender_item = check_type(tender_item, dict)
-            tender_item_description = tender_item.get('description')
+            tender_item_description = tender_item.get("description")
             if tender_item_description:
                 tender_items_descriptions.append(tender_item_description)
 
         if len(tender_items_descriptions) == 1:
-            contracting_process['summary']['description'] = tender_items_descriptions[0]
+            contracting_process["summary"]["description"] = tender_items_descriptions[0]
             continue
 
 
@@ -716,14 +711,16 @@ def contract_period(state):
             if end_date:
                 end_dates.append(start_date)
         if start_dates and end_dates:
-            contracting_process['summary']['contractPeriod'] = {"startDate": min(start_dates),
-                                                                "endDate": max(end_dates)}
+            contracting_process["summary"]["contractPeriod"] = {
+                "startDate": min(start_dates),
+                "endDate": max(end_dates),
+            }
             continue
 
-        tender = check_type(compiled_release.get('tender'), dict)
-        contract_period = tender.get('contractPeriod')
+        tender = check_type(compiled_release.get("tender"), dict)
+        contract_period = tender.get("contractPeriod")
         if contract_period:
-            contracting_process['summary']['contractPeriod'] = contract_period
+            contracting_process["summary"]["contractPeriod"] = contract_period
 
 
 TRANSFORM_LIST = [
@@ -759,9 +756,9 @@ TRANSFORM_LIST = [
 
 
 OPTIONAL_TRANSFORMS = [
-    'buyer_role',
-    'title_from_tender',
-    'location_from_items',
-    'purpose_needs_assessment',
-    'description_tender',
+    "buyer_role",
+    "title_from_tender",
+    "location_from_items",
+    "purpose_needs_assessment",
+    "description_tender",
 ]
