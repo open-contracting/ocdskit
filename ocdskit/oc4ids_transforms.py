@@ -723,6 +723,10 @@ def contract_period(state):
             contracting_process["summary"]["contractPeriod"] = contract_period
 
 
+def project_scope(state):
+    return copy_document_by_type(state, "projectScope")
+
+
 TRANSFORM_LIST = [
     contracting_process_setup,
     public_authority_role,
@@ -752,6 +756,7 @@ TRANSFORM_LIST = [
     contract_price,
     contract_process_description,
     contract_period,
+    project_scope,
 ]
 
 

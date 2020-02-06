@@ -1014,6 +1014,26 @@ def test_land_and_settlement_impact():
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
 
+def test_project_scope():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [
+                    {"id": "doc1", "documentType": "projectScope", "title": "A Document"},
+                    {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                ]
+            },
+        },
+    ]
+
+    output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.project_scope],)
+    assert output["documents"] == [releases[0]["planning"]["documents"][0]]
+
+
 def test_funders_budget():
     releases = [
         {
