@@ -194,7 +194,7 @@ def _create_party_id(party):
 
 def _get_bytes(obj, field):
     # Handle null and integers.
-    return bytes(str(obj.get(field) or ''), 'utf-8')
+    return str(obj.get(field) or '').encode('utf-8')
 
 
 def upgrade_amendments_10_11(release):
