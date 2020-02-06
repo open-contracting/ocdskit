@@ -380,12 +380,16 @@ def number_of_tenderers(state):
 
 def location(state):
     success = False
+    all_locations = []
     for compiled_release in state.compiled_releases:
         locations = resolve_pointer(compiled_release, "/planning/project/locations", None)
         if locations:
-            state.output["locations"] = locations
+            all_locations.extend(locations)
             success = True
-            break
+
+    if all_locations:
+        state.output["locations"] = all_locations
+    
     return success
 
 

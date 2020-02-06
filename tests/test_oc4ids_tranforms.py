@@ -601,6 +601,29 @@ def test_location():
     assert output["locations"] == [{"description": "Mars"}]
 
 
+def test_location_multiple_releases():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"locations": [{"description": "Mars"}, {"description": "Jupiter"}]}},
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "2",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"locations": [{"description": "Earth"}]}},
+        }
+    ]
+
+    output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.location],)
+
+    assert output["locations"] == [{"description": "Mars"}, {"description": "Jupiter"}, {"description": "Earth"}]
+
+
 def test_location_from_item_location():
     releases = [
         {
