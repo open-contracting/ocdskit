@@ -1034,6 +1034,31 @@ def test_project_scope():
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
 
+def test_project_scope_summary():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {
+                "description": "c",
+                "items": [{"description": "Some item"}],
+                "milestones": [{"description": "Some milestone"}, {"description": "Another milestone"}],
+            },
+        }
+    ]
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.project_scope_summary],
+    )
+
+    assert "items" in output["contractingProcesses"][0]["summary"]["tender"]
+    assert "milestones" in output["contractingProcesses"][0]["summary"]["tender"]
+    assert output["contractingProcesses"][0]["summary"]["tender"]["items"] == releases[0]["tender"]["items"]
+    assert output["contractingProcesses"][0]["summary"]["tender"]["milestones"] == releases[0]["tender"]["milestones"]
+
+
 def test_funders_budget():
     releases = [
         {

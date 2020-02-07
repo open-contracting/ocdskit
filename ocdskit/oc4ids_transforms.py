@@ -727,6 +727,29 @@ def project_scope(state):
     return copy_document_by_type(state, "projectScope")
 
 
+def project_scope_summary(state):
+    for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+
+        release_tender = compiled_release.get("tender", {})
+        items = check_type(release_tender.get("items"), list)
+        milestones = check_type(release_tender.get("milestones"), list)
+        
+        tender = contracting_process["summary"].get("tender", defaultdict(list))
+
+        if items:
+            tender_items = tender.get("items", [])
+            tender_items.extend(items)
+            if tender_items:
+                tender["items"] = tender_items
+        if milestones:
+            tender_milestones = tender.get("milestones", [])
+            tender_milestones.extend(milestones)
+            if tender_milestones:
+                tender["milestones"] = tender_milestones
+        
+        contracting_process["summary"]["tender"] = tender
+
+
 TRANSFORM_LIST = [
     contracting_process_setup,
     public_authority_role,
@@ -757,6 +780,7 @@ TRANSFORM_LIST = [
     contract_process_description,
     contract_period,
     project_scope,
+    project_scope_summary,
 ]
 
 
@@ -766,4 +790,5 @@ OPTIONAL_TRANSFORMS = [
     "location_from_items",
     "purpose_needs_assessment",
     "description_tender",
+    "project_scope_summary",
 ]
