@@ -734,18 +734,12 @@ def project_scope_summary(state):
         items = check_type(release_tender.get("items"), list)
         milestones = check_type(release_tender.get("milestones"), list)
 
-        tender = contracting_process["summary"].get("tender", defaultdict(list))
+        tender = contracting_process["summary"].get("tender", {})
 
         if items:
-            tender_items = tender.get("items", [])
-            tender_items.extend(items)
-            if tender_items:
-                tender["items"] = tender_items
+            tender.setdefault("items", []).extend(items)
         if milestones:
-            tender_milestones = tender.get("milestones", [])
-            tender_milestones.extend(milestones)
-            if tender_milestones:
-                tender["milestones"] = tender_milestones
+            tender.setdefault("milestones", []).extend(milestones)
 
         contracting_process["summary"]["tender"] = tender
 
