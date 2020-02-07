@@ -1398,3 +1398,38 @@ def test_contracting_period():
     )
 
     output["contractingProcesses"][0]["summary"]["contractPeriod"] = releases[0]["tender"]["contractPeriod"]
+
+
+def test_final_audit():
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "contracts": [
+                {
+                    "implementation": {
+                        "documents": [
+                            {"id": "doc1", "documentType": "finalAudit", "title": "A Document"},
+                            {"id": "doc2", "documentType": "budgetApproval", "title": "Another Document"},
+                        ]
+                    },
+                },
+                {
+                    "implementation": {
+                        "documents": [
+                            {"id": "doc3", "documentType": "finalAudit", "title": "B Document"},
+                            {"id": "doc4", "documentType": "projectScope", "title": "Yet another Document"},
+                        ]
+                    },
+                },
+            ],
+        },
+    ]
+
+    output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.final_audit],)
+    assert output["documents"] == [
+        releases[0]["contracts"][0]["implementation"]["documents"][0],
+        releases[0]["contracts"][1]["implementation"]["documents"][0],
+    ]

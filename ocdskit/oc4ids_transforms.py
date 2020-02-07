@@ -733,7 +733,7 @@ def project_scope_summary(state):
         release_tender = compiled_release.get("tender", {})
         items = check_type(release_tender.get("items"), list)
         milestones = check_type(release_tender.get("milestones"), list)
-        
+
         tender = contracting_process["summary"].get("tender", defaultdict(list))
 
         if items:
@@ -746,8 +746,24 @@ def project_scope_summary(state):
             tender_milestones.extend(milestones)
             if tender_milestones:
                 tender["milestones"] = tender_milestones
-        
+
         contracting_process["summary"]["tender"] = tender
+
+
+def final_audit(state):
+
+    if not state.output.get("documents"):
+        state.output["documents"] = []
+
+    for compiled_release in state.compiled_releases:
+
+        contracts = resolve_pointer(compiled_release, "/contracts", [])
+        for contract in contracts:
+            documents = resolve_pointer(contract, "/implementation/documents", [])
+            for document in check_type(documents, list):
+                document = check_type(document, dict)
+                if document.get("documentType") == "finalAudit":
+                    state.output["documents"].append(document)
 
 
 TRANSFORM_LIST = [
@@ -781,6 +797,7 @@ TRANSFORM_LIST = [
     contract_period,
     project_scope,
     project_scope_summary,
+    final_audit,
 ]
 
 
