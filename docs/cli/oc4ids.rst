@@ -3,10 +3,12 @@ OC4IDS Commands
 
 The following commands may be used when working with `Open Contracting for Infrastructure <https://standard.open-contracting.org/infrastructure>`__ data.
 
-oc4ids_transforms
+oc4ids-transforms
 -----------------
 
 This command takes a list of OCDS releases and transforms them into a single OC4IDS project.
+
+`The logic for the mappings between OCDS and OC4IDS fields is documented here <https://standard.open-contracting.org/infrastructure/latest/en/cost/#mapping-to-ids-and-from-ocds>`__.
 
 Optional arguments:
 

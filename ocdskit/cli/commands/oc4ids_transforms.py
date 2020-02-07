@@ -7,7 +7,7 @@ logger = logging.getLogger("ocdskit")
 
 
 class Command(OCDSCommand):
-    name = "oc4ids_transform"
+    name = "oc4ids-transform"
     help = "reads release packages and individual releases from standard input and produces an oc4ids project"
 
     def add_arguments(self):
