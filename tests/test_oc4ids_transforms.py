@@ -1417,23 +1417,23 @@ def test_contract_title():
 
     assert output["contractingProcesses"][0]["summary"]["title"] == "a"
 
-    # with second contract we do not use contract title
+    # with second contract we use tender title
     releases[0]["contracts"].append({"title": "a"})
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_title],
     )
 
-    assert output["contractingProcesses"][0]["summary"]["title"] == "b"
+    assert output["contractingProcesses"][0]["summary"]["title"] == "c"
 
-    # with second awards we also do not use award title
-    releases[0]["awards"].append({"title": "b"})
+    # if we remove contracts we use award title
+    releases[0].pop("contracts")
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_title],
     )
 
-    assert output["contractingProcesses"][0]["summary"]["title"] == "c"
+    assert output["contractingProcesses"][0]["summary"]["title"] == "b"
 
 
 def test_supplier():
@@ -1515,8 +1515,8 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "a"
 
-    # with second contract we do not use contract description but item description
-    releases[0]["contracts"].append({"description": "a"})
+    # with no contract description we do not use contract description but item description
+    releases[0]["contracts"][0].pop("description")
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
@@ -1524,8 +1524,8 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_a"
 
-    # with second contract item we do not use contract item description but award description
-    releases[0]["contracts"][0]["items"].append({"description": "item_b"})
+    # with no contracts we use awards
+    releases[0].pop("contracts")
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
@@ -1533,8 +1533,8 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "b"
 
-    # with second award we do not use award description but award item description
-    releases[0]["awards"].append({"description": "b"})
+    # with no award description use award item
+    releases[0]["awards"][0].pop("description")
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
@@ -1542,8 +1542,18 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_b"
 
-    # with second award item we do not use award item description but tender description
+    # with second award item nothing is populated
+
     releases[0]["awards"][0]["items"].append({"description": "item_b"})
+
+    output = transforms._run_transforms(
+        releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
+    )
+
+    assert "description" not in output["contractingProcesses"][0]["summary"]
+
+    # with a second award uses tender
+    releases[0]["awards"].append({"description": "b"})
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],
@@ -1551,7 +1561,7 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "c"
 
-    # with a tender without a description we look in tender items
+    # with no tender description use items 
     releases[0]["tender"].pop("description")
 
     output = transforms._run_transforms(
@@ -1561,7 +1571,7 @@ def test_contracting_process_description():
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_c"
 
     # with second tender item we do not have a viable description
-    releases[0]["tender"]["items"].append({"description": "item_b"})
+    releases[0]["tender"]["items"].append({"description": "item_c"})
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_process_description],

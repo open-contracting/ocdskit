@@ -663,30 +663,29 @@ def cost_estimate(state):
 
 def contract_title(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        contract_titles = []
-        for contract in check_type(compiled_release.get("contracts"), list):
-            contract = check_type(contract, dict)
+        contracts = check_type(compiled_release.get("contracts"), list)
+        awards = check_type(compiled_release.get("awards"), list)
+
+        if len(contracts) > 1 or len(awards) > 1:
+            tender_title = resolve_pointer(compiled_release, "/tender/title", None)
+
+            if tender_title:
+                contracting_process["summary"]["title"] = tender_title
+            continue
+
+        if len(contracts) == 1:
+            contract = check_type(contracts[0], dict)
             contract_title = contract.get("title")
-            contract_titles.append(contract_title)
-
-        if len(contract_titles) == 1:
-            contracting_process["summary"]["title"] = contract_titles[0]
+            if contract_title:
+                contracting_process["summary"]["title"] = contract_title
             continue
 
-        award_titles = []
-        for award in check_type(compiled_release.get("awards", []), list):
-            award = check_type(award, dict)
+        if len(awards) == 1:
+            award = check_type(awards[0], dict)
             award_title = award.get("title")
-            award_titles.append(award_title)
-
-        if len(award_titles) == 1:
-            contracting_process["summary"]["title"] = award_titles[0]
+            if award_title:
+                contracting_process["summary"]["title"] = award_title
             continue
-
-        tender_title = resolve_pointer(compiled_release, "/tender/title", None)
-
-        if tender_title:
-            contracting_process["summary"]["title"] = tender_title
 
 
 def suppliers(state):
@@ -730,9 +729,30 @@ def contract_price(state):
 def contract_process_description(state):
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
+        contracts = check_type(compiled_release.get("contracts"), list)
+        awards = check_type(compiled_release.get("awards"), list)
+
+        if len(contracts) > 1 or len(awards) > 1:
+            tender = check_type(compiled_release.get("tender"), dict)
+            tender_description = tender.get("description")
+            if tender_description:
+                contracting_process["summary"]["description"] = tender_description
+                continue
+
+            tender_items_descriptions = []
+            for tender_item in check_type(tender.get("items"), list):
+                tender_item = check_type(tender_item, dict)
+                tender_item_description = tender_item.get("description")
+                if tender_item_description:
+                    tender_items_descriptions.append(tender_item_description)
+
+            if len(tender_items_descriptions) == 1:
+                contracting_process["summary"]["description"] = tender_items_descriptions[0]
+            continue
+
         contract_descriptions = []
         contract_items_descriptions = []
-        for contract in check_type(compiled_release.get("contracts"), list):
+        for contract in contracts:
             contract = check_type(contract, dict)
             contract_description = contract.get("description")
             if contract_description:
@@ -742,6 +762,7 @@ def contract_process_description(state):
                 contract_item_description = contract_item.get("description")
                 if contract_item_description:
                     contract_items_descriptions.append(contract_item_description)
+
         if len(contract_descriptions) == 1:
             contracting_process["summary"]["description"] = contract_descriptions[0]
             continue
@@ -751,7 +772,7 @@ def contract_process_description(state):
 
         award_descriptions = []
         award_items_descriptions = []
-        for award in check_type(compiled_release.get("awards"), list):
+        for award in awards:
             award = check_type(award, dict)
             award_description = award.get("description")
             if award_description:
@@ -761,28 +782,12 @@ def contract_process_description(state):
                 award_item_description = award_item.get("description")
                 if award_item_description:
                     award_items_descriptions.append(award_item_description)
+
         if len(award_descriptions) == 1:
             contracting_process["summary"]["description"] = award_descriptions[0]
             continue
         if len(award_items_descriptions) == 1:
             contracting_process["summary"]["description"] = award_items_descriptions[0]
-            continue
-
-        tender = check_type(compiled_release.get("tender"), dict)
-        tender_description = tender.get("description")
-        if tender_description:
-            contracting_process["summary"]["description"] = tender_description
-            continue
-
-        tender_items_descriptions = []
-        for tender_item in check_type(tender.get("items"), list):
-            tender_item = check_type(tender_item, dict)
-            tender_item_description = tender_item.get("description")
-            if tender_item_description:
-                tender_items_descriptions.append(tender_item_description)
-
-        if len(tender_items_descriptions) == 1:
-            contracting_process["summary"]["description"] = tender_items_descriptions[0]
             continue
 
 
