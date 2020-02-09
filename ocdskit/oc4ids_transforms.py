@@ -206,8 +206,9 @@ def concat_ocid_and_string(state, path_to_string):
         ocid = check_type(resolve_pointer(compiled_release, "/ocid", None), str)
         a_string = check_type(resolve_pointer(compiled_release, path_to_string, None), str)
 
-        concat = "<{}> {}\n".format(ocid, a_string)
-        strings = strings + concat
+        if a_string:
+            concat = "<{}> {}\n".format(ocid, a_string)
+            strings = strings + concat
 
     return strings
 
@@ -221,14 +222,20 @@ def buyer_role(state):
 
 
 def sector(state):
-    success = False
+    found_sector = None
     for compiled_release in state.compiled_releases:
         sector = resolve_pointer(compiled_release, "/planning/project/sector", None)
         if sector:
-            state.output["sector"] = sector
-            success = True
-            break
-    return success
+            if found_sector and found_sector != sector:
+                logger.warning(
+                    "Multiple differing sectors found for project {}".format(
+                        state.project_id
+                    )
+                )
+                return
+        found_sector = sector
+    if found_sector:
+        state.output["sector"] = found_sector
 
 
 def additional_classifications(state):
@@ -245,28 +252,35 @@ def additional_classifications(state):
 
 
 def title(state):
-    success = False
+    found_title = None
     for compiled_release in state.compiled_releases:
         title = resolve_pointer(compiled_release, "/planning/project/title", None)
         if title:
-            state.output["title"] = title
-            success = True
-            break
-    return success
+            if found_title and found_title != title:
+                logger.warning(
+                    "Multiple differing titles found for project {}".format(
+                        state.project_id
+                    )
+                )
+                return
+        found_title = title
+    if found_title:
+        state.output["title"] = title
 
 
 def title_from_tender(state):
     if state.output.get("title"):
         return True
 
-    success = False
+    titles = []
     for compiled_release in state.compiled_releases:
         title = resolve_pointer(compiled_release, "/tender/title", None)
         if title:
-            state.output["title"] = title
-            success = True
-            break
-    return success
+            titles.append(title)
+    if len(titles) > 1:
+        state.output["title"] = concat_ocid_and_string(state, "/tender/title")
+    elif len(titles) == 1:
+        state.output["title"] = titles[0]
 
 
 def contracting_process_setup(state):
@@ -785,7 +799,7 @@ def contract_period(state):
                 start_dates.append(start_date)
             end_date = check_type(contract_period.get("endDate"), str)
             if end_date:
-                end_dates.append(start_date)
+                end_dates.append(end_date)
         if start_dates and end_dates:
             contracting_process["summary"]["contractPeriod"] = {
                 "startDate": min(start_dates),

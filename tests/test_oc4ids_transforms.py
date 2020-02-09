@@ -177,6 +177,25 @@ def test_sector():
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
     assert output["sector"] == "a"
 
+    # 2 contracting processes but same sector
+    releases.append(
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"sector": "a"}},
+        }
+    )
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
+    assert output["sector"] == "a"
+
+    # 2 contracting processes but differnt sector
+    releases[1]["planning"]["project"]["sector"] = "b"
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
+    assert "sector" not in output
+
 
 def test_additional_classifications():
     releases = [
@@ -207,6 +226,19 @@ def test_title():
     output = transforms._run_transforms(releases, "1", transforms=[transforms.title])
     assert output["title"] == "a title"
 
+    releases.append(
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"title": "b title"}},
+        }
+    )
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.title])
+    assert "title" not in output
+
 
 def test_title_from_tender():
     releases = [
@@ -221,6 +253,20 @@ def test_title_from_tender():
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.title, transforms.title_from_tender])
     assert output["title"] == "a title"
+
+    releases.append(
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"title": "b title"},
+        }
+    )
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.title, transforms.title_from_tender])
+
+    assert output["title"] == "<ocds-213czf-1> a title\n<ocds-213czf-2> b title\n"
 
     releases = [
         {
@@ -1544,8 +1590,8 @@ def test_contracting_period():
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_period],
     )
 
-    output["contractingProcesses"][0]["summary"]["contractPeriod"] = {
-        "startDate": "2000-01-01",
+    assert output["contractingProcesses"][0]["summary"]["contractPeriod"] == {
+        "startDate": "1999-01-01",
         "endDate": "3000-02-01",
     }
 
@@ -1556,7 +1602,7 @@ def test_contracting_period():
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.contract_period],
     )
 
-    output["contractingProcesses"][0]["summary"]["contractPeriod"] = releases[0]["tender"]["contractPeriod"]
+    assert output["contractingProcesses"][0]["summary"]["contractPeriod"] == releases[0]["tender"]["contractPeriod"]
 
 
 def test_final_audit():
