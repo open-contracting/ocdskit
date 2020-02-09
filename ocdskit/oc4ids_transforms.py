@@ -1,5 +1,6 @@
 import copy
 import datetime
+import json
 import logging
 from collections import defaultdict
 
@@ -96,28 +97,88 @@ class InitialTransformState:
         if project_id and "id" not in self.output:
             self.output["id"] = project_id
 
+        self.party_analysis()
+
+    def party_analysis(self):
+
+        all_parties = []
+        party_ids = set()
+        duplicate_party_ids = False
+
+        for compiled_release in self.compiled_releases:
+            parties = check_type(compiled_release.get("parties"), list)
+            for party in parties:
+                full_party_copy = copy.deepcopy(party)
+                partial_party_copy = copy.deepcopy(party)
+                partial_party_copy.pop("id", None)
+                partial_party_copy.pop("roles", None)
+
+                # A guess at the identity of the party. i.e id and roles missing
+                party_fingerprint = json.dumps(partial_party_copy, sort_keys=True)
+
+                unique_identifier = None
+                identifier = check_type(party.get("identifier"), dict)
+                id_ = check_type(identifier.get("id"), str)
+                scheme = check_type(identifier.get("scheme"), str)
+                if identifier and scheme:
+                    unique_identifier = scheme + "-" + id_
+
+                all_parties.append(
+                    {
+                        "party": full_party_copy,
+                        "original_party": party,
+                        "party_fingerprint": party_fingerprint,
+                        "unique_identifier": unique_identifier,
+                    }
+                )
+                party_id = party.get("id")
+                if party_id in party_ids:
+                    duplicate_party_ids = True
+                party_ids.add(party_id)
+
+        party_num = 1
+        unique_parties = []
+
+        for party in all_parties:
+            found_party = None
+            for unique_party in unique_parties:
+                if party["unique_identifier"] and party["unique_identifier"] == unique_party["unique_identifier"]:
+                    found_party = unique_party
+                    break
+                if party["party_fingerprint"] == unique_party["party_fingerprint"]:
+                    found_party = unique_party
+                    break
+            if found_party:
+                new_roles = set(
+                    check_type(found_party["party"].get("roles"), list) + check_type(party["party"].get("roles"), list)
+                )
+                found_party["party"]["roles"] = list(new_roles)
+            else:
+                if duplicate_party_ids:
+                    if party["unique_identifier"]:
+                        party["party"]["id"] = party["unique_identifier"]
+                    else:
+                        party["party"]["id"] = str(party_num)
+                        party_num += 1
+                unique_parties.append(party)
+            party["original_party"]["_new_id"] = party["party"]["id"]
+
+        self.parties = [party["party"] for party in unique_parties]
+
 
 def copy_party_by_role(state, role, new_roles=None):
 
-    success = False
-
-    for compiled_release in state.compiled_releases:
-        parties = check_type(compiled_release.get("parties"), list)
-
-        for party in parties:
-            if role in check_type(party.get("roles"), list):
-                output_parties = state.output.get("parties", [])
-                if not output_parties:
-                    state.output["parties"] = output_parties
-                output_party = copy.deepcopy(party)
-                if new_roles:
-                    output_roles = output_party.get("roles", [])
-                    output_roles.extend(new_roles)
-                    output_party["roles"] = output_roles
-                output_parties.append(output_party)
-                success = True
-
-    return success
+    for party in state.parties:
+        if role in check_type(party.get("roles"), list):
+            output_parties = state.output.get("parties", [])
+            if not output_parties:
+                state.output["parties"] = output_parties
+            output_party = copy.deepcopy(party)
+            if new_roles:
+                output_roles = output_party.get("roles", [])
+                output_roles.extend(new_roles)
+                output_party["roles"] = output_roles
+            output_parties.append(output_party)
 
 
 def copy_document_by_type(state, document_type):
@@ -237,9 +298,24 @@ def procuring_entity(state):
     success = copy_party_by_role(state, "procuringEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        procuring_entity = resolve_pointer(compiled_release, "/tender/procuringEntity", None)
-        if procuring_entity:
+        procuring_entities = []
+        for party in check_type(compiled_release.get("parties"), list):
+            if "procuringEntity" in check_type(party.get("roles"), list):
+                procuring_entities.append(party)
+        if len(procuring_entities) > 1:
+            logger.warning(
+                "More than one procuringEntity in contractingProcesses with ocid {} skipping tranform".format(
+                    compiled_release.get("ocid")
+                )
+            )
+            continue
+        if procuring_entities:
             tender = check_type(contracting_process["summary"].get("tender"), dict)
+            procuring_entity = {}
+            procuring_entity["id"] = procuring_entities[0].get("_new_id")
+            name = procuring_entities[0].get("name")
+            if name:
+                procuring_entity["name"] = name
             tender["procuringEntity"] = procuring_entity
             contracting_process["summary"]["tender"] = tender
 
@@ -264,7 +340,7 @@ def administrative_entity(state):
         if administrative_entities:
             tender = check_type(contracting_process["summary"].get("tender"), dict)
             administrative_entity = {}
-            administrative_entity["id"] = administrative_entities[0].get("id")
+            administrative_entity["id"] = administrative_entities[0].get("_new_id")
             administrative_entity["name"] = administrative_entities[0].get("name")
             tender["administrativeEntity"] = administrative_entity
             contracting_process["summary"]["tender"] = tender

@@ -33,7 +33,8 @@ def test_public_authority_role():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "parties": [{"id": "1", "roles": ["publicAuthority"]}, {"id": "2", "roles": ["publicAuthority"]}],
+            "parties": [{"id": "1", "name": "a", "roles": ["publicAuthority"]}, 
+                        {"id": "2", "name": "b", "roles": ["publicAuthority"]}],
         }
     ]
 
@@ -52,6 +53,97 @@ def test_public_authority_role():
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
     assert len(output["parties"]) == 1
+
+
+def test_duplicate_public_authority_role():
+
+    # Match on identifier
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "a", "roles": ["publicAuthority"], "identifier": {"id": "a", "scheme": "b"}}],
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "a", "roles": ["publicAuthority"], "identifier": {"id": "a", "scheme": "b"}}],
+        },
+    ]
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 1
+    assert output["parties"][0]["id"] == "b-a"
+
+    # No match on identifier
+    releases[0]["parties"][0]["identifier"]["id"] = "b"
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+
+    assert len(output["parties"]) == 2
+    print(output["parties"])
+    assert output["parties"][0]["id"] == "b-b"
+    assert output["parties"][1]["id"] == "b-a"
+
+    # Match on name
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "a", "name": "org 1", "roles": ["publicAuthority"]}],
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "a", "name": "org 1", "roles": ["publicAuthority"]}],
+        },
+    ]
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 1
+    assert output["parties"][0]["id"] == "1"
+
+    # No match on name
+    releases[0]["parties"][0]["name"] = "org 2"
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 2
+    # Generated autoincrement party ids
+    assert output["parties"][0]["id"] == "1"
+    assert output["parties"][1]["id"] == "2"
+
+    # Match on name but different address
+    releases[0]["parties"][0]["name"] = "org 1"
+    releases[0]["parties"][0]["address"] = {"streetAddress": "1 the street"}
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 2
+    assert output["parties"][0]["id"] == "1"
+    assert output["parties"][1]["id"] == "2"
+
+    # Match on name and address
+    releases[1]["parties"][0]["address"] = {"streetAddress": "1 the street"}
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 1
+    assert output["parties"][0]["id"] == "1"
+
+    # all roles if match
+    releases[1]["parties"][0]["roles"].append("some role")
+    releases[1]["parties"][0]["roles"].append("some other role")
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.public_authority_role])
+    assert len(output["parties"]) == 1
+
+    assert len(output["parties"][0]["roles"]) == 3
+    assert output["parties"][0]["id"] == "1"
 
 
 def test_buyer_role():
@@ -283,7 +375,7 @@ def test_procuring_entity():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "tender": {"procuringEntity": {"id": 1}},
+            "tender": {"procuringEntity": {"id": "1"}},
             "parties": [{"id": "1", "roles": ["procuringEntity"]}],
         },
     ]
@@ -294,6 +386,73 @@ def test_procuring_entity():
 
     assert output["parties"] == releases[0]["parties"]
     assert output["contractingProcesses"][0]["summary"]["tender"] == releases[0]["tender"]
+
+    # with identifier no duplicate party id
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "roles": ["procuringEntity"], "identifier": {"id": "a", "scheme": "a"}}],
+        },
+    ]
+    output = transforms._run_transforms(
+        copy.deepcopy(releases), "1", transforms=[transforms.contracting_process_setup, transforms.procuring_entity],
+    )
+
+    assert output["parties"][0]["id"] == "1"
+    assert output["contractingProcesses"][0]["summary"]["tender"]["procuringEntity"]["id"] == "1"
+
+    # with identifier and duplicate party id
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "roles": ["procuringEntity"], "identifier": {"id": "a", "scheme": "a"}}],
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "roles": ["procuringEntity"], "identifier": {"id": "a", "scheme": "a"}}],
+        },
+    ]
+    output = transforms._run_transforms(
+        copy.deepcopy(releases), "1", transforms=[transforms.contracting_process_setup, transforms.procuring_entity],
+    )
+
+    assert output["parties"][0]["id"] == "a-a"
+    assert output["contractingProcesses"][0]["summary"]["tender"]["procuringEntity"]["id"] == "a-a"
+
+    # with genderated id
+    releases = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "name": "org1", "roles": ["procuringEntity"]}],
+        },
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "name": "org2", "roles": ["procuringEntity"]}],
+        },
+    ]
+    output = transforms._run_transforms(
+        copy.deepcopy(releases), "1", transforms=[transforms.contracting_process_setup, transforms.procuring_entity],
+    )
+
+    assert output["parties"][0]["id"] == "1"
+    assert output["parties"][1]["id"] == "2"
+    assert output["contractingProcesses"][0]["summary"]["tender"]["procuringEntity"]["id"] == "1"
+    assert output["contractingProcesses"][1]["summary"]["tender"]["procuringEntity"]["id"] == "2"
 
 
 def test_administrative_entity():
