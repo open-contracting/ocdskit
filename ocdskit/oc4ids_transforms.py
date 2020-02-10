@@ -183,8 +183,6 @@ def copy_party_by_role(state, role, new_roles=None):
 
 def copy_document_by_type(state, document_type):
 
-    success = False
-
     if not state.output.get("documents"):
         state.output["documents"] = []
 
@@ -194,8 +192,6 @@ def copy_document_by_type(state, document_type):
             document = check_type(document, dict)
             if document_type == document.get("documentType"):
                 state.output["documents"].append(document)
-                success = True
-    return success
 
 
 def concat_ocid_and_string(state, path_to_string):
@@ -235,16 +231,13 @@ def sector(state):
 
 
 def additional_classifications(state):
-    success = False
     for compiled_release in state.compiled_releases:
         additionalClassifications = resolve_pointer(
             compiled_release, "/planning/project/additionalClassifications", None
         )
         if additionalClassifications:
             state.output["additionalClassifications"] = additionalClassifications
-            success = True
             break
-    return success
 
 
 def title(state):
@@ -301,7 +294,7 @@ def contracting_process_setup(state):
 
 
 def procuring_entity(state):
-    success = copy_party_by_role(state, "procuringEntity")
+    copy_party_by_role(state, "procuringEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         procuring_entities = []
@@ -325,11 +318,9 @@ def procuring_entity(state):
             tender["procuringEntity"] = procuring_entity
             contracting_process["summary"]["tender"] = tender
 
-    return success
-
 
 def administrative_entity(state):
-    success = copy_party_by_role(state, "administrativeEntity")
+    copy_party_by_role(state, "administrativeEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         administrative_entities = []
@@ -350,8 +341,6 @@ def administrative_entity(state):
             administrative_entity["name"] = administrative_entities[0].get("name")
             tender["administrativeEntity"] = administrative_entity
             contracting_process["summary"]["tender"] = tender
-
-    return success
 
 
 def contract_status(state):
@@ -468,25 +457,19 @@ def number_of_tenderers(state):
 
 
 def location(state):
-    success = False
     all_locations = []
     for compiled_release in state.compiled_releases:
         locations = resolve_pointer(compiled_release, "/planning/project/locations", None)
         if locations:
             all_locations.extend(locations)
-            success = True
 
     if all_locations:
         state.output["locations"] = all_locations
-
-    return success
 
 
 def location_from_items(state):
     if state.output.get("locations"):
         return True
-
-    success = False
 
     locations = []
     for compiled_release in state.compiled_releases:
@@ -504,21 +487,15 @@ def location_from_items(state):
 
         if len(locations) > 0:
             state.output["locations"] = locations
-            success = True
             break
-
-    return success
 
 
 def budget(state):
-
-    success = False
 
     if len(state.compiled_releases) == 1:
         budget_value = resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
         if budget_value:
             state.output["budget"] = {"amount": budget_value}
-            success = True
     else:
         budget_currencies = set()
         budget_amounts = []
@@ -535,8 +512,6 @@ def budget(state):
             state.output["budget"] = {
                 "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
             }
-            success = True
-    return success
 
 
 def budget_approval(state):
@@ -607,7 +582,6 @@ def description_tender(state):
 
 
 def funding_sources(state):
-    success = False
 
     if not state.output.get("parties"):
         state.output["parties"] = []
@@ -633,13 +607,10 @@ def funding_sources(state):
                             else:
                                 party["roles"] = ["funder"]
                             state.output["parties"].append(party)
-                            success = True
 
         # If no parties from the budget breakdown, copy from top level with 'funder' roles
         if len(state.output["parties"]) == 0:
             copy_party_by_role(state, "funder")
-            success = True
-    return success
 
 
 def cost_estimate(state):
