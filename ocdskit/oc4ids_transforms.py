@@ -183,6 +183,10 @@ def copy_party_by_role(state, role, new_roles=None):
 
 def copy_document_by_type(state, document_type):
 
+    """
+    Copies documents of specific documentType from planning.documents to documents
+    """
+
     if not state.output.get("documents"):
         state.output["documents"] = []
 
@@ -195,6 +199,10 @@ def copy_document_by_type(state, document_type):
 
 
 def concat_ocid_and_string(state, path_to_string):
+
+    """
+    Places the ocid of a release in front of a string (eg. description or title) so that it can be joined unambiguously with others, separated by new lines
+    """
 
     strings = ""
     for compiled_release in state.compiled_releases:
@@ -210,14 +218,23 @@ def concat_ocid_and_string(state, path_to_string):
 
 
 def public_authority_role(state):
+    """
+    CoST IDS element: Project owner
+    """
     return copy_party_by_role(state, "publicAuthority")
 
 
 def buyer_role(state):
+    """
+    CoST IDS element: Project owner
+    """
     return copy_party_by_role(state, "buyer", ["publicAuthority"])
 
 
 def sector(state):
+    """
+    CoST IDS element: Sector
+    """
     found_sector = None
     for compiled_release in state.compiled_releases:
         sector = resolve_pointer(compiled_release, "/planning/project/sector", None)
@@ -231,6 +248,9 @@ def sector(state):
 
 
 def additional_classifications(state):
+    """
+    CoST IDS element: Subsector
+    """
     for compiled_release in state.compiled_releases:
         additionalClassifications = resolve_pointer(
             compiled_release, "/planning/project/additionalClassifications", None
@@ -241,6 +261,9 @@ def additional_classifications(state):
 
 
 def title(state):
+    """
+    CoST IDS element: Project name
+    """
     found_title = None
     for compiled_release in state.compiled_releases:
         title = resolve_pointer(compiled_release, "/planning/project/title", None)
@@ -254,6 +277,9 @@ def title(state):
 
 
 def title_from_tender(state):
+    """
+    CoST IDS element: Project name
+    """
     if state.output.get("title"):
         return True
 
@@ -294,6 +320,9 @@ def contracting_process_setup(state):
 
 
 def procuring_entity(state):
+    """
+    CoST IDS element: Procuring entity
+    """
     copy_party_by_role(state, "procuringEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
@@ -320,6 +349,10 @@ def procuring_entity(state):
 
 
 def administrative_entity(state):
+    """
+    CoST IDS element: Contract administrative entity
+    """
+    success = copy_party_by_role(state, "administrativeEntity")
     copy_party_by_role(state, "administrativeEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
@@ -344,7 +377,9 @@ def administrative_entity(state):
 
 
 def contract_status(state):
-
+    """
+    CoST IDS element: Contract status
+    """
     current_iso_datetime = datetime.datetime.now().isoformat()
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
@@ -429,6 +464,9 @@ def contract_status(state):
 
 
 def procurement_process(state):
+    """
+    CoST IDS element: Procurement process
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         input_tender = check_type(compiled_release.get("tender"), dict)
         if input_tender:
@@ -446,6 +484,9 @@ def procurement_process(state):
 
 
 def number_of_tenderers(state):
+    """
+    CoST IDS element: Number of firms tendering
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         input_tender = check_type(compiled_release.get("tender"), dict)
         if input_tender:
@@ -457,6 +498,9 @@ def number_of_tenderers(state):
 
 
 def location(state):
+    """
+    CoST IDS element: Project location
+    """
     all_locations = []
     for compiled_release in state.compiled_releases:
         locations = resolve_pointer(compiled_release, "/planning/project/locations", None)
@@ -468,6 +512,9 @@ def location(state):
 
 
 def location_from_items(state):
+    """
+    CoST IDS element: Project location 
+    """
     if state.output.get("locations"):
         return True
 
@@ -491,6 +538,9 @@ def location_from_items(state):
 
 
 def budget(state):
+    """
+    CoST IDS element: Budget
+    """
 
     if len(state.compiled_releases) == 1:
         budget_value = resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
@@ -515,18 +565,30 @@ def budget(state):
 
 
 def budget_approval(state):
+    """
+    CoST IDS element: Project budget approval date
+    """
     return copy_document_by_type(state, "budgetApproval")
 
 
 def environmental_impact(state):
+    """
+    CoST IDS element: Environmental impact
+    """
     return copy_document_by_type(state, "environmentalImpact")
 
 
 def land_and_settlement_impact(state):
+    """
+    CoST IDS element: Land and settlement impact
+    """
     return copy_document_by_type(state, "landAndSettlementImpact")
 
 
 def purpose(state):
+    """
+    CoST IDS element: Purpose
+    """
     if len(state.compiled_releases) == 1:
         rationale = resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
         if rationale:
@@ -543,11 +605,16 @@ def purpose(state):
 
 
 def purpose_needs_assessment(state):
+    """
+    CoST IDS element: Purpose
+    """
     return copy_document_by_type(state, "needsAssessment")
 
 
 def description(state):
-
+    """
+    CoST IDS element: Project description
+    """
     if len(state.compiled_releases) == 1:
         description = resolve_pointer(state.compiled_releases[0], "/planning/project/description", None)
         if description:
@@ -563,6 +630,9 @@ def description(state):
 
 
 def description_tender(state):
+    """
+    CoST IDS element: Project description
+    """
     if state.output.get("description"):
         return True
 
@@ -582,6 +652,9 @@ def description_tender(state):
 
 
 def funding_sources(state):
+    """
+    CoST IDS element: Funding sources
+    """
 
     if not state.output.get("parties"):
         state.output["parties"] = []
@@ -614,7 +687,9 @@ def funding_sources(state):
 
 
 def cost_estimate(state):
-
+    """
+    CoST IDS element: Cost estimate
+    """
     for contracting_process in state.output["contractingProcesses"]:
         ocid = contracting_process.get("id")
         latest_planning_value = None
@@ -631,6 +706,9 @@ def cost_estimate(state):
 
 
 def contract_title(state):
+    """
+    CoST IDS element: Contract title
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         contracts = check_type(compiled_release.get("contracts"), list)
         awards = check_type(compiled_release.get("awards"), list)
@@ -658,6 +736,9 @@ def contract_title(state):
 
 
 def suppliers(state):
+    """
+    CoST IDS element: Contract firm(s)
+    """
     copy_party_by_role(state, "supplier")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
@@ -672,6 +753,9 @@ def suppliers(state):
 
 
 def contract_price(state):
+    """
+    CoST IDS element: Contract price
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         awards = check_type(compiled_release.get("awards"), list)
         award_currency = None
@@ -696,7 +780,9 @@ def contract_price(state):
 
 
 def contract_process_description(state):
-
+    """
+    CoST IDS element: Contract scope of work
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         contracts = check_type(compiled_release.get("contracts"), list)
         awards = check_type(compiled_release.get("awards"), list)
@@ -761,7 +847,9 @@ def contract_process_description(state):
 
 
 def contract_period(state):
-
+    """
+    CoST IDS element: Contract start date and contract period (duration)
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         awards = check_type(compiled_release.get("awards"), list)
         start_dates = []
@@ -788,10 +876,16 @@ def contract_period(state):
 
 
 def project_scope(state):
+    """
+    CoST IDS element: Project Scope (main output)
+    """
     return copy_document_by_type(state, "projectScope")
 
 
 def project_scope_summary(state):
+    """
+    CoST IDS element: Project Scope (main output)
+    """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
 
         release_tender = compiled_release.get("tender", {})
@@ -809,7 +903,9 @@ def project_scope_summary(state):
 
 
 def final_audit(state):
-
+    """
+    CoST IDS element: Reference to audit and evaluation reports
+    """
     if not state.output.get("documents"):
         state.output["documents"] = []
 
