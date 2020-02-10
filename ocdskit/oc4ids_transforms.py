@@ -904,7 +904,7 @@ def contract_period(state):
 
 def project_scope(state):
     """
-    CoST IDS element: Project Scope (main output)
+    CoST IDS element: Project Scope (main output) and Project Scope (projected)
     """
     return copy_document_by_type(state, "projectScope")
 
