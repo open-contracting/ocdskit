@@ -33,8 +33,10 @@ def test_public_authority_role():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "parties": [{"id": "1", "name": "a", "roles": ["publicAuthority"]}, 
-                        {"id": "2", "name": "b", "roles": ["publicAuthority"]}],
+            "parties": [
+                {"id": "1", "name": "a", "roles": ["publicAuthority"]},
+                {"id": "2", "name": "b", "roles": ["publicAuthority"]},
+            ],
         }
     ]
 
@@ -170,12 +172,14 @@ def test_sector():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "planning": {"project": {"sector": "a"}},
+            "planning": {
+                "project": {"sector": {"scheme": "COFOG", "description": "Road transportation", "id": "04.5.1"}}
+            },
         }
     ]
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert output["sector"] == "a"
+    assert output["sector"] == releases[0]["planning"]["project"]["sector"]
 
     # 2 contracting processes but same sector
     releases.append(
@@ -184,15 +188,17 @@ def test_sector():
             "id": "1",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "planning": {"project": {"sector": "a"}},
+            "planning": {
+                "project": {"sector": {"scheme": "COFOG", "description": "Road transportation", "id": "04.5.1"}}
+            },
         }
     )
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert output["sector"] == "a"
+    assert output["sector"] == releases[0]["planning"]["project"]["sector"]
 
     # 2 contracting processes but differnt sector
-    releases[1]["planning"]["project"]["sector"] = "b"
+    releases[1]["planning"]["project"]["sector"]["id"] = "2"
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
     assert "sector" not in output
 
@@ -224,8 +230,9 @@ def test_title():
     ]
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.title])
-    assert output["title"] == "a title"
+    assert output["title"] == releases[0]["planning"]["project"]["title"]
 
+    # clashing titles give warning and no output
     releases.append(
         {
             "ocid": "ocds-213czf-2",
@@ -252,7 +259,7 @@ def test_title_from_tender():
     ]
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.title, transforms.title_from_tender])
-    assert output["title"] == "a title"
+    assert output["title"] == releases[0]["tender"]["title"]
 
     releases.append(
         {
@@ -281,7 +288,7 @@ def test_title_from_tender():
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.title, transforms.title_from_tender])
 
-    assert output["title"] == "a title"
+    assert output["title"] == releases[0]["planning"]["project"]["title"]
 
 
 def test_contracting_process_setup_releases():
@@ -663,9 +670,9 @@ def test_contract_status_active():
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "active"
     assert output["contractingProcesses"][1]["summary"]["status"] == "active"
+    assert output["contractingProcesses"][2]["summary"]["status"] != "active"
 
     # Currently no status at all as fits no status
-    assert output["contractingProcesses"][2]["summary"].get("status") != "active"
 
     assert output["contractingProcesses"][3]["summary"]["status"] == "active"
     assert output["contractingProcesses"][4]["summary"]["status"] == "active"
@@ -746,7 +753,6 @@ def test_contract_status_closed():
     assert output["contractingProcesses"][4]["summary"]["status"] != "closed"
     assert output["contractingProcesses"][5]["summary"]["status"] != "closed"
     assert output["contractingProcesses"][6]["summary"]["status"] != "closed"
-
 
 def test_procurment_process():
 
@@ -1360,7 +1366,7 @@ def test_cost_estimate():
             "ocid": "ocds-213czf-1",
             "id": "1",
             "tag": "planning",
-            "date": "2001-02-03T04:05:06Z",
+            "date": "2100-02-03T04:05:06Z",
             "tender": {"status": "planning", "value": {"amount": 10}},
         },
     ]
@@ -1372,7 +1378,7 @@ def test_cost_estimate():
     assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 10}
 
     # reverse releases
-    releases = releases[::-1]
+    releases[0]["date"], releases[1]["date"] = releases[1]["date"], releases[0]["date"]
 
     output = transforms._run_transforms(
         releases, "1", transforms=[transforms.contracting_process_setup, transforms.cost_estimate],
@@ -1385,8 +1391,8 @@ def test_cost_estimate():
             "ocid": "ocds-213czf-1",
             "id": "1",
             "tag": "planning",
-            "date": "2001-02-03T04:05:06Z",
-            "tender": {"value": {"amount": 100}},
+            "date": "2200-02-03T04:05:06Z",
+            "tender": {"status": "active", "value": {"amount": 100}},
         }
     )
 
@@ -1561,7 +1567,7 @@ def test_contracting_process_description():
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "c"
 
-    # with no tender description use items 
+    # with no tender description use items
     releases[0]["tender"].pop("description")
 
     output = transforms._run_transforms(

@@ -227,11 +227,7 @@ def sector(state):
         sector = resolve_pointer(compiled_release, "/planning/project/sector", None)
         if sector:
             if found_sector and found_sector != sector:
-                logger.warning(
-                    "Multiple differing sectors found for project {}".format(
-                        state.project_id
-                    )
-                )
+                logger.warning("Multiple differing sectors found for project {}".format(state.project_id))
                 return
         found_sector = sector
     if found_sector:
@@ -257,11 +253,7 @@ def title(state):
         title = resolve_pointer(compiled_release, "/planning/project/title", None)
         if title:
             if found_title and found_title != title:
-                logger.warning(
-                    "Multiple differing titles found for project {}".format(
-                        state.project_id
-                    )
-                )
+                logger.warning("Multiple differing titles found for project {}".format(state.project_id))
                 return
         found_title = title
     if found_title:
@@ -375,11 +367,17 @@ def contract_status(state):
 
         contract_periods = []
         if tender:
-            contract_periods.append(check_type(tender.get("contractPeriod"), dict))
+            tender_contract_period = check_type(tender.get("contractPeriod"), dict)
+            if tender_contract_period:
+                contract_periods.append(tender_contract_period)
         for contract in contracts:
-            contract_periods.append(check_type(contract.get("period"), dict))
+            contract_contract_period = check_type(contract.get("period"), dict)
+            if contract_contract_period:
+                contract_periods.append(contract_contract_period)
         for award in awards:
-            contract_periods.append(check_type(award.get("contractPeriod"), dict))
+            award_contract_period = check_type(award.get("contractPeriod"), dict)
+            if award_contract_period:
+                contract_periods.append(award_contract_period)
 
         # pre-award
         if tender and not closed_tender:
@@ -425,7 +423,7 @@ def contract_status(state):
             continue
 
         if awards:
-            if all(check_type(award, dict).get("status") in ("cancelled", "withdrawn") for award in awards):
+            if all(check_type(award, dict).get("status") in ("cancelled", "unsuccessful") for award in awards):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
