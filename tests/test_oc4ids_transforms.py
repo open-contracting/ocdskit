@@ -1048,6 +1048,25 @@ def test_budget_approval():
     output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.budget_approval],)
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
+    # duplicate document id in different process, auto increment new doc ids.
+    releases.append(
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {
+                "documents": [{"id": "doc2", "documentType": "budgetApproval", "title": "Another Another Document"}]
+            },
+        }
+    )
+
+    output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.budget_approval],)
+
+    assert len(output["documents"]) == 2
+    assert output["documents"][0]["id"] == "1"
+    assert output["documents"][1]["id"] == "2"
+
 
 def test_purpose_one():
     releases = [

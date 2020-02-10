@@ -99,6 +99,8 @@ class InitialTransformState:
 
         self.party_analysis()
 
+        self.generate_document_ids = False
+
     def party_analysis(self):
 
         all_parties = []
@@ -166,19 +168,54 @@ class InitialTransformState:
         self.parties = [party["party"] for party in unique_parties]
 
 
-def copy_party_by_role(state, role, new_roles=None):
+def copy_party_to_party_list(state, party):
+    output_parties = state.output.get("parties", [])
+    if not output_parties:
+        state.output["parties"] = output_parties
 
+    output_party = None
+    for party_to_match in output_parties:
+        if party.get("id") == party_to_match.get("id"):
+            output_party = party_to_match
+
+    if not output_party:
+        output_party = copy.deepcopy(party)
+        output_parties.append(output_party)
+    return output_party
+
+
+def copy_party_by_role(state, role, new_roles=None):
     for party in state.parties:
         if role in check_type(party.get("roles"), list):
-            output_parties = state.output.get("parties", [])
-            if not output_parties:
-                state.output["parties"] = output_parties
-            output_party = copy.deepcopy(party)
+            output_party = copy_party_to_party_list(state, party)
             if new_roles:
                 output_roles = output_party.get("roles", [])
                 output_roles.extend(new_roles)
-                output_party["roles"] = output_roles
-            output_parties.append(output_party)
+                output_party["roles"] = list(set(output_roles))
+
+
+def copy_document(state, document):
+    """
+    Copies a document. If it finds clasing ids changed ids to autoincrement numbers
+    """
+
+    output_documents = state.output.get("documents")
+    if not output_documents:
+        output_documents = []
+        state.output["documents"] = output_documents
+
+    duplicate_doc_id = False
+
+    for output_document in output_documents:
+        if output_document.get("id") == document.get("id"):
+            duplicate_doc_id = True
+            break
+
+    output_documents.append(document)
+
+    if duplicate_doc_id:
+        for num, doc in enumerate(output_documents):
+            doc["id"] = str(num + 1)
 
 
 def copy_document_by_type(state, document_type):
@@ -187,21 +224,19 @@ def copy_document_by_type(state, document_type):
     Copies documents of specific documentType from planning.documents to documents
     """
 
-    if not state.output.get("documents"):
-        state.output["documents"] = []
-
     for compiled_release in state.compiled_releases:
         documents = resolve_pointer(compiled_release, "/planning/documents", [])
         for document in check_type(documents, list):
             document = check_type(document, dict)
             if document_type == document.get("documentType"):
-                state.output["documents"].append(document)
+                copy_document(state, document)
 
 
 def concat_ocid_and_string(state, path_to_string):
 
     """
-    Places the ocid of a release in front of a string (eg. description or title) so that it can be joined unambiguously with others, separated by new lines
+    Places the ocid of a release in front of a string (eg. description or title)
+    so that it can be joined unambiguously with others, separated by new lines
     """
 
     strings = ""
@@ -352,7 +387,6 @@ def administrative_entity(state):
     """
     CoST IDS element: Contract administrative entity
     """
-    success = copy_party_by_role(state, "administrativeEntity")
     copy_party_by_role(state, "administrativeEntity")
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
@@ -513,7 +547,7 @@ def location(state):
 
 def location_from_items(state):
     """
-    CoST IDS element: Project location 
+    CoST IDS element: Project location
     """
     if state.output.get("locations"):
         return True
@@ -656,9 +690,7 @@ def funding_sources(state):
     CoST IDS element: Funding sources
     """
 
-    if not state.output.get("parties"):
-        state.output["parties"] = []
-
+    found_funding_source = False
     for compiled_release in state.compiled_releases:
 
         parties = check_type(resolve_pointer(compiled_release, "/parties", None), list)
@@ -674,16 +706,19 @@ def funding_sources(state):
                     for party in parties:
                         party = check_type(party, dict)
                         if party.get("id") == party_id:
+                            output_party = copy.deepcopy(party)
                             # Add to parties and set funder in roles
-                            if check_type(party.get("roles"), list):
-                                party["roles"].append("funder")
+                            if check_type(output_party.get("roles"), list):
+                                output_party["roles"].append("funder")
                             else:
-                                party["roles"] = ["funder"]
-                            state.output["parties"].append(party)
+                                output_party["roles"] = ["funder"]
+                            output_party["id"] = output_party.pop("_new_id")
+                            copy_party_to_party_list(state, output_party)
+                            found_funding_source = True
 
-        # If no parties from the budget breakdown, copy from top level with 'funder' roles
-        if len(state.output["parties"]) == 0:
-            copy_party_by_role(state, "funder")
+    # If no parties from the budget breakdown, copy from top level with 'funder' roles
+    if not found_funding_source:
+        copy_party_by_role(state, "funder")
 
 
 def cost_estimate(state):
