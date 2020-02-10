@@ -754,6 +754,7 @@ def test_contract_status_closed():
     assert output["contractingProcesses"][5]["summary"]["status"] != "closed"
     assert output["contractingProcesses"][6]["summary"]["status"] != "closed"
 
+
 def test_procurment_process():
 
     releases = [
