@@ -179,7 +179,7 @@ def test_sector():
     ]
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert output["sector"] == releases[0]["planning"]["project"]["sector"]
+    assert output["sector"] == ["COFOG-04.5.1"]
 
     # 2 contracting processes but same sector
     releases.append(
@@ -195,12 +195,12 @@ def test_sector():
     )
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert output["sector"] == releases[0]["planning"]["project"]["sector"]
+    assert output["sector"] == ["COFOG-04.5.1"]
 
     # 2 contracting processes but differnt sector
     releases[1]["planning"]["project"]["sector"]["id"] = "2"
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert "sector" not in output
+    assert output["sector"] == ["COFOG-04.5.1", "COFOG-2"]
 
 
 def test_additional_classifications():
@@ -216,6 +216,33 @@ def test_additional_classifications():
 
     output = transforms._run_transforms(releases, "1", transforms=[transforms.additional_classifications])
     assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"}]
+
+    # same classification
+    releases.append(
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"additionalClassifications": [{"scheme": "a", "id": "1"}]}},
+        }
+    )
+
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.additional_classifications])
+    assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"}]
+
+    # new classification
+    releases.append(
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "planning": {"project": {"additionalClassifications": [{"scheme": "a", "id": "2"}]}},
+        }
+    )
+    output = transforms._run_transforms(releases, "1", transforms=[transforms.additional_classifications])
+    assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"},{"scheme": "a", "id": "2"}]
 
 
 def test_title():

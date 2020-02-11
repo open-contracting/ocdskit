@@ -270,16 +270,19 @@ def sector(state):
     """
     CoST IDS element: Sector
     """
-    found_sector = None
+    sectors = []
     for compiled_release in state.compiled_releases:
-        sector = resolve_pointer(compiled_release, "/planning/project/sector", None)
-        if sector:
-            if found_sector and found_sector != sector:
-                logger.warning("Multiple differing sectors found for project {}".format(state.project_id))
-                return
-        found_sector = sector
-    if found_sector:
-        state.output["sector"] = found_sector
+        sector_id = check_type(resolve_pointer(compiled_release, "/planning/project/sector/id", ""), str)
+        sector_scheme = check_type(resolve_pointer(compiled_release, "/planning/project/sector/scheme", ""), str)
+        if sector_scheme:
+            sector_name = sector_scheme + '-' + sector_id
+        else:
+            sector_name = sector_id
+
+        sectors.append(sector_name)
+
+    if sectors:
+        state.output["sector"] = list(set(sectors))
 
 
 def additional_classifications(state):
@@ -287,12 +290,15 @@ def additional_classifications(state):
     CoST IDS element: Subsector
     """
     for compiled_release in state.compiled_releases:
-        additionalClassifications = resolve_pointer(
+        additional_classifications = resolve_pointer(
             compiled_release, "/planning/project/additionalClassifications", None
         )
-        if additionalClassifications:
-            state.output["additionalClassifications"] = additionalClassifications
-            break
+        if additional_classifications:
+            output_classifications = state.output.get("additionalClassifications", [])
+            state.output["additionalClassifications"] = output_classifications
+            for classification in additional_classifications:
+                if classification not in output_classifications:
+                    output_classifications.append(classification)
 
 
 def title(state):
