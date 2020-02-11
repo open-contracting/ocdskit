@@ -649,18 +649,22 @@ def description(state):
     """
     CoST IDS element: Project description
     """
-    if len(state.compiled_releases) == 1:
-        description = resolve_pointer(state.compiled_releases[0], "/planning/project/description", None)
-        if description:
-            state.output["description"] = description
-            return True
+    output_description = None
 
-    else:
-        descriptions = concat_ocid_and_string(state, "/planning/project/description")
-        if descriptions != "":
-            state.output["description"] = descriptions
-            return True
-    return False
+    for compiled_release in state.compiled_releases:
+        description = resolve_pointer(compiled_release, "/planning/project/description", None)
+        if description:
+            if output_description and output_description != description:
+                logger.warn(
+                    "Multiple differing planning/project/descriptions found eg. {}, {}, skipping conversion".format(
+                        description, output_description
+                    )
+                )
+                return
+            output_description = description
+
+    if output_description:
+        state.output["description"] = output_description
 
 
 def description_tender(state):

@@ -1158,14 +1158,19 @@ def test_description_multiple():
             "id": "2",
             "tag": "planning",
             "date": "2001-02-03T04:05:06Z",
-            "planning": {"project": {"description": "Another project description"}},
+            "planning": {"project": {"description": "A project description"}},
         },
     ]
 
-    rationales = "<ocds-213czf-1> A project description\n<ocds-213czf-2> Another project description\n"
+    output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.description],)
+    assert output["description"] == releases[0]["planning"]["project"]["description"]
+
+    # contraditing descriptions
+    releases[0]["planning"]["project"]["description"] = "another description"
 
     output = transforms._run_transforms(copy.deepcopy(releases), "1", transforms=[transforms.description],)
-    assert output["description"] == rationales
+
+    assert "description" not in output
 
 
 def test_description_tender():
