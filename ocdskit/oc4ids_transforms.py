@@ -275,7 +275,7 @@ def sector(state):
         sector_id = check_type(resolve_pointer(compiled_release, "/planning/project/sector/id", ""), str)
         sector_scheme = check_type(resolve_pointer(compiled_release, "/planning/project/sector/scheme", ""), str)
         if sector_scheme:
-            sector_name = sector_scheme + '-' + sector_id
+            sector_name = sector_scheme + "-" + sector_id
         else:
             sector_name = sector_id
 

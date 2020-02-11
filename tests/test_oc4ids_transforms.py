@@ -200,7 +200,7 @@ def test_sector():
     # 2 contracting processes but differnt sector
     releases[1]["planning"]["project"]["sector"]["id"] = "2"
     output = transforms._run_transforms(releases, "1", transforms=[transforms.sector])
-    assert output["sector"] == ["COFOG-04.5.1", "COFOG-2"]
+    assert set(output["sector"]) == set(["COFOG-04.5.1", "COFOG-2"])
 
 
 def test_additional_classifications():
@@ -242,7 +242,7 @@ def test_additional_classifications():
         }
     )
     output = transforms._run_transforms(releases, "1", transforms=[transforms.additional_classifications])
-    assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"},{"scheme": "a", "id": "2"}]
+    assert output["additionalClassifications"] == [{"scheme": "a", "id": "1"}, {"scheme": "a", "id": "2"}]
 
 
 def test_title():
@@ -1215,6 +1215,22 @@ def test_description_tender():
         copy.deepcopy(releases), "1", transforms=[transforms.description, transforms.description_tender],
     )
     assert output["description"] == releases[0]["tender"]["description"]
+
+    releases.append(
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "tender": {"description": "A new project description"},
+        }
+    )
+    output = transforms._run_transforms(
+        copy.deepcopy(releases), "1", transforms=[transforms.description, transforms.description_tender],
+    )
+    assert (
+        output["description"] == "<ocds-213czf-1> A project description\n<ocds-213czf-2> A new project description\n"
+    )
 
 
 def test_description_not_tender():
