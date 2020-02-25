@@ -60,3 +60,64 @@ Some transforms are not run automatically, but only if set. The following transf
 * ``project_scope_summary``: updates ``summary.tender`` with ``items`` and ``milestones`` from ``tender``
 * ``purpose_needs_assessment``: populate the ``documents`` field from ``planning.documents`` according to the ``documentType`` ``needsAssessment``
 * ``title_from_tender``: populate the ``title`` field from ``tender.title`` if no other is available
+
+Transformation Notes
+~~~~~~~~~~~~~~~~~~~~
+
+Most transforms follow the logic in the `mapping documentation <https://standard.open-contracting.org/infrastructure>`__.  However, there is some room for interpretation in some of the mappings, so here are some notes about these interpretations.
+
+Differing text across multiple contracting process
+##################################################
+
+**planning/project/title, project/planning/description (planning and budget extension):**
+
+If there are any contradictions i.e one contract says the title is different from another a warning is raised and the field is ignored in that case.  If all contracting processes agree (when the fields exists in them) then the value is still used.
+
+**tender/title, tender/description, /planning/rationale:**
+
+If there a multiple contradicting process then we concatenate the strings and put the ocid
+in angle brackets like:
+
+``<someocid> a tender description <anotherocid> another description``
+
+If there is only one contracting processes then the ocid part is omitted.
+
+
+Parties ID across multiple contracting processes
+################################################
+
+When ``parties/id`` from different contracting processes are conflicting and also if there are parties in multiple contracting processes that are the same, we need to identify which are in fact the same party.
+
+The logic that the transforms do to work out matching parties:
+
+* If all ``parties/id`` are unique across contracting processes then do nothing and add all parties to the project.
+* If there are conflicting parties/id then look at the ``identifier`` field and if there are ``scheme`` and ``id`` make an id of ``somescheme-someid`` and use that in order to match parties across processes.  If there are different roles then add them to the same party.  Use the other fields from the first party found with this id.
+* If there is no ``identifier`` then make up a new auto increment number and use that as the ``id``. **This means the original IDs get replaced and are lost in the mapping**
+* If there is no ``identifier`` and all fields apart from ``roles`` and ``id`` are the same across parties then treat that as a single party and add the roles together and use a single generated `id`.
+
+Document ID across multiple contracting processes
+#################################################
+
+If there are are only unique project/documents/id keep the ids the same. Otherwise create a new auto-increment for all docs.  **This means the original ``documanets/id`` are lost**
+
+
+Project Sector
+##############
+
+Sectors are gathered from ``planning/project/sector`` and it gets all unique ``scheme`` and ``id`` of the form ``<scheme>-<id>`` and adds them to the ``sector`` array. This could mean that the sectors generated are not in the `Project Sector Codelist <https://standard.open-contracting.org/infrastructure/latest/en/reference/codelists/#projectsector>`__.
+
+
+Release Links
+#############
+
+``contractingProcesses/releases`` within OC4IDS has link to a releases via a URL. This URL will be generated if OCDS release packages are supplied and a `uri` is in the package data. However, if this is not case the transform adds an additional field ``contractingProcesses/embeddedReleases`` which contains all releases supplied in their full.
+
+
+Project Scope Summary
+#####################
+
+When the project_scope_summary transform is selected in config then copy over all ``tender/items`` and ``tender/milestones`` to ``contractingProcess/tender``.  This is to give the output enough information in order to infer project scope.
+
+
+
+
