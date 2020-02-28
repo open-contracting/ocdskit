@@ -1,20 +1,20 @@
 OC4IDS Commands
-================
+===============
 
-The following commands may be used when working with `Open Contracting for Infrastructure <https://standard.open-contracting.org/infrastructure>`__ data.
+The following commands may be used when working with data conforming to the `Open Contracting for Infrastructure Data Standards (OC4IDS) <https://standard.open-contracting.org/infrastructure>`__.
 
-oc4ids-transforms
+convert-to-oc4ids
 -----------------
 
-This command takes a list of OCDS releases and transforms them into a single OC4IDS project.
+This command takes a list of OCDS releases or release packages and transforms them into a single OC4IDS project.
 
 `The logic for the mappings between OCDS and OC4IDS fields is documented here <https://standard.open-contracting.org/infrastructure/latest/en/cost/#mapping-to-ids-and-from-ocds>`__.
 
 Optional arguments:
 
-* ``--id ID`` the Project ID of the created project
+* ``--project-id PROJECT_ID`` the Project ID of the created project
 * ``--package`` wrap the project in a package
-* ``--options OPTIONS`` a comma seperated list of optional tranforms
+* ``--transforms OPTIONS`` a comma separated list of optional transforms
 * ``--all`` run all optional transforms
 
 Arguments that can be applied if the project is in a package:
@@ -52,7 +52,7 @@ The transforms that are run are described here.
 Optional transforms
 ~~~~~~~~~~~~~~~~~~~
 
-Some transforms are not run automatically, but only if set. The following transforms are included if they are listed in using the ``--options`` argument (as part of a comma-separated list) or if ``--all`` is passed.
+Some transforms are not run automatically, but only if set. The following transforms are included if they are listed in using the ``--transforms`` argument (as part of a comma-separated list) or if ``--all`` is passed.
 
 * ``buyer_role``: updates the ``parties`` field with parties that have ``buyer`` in their ``roles``
 * ``description_tender``: populate the ``description`` field from ``tender.description`` if no other is available
@@ -67,7 +67,7 @@ Transformation Notes
 Most transforms follow the logic in the `mapping documentation <https://standard.open-contracting.org/infrastructure>`__.  However, there is some room for interpretation in some of the mappings, so here are some notes about these interpretations.
 
 Differing text across multiple contracting process
-##################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **planning/project/title, project/planning/description (planning and budget extension):**
 
@@ -84,7 +84,7 @@ If there is only one contracting processes then the ocid part is omitted.
 
 
 Parties ID across multiple contracting processes
-################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When ``parties/id`` from different contracting processes are conflicting and also if there are parties in multiple contracting processes that are the same, we need to identify which are in fact the same party.
 
@@ -96,28 +96,24 @@ The logic that the transforms do to work out matching parties:
 * If there is no ``identifier`` and all fields apart from ``roles`` and ``id`` are the same across parties then treat that as a single party and add the roles together and use a single generated `id`.
 
 Document ID across multiple contracting processes
-#################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If there are are only unique project/documents/id keep the ids the same. Otherwise create a new auto-increment for all docs.  **This means the original ``documanets/id`` are lost**
+If there are are only unique project/documents/id keep the ids the same. Otherwise create a new auto-increment for all docs.  **This means the original ``documents/id`` are lost**
 
 
 Project Sector
-##############
+^^^^^^^^^^^^^^
 
 Sectors are gathered from ``planning/project/sector`` and it gets all unique ``scheme`` and ``id`` of the form ``<scheme>-<id>`` and adds them to the ``sector`` array. This could mean that the sectors generated are not in the `Project Sector Codelist <https://standard.open-contracting.org/infrastructure/latest/en/reference/codelists/#projectsector>`__.
 
 
 Release Links
-#############
+^^^^^^^^^^^^^
 
 ``contractingProcesses/releases`` within OC4IDS has link to a releases via a URL. This URL will be generated if OCDS release packages are supplied and a `uri` is in the package data. However, if this is not case the transform adds an additional field ``contractingProcesses/embeddedReleases`` which contains all releases supplied in their full.
 
 
 Project Scope Summary
-#####################
+^^^^^^^^^^^^^^^^^^^^^
 
-When the project_scope_summary transform is selected in config then copy over all ``tender/items`` and ``tender/milestones`` to ``contractingProcess/tender``.  This is to give the output enough information in order to infer project scope.
-
-
-
-
+If `--all` is set or if `project_scope_summary` is included in `--transforms` it copies over all ``tender/items`` and ``tender/milestones`` to ``contractingProcess/tender``.  This is to give the output enough information in order to infer project scope.

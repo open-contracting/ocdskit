@@ -256,14 +256,14 @@ def public_authority_role(state):
     """
     CoST IDS element: Project owner
     """
-    return copy_party_by_role(state, "publicAuthority")
+    copy_party_by_role(state, "publicAuthority")
 
 
 def buyer_role(state):
     """
     CoST IDS element: Project owner
     """
-    return copy_party_by_role(state, "buyer", ["publicAuthority"])
+    copy_party_by_role(state, "buyer", ["publicAuthority"])
 
 
 def sector(state):
@@ -322,7 +322,7 @@ def title_from_tender(state):
     CoST IDS element: Project name
     """
     if state.output.get("title"):
-        return True
+        return
 
     titles = []
     for compiled_release in state.compiled_releases:
@@ -356,8 +356,6 @@ def contracting_process_setup(state):
             contracting_process["embeddedReleases"] = embedded_releases
 
         state.output["contractingProcesses"].append(contracting_process)
-
-    return True
 
 
 def procuring_entity(state):
@@ -556,7 +554,7 @@ def location_from_items(state):
     CoST IDS element: Project location
     """
     if state.output.get("locations"):
-        return True
+        return
 
     locations = []
     for compiled_release in state.compiled_releases:
@@ -608,21 +606,21 @@ def budget_approval(state):
     """
     CoST IDS element: Project budget approval date
     """
-    return copy_document_by_type(state, "budgetApproval")
+    copy_document_by_type(state, "budgetApproval")
 
 
 def environmental_impact(state):
     """
     CoST IDS element: Environmental impact
     """
-    return copy_document_by_type(state, "environmentalImpact")
+    copy_document_by_type(state, "environmentalImpact")
 
 
 def land_and_settlement_impact(state):
     """
     CoST IDS element: Land and settlement impact
     """
-    return copy_document_by_type(state, "landAndSettlementImpact")
+    copy_document_by_type(state, "landAndSettlementImpact")
 
 
 def purpose(state):
@@ -633,22 +631,17 @@ def purpose(state):
         rationale = resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
         if rationale:
             state.output["purpose"] = rationale
-            return True
-
     else:
         purposes = concat_ocid_and_string(state, "/planning/rationale")
         if purposes != "":
             state.output["purpose"] = purposes
-            return True
-
-    return False
 
 
 def purpose_needs_assessment(state):
     """
     CoST IDS element: Purpose
     """
-    return copy_document_by_type(state, "needsAssessment")
+    copy_document_by_type(state, "needsAssessment")
 
 
 def description(state):
@@ -678,21 +671,19 @@ def description_tender(state):
     CoST IDS element: Project description
     """
     if state.output.get("description"):
-        return True
+        return
 
     if len(state.compiled_releases) == 1:
         description = resolve_pointer(state.compiled_releases[0], "/tender/description", None)
         if description:
             state.output["description"] = description
-            return True
+            return
 
     else:
         descriptions = concat_ocid_and_string(state, "/tender/description")
         if descriptions != "":
             state.output["description"] = descriptions
-            return True
-
-    return False
+            return
 
 
 def funding_sources(state):
@@ -924,7 +915,7 @@ def project_scope(state):
     """
     CoST IDS element: Project Scope (main output) and Project Scope (projected)
     """
-    return copy_document_by_type(state, "projectScope")
+    copy_document_by_type(state, "projectScope")
 
 
 def project_scope_summary(state):
