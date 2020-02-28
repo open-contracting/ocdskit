@@ -37,7 +37,7 @@ If you are working with files that embed OCDS data, use the ``--root-path ROOT_P
      ]
    }
 
-You can run ``ocdskit <command> --root-path results.items`` to process the release packages. To build the root path, in this case, you join the ``results`` key to the ``item`` literal by a period (the ``item`` literal indicates that the items to process are in an array).
+You can run ``ocdskit <command> --root-path results`` to process the release packages. The root path, in this case, is simply the ``results`` key. OCDS Kit will then process each release package in the ``results`` array.
 
 For this next example, you can run ``ocdskit <command> --root-path results.item.ocdsReleasePackage``:
 
@@ -58,6 +58,8 @@ For this next example, you can run ``ocdskit <command> --root-path results.item.
        }
      ]
    }
+
+To build the root path, in this case, you join the ``results`` key to the ``item`` literal by a period (the ``item`` literal indicates that the items to process are in an array), and then to the ``ocdsReleasePackage`` key.
 
 detect-format
 -------------
@@ -119,7 +121,7 @@ OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/referen
 
 For the Python API, see :doc:`../api/upgrade`.
 
-If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases``.
 
 .. _package-records:
 
@@ -145,7 +147,7 @@ Optional positional arguments:
 
 To convert record packages to a record package, you can use the ``--root-path`` option::
 
-    cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records.item.records
+    cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records
 
 If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
@@ -322,11 +324,11 @@ You can also use this command to extract releases from release packages, and rec
 
 -  Split a large record package into smaller packages of 100 records each::
 
-      cat large-record-package.json | ocdskit echo --root-path records.item | ocdskit package-records --size 100
+      cat large-record-package.json | ocdskit echo --root-path records | ocdskit package-records --size 100
 
 -  Split a large release package into smaller packages of 1,000 releases each::
 
-      cat large-release-package.json | ocdskit echo --root-path releases.item | ocdskit package-releases --size 1000
+      cat large-release-package.json | ocdskit echo --root-path releases | ocdskit package-releases --size 1000
 
 Note that the package metadata from the large package won't be retained in the smaller packages; you can use the optional arguments of the :ref:`package-records` and :ref:`package-releases` commands to set the package metadata.
 
