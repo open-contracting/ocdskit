@@ -14,9 +14,9 @@ Adding a command
 Streaming
 ---------
 
-A naive program buffers all inputs into memory before writing any outputs. Since OCDS files can be very large, all OCDS commands read inputs and write outputs progressively or one-at-a-time (that is, they "stream"), as much as possible. Streaming writes outputs faster and requires less memory than buffering. All OCDS commands:
+All OCDS commands:
 
--  stream input, using ``ijson`` to iteratively parse the JSON inputs with a read buffer of 64 kB
+-  stream input, using `ijson <https://pypi.org/project/ijson/>`__ to iteratively parse the JSON inputs with a read buffer of 64 kB
 -  stream output, using `json.JSONDecoder.iterencode() <https://docs.python.org/3/library/json.html#json.JSONEncoder.iterencode>`__ with a `default <https://docs.python.org/3/library/json.html#json.JSONEncoder.default>`__ method that postpones the evaluation of iterators
 -  postpone the evaluation of inputs by using iterators instead of lists (for example, ``package-releases`` sets the package's ``releases`` to an iterator), using the `itertools <https://docs.python.org/2/library/itertools.html>`__ module
 
