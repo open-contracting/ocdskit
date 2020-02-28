@@ -13,7 +13,10 @@ logger = logging.getLogger("ocdskit")
 
 
 def check_type(item, item_type):
-    """ Check type and if incorrect return empty version of type so that future processing works with bad data"""
+    """
+    Check type and if incorrect return empty version of type so that future processing works with bad data.
+    Should be used with dicts or lists that are then accessed later.
+    """
     if not isinstance(item, item_type):
         if item:
             logger.warn("item {} is not of type {} so skipping".format(item, item_type.__name__))
@@ -21,12 +24,29 @@ def check_type(item, item_type):
     return item
 
 
-def cast(item, item_type):
-    """ Cast to type and if casting fails return empty version of type """
+def cast_number_or_zero(item):
+    """ Cast to number if fail return 0 so summing still works."""
+    # keep original type so that if all values in summation are ints value is int also (not float).
+    if isinstance(item, (float, int)):
+        return item
     try:
-        return item_type(item)
+        return float(item)
     except ValueError:
-        return item_type()
+        logger.warn("item {} is not a number treating as zero".format(item))
+        return 0
+
+
+def cast_string(item):
+    """
+    Cast to string if possible. Does not try to convert dict, list, or None to string.
+    Returns empty string on failure so future processing works.
+    """
+
+    if isinstance(item, (str, float, int)):
+        return str(item)
+
+    logger.warn("item {} is not able to be converted to a string".format(item))
+    return ""
 
 
 def run_transforms(config, releases, project_id=None, records=None, output=None):
@@ -68,7 +88,7 @@ class InitialTransformState:
         self.releases = sorted_releases(releases)
         self.releases_by_ocid = defaultdict(list)
         for release in self.releases:
-            ocid = check_type(release.get("ocid"), str)
+            ocid = cast_string(release.get("ocid"))
             if ocid:
                 self.releases_by_ocid[ocid].append(release)
 
@@ -120,8 +140,8 @@ class InitialTransformState:
 
                 unique_identifier = None
                 identifier = check_type(party.get("identifier"), dict)
-                id_ = check_type(identifier.get("id"), str)
-                scheme = check_type(identifier.get("scheme"), str)
+                id_ = cast_string(identifier.get("id"))
+                scheme = cast_string(identifier.get("scheme"))
                 if identifier and scheme:
                     unique_identifier = scheme + "-" + id_
 
@@ -196,7 +216,7 @@ def copy_party_by_role(state, role, new_roles=None):
 
 def copy_document(state, document):
     """
-    Copies a document. If it finds clasing ids changed ids to autoincrement numbers
+    Copies a document. If it finds clashing ids change ids to autoincrement numbers
     """
 
     output_documents = state.output.get("documents")
@@ -242,8 +262,8 @@ def concat_ocid_and_string(state, path_to_string):
     strings = ""
     for compiled_release in state.compiled_releases:
 
-        ocid = check_type(resolve_pointer(compiled_release, "/ocid", None), str)
-        a_string = check_type(resolve_pointer(compiled_release, path_to_string, None), str)
+        ocid = cast_string(resolve_pointer(compiled_release, "/ocid", None))
+        a_string = cast_string(resolve_pointer(compiled_release, path_to_string, None))
 
         if a_string:
             concat = "<{}> {}\n".format(ocid, a_string)
@@ -272,8 +292,8 @@ def sector(state):
     """
     sectors = []
     for compiled_release in state.compiled_releases:
-        sector_id = check_type(resolve_pointer(compiled_release, "/planning/project/sector/id", ""), str)
-        sector_scheme = check_type(resolve_pointer(compiled_release, "/planning/project/sector/scheme", ""), str)
+        sector_id = cast_string(resolve_pointer(compiled_release, "/planning/project/sector/id", ""))
+        sector_scheme = cast_string(resolve_pointer(compiled_release, "/planning/project/sector/scheme", ""))
         if sector_scheme:
             sector_name = sector_scheme + "-" + sector_id
         else:
@@ -454,9 +474,9 @@ def contract_status(state):
                 contracting_process["summary"]["status"] = "pre-award"
                 continue
 
-            all_awards_in_future = all(check_type(award.get("date"), str) > current_iso_datetime for award in awards)
+            all_awards_in_future = all(cast_string(award.get("date")) > current_iso_datetime for award in awards)
 
-            award_period_start_date = check_type(resolve_pointer(tender, "/awardPeriod/startDate", ""), str)
+            award_period_start_date = cast_string(resolve_pointer(tender, "/awardPeriod/startDate", ""))
             award_period_in_future = award_period_start_date > current_iso_datetime
 
             if all_awards_in_future and award_period_in_future:
@@ -470,8 +490,8 @@ def contract_status(state):
             continue
 
         if any(
-            (check_type(period.get("startDate"), str) < current_iso_datetime)
-            and (current_iso_datetime < check_type(period.get("endDate", "9999-12-31"), str))
+            (cast_string(period.get("startDate")) < current_iso_datetime)
+            and (current_iso_datetime < cast_string(period.get("endDate", "9999-12-31")))
             for period in contract_periods
             if period
         ):
@@ -494,9 +514,7 @@ def contract_status(state):
                 contracting_process["summary"]["status"] = "closed"
                 continue
 
-        if all(
-            current_iso_datetime > check_type(period.get("endDate", "9999-12-31"), str) for period in contract_periods
-        ):
+        if all(current_iso_datetime > cast_string(period.get("endDate", "9999-12-31")) for period in contract_periods):
             contracting_process["summary"]["status"] = "closed"
             continue
 
@@ -590,7 +608,7 @@ def budget(state):
 
         for compiled_release in state.compiled_releases:
             budget_amounts.append(
-                cast(resolve_pointer(compiled_release, "/planning/budget/amount/amount", None), float)
+                cast_number_or_zero(resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
             )
             budget_currencies.add(resolve_pointer(compiled_release, "/planning/budget/amount/currency", None))
 
@@ -798,10 +816,10 @@ def contract_price(state):
         award_amount = 0
         for award in awards:
             award = check_type(award, dict)
-            amount = cast(resolve_pointer(award, "/value/amount", None), float)
+            amount = cast_number_or_zero(resolve_pointer(award, "/value/amount", None))
             award_amount += amount
 
-            currency = check_type(resolve_pointer(award, "/value/currency", None), str)
+            currency = cast_string(resolve_pointer(award, "/value/currency", None))
             if currency:
                 if award_currency is None:
                     award_currency = currency
@@ -892,10 +910,10 @@ def contract_period(state):
         end_dates = []
         for award in awards:
             contract_period = check_type(award.get("contractPeriod"), dict)
-            start_date = check_type(contract_period.get("startDate"), str)
+            start_date = cast_string(contract_period.get("startDate"))
             if start_date:
                 start_dates.append(start_date)
-            end_date = check_type(contract_period.get("endDate"), str)
+            end_date = cast_string(contract_period.get("endDate"))
             if end_date:
                 end_dates.append(end_date)
         if start_dates and end_dates:
