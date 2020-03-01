@@ -1,5 +1,6 @@
 import copy
 import datetime
+import decimal
 import json
 import logging
 from collections import defaultdict
@@ -25,14 +26,12 @@ def check_type(item, item_type):
 
 
 def cast_number_or_zero(item):
-    """ Cast to number if fail return 0 so summing still works."""
-    # keep original type so that if all values in summation are ints value is int also (not float).
-    if isinstance(item, (float, int)):
-        return item
+    """ Cast to decimal if fail return 0 so summing still works."""
     try:
-        return float(item)
+        return decimal.Decimal(item)
     except ValueError:
-        logger.warn("item {} is not a number treating as zero".format(item))
+        if item:
+            logger.warn("item {} is not a number treating as zero".format(item))
         return 0
 
 
@@ -42,10 +41,11 @@ def cast_string(item):
     Returns empty string on failure so future processing works.
     """
 
-    if isinstance(item, (str, float, int)):
+    if isinstance(item, (str, float, int, decimal.Decimal)):
         return str(item)
 
-    logger.warn("item {} is not able to be converted to a string".format(item))
+    if item:
+        logger.warn("item {} is not able to be converted to a string".format(item))
     return ""
 
 
