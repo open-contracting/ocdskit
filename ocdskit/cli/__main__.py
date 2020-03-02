@@ -13,6 +13,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.combine_record_packages',
     'ocdskit.cli.commands.combine_release_packages',
     'ocdskit.cli.commands.compile',
+    'ocdskit.cli.commands.convert_to_oc4ids',
     'ocdskit.cli.commands.detect_format',
     'ocdskit.cli.commands.echo',
     'ocdskit.cli.commands.indent',
