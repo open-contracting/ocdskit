@@ -4,7 +4,7 @@ Python library
 Working with streams
 --------------------
 
-A naive program buffers all inputs into memory before writing any outputs. Since OCDS files can be very large, the :doc:`command-line interface<cli>` reads inputs and writes outputs progressively or one-at-a-time (that is, it "streams"), as much as possible. Streaming writes outputs faster and requires less memory than buffering.
+A naive program buffers all inputs into memory before writing any outputs. OCDS files can be very large, and loading them into memory can exhaust all available memory. The :doc:`command-line interface<cli>` therefore reads inputs and writes outputs progressively or one-at-a-time (that is, it "streams"), as much as possible. Streaming writes outputs faster and requires less memory than buffering.
 
 Output
 ~~~~~~
