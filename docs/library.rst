@@ -36,11 +36,15 @@ If you are working with files that :ref:`embed OCDS data<embedded-data>`, set th
 
    for item in ijson.items(f, 'results.item'):
 
+Modules
+-------
+
 .. toctree::
    :maxdepth: 2
 
    api/combine
    api/upgrade
+   api/oc4ids
    api/mapping_sheet
    api/schema
    api/util

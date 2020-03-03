@@ -4,6 +4,17 @@ Changelog
 0.2.4 (Unreleased)
 ------------------
 
+Added
+~~~~~
+
+New CLI commands:
+
+-  convert-to-oc4ids
+
+New library module:
+
+-  ``ocdskit.oc4ids``
+
 Changed
 ~~~~~~~
 
@@ -56,6 +67,13 @@ Fixed
 0.2.0 (2019-12-31)
 ------------------
 
+Added
+~~~~~
+
+New library module:
+
+- ``ocdskit.packager``
+
 Changed
 ~~~~~~~
 
@@ -66,8 +84,7 @@ CLI:
 
 Library:
 
--  **Backwards-incompatible**: Rename ``compile_release_packages`` to ``merge``
--  Add ``packager`` module with ``Packager`` class
+-  **Backwards-incompatible**: Rename ``ocdskit.combine.compile_release_packages`` to ``ocdskit.combine.merge``
 
 Fixed
 ~~~~~
@@ -82,10 +99,10 @@ Added
 
 New library methods:
 
--  ``is_record``
--  ``is_release``
+-  ``ocdskit.util.is_record``
+-  ``ocdskit.util.is_release``
 
-The internal methods ``json_load`` and ``json_loads`` are removed.
+The internal methods ``ocdskit.util.json_load`` and ``ocdskit.util.json_loads`` are removed.
 
 0.1.4 (2019-11-28)
 ------------------
@@ -107,7 +124,7 @@ New CLI commands:
 
 New library methods:
 
--  ``package_records``
+-  ``ocdskit.combine.package_records``
 
 Changed
 ~~~~~~~
@@ -133,7 +150,7 @@ Changed
 Changed
 ~~~~~~~
 
--  Align the library methods ``json_dump`` and ``json_dumps``.
+-  Align the library methods ``ocdskit.util.json_dump`` and ``ocdskit.util.json_dumps``.
 
 0.1.1 (2019-09-19)
 ------------------
@@ -168,12 +185,12 @@ The ``--root-path`` option is added to all OCDS commands.
 
 New library methods:
 
--  ``compile_release_packages``
--  ``package_releases``
--  ``combine_record_packages``
--  ``combine_release_packages``
--  ``mapping_sheet``
--  ``get_schema_fields``
+-  ``ocdskit.combine.package_releases``
+-  ``ocdskit.combine.combine_record_packages``
+-  ``ocdskit.combine.combine_release_packages``
+-  ``ocdskit.combine.compile_release_packages``
+-  ``ocdskit.mapping_sheet.mapping_sheet``
+-  ``ocdskit.schema.get_schema_fields``
 
 Changed
 ~~~~~~~
