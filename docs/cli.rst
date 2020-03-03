@@ -22,7 +22,6 @@ For exploring JSON data, consider using ``jq``. See our tips on using :ref:`jq <
    :maxdepth: 2
 
    cli/ocds
-   cli/oc4ids
    cli/schema
    cli/generic
    cli/examples
