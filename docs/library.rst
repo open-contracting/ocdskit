@@ -14,7 +14,9 @@ Several library methods return dictionaries with generators as values, which can
 Input
 ~~~~~
 
-The command-line interface uses `ijson <https://pypi.org/project/ijson/>`__ to iteratively parse the JSON inputs with a read buffer of 64 kB. To do the same in your code:
+The command-line interface uses `ijson <https://pypi.org/project/ijson/>`__ to iteratively parse the JSON inputs with a read buffer of 64 kB.
+
+To start, this uses the same amount of memory as ``json.load(f)``:
 
 .. code-block:: python
 
@@ -24,17 +26,27 @@ The command-line interface uses `ijson <https://pypi.org/project/ijson/>`__ to i
        for item in ijson.items(f, ''):
            # do stuff
 
-If you are parsing `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__, use :code:`multiple_values=True`:
+If you are working with release packages or record packages and only need the releases or records, set the ``prefix`` argument (:code:`''` above) as described in `ijson's documentation <https://github.com/ICRAR/ijson#prefix>`__. Instead of loading the entire package into memory, this instead loads each release or record one-at-a-time. For example:
 
 .. code-block:: python
 
-   for item in ijson.items(f, '', multiple_values=True):
+   for item in ijson.items(f, 'releases.item'):
 
-If you are working with files that :ref:`embed OCDS data<embedded-data>`, set the ``prefix`` argument (:code:`''` above) as described in `ijson's documentation <https://github.com/ICRAR/ijson#prefix>`__. For example:
+.. code-block:: python
+
+   for item in ijson.items(f, 'records.item'):
+
+The ``prefix`` argument is also relevant if you are working with files that :ref:`embed OCDS data<embedded-data>`. For example:
 
 .. code-block:: python
 
    for item in ijson.items(f, 'results.item'):
+
+If you are parsing `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__, add :code:`multiple_values=True`. For example:
+
+.. code-block:: python
+
+   for item in ijson.items(f, '', multiple_values=True):
 
 Modules
 -------
