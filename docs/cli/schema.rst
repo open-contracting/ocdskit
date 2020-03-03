@@ -1,7 +1,12 @@
 Schema Commands
 ===============
 
-The following commands may be used when working with OCDS schema from extensions, profiles, or OCDS itself.
+The following commands may be used when working with:
+
+* Open Contracting Data Standard (OCDS), plus its extensions and profiles
+* Open Contracting for Infrastructure Data Standard (OC4IDS)
+* Beneficial Ownership Data Standard (BODS)
+* Social Investment Data Lab Specification (SEDL)
 
 Optional arguments for all commands (if relevant) are:
 
@@ -12,12 +17,7 @@ Optional arguments for all commands (if relevant) are:
 mapping-sheet
 -------------
 
-Generates a spreadsheet with all field paths in a JSON Schema. It works with at least:
-
-* Open Contracting Data Standard (OCDS)
-* Open Contracting for Infrastructure Data Standard (OC4IDS)
-* Beneficial Ownership Data Standard (BODS)
-* Social Investment Data Lab Specification (SEDL)
+Generates a spreadsheet with all field paths in a JSON Schema.
 
 Required arguments:
 
