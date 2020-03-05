@@ -8,13 +8,13 @@ logger = logging.getLogger("ocdskit")
 
 class Command(OCDSCommand):
     name = "convert-to-oc4ids"
-    help = "reads release packages and individual releases from standard input and produces an oc4ids project"
+    help = "reads individual releases from standard input, and prints a single project conforming to the OC4IDS"
 
     def add_arguments(self):
-        self.add_argument("--project-id", help="Project ID of the created project", default=None)
+        self.add_argument("--project-id", help="set the project's id to this value")
+        self.add_argument("--all-transforms", help="run all optional transforms", action="store_true")
+        self.add_argument("--transforms", help="comma-separated list of optional transforms to run", default="")
         self.add_argument("--package", action="store_true", help="wrap the project in a package")
-        self.add_argument("--transforms", help="comma-separated list of optional transforms", default="")
-        self.add_argument("--all", help="run all optional transforms", action="store_true")
 
         self.add_package_arguments("project", "if --package is set, ")
 

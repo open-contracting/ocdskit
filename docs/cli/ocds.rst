@@ -135,6 +135,9 @@ Reads records from standard input, and prints one record package.
 Optional positional arguments:
 
 * ``extension`` add this extension to the package
+
+Optional arguments:
+
 * ``--uri URL`` set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
@@ -165,6 +168,9 @@ Reads releases from standard input, and prints one release package.
 Optional positional arguments:
 
 * ``extension`` add this extension to the package
+
+Optional arguments:
+
 * ``--uri URL`` set the release package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the release package's ``publisher``'s ``name`` to this value
@@ -339,26 +345,27 @@ If the single package is small enough to hold in memory, you can use the :ref:`s
 convert-to-oc4ids
 -----------------
 
-This command takes a list of OCDS releases or release packages and transforms them into a single OC4IDS project.
+Reads individual releases from standard input, and prints a single project conforming to the `Open Contracting for Infrastructure Data Standards (OC4IDS) <https://standard.open-contracting.org/infrastructure/>`__. It assumes all inputs belong to the same project.
 
 `The logic for the mappings between OCDS and OC4IDS fields is documented here <https://standard.open-contracting.org/infrastructure/latest/en/cost/#mapping-to-ids-and-from-ocds>`__.
 
 Optional arguments:
 
-* ``--project-id PROJECT_ID`` the Project ID of the created project
-* ``--package`` wrap the project in a package
-* ``--transforms OPTIONS`` a comma separated list of optional transforms
-* ``--all`` run all optional transforms
+* ``--project-id PROJECT_ID`` set the project's ``id`` to this value
+* ``--all-transforms`` run all optional transforms
+* ``--transforms OPTIONS`` comma-separated list of optional transforms to run
+* ``--package`` wrap the project in a project package
+* ``--uri URI`` if ``--package`` is set, set the project package's ``uri`` to this value
+* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the project package's ``publishedDate`` to this value
+* ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the project package's ``publisher``'s ``name`` to this value
+* ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the project package's ``publisher``'s ``uri`` to this value
+* ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the project package's ``publisher``'s ``scheme`` to this value
+* ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the project package's ``publisher``'s ``uid`` to this value
+* ``--fake`` if ``--package`` is set, set the project package's required metadata to dummy values
 
-Arguments that can be applied if the project is in a package:
+::
 
-* ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
-* ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the record package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the record package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the record package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the record package's ``publisher``'s ``uid`` to this value
-* ``--fake`` if ``--package`` is set, set the record package's required metadata to dummy values
+    cat releases.json | ocdskit convert-to-oc4ids > out.json
 
 Transforms
 ~~~~~~~~~~
@@ -385,7 +392,7 @@ The transforms that are run are described here.
 Optional transforms
 ~~~~~~~~~~~~~~~~~~~
 
-Some transforms are not run automatically, but only if set. The following transforms are included if they are listed in using the ``--transforms`` argument (as part of a comma-separated list) or if ``--all`` is passed.
+Some transforms are not run automatically, but only if set. The following transforms are included if they are listed in using the ``--transforms`` argument (as part of a comma-separated list) or if ``--all-transforms`` is passed.
 
 * ``buyer_role``: updates the ``parties`` field with parties that have ``buyer`` in their ``roles``
 * ``description_tender``: populate the ``description`` field from ``tender.description`` if no other is available
@@ -425,7 +432,7 @@ The logic that the transforms do to work out matching parties:
 * If all ``parties/id`` are unique across contracting processes then do nothing and add all parties to the project.
 * If there are conflicting parties/id then look at the ``identifier`` field and if there are ``scheme`` and ``id`` make an id of ``somescheme-someid`` and use that in order to match parties across processes.  If there are different roles then add them to the same party.  Use the other fields from the first party found with this id.
 * If there is no ``identifier`` then make up a new auto increment number and use that as the ``id``. **This means the original IDs get replaced and are lost in the mapping**
-* If there is no ``identifier`` and all fields apart from ``roles`` and ``id`` are the same across parties then treat that as a single party and add the roles together and use a single generated `id`.
+* If there is no ``identifier`` and all fields apart from ``roles`` and ``id`` are the same across parties then treat that as a single party and add the roles together and use a single generated ``id``.
 
 Document ID across multiple contracting processes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -440,9 +447,9 @@ Sectors are gathered from ``planning/project/sector`` and it gets all unique ``s
 Release Links
 ^^^^^^^^^^^^^
 
-``contractingProcesses/releases`` within OC4IDS has link to a releases via a URL. This URL will be generated if OCDS release packages are supplied and a `uri` is in the package data. However, if this is not case the transform adds an additional field ``contractingProcesses/embeddedReleases`` which contains all releases supplied in their full.
+``contractingProcesses/releases`` within OC4IDS has link to a releases via a URL. This URL will be generated if OCDS release packages are supplied and a ``uri`` is in the package data. However, if this is not case the transform adds an additional field ``contractingProcesses/embeddedReleases`` which contains all releases supplied in their full.
 
 Project Scope Summary
 ^^^^^^^^^^^^^^^^^^^^^
 
-If `--all` is set or if `project_scope_summary` is included in `--transforms` it copies over all ``tender/items`` and ``tender/milestones`` to ``contractingProcess/tender``.  This is to give the output enough information in order to infer project scope.
+If ``--all-transforms`` is set or if ``project_scope_summary`` is included in ``--transforms`` it copies over all ``tender/items`` and ``tender/milestones`` to ``contractingProcess/tender``.  This is to give the output enough information in order to infer project scope.
