@@ -8,7 +8,8 @@ logger = logging.getLogger("ocdskit")
 
 class Command(OCDSCommand):
     name = "convert-to-oc4ids"
-    help = "reads individual releases from standard input, and prints a single project conforming to the OC4IDS"
+    help = '''reads individual releases or release packages from standard input,
+              and prints a single project conforming to the OC4IDS'''
 
     def add_arguments(self):
         self.add_argument("--project-id", help="set the project's id to this value")

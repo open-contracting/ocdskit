@@ -56,7 +56,7 @@ def run_transforms(config, releases, project_id=None, records=None, output=None)
     Transforms a list of OCDS releases into a OC4IDS project.
 
     :param dict config: contains optional tranform options.
-    :param list releases: list of OCDS releases
+    :param list releases: list of OCDS releases or release packages
     :param string project_id: project ID of resulting project
     :param list records: pre computed list of records
     :param dict output: initial project output template project where transformed data will be added

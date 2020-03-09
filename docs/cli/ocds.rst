@@ -365,7 +365,7 @@ If the single package is small enough to hold in memory, you can use the :ref:`s
 convert-to-oc4ids
 -----------------
 
-Reads individual releases from standard input, and prints a single project conforming to the `Open Contracting for Infrastructure Data Standards (OC4IDS) <https://standard.open-contracting.org/infrastructure/>`__. It assumes all inputs belong to the same project.
+Reads individual releases or release packages from standard input, and prints a single project conforming to the `Open Contracting for Infrastructure Data Standards (OC4IDS) <https://standard.open-contracting.org/infrastructure/>`__. It assumes all inputs belong to the same project.
 
 `The logic for the mappings between OCDS and OC4IDS fields is documented here <https://standard.open-contracting.org/infrastructure/latest/en/cost/#mapping-to-ids-and-from-ocds>`__.
 
