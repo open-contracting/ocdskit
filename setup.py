@@ -15,6 +15,7 @@ setup(
     long_description=long_description,
     install_requires=[
         'ijson>=2.5',
+        'jsonpointer',
         'jsonref',
         'jsonschema',
         'ocdsmerge>=0.6',
@@ -30,7 +31,6 @@ setup(
         ],
         'test': [
             'coveralls',
-            'jsonpointer',
             'pytest',
             'pytest-cov',
             'pytest-vcr',
