@@ -65,6 +65,9 @@ html_static_path = []
 
 # -- Extension configuration -------------------------------------------------
 
+# Needed for ReadTheDocs (Sphinx 1.8).
+master_doc = 'index'
+
 autodoc_default_options = {
     'members': None,
 }
