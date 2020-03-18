@@ -26,6 +26,38 @@ def test_run_all():
     assert output["parties"] == releases[0]["parties"]
 
 
+def test_run_all_release_package():
+    releases_package_1 = [
+        {
+            "ocid": "ocds-213czf-1",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "1", "roles": ["publicAuthority"]}],
+        }
+    ]
+    releases_package_2 = [
+        {
+            "ocid": "ocds-213czf-2",
+            "id": "1",
+            "tag": "planning",
+            "date": "2001-02-03T04:05:06Z",
+            "parties": [{"id": "2", "name": "a", "roles": ["publicAuthority"]}],
+        }
+    ]
+
+    release_packages = [{"uri": "example.com", "releases": releases_package_1},
+                        {"uri": "example.com", "releases": releases_package_2}]
+
+    output = oc4ids.run_transforms({}, release_packages, "1")
+
+    assert len(output["contractingProcesses"]) == 2
+    assert len(output["parties"]) == 2
+    assert output["contractingProcesses"][0]['releases'] == [
+        {'url': 'example.com#1', 'date': '2001-02-03T04:05:06Z', 'tag': 'planning'}
+    ]
+
+
 def test_public_authority_role():
     releases = [
         {

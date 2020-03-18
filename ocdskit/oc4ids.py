@@ -9,6 +9,7 @@ from jsonpointer import resolve_pointer
 from ocdsmerge.util import sorted_releases
 
 from ocdskit.combine import merge
+from ocdskit.util import is_package
 
 logger = logging.getLogger("ocdskit")
 
@@ -29,7 +30,7 @@ def cast_number_or_zero(item):
     """ Cast to decimal if fail return 0 so summing still works."""
     try:
         return decimal.Decimal(item)
-    except ValueError:
+    except (ValueError, TypeError):
         if item:
             logger.warn("item {} is not a number treating as zero".format(item))
         return 0
@@ -55,7 +56,7 @@ def run_transforms(config, releases, project_id=None, records=None, output=None)
     Transforms a list of OCDS releases into a OC4IDS project.
 
     :param dict config: contains optional tranform options.
-    :param list releases: list of OCDS releases
+    :param list releases: list of OCDS releases or release packages
     :param string project_id: project ID of resulting project
     :param list records: pre computed list of records
     :param dict output: initial project output template project where transformed data will be added
@@ -85,7 +86,15 @@ def _run_transforms(releases, project_id=None, records=None, output=None, transf
 
 class InitialTransformState:
     def __init__(self, releases, project_id=None, records=None, output=None):
-        self.releases = sorted_releases(releases)
+
+        all_releases = []
+        for release in releases:
+            if is_package(release):
+                all_releases.extend(check_type(release.get("releases"), list))
+            else:
+                all_releases.append(release)
+
+        self.releases = sorted_releases(all_releases)
         self.releases_by_ocid = defaultdict(list)
         for release in self.releases:
             ocid = cast_string(release.get("ocid"))
@@ -96,7 +105,7 @@ class InitialTransformState:
         records = records
 
         if not records:
-            record_package = next(merge(self.releases, return_package=True, use_linked_releases=True))
+            record_package = next(merge(releases, return_package=True, use_linked_releases=True))
             records = check_type(record_package.get("records"), list)
 
         compiled_releases = []
