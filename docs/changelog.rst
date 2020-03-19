@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.4 (Unreleased)
+0.2.3 (2020-03-19)
 ------------------
 
 Added
@@ -19,13 +19,6 @@ Changed
 ~~~~~~~
 
 - ``compile`` errors if an ``ocid`` field is missing from a release.
-
-0.2.3 (2020-01-27)
-------------------
-
-Changed
-~~~~~~~
-
 - ``upgrade`` upgrades records.
 
 0.2.2 (2019-01-07)
