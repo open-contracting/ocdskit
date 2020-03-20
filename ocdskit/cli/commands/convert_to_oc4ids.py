@@ -20,13 +20,13 @@ class Command(OCDSCommand):
         self.add_package_arguments("project", "if --package is set, ")
 
     def handle(self):
-        project_id = self.args.id
+        project_id = self.args.project_id
         config = {}
 
-        if self.args.all:
+        if self.args.all_transforms:
             config["all"] = True
         else:
-            for option in self.args.options.split(","):
+            for option in self.args.transforms.split(","):
                 config[option.strip()] = True
 
         project = oc4ids.run_transforms(config, self.items(), project_id=project_id)
