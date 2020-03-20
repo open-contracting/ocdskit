@@ -85,14 +85,16 @@ def _run_transforms(releases, project_id=None, records=None, output=None, transf
 
 
 class InitialTransformState:
-    def __init__(self, releases, project_id=None, records=None, output=None):
+    def __init__(self, releases_or_release_packages, project_id=None, records=None, output=None):
 
+        # coerce generator into list as we iterate over it twice.
+        releases_or_release_packages = list(releases_or_release_packages)
         all_releases = []
-        for release in releases:
-            if is_package(release):
-                all_releases.extend(check_type(release.get("releases"), list))
+        for releases_or_release_package in releases_or_release_packages:
+            if is_package(releases_or_release_package):
+                all_releases.extend(check_type(releases_or_release_package.get("releases"), list))
             else:
-                all_releases.append(release)
+                all_releases.append(releases_or_release_package)
 
         self.releases = sorted_releases(all_releases)
         self.releases_by_ocid = defaultdict(list)
@@ -105,7 +107,7 @@ class InitialTransformState:
         records = records
 
         if not records:
-            record_package = next(merge(releases, return_package=True, use_linked_releases=True))
+            record_package = next(merge(releases_or_release_packages, return_package=True, use_linked_releases=True))
             records = check_type(record_package.get("records"), list)
 
         compiled_releases = []
