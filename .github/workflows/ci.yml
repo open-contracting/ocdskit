@@ -1,0 +1,36 @@
+name: CI
+on: [push, pull_request]
+env:
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        python-version: [3.6, 3.7, 3.8]
+        packages:
+          - ''
+          - libyajl-dev
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install
+      run: |
+        if [ ! -z "${{ matrix.packages }}" ]; then apt-get install libyajl-dev; fi
+        pip install .[test]
+    - name: Test
+      run: |
+        coverage run --append --source=ocdskit -m pytest --vcr-record=none
+        pip install orjson
+        coverage run --append --source=ocdskit -m pytest --vcr-record=none
+        pip uninstall -y orjson
+    - run: coveralls
