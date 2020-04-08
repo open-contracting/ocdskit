@@ -23,13 +23,13 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-    - name: Install YAML on Linux
+    - name: Install YAJL on Linux
       if: matrix.packages && matrix.os == 'ubuntu-latest'
-      run: apt-get install libyajl-dev
-    - name: Install YAML on macOS
+      run: sudo apt-get install libyajl-dev
+    - name: Install YAJL on macOS
       if: matrix.packages && matrix.os == 'macos-latest'
       run: brew install yajl
-    - name: Install YAML on Windows
+    - name: Install YAJL on Windows
       if: matrix.packages && matrix.os == 'windows-latest'
       # https://github.com/ICRAR/ijson/blob/master/.appveyor.yml
       run: |
