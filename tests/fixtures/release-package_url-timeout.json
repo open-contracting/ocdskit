@@ -1,0 +1,1 @@
+{"uri":"http://httpbin.org/status/200","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender","tender":{"id":1,"documents":[{"id":1,"url":"http://httpbin.org/delay/3"}]}}],"version":"1.1"}

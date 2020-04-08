@@ -75,13 +75,21 @@ def test_command_no_check_urls(monkeypatch):
     assert actual == ''
 
 
-# Can't record delay endpoint with VCR.
-def test_command_check_urls(monkeypatch):
+@pytest.mark.vcr()
+def test_command_check_urls_error(monkeypatch):
     actual = run_streaming(monkeypatch, main, ['validate', '--check-urls', '--timeout', '3'],
-                           ['release-package_urls.json'])
+                           ['release-package_url-error.json'])
 
     assert actual == """HTTP 500 on GET http://httpbin.org/status/500
 item 0: 'http://httpbin.org/status/500' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
-Timedout on GET http://httpbin.org/delay/3
+"""  # noqa: E501
+
+
+# Can't record delay endpoint with VCR.
+def test_command_check_urls_timeout(monkeypatch):
+    actual = run_streaming(monkeypatch, main, ['validate', '--check-urls', '--timeout', '3'],
+                           ['release-package_url-timeout.json'])
+
+    assert actual == """Timedout on GET http://httpbin.org/delay/3
 item 0: 'http://httpbin.org/delay/3' is not a 'uri' (properties/releases/items/properties/tender/properties/documents/items/properties/url/format)
 """  # noqa: E501
