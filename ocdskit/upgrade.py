@@ -100,11 +100,13 @@ def upgrade_parties_10_to_11(release):
     parties = _get_parties(release)
 
     if _in(release, 'buyer'):
-        release['buyer'] = _add_party(parties, release['buyer'], 'buyer')
+        buyer = release['buyer']
+        release['buyer'] = _add_party(parties, buyer, 'buyer')
 
     if _in(release, 'tender'):
         if _in(release['tender'], 'procuringEntity'):
-            release['tender']['procuringEntity'] = _add_party(parties, release['tender']['procuringEntity'], 'procuringEntity')  # noqa: E501
+            procuring_entity = release['tender']['procuringEntity']
+            release['tender']['procuringEntity'] = _add_party(parties, procuring_entity, 'procuringEntity')
         if _in(release['tender'], 'tenderers'):
             for i, tenderer in enumerate(release['tender']['tenderers']):
                 release['tender']['tenderers'][i] = _add_party(parties, tenderer, 'tenderer')

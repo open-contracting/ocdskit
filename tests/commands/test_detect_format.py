@@ -61,7 +61,8 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == 'tests/fixtures/{}: unknown (top-level JSON value is a {})'.format(filename, result)  # noqa: E501
+    assert caplog.records[0].message == 'tests/fixtures/{}: unknown (top-level JSON value is a {})'.format(
+        filename, result)
 
 
 def test_command_directory(monkeypatch, caplog):
