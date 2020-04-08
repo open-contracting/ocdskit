@@ -1,4 +1,4 @@
-LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))'  # noqa
+LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))'  # noqa: E501
 LANGUAGE_CODE_SUFFIX_LEN = len(LANGUAGE_CODE_SUFFIX)
 
 
@@ -144,7 +144,7 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
         for offset in (2, 1):
             end = -LANGUAGE_CODE_SUFFIX_LEN - offset
             # The pattern must be anchored and the suffix must occur at the end.
-            if key[end:-offset] == LANGUAGE_CODE_SUFFIX and key[:offset] == '^('[:offset] and key[-offset:] == ')$'[-offset:]:  # noqa
+            if key[end:-offset] == LANGUAGE_CODE_SUFFIX and key[:offset] == '^('[:offset] and key[-offset:] == ')$'[-offset:]:  # noqa: E501
                 multilingual.add(key[offset:end])
                 hidden.add(key)
                 break

@@ -37,7 +37,7 @@ class Command(BaseCommand):
             - If the --extension option is not set, then the --extension-field option must be set to the property in
               the JSON schema containing the name of the extension in which each field was defined. If there is no such
               property, then the result is a mapping sheet with no values in its "extension" column.
-            """  # noqa
+            """  # noqa: E501
         ),
         'formatter_class': RawDescriptionHelpFormatter,
     }
