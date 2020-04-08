@@ -21,7 +21,7 @@ def check_type(item, item_type):
     """
     if not isinstance(item, item_type):
         if item:
-            logger.warn("item {} is not of type {} so skipping".format(item, item_type.__name__))
+            logger.warning("item {} is not of type {} so skipping".format(item, item_type.__name__))
         return item_type()
     return item
 
@@ -32,7 +32,7 @@ def cast_number_or_zero(item):
         return decimal.Decimal(item)
     except (ValueError, TypeError):
         if item:
-            logger.warn("item {} is not a number treating as zero".format(item))
+            logger.warning("item {} is not a number treating as zero".format(item))
         return 0
 
 
@@ -46,7 +46,7 @@ def cast_string(item):
         return str(item)
 
     if item:
-        logger.warn("item {} is not able to be converted to a string".format(item))
+        logger.warning("item {} is not able to be converted to a string".format(item))
     return ""
 
 
@@ -683,7 +683,7 @@ def description(state):
         description = resolve_pointer(compiled_release, "/planning/project/description", None)
         if description:
             if output_description and output_description != description:
-                logger.warn(
+                logger.warning(
                     "Multiple differing planning/project/descriptions found eg. {}, {}, skipping conversion".format(
                         description, output_description
                     )
