@@ -1,4 +1,4 @@
-|PyPI Version| |Build Status| |Coverage Status| |Python Version|
+|PyPI Version| |Build Status| |Lint Status| |Coverage Status| |Python Version|
 
 A suite of command-line tools for working with OCDS data to:
 
@@ -16,8 +16,8 @@ If you are viewing this on GitHub or PyPi, open the `full documentation <https:/
 
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/ocdskit.svg
    :target: https://pypi.org/project/ocdskit/
-.. |Build Status| image:: https://secure.travis-ci.org/open-contracting/ocdskit.png
-   :target: https://travis-ci.org/open-contracting/ocdskit
+.. |Build Status| image:: https://github.com/open-contracting/ocdskit/workflows/CI/badge.svg
+.. |Lint Status| image:: https://github.com/open-contracting/ocdskit/workflows/Lint/badge.svg
 .. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=master
    :target: https://coveralls.io/github/open-contracting/ocdskit?branch=master
 .. |Python Version| image:: https://img.shields.io/pypi/pyversions/ocdskit.svg
