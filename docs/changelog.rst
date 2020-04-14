@@ -7,7 +7,7 @@ Changelog
 Fixed
 ~~~~~
 
--  :meth:`ocdskit.combine.combine_record_packages` and :meth:`~ocdskit.combine.combine_release_packages` no longer error if the `"records"` and `"releases"` fields aren't set.
+-  ``combine-record-packages`` and ``combine-release-packages`` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
 
 0.2.4 (2020-03-19)
 ------------------
@@ -25,7 +25,7 @@ Added
 
 New CLI commands:
 
--  convert-to-oc4ids
+-  ``convert-to-oc4ids``
 
 New library module:
 
@@ -34,8 +34,8 @@ New library module:
 Changed
 ~~~~~~~
 
--  ``compile`` errors if an ``ocid`` field is missing from a release.
--  ``upgrade`` upgrades records.
+-  ``compile`` errors if an ``ocid`` field is missing from a release (see :meth:`~ocdskit.packager.AbstractBackend.add_release`).
+-  ``upgrade`` upgrades records (see :meth:`~ocdskit.upgrade.upgrade_10_11`).
 
 0.2.2 (2019-01-07)
 ------------------
@@ -43,9 +43,9 @@ Changed
 Changed
 ~~~~~~~
 
--  Avoid exception when piping output to tools like ``head``
--  package-records, package-releases: Use fast writer if ``--size`` is set
--  echo: Use fast writer (assuming ``--root-path`` is set anytime input is too large)
+-  Avoid exception when piping output to tools like ``head``.
+-  ``package-records``, ``package-releases``: Use fast writer if ``--size`` is set.
+-  ``echo``: Use fast writer (assuming ``--root-path`` is set anytime input is too large).
 
 0.2.1 (2020-01-06)
 ------------------
@@ -55,23 +55,23 @@ Added
 
 New CLI options:
 
--  package-records: ``--size``
--  package-releases: ``--size``
+-  ``package-records``: ``--size``
+-  ``package-releases``: ``--size``
 
 New CLI commands:
 
--  echo
+-  ``echo``
 
 Changed
 ~~~~~~~
 
--  Implement iterative JSON writer
--  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command
+-  Implement iterative JSON writer.
+-  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command (see :mod:`ocdskit.packager`).
 
 Fixed
 ~~~~~
 
--  ``combine-record-packages`` no longer duplicates release package URLs in ``packages``
+-  ``combine-record-packages`` no longer duplicates release package URLs in ``packages`` (see :meth:`ocdskit.combine.combine_record_packages`).
 
 0.2.0 (2019-12-31)
 ------------------
@@ -88,17 +88,17 @@ Changed
 
 CLI:
 
--  ``compile`` accepts either release packages or individual releases
--  ``compile`` is memory efficient if given a long list of inputs
+-  ``compile`` accepts either release packages or individual releases (see :meth:`~ocdskit.combine.merge`).
+-  ``compile`` is memory efficient if given a long list of inputs (see :meth:`~ocdskit.combine.merge`).
 
 Library:
 
--  **Backwards-incompatible**: Rename ``ocdskit.combine.compile_release_packages`` to :meth:`ocdskit.combine.merge`.
+-  Deprecate ``ocdskit.combine.compile_release_packages`` in favor of :meth:`ocdskit.combine.merge`.
 
 Fixed
 ~~~~~
 
--  ``--linked-releases`` no longer uses the same linked releases for all records
+-  ``--linked-releases`` no longer uses the same linked releases for all records (see :meth:`~ocdskit.packager.Packager.output_records`).
 
 0.1.5 (2019-12-18)
 ------------------
@@ -121,15 +121,15 @@ Added
 
 New CLI options:
 
--  combine-record-packages: ``--fake``
--  combine-release-packages: ``--fake``
--  compile: ``--fake``
--  package-records: ``--fake``
--  package-releases: ``--fake``
+-  ``combine-record-packages``: ``--fake``
+-  ``combine-release-packages``: ``--fake``
+-  ``compile``: ``--fake``
+-  ``package-records``: ``--fake``
+-  ``package-releases``: ``--fake``
 
 New CLI commands:
 
--  package-records
+-  ``package-records``
 
 New library methods:
 
@@ -138,7 +138,7 @@ New library methods:
 Changed
 ~~~~~~~
 
--  mapping-sheet: Improve documentation of ``--extension`` and ``--extension-field``.
+-  ``mapping-sheet``: Improve documentation of ``--extension`` and ``--extension-field``.
 
 Fixed
 ~~~~~
@@ -180,15 +180,46 @@ Added
 
 New CLI commands:
 
--  detect-format
+-  ``detect-format``
 
 New CLI options:
 
--  package-releases: ``--uri``, ``--published-date``, ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  compile: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  combine-record-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  combine-release-packages: ``--publisher-name``, ``--publisher-uri``, ``--publisher-scheme``, ``--publisher-uid``
--  mapping-sheet: ``--order-by``, ``--infer-required``, ``--extension``, ``--extension-field``
+-  ``package-releases``:
+
+   -  ``--uri``
+   -  ``--published-date``
+   -  ``--publisher-name``
+   -  ``--publisher-uri``
+   -  ``--publisher-scheme``
+   -  ``--publisher-uid``
+
+-  ``compile``:
+
+   -  ``--publisher-name``
+   -  ``--publisher-uri``
+   -  ``--publisher-scheme``
+   -  ``--publisher-uid``
+
+-  ``combine-record-packages``:
+
+   -  ``--publisher-name``
+   -  ``--publisher-uri``
+   -  ``--publisher-scheme``
+   -  ``--publisher-uid``
+
+-  ``combine-release-packages``:
+
+   -  ``--publisher-name``
+   -  ``--publisher-uri``
+   -  ``--publisher-scheme``
+   -  ``--publisher-uid``
+
+-  ``mapping-sheet``:
+
+   -  ``--order-by``
+   -  ``--infer-required``
+   -  ``--extension``
+   -  ``--extension-field``
 
 The ``--root-path`` option is added to all OCDS commands.
 
@@ -204,7 +235,7 @@ New library methods:
 Changed
 ~~~~~~~
 
--  **Backwards-incompatible**: :meth:`ocdskit.upgrade.upgrade_10_10`, :meth:`~ocdskit.upgrade.upgrade_11_11` and :meth:`~ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
+-  **Backwards-incompatible**: :meth:`~ocdskit.upgrade.upgrade_10_10`, :meth:`~ocdskit.upgrade.upgrade_11_11` and :meth:`~ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: ``mapping-sheet`` and ``schema-report`` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
 -  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
 -  ``mapping-sheet`` outputs:
@@ -232,7 +263,7 @@ Added
 
 New CLI options:
 
--  compile:
+-  ``compile``:
 
    -  ``--schema``: You can create compiled releases and versioned releases using a specific release schema.
    -  ``--linked-releases``: You can have the record package use linked releases instead of full releases.
@@ -240,12 +271,12 @@ New CLI options:
 
       -  If not set, these will be ``null`` instead of the ``uri`` and ``publishedDate`` of the last package.
 
--  combine-record-packages: ``--uri``, ``--published-date``
--  combine-release-packages: ``--uri``, ``--published-date``
+-  ``combine-record-packages``: ``--uri``, ``--published-date``
+-  ``combine-release-packages``: ``--uri``, ``--published-date``
 
 New CLI commands:
 
--  upgrade
+-  ``upgrade``
 
 Changed
 ~~~~~~~
@@ -269,7 +300,7 @@ Added
 
 New CLI options:
 
--  schema-report: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
+-  ``schema-report``: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
 
 Changed
 ~~~~~~~
@@ -285,20 +316,20 @@ Added
 
 New CLI options:
 
--  compile: ``--package``, ``--versioned``
+-  ``compile``: ``--package``, ``--versioned``
 
 New CLI commands:
 
--  package-releases
--  split-record-packages
--  split-release-packages
+-  ``package-releases``
+-  ``split-record-packages``
+-  ``split-release-packages``
 
 Changed
 ~~~~~~~
 
 -  Add helpful error messages if:
 
-   -  the input is not `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data;
+   -  the input is not `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data.
    -  the input to the ``indent`` command is not valid JSON.
 
 -  Change default behavior to print UTF-8 characters instead of escape sequences.
@@ -313,14 +344,14 @@ Added
 
 New CLI options:
 
--  validate: ``--check-urls`` and ``--timeout``
+-  ``validate``: ``--check-urls`` and ``--timeout``
 
 New CLI commands:
 
--  indent
--  schema-report
--  schema-strict
--  set-closed-codelist-enums
+-  ``indent``
+-  ``schema-report``
+-  ``schema-strict``
+-  ``set-closed-codelist-enums``
 
 0.0.1 (2017-12-25)
 ------------------
@@ -330,10 +361,10 @@ Added
 
 New CLI commands:
 
--  combine-record-packages
--  combine-release-packages
--  compile
--  mapping-sheet
--  measure
--  tabulate
--  validate
+-  ``combine-record-packages``
+-  ``combine-release-packages``
+-  ``compile``
+-  ``mapping-sheet``
+-  ``measure``
+-  ``tabulate``
+-  ``validate``
