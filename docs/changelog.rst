@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.5 (Unreleased)
+------------------
+
+Fixed
+~~~~~
+
+-  :meth:`ocdskit.combine.combine_record_packages` and :meth:`~ocdskit.combine.combine_release_packages` no longer error if the `"records"` and `"releases"` fields aren't set.
+
 0.2.4 (2020-03-19)
 ------------------
 

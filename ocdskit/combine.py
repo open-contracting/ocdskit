@@ -70,7 +70,8 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
 
     for package in packages:
         _update_package_metadata(output, package)
-        output['records'].extend(package['records'])
+        if 'records' in package:
+            output['records'].extend(package['records'])
         if 'packages' in package:
             output['packages'].update(dict.fromkeys(package['packages']))
 
@@ -98,7 +99,8 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 
     for package in packages:
         _update_package_metadata(output, package)
-        output['releases'].extend(package['releases'])
+        if 'releases' in package:
+            output['releases'].extend(package['releases'])
 
     if publisher:
         output['publisher'] = publisher
