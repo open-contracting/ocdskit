@@ -16,7 +16,7 @@ class InconsistentVersionError(OCDSKitError):
 
 
 class MissingColumnError(OCDSKitError):
-    """Raised if the column to order by is missing"""
+    """Raised if the column by which to order is missing"""
 
 
 class UnknownFormatError(OCDSKitError):

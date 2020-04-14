@@ -45,6 +45,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :``deprecated``: The OCDS minor version in which the field (or its parent) was deprecated
     :``deprecationNotes``: The explanation for the deprecation of the field
     :``extension``: The name of the extension in which the field was defined (see the ``extension_field`` parameter)
+
+    :raises MissingColumnError: if the column by which to order is missing
     """
     rows = []
     for field in get_schema_fields(schema):

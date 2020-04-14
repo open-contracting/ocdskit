@@ -47,6 +47,7 @@ class Packager:
         Adds release packages and/or individual releases to be merged.
 
         :param data: an iterable of release packages and individual releases
+        :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
         """
         for i, item in enumerate(data):
             version = get_ocds_minor_version(item)
@@ -168,7 +169,7 @@ class AbstractBackend:
         """
         Adds a release to the backend. (The release might be added to an internal buffer.)
 
-        Raises ``ocdskit.exceptions.MissingOcidKeyError`` if the release is missing an ``ocid`` key.
+        :raises MissingOcidKeyError: if the release is missing an ``ocid`` key.
         """
         try:
             self._add_release(release['ocid'], package_uri, release)
