@@ -21,13 +21,13 @@ New CLI commands:
 
 New library module:
 
--  ``ocdskit.oc4ids``
+-  :mod:`ocdskit.oc4ids`
 
 Changed
 ~~~~~~~
 
-- ``compile`` errors if an ``ocid`` field is missing from a release.
-- ``upgrade`` upgrades records.
+-  ``compile`` errors if an ``ocid`` field is missing from a release.
+-  ``upgrade`` upgrades records.
 
 0.2.2 (2019-01-07)
 ------------------
@@ -73,7 +73,7 @@ Added
 
 New library module:
 
-- ``ocdskit.packager``
+-  :mod:`ocdskit.packager`
 
 Changed
 ~~~~~~~
@@ -85,7 +85,7 @@ CLI:
 
 Library:
 
--  **Backwards-incompatible**: Rename ``ocdskit.combine.compile_release_packages`` to ``ocdskit.combine.merge``
+-  **Backwards-incompatible**: Rename ``ocdskit.combine.compile_release_packages`` to :meth:`ocdskit.combine.merge`.
 
 Fixed
 ~~~~~
@@ -100,8 +100,8 @@ Added
 
 New library methods:
 
--  ``ocdskit.util.is_record``
--  ``ocdskit.util.is_release``
+-  :meth:`ocdskit.util.is_record`
+-  :meth:`ocdskit.util.is_release`
 
 The internal methods ``ocdskit.util.json_load`` and ``ocdskit.util.json_loads`` are removed.
 
@@ -125,7 +125,7 @@ New CLI commands:
 
 New library methods:
 
--  ``ocdskit.combine.package_records``
+-  :meth:`ocdskit.combine.package_records`
 
 Changed
 ~~~~~~~
@@ -151,7 +151,7 @@ Changed
 Changed
 ~~~~~~~
 
--  Align the library methods ``ocdskit.util.json_dump`` and ``ocdskit.util.json_dumps``.
+-  Align the library methods :meth:`ocdskit.util.json_dump` and :meth:`ocdskit.util.json_dumps`.
 
 0.1.1 (2019-09-19)
 ------------------
@@ -186,17 +186,17 @@ The ``--root-path`` option is added to all OCDS commands.
 
 New library methods:
 
--  ``ocdskit.combine.package_releases``
--  ``ocdskit.combine.combine_record_packages``
--  ``ocdskit.combine.combine_release_packages``
--  ``ocdskit.combine.compile_release_packages``
--  ``ocdskit.mapping_sheet.mapping_sheet``
--  ``ocdskit.schema.get_schema_fields``
+-  :meth:`ocdskit.combine.package_releases`
+-  :meth:`ocdskit.combine.combine_record_packages`
+-  :meth:`ocdskit.combine.combine_release_packages`
+-  :meth:`ocdskit.combine.compile_release_packages`
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet`
+-  :meth:`ocdskit.schema.get_schema_fields`
 
 Changed
 ~~~~~~~
 
--  **Backwards-incompatible**: ``upgrade_10_10``, ``upgrade_11_11`` and ``upgrade_10_11`` now return data, instead of only editing in-place.
+-  **Backwards-incompatible**: :meth:`ocdskit.upgrade.upgrade_10_10`, :meth:`~ocdskit.upgrade.upgrade_11_11` and :meth:`~ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: ``mapping-sheet`` and ``schema-report`` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
 -  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
 -  ``mapping-sheet`` outputs:
