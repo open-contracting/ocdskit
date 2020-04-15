@@ -3,10 +3,7 @@ import sys
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest.mock import patch
 
-import pytest
-
 from ocdskit.cli.__main__ import main
-from ocdskit.exceptions import MissingRecordsWarning
 from tests import assert_streaming, read, run_streaming
 
 
@@ -49,7 +46,7 @@ def test_command_missing_field(stdout, stderr, monkeypatch):
         monkeypatch.setattr(sys, 'argv', ['ocdskit', 'combine-record-packages'])
         main()
 
-    assert stdout.getvalue() == '{"uri":"","publisher":{"name":"Acme"},"publishedDate":"","version":"1.1","records":[]}\n'
+    assert stdout.getvalue() == '{"uri":"","publisher":{"name":"Acme"},"publishedDate":"","version":"1.1","records":[]}\n'  # noqa: E501
     assert stderr.getvalue() == 'item 0 has no "records" field (check that it is a record package)\n'
 
 
