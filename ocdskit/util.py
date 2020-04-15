@@ -109,6 +109,8 @@ def is_package(data):
 def is_record_package(data):
     """
     Returns whether the data is a record package.
+
+    A record package has a required ``records`` field. Its other required fields are shared with release packages.
     """
     return 'records' in data
 
@@ -116,6 +118,8 @@ def is_record_package(data):
 def is_record(data):
     """
     Returns whether the data is a record.
+
+    A record has required ``releases`` and ``ocid`` fields.
     """
     return 'releases' in data and 'ocid' in data
 
@@ -123,15 +127,31 @@ def is_record(data):
 def is_release_package(data):
     """
     Returns whether the data is a release package.
+
+    A release package has a required ``releases`` field. Its other required fields are shared with record packages.
+    To distinguish a release package from a record, we test for the absence of the ``ocid`` field.
     """
     return 'releases' in data and 'ocid' not in data
 
 
 def is_release(data):
     """
-    Returns whether the data is a release.
+    Returns whether the data is an embedded, linked or compiled release.
     """
-    return 'tag' in data
+    return 'date' in data
+
+
+def is_linked_release(data):
+    """
+    Returns whether the data is a linked release.
+
+    A linked release has required ``url`` and ``date`` fields and an optional ``tag`` field. An embedded release has
+    required ``date`` and ``tag`` fields (among others), and it can have a ``url`` field as an additional field.
+
+    To distinguish a linked release from an embedded release, we test for the presence of the required ``url`` field
+    and test whether the number of fields is fewer than three.
+    """
+    return 'url' in data and len(data) <= 3
 
 
 def _empty_package(uri, publisher, published_date):
