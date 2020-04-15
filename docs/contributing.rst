@@ -40,7 +40,7 @@ You can append these lines to the end of a ``handle()`` method to see if memory 
 .. code:: python
 
    import resource, sys
-   sys.stderr.write(str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024))
+   print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024 / 1024, file=sys.stderr)
 
 And run, for example::
 
