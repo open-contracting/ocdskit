@@ -2,6 +2,7 @@ import argparse
 import importlib
 import logging
 import sys
+import warnings
 
 import ijson
 
@@ -55,7 +56,9 @@ def main():
         try:
             command.args = args
             try:
-                command.handle()
+                with warnings.catch_warnings():
+                    warnings.showwarning = _showwarning
+                    command.handle()
             except ijson.common.IncompleteJSONError as e:
                 if str(e):
                     raise CommandError('JSON error: {}'.format(e))
@@ -67,6 +70,12 @@ def main():
             sys.exit(1)
     else:
         parser.print_help()
+
+
+def _showwarning(message, category, filename, lineno, file=None, line=None):
+    if file is None:
+        file = sys.stderr
+    print(message, file=file)
 
 
 def _raise_encoding_error(e, encoding):

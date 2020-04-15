@@ -4,6 +4,7 @@ from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge import Merger
 from ocdsmerge.util import get_release_schema_url, get_tags
 
+from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning
 from ocdskit.packager import Packager
 from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
                           _resolve_metadata, _update_package_metadata)
@@ -59,6 +60,8 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     """
     Collects the packages and records from the record packages into one record package.
 
+    Warns ``~ocdskit.exceptions.MissingRecordsWarning`` if the "records" field is missing from a record package.
+
     :param packages: an iterable of record packages
     :param str uri: the record package's ``uri``
     :param dict publisher: the record package's ``publisher``
@@ -68,10 +71,12 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     output = _empty_record_package(uri, publisher, published_date)
     output['packages'] = {}
 
-    for package in packages:
+    for i, package in enumerate(packages):
         _update_package_metadata(output, package)
         if 'records' in package:
             output['records'].extend(package['records'])
+        else:
+            warnings.warn(MissingRecordsWarning(i))
         if 'packages' in package:
             output['packages'].update(dict.fromkeys(package['packages']))
 
@@ -89,6 +94,8 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     """
     Collects the releases from the release packages into one release package.
 
+    Warns ``~ocdskit.exceptions.MissingReleasesWarning`` if the "releases" field is missing from a release package.
+
     :param packages: an iterable of release packages
     :param str uri: the release package's ``uri``
     :param dict publisher: the release package's ``publisher``
@@ -97,10 +104,12 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     # See options for not buffering all inputs into memory: https://github.com/open-contracting/ocdskit/issues/119
     output = _empty_release_package(uri, publisher, published_date)
 
-    for package in packages:
+    for i, package in enumerate(packages):
         _update_package_metadata(output, package)
         if 'releases' in package:
             output['releases'].extend(package['releases'])
+        else:
+            warnings.warn(MissingReleasesWarning(i))
 
     if publisher:
         output['publisher'] = publisher

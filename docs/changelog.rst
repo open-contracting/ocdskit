@@ -1,6 +1,20 @@
 Changelog
 =========
 
+0.2.6 (2020-04-15)
+
+Added
+~~~~~
+
+New library method:
+
+-  :meth:`ocdskit.util.is_linked_release`
+
+Changed
+~~~~~~~
+
+-  ``combine-record-packages`` and ``combine-release-packages`` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
+
 0.2.5 (2020-04-14)
 ------------------
 

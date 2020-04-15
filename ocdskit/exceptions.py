@@ -25,3 +25,21 @@ class UnknownFormatError(OCDSKitError):
 
 class MissingOcidKeyError(OCDSKitError, KeyError):
     """Raised if a release to be merged is missing an ``ocid`` key"""
+
+
+class OCDSKitWarning(UserWarning):
+    """Base class for warnings from within this package"""
+
+
+class MissingRecordsWarning(OCDSKitWarning):
+    """Used when the "records" field is missing from a record package when combining packages"""
+
+    def __str__(self):
+        return 'item {0} has no "records" field (check that it is a record package)'.format(*self.args)
+
+
+class MissingReleasesWarning(OCDSKitWarning):
+    """Used when the "releases" field is missing from a release package when combining packages"""
+
+    def __str__(self):
+        return 'item {0} has no "releases" field (check that it is a release package)'.format(*self.args)
