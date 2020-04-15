@@ -3,7 +3,7 @@ from tempfile import TemporaryFile
 
 import pytest
 
-from ocdskit.util import is_linked_release, is_record, json_dump
+from ocdskit.util import is_compiled_release, is_linked_release, is_record, json_dump
 from tests import read
 
 
@@ -30,6 +30,16 @@ def test_is_record(filename, expected):
 ])
 def test_is_linked_release(data, expected):
     assert is_linked_release(data) == expected
+
+
+@pytest.mark.parametrize('data,expected', [
+    ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': ['compiled']}, True),
+    ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': ['tender']}, False),
+    ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': None}, False),
+    ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z'}, False),
+])
+def test_is_compiled_release(data, expected):
+    assert is_compiled_release(data) == expected
 
 
 @pytest.mark.parametrize('data,expected', [

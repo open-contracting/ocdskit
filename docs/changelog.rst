@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.2.7 (Unreleased)
+------------------
+
+Added
+~~~~~
+
+New library method:
+
+-  :meth:`ocdskit.util.is_compiled_release`
+
 0.2.6 (2020-04-15)
 ------------------
 

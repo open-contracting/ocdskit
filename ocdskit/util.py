@@ -136,9 +136,16 @@ def is_release_package(data):
 
 def is_release(data):
     """
-    Returns whether the data is an embedded, linked or compiled release.
+    Returns whether the data is a release (embedded or linked, individual or compiled).
     """
     return 'date' in data
+
+
+def is_compiled_release(data):
+    """
+    Returns whether the data is a compiled release (embedded or linked).
+    """
+    return 'tag' in data and isinstance(data['tag'], list) and 'compiled' in data['tag']
 
 
 def is_linked_release(data):
