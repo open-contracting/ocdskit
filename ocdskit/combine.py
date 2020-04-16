@@ -144,6 +144,8 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
         package; otherwise, yield versioned releases instead of compiled releases
     :param bool streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
         if the calling code exhausts the generator before ``merge`` returns)
+    :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
+    :raises MissingOcidKeyError: if the release is missing an ``ocid`` key
     """
     with Packager() as packager:
         packager.add(data)

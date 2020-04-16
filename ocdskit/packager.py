@@ -169,7 +169,7 @@ class AbstractBackend:
         """
         Adds a release to the backend. (The release might be added to an internal buffer.)
 
-        :raises MissingOcidKeyError: if the release is missing an ``ocid`` key.
+        :raises MissingOcidKeyError: if the release is missing an ``ocid`` key
         """
         try:
             self._add_release(release['ocid'], package_uri, release)
