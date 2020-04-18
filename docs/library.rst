@@ -1,5 +1,18 @@
-Python library
-==============
+API Reference
+=============
+
+.. toctree::
+   :maxdepth: 2
+
+   api/combine
+   api/upgrade
+   api/oc4ids
+   api/mapping_sheet
+   api/packager
+   api/schema
+   api/util
+   api/cli
+   api/exceptions
 
 Working with streams
 --------------------
@@ -47,19 +60,3 @@ If you are parsing `concatenated JSON <https://en.wikipedia.org/wiki/JSON_stream
 .. code-block:: python
 
    for item in ijson.items(f, '', multiple_values=True):
-
-Modules
--------
-
-.. toctree::
-   :maxdepth: 2
-
-   api/combine
-   api/upgrade
-   api/oc4ids
-   api/mapping_sheet
-   api/packager
-   api/schema
-   api/util
-   api/cli
-   api/exceptions

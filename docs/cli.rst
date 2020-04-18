@@ -1,4 +1,4 @@
-Command-line interface
+Command-Line Interface
 ======================
 
 To see all commands available, run::
