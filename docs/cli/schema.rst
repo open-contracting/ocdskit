@@ -73,7 +73,7 @@ Optional arguments:
 schema-strict
 -------------
 
-For any required field, adds "minItems" if an array, "minProperties" if an object and "minLength" if a string and "enum", "format" and "pattern" are not set. For any array field, adds "uniqueItems".
+Adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and "minLength" if a string and "enum", "format" and "pattern" are not set.
 
 Optional arguments:
 

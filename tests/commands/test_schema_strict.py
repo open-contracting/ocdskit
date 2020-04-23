@@ -79,6 +79,7 @@ expected = '''{
   "properties": {
     "optionalArray": {
       "type": "array",
+      "minItems": 1,
       "uniqueItems": true
     },
     "array": {
@@ -92,7 +93,8 @@ expected = '''{
       "uniqueItems": true
     },
     "optionalObject": {
-      "type": "object"
+      "type": "object",
+      "minProperties": 1
     },
     "object": {
       "type": "object",
@@ -103,7 +105,8 @@ expected = '''{
       "minProperties": 2
     },
     "optionalString": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "string": {
       "type": "string",
