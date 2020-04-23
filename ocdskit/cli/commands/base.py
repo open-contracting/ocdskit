@@ -134,23 +134,23 @@ class OCDSCommand(BaseCommand):
 
     def parse_package_arguments(self):
         """
-        Returns a publisher block as a dictionary.
+        Returns package metadata as a dictionary to be used as keyword arguments.
         """
-        metadata = {
+        kwargs = {
             'uri': self.args.uri,
             'publisher': {},
             'published_date': self.args.published_date,
         }
 
         if self.args.fake:
-            if not metadata['uri']:
-                metadata['uri'] = 'placeholder:'
-            if not metadata['published_date']:
-                metadata['published_date'] = '9999-01-01T00:00:00Z'
+            if not kwargs['uri']:
+                kwargs['uri'] = 'placeholder:'
+            if not kwargs['published_date']:
+                kwargs['published_date'] = '9999-01-01T00:00:00Z'
 
         for key in ('publisher_name', 'publisher_uri', 'publisher_scheme', 'publisher_uid'):
             value = getattr(self.args, key)
             if value:
-                metadata['publisher'][key[10:]] = value
+                kwargs['publisher'][key[10:]] = value
 
-        return metadata
+        return kwargs
