@@ -11,6 +11,11 @@ New library method:
 
 -  :meth:`ocdskit.util.is_compiled_release`
 
+Changed
+~~~~~~~
+
+-  ``package-records`` and ``package-releases`` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
+
 0.2.6 (2020-04-15)
 ------------------
 

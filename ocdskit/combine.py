@@ -15,17 +15,18 @@ def _package(key, items, uri, publisher, published_date, extensions):
         publisher = {}
     if 'name' not in publisher:
         publisher['name'] = ''
-    if extensions is None:
-        extensions = []
 
     output = {
         'uri': uri,
         'publisher': publisher,
         'publishedDate': published_date,
         'version': '1.1',  # fields might be deprecated
-        'extensions': extensions,
-        key: items,
     }
+
+    if extensions:
+        output['extensions'] = extensions
+
+    output[key] = items
 
     return output
 
