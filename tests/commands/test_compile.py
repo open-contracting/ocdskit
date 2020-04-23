@@ -71,12 +71,13 @@ def test_command_package(monkeypatch):
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_uri_published_date(monkeypatch):
     actual = run_streaming(monkeypatch, main, ['compile', '--package', '--uri', 'http://example.com/x.json',
-                                               '--published-date', '2010-01-01T00:00:00Z'],
+                                               '--published-date', '2010-01-01T00:00:00Z', '--version', '1.2'],
                            ['release-package_minimal.json'])
 
     package = json.loads(actual)
     assert package['uri'] == 'http://example.com/x.json'
     assert package['publishedDate'] == '2010-01-01T00:00:00Z'
+    assert package['version'] == '1.2'
 
 
 @pytest.mark.vcr()

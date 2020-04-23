@@ -7,6 +7,15 @@ Changelog
 Added
 ~~~~~
 
+New CLI options:
+
+-  ``combine-record-packages``: ``--version``
+-  ``combine-release-packages``: ``--version``
+-  ``compile``: ``--version``
+-  ``convert-to-oc4ids``: ``--version``
+-  ``package-records``: ``--version``
+-  ``package-releases``: ``--version``
+
 New library method:
 
 -  :meth:`ocdskit.util.is_compiled_release`
@@ -14,7 +23,13 @@ New library method:
 Changed
 ~~~~~~~
 
+-  ``merge`` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
 -  ``package-records`` and ``package-releases`` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
+
+Fixed
+~~~~~
+
+-  ``convert-to-oc4ids`` sets the ``publishedDate`` field, not the ``published_date`` field.
 
 0.2.6 (2020-04-15)
 ------------------

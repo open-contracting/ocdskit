@@ -98,6 +98,7 @@ Optional arguments:
 * ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
 * ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
+* ``--version VERSION`` if ``--package`` is set, set the record package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the record package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the record package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the record package's ``publisher``'s ``scheme`` to this value
@@ -148,6 +149,7 @@ Optional arguments:
 
 * ``--uri URL`` set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
+* ``--version VERSION`` set the record package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` set the record package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` set the record package's ``publisher``'s ``scheme`` to this value
@@ -181,6 +183,7 @@ Optional arguments:
 
 * ``--uri URL`` set the release package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
+* ``--version VERSION`` set the release package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the release package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` set the release package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` set the release package's ``publisher``'s ``scheme`` to this value
@@ -210,6 +213,7 @@ Optional arguments:
 
 * ``--uri URL`` set the record package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
+* ``--version VERSION`` set the record package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` set the record package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` set the record package's ``publisher``'s ``scheme`` to this value
@@ -235,6 +239,7 @@ Optional arguments:
 
 * ``--uri URL`` set the release package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
+* ``--version VERSION`` set the release package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` set the release package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` set the release package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` set the release package's ``publisher``'s ``scheme`` to this value
@@ -377,6 +382,7 @@ Optional arguments:
 * ``--package`` wrap the project in a project package
 * ``--uri URI`` if ``--package`` is set, set the project package's ``uri`` to this value
 * ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the project package's ``publishedDate`` to this value
+* ``--version VERSION`` if ``--package`` is set, set the project package's ``version`` to this value
 * ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the project package's ``publisher``'s ``name`` to this value
 * ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the project package's ``publisher``'s ``uri`` to this value
 * ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the project package's ``publisher``'s ``scheme`` to this value

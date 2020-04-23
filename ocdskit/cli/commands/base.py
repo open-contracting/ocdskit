@@ -112,7 +112,7 @@ class OCDSCommand(BaseCommand):
             else:
                 yield item
 
-    def add_package_arguments(self, infix, prefix=''):
+    def add_package_arguments(self, infix, prefix='', version='1.1'):
         """
         Adds arguments for setting package metadata to the subparser.
         """
@@ -125,6 +125,7 @@ class OCDSCommand(BaseCommand):
 
         self.add_argument('--uri', type=str, default='', help=template.format('uri'))
         self.add_argument('--published-date', type=str, default='', help=template.format('publishedDate'))
+        self.add_argument('--version', type=str, default=version, help=template.format("version"))
         self.add_argument('--publisher-name', type=str, default='', help=template.format("publisher's name"))
         self.add_argument('--publisher-uri', type=str, default='', help=template.format("publisher's uri"))
         self.add_argument('--publisher-scheme', type=str, default='', help=template.format("publisher's scheme"))
@@ -140,6 +141,7 @@ class OCDSCommand(BaseCommand):
             'uri': self.args.uri,
             'publisher': {},
             'published_date': self.args.published_date,
+            'version': self.args.version,
         }
 
         if self.args.fake:

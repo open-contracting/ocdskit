@@ -22,12 +22,13 @@ def test_command_no_extensions(monkeypatch):
 
 def test_command_uri_published_date(monkeypatch):
     actual = run_streaming(monkeypatch, main, ['combine-release-packages', '--uri', 'http://example.com/x.json',
-                                               '--published-date', '2010-01-01T00:00:00Z'],
+                                               '--published-date', '2010-01-01T00:00:00Z', '--version', '1.2'],
                            ['release-package_minimal.json'])
 
     package = json.loads(actual)
     assert package['uri'] == 'http://example.com/x.json'
     assert package['publishedDate'] == '2010-01-01T00:00:00Z'
+    assert package['version'] == '1.2'
 
 
 def test_command_publisher(monkeypatch):

@@ -6,11 +6,11 @@ from ocdsmerge.util import get_release_schema_url, get_tags
 
 from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning
 from ocdskit.packager import Packager
-from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
-                          _resolve_metadata, _update_package_metadata)
+from ocdskit.util import (_default_version, _empty_record_package, _empty_release_package,
+                          _remove_empty_optional_metadata, _resolve_metadata, _update_package_metadata)
 
 
-def _package(key, items, uri, publisher, published_date, extensions):
+def _package(key, items, uri, publisher, published_date, version, extensions=None):
     if publisher is None:
         publisher = {}
     if 'name' not in publisher:
@@ -20,7 +20,7 @@ def _package(key, items, uri, publisher, published_date, extensions):
         'uri': uri,
         'publisher': publisher,
         'publishedDate': published_date,
-        'version': '1.1',  # fields might be deprecated
+        'version': version,
     }
 
     if extensions:
@@ -31,7 +31,7 @@ def _package(key, items, uri, publisher, published_date, extensions):
     return output
 
 
-def package_records(records, uri='', publisher=None, published_date='', extensions=None):
+def package_records(records, uri='', publisher=None, published_date='', version=_default_version, extensions=None):
     """
     Wraps records in a record package.
 
@@ -39,12 +39,13 @@ def package_records(records, uri='', publisher=None, published_date='', extensio
     :param str uri: the record package's ``uri``
     :param dict publisher: the record package's ``publisher``
     :param str published_date: the record package's ``publishedDate``
+    :param str version: the record package's ``version``
     :param list extensions: the record package's ``extensions``
     """
-    return _package('records', records, uri, publisher, published_date, extensions)
+    return _package('records', records, uri, publisher, published_date, version, extensions)
 
 
-def package_releases(releases, uri='', publisher=None, published_date='', extensions=None):
+def package_releases(releases, uri='', publisher=None, published_date='', version=_default_version, extensions=None):
     """
     Wraps releases in a release package.
 
@@ -52,12 +53,13 @@ def package_releases(releases, uri='', publisher=None, published_date='', extens
     :param str uri: the release package's ``uri``
     :param dict publisher: the release package's ``publisher``
     :param str published_date: the release package's ``publishedDate``
+    :param str version: the release package's ``version``
     :param list extensions: the release package's ``extensions``
     """
-    return _package('releases', releases, uri, publisher, published_date, extensions)
+    return _package('releases', releases, uri, publisher, published_date, version, extensions)
 
 
-def combine_record_packages(packages, uri='', publisher=None, published_date=''):
+def combine_record_packages(packages, uri='', publisher=None, published_date='', version=_default_version):
     """
     Collects the packages and records from the record packages into one record package.
 
@@ -67,9 +69,10 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     :param str uri: the record package's ``uri``
     :param dict publisher: the record package's ``publisher``
     :param str published_date: the record package's ``publishedDate``
+    :param str version: the record package's ``version``
     """
     # See options for not buffering all inputs into memory: https://github.com/open-contracting/ocdskit/issues/119
-    output = _empty_record_package(uri, publisher, published_date)
+    output = _empty_record_package(uri, publisher, published_date, version)
     output['packages'] = {}
 
     for i, package in enumerate(packages):
@@ -91,7 +94,7 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='')
     return output
 
 
-def combine_release_packages(packages, uri='', publisher=None, published_date=''):
+def combine_release_packages(packages, uri='', publisher=None, published_date='', version=_default_version):
     """
     Collects the releases from the release packages into one release package.
 
@@ -101,9 +104,10 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     :param str uri: the release package's ``uri``
     :param dict publisher: the release package's ``publisher``
     :param str published_date: the release package's ``publishedDate``
+    :param str version: the release package's ``version``
     """
     # See options for not buffering all inputs into memory: https://github.com/open-contracting/ocdskit/issues/119
-    output = _empty_release_package(uri, publisher, published_date)
+    output = _empty_release_package(uri, publisher, published_date, version)
 
     for i, package in enumerate(packages):
         _update_package_metadata(output, package)
@@ -121,8 +125,8 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     return output
 
 
-def merge(data, uri='', publisher=None, published_date='', schema=None, return_versioned_release=False,
-          return_package=False, use_linked_releases=False, streaming=False):
+def merge(data, uri='', publisher=None, published_date='', version=_default_version, schema=None,
+          return_versioned_release=False, return_package=False, use_linked_releases=False, streaming=False):
     """
     Merges release packages and individual releases.
 
@@ -137,6 +141,7 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
     :param str uri: if ``return_package`` is ``True``, the record package's ``uri``
     :param dict publisher: if ``return_package`` is ``True``, the record package's ``publisher``
     :param str published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
+    :param str version: if ``return_package`` is ``True``, the record package's ``version``
     :param dict schema: the URL, path or dict of the patched release schema to use
     :param bool return_package: wrap the compiled releases in a record package
     :param bool use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases,
@@ -165,6 +170,7 @@ def merge(data, uri='', publisher=None, published_date='', schema=None, return_v
         if return_package:
             packager.package['uri'] = uri
             packager.package['publishedDate'] = published_date
+            packager.package['version'] = version
             if publisher:
                 packager.package['publisher'] = publisher
 

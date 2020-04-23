@@ -13,6 +13,8 @@ except ImportError:
     jsonlib = json
     using_orjson = False
 
+_default_version = '1.1'  # fields might be deprecated
+
 
 # See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
 def grouper(iterable, n, fillvalue=None):
@@ -161,7 +163,7 @@ def is_linked_release(data):
     return 'url' in data and len(data) <= 3
 
 
-def _empty_package(uri, publisher, published_date):
+def _empty_package(uri, publisher, published_date, version):
     if publisher is None:
         publisher = {}
 
@@ -171,26 +173,26 @@ def _empty_package(uri, publisher, published_date):
         'publishedDate': published_date,
         'license': None,
         'publicationPolicy': None,
-        'version': None,
+        'version': version,
         'extensions': {},
     }
 
 
-def _empty_record_package(uri='', publisher=None, published_date=''):
-    package = _empty_package(uri, publisher, published_date)
+def _empty_record_package(uri='', publisher=None, published_date='', version=None):
+    package = _empty_package(uri, publisher, published_date, version)
     package['packages'] = []
     package['records'] = []
     return package
 
 
-def _empty_release_package(uri='', publisher=None, published_date=''):
-    package = _empty_package(uri, publisher, published_date)
+def _empty_release_package(uri='', publisher=None, published_date='', version=None):
+    package = _empty_package(uri, publisher, published_date, version)
     package['releases'] = []
     return package
 
 
 def _update_package_metadata(output, package):
-    for field in ('publisher', 'license', 'publicationPolicy', 'version'):
+    for field in ('publisher', 'license', 'publicationPolicy'):
         if field in package:
             output[field] = package[field]
 

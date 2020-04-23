@@ -2,6 +2,7 @@ import logging
 
 from ocdskit import oc4ids
 from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.combine import _package
 
 logger = logging.getLogger("ocdskit")
 
@@ -17,7 +18,7 @@ class Command(OCDSCommand):
         self.add_argument("--transforms", help="comma-separated list of optional transforms to run", default="")
         self.add_argument("--package", action="store_true", help="wrap the project in a package")
 
-        self.add_package_arguments("project", "if --package is set, ")
+        self.add_package_arguments("project", "if --package is set, ", version='0.9')
 
     def handle(self):
         project_id = self.args.project_id
@@ -32,8 +33,8 @@ class Command(OCDSCommand):
         project = oc4ids.run_transforms(config, self.items(), project_id=project_id)
 
         if self.args.package:
-            output = self.parse_package_arguments()
-            output["projects"] = [project]
+            kwargs = self.parse_package_arguments()
+            output = _package('projects', [project], **kwargs)
         else:
             output = project
 

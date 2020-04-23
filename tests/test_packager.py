@@ -14,6 +14,7 @@ def test_output_package_no_streaming():
             ('realdata/release-package-1.json', 'realdata/release-package-2.json')]
 
     with Packager() as packager:
+        packager.package['version'] = '1.1'
         packager.add(data)
 
         prefix = packager.version.replace('.', '__') + '__'
