@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2.8 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+-  ``schema-strict`` accepts a filename as a positional argument, instead of a schema as standard input.
+-  ``schema-strict`` adds constraints to all fields, not only required fields.
+
 0.2.7 (2020-04-23)
 ------------------
 

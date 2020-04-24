@@ -1,4 +1,7 @@
+import json
+
 from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.util import json_dump
 
 
 class Command(BaseCommand):
@@ -7,6 +10,7 @@ class Command(BaseCommand):
            'string and "enum", "format" and "pattern" are not set'
 
     def add_arguments(self):
+        self.add_argument('file', help='the schema file')
         self.add_argument('--no-unique-items', action='store_true',
                           help="""don't add "uniqueItems" properties to array fields""")
 
@@ -35,6 +39,10 @@ class Command(BaseCommand):
                 for value in data.values():
                     recurse(value)
 
-        for schema in self.items():
-            recurse(schema)
-            self.print(schema)
+        with open(self.args.file) as f:
+            schema = json.load(f)
+
+        recurse(schema)
+
+        with open(self.args.file, 'w') as f:
+            json_dump(schema, f, indent=2)

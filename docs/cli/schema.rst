@@ -81,7 +81,7 @@ Optional arguments:
 
 ::
 
-    cat path/to/release-schema.json | ocdskit schema-strict --pretty > out.json
+    ocdskit schema-strict path/to/release-schema.json
 
 set-closed-codelist-enums
 -------------------------
