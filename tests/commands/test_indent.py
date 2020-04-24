@@ -1,5 +1,3 @@
-import os.path
-
 from ocdskit.cli.__main__ import main
 from tests import assert_command
 

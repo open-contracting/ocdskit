@@ -1,5 +1,3 @@
-import os.path
-
 import pytest
 
 from ocdskit.cli.__main__ import main
