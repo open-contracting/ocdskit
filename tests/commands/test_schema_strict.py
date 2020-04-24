@@ -1,9 +1,9 @@
 import json
 
 from ocdskit.cli.__main__ import main
-from tests import run_streaming
+from tests import run_command
 
-stdin = b'''{
+schema = b'''{
   "required": [
     "array",
     "minItemsArray",
@@ -135,13 +135,19 @@ expected = '''{
 '''
 
 
-def test_command(monkeypatch):
-    actual = run_streaming(monkeypatch, main, ['--pretty', 'schema-strict'], stdin)
+def test_command(monkeypatch, tmpdir):
+    p = tmpdir.join('schema.json')
+    p.write(schema)
 
-    assert actual == expected
+    run_command(monkeypatch, main, ['schema-strict', str(p)])
+
+    assert p.read() == expected
 
 
-def test_command_no_unique_items(monkeypatch):
-    actual = run_streaming(monkeypatch, main, ['schema-strict', '--no-unique-items'], stdin)
+def test_command_no_unique_items(monkeypatch, tmpdir):
+    p = tmpdir.join('schema.json')
+    p.write(schema)
 
-    assert 'uniqueItems' not in json.loads(actual)['properties']['array']
+    run_command(monkeypatch, main, ['schema-strict', '--no-unique-items', str(p)])
+
+    assert 'uniqueItems' not in json.loads(p.read())['properties']['array']

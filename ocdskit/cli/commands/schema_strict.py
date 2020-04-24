@@ -46,3 +46,4 @@ class Command(BaseCommand):
 
         with open(self.args.file, 'w') as f:
             json_dump(schema, f, indent=2)
+            f.write('\n')
