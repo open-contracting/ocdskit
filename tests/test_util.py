@@ -1,5 +1,4 @@
 import json
-from tempfile import TemporaryFile
 
 import pytest
 
@@ -46,10 +45,10 @@ def test_is_compiled_release(data, expected):
     (iter([]), '[]'),
     ({'a': 1, 'b': 2}, '{"a":1,"b":2}'),
 ])
-def test_json_dump(data, expected):
-    with TemporaryFile('w+') as f:
+def test_json_dump(data, expected, tmpdir):
+    p = tmpdir.join('test.json')
+
+    with open(p, 'w') as f:
         json_dump(data, f)
 
-        f.seek(0)
-
-        assert f.read() == expected
+    assert p.read() == expected

@@ -1,5 +1,4 @@
 import os.path
-from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -38,19 +37,15 @@ def test_command(filename, result, monkeypatch):
     assert_command(monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
-def test_command_recursive(monkeypatch, caplog):
-    with TemporaryDirectory() as d:
-        with open(os.path.join(d, 'test.json'), 'wb') as f:
-            f.write(content)
+def test_command_recursive(monkeypatch, caplog, tmpdir):
+    tmpdir.join('test.json').write(content)
+    tmpdir.join('.test.json').write(content)
 
-        with open(os.path.join(d, '.test.json'), 'wb') as f:
-            f.write(content)
+    actual = run_command(monkeypatch, main, ['detect-format', '--recursive', str(tmpdir)])
 
-        actual = run_command(monkeypatch, main, ['detect-format', '--recursive', d])
-
-        assert '/test.json: record package' in actual
-        assert '.test.json' not in actual
-        assert len(caplog.records) == 0
+    assert '/test.json: record package' in actual
+    assert '.test.json' not in actual
+    assert len(caplog.records) == 0
 
 
 @pytest.mark.parametrize('basename,result', test_command_unknown_format_argvalues)
@@ -65,13 +60,12 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
         filename, result)
 
 
-def test_command_directory(monkeypatch, caplog):
-    with TemporaryDirectory() as d:
-        assert_command(monkeypatch, main, ['detect-format', d], '')
+def test_command_directory(monkeypatch, caplog, tmpdir):
+    assert_command(monkeypatch, main, ['detect-format', str(tmpdir)], '')
 
-        assert len(caplog.records) == 1
-        assert caplog.records[0].levelname == 'WARNING'
-        assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'WARNING'
+    assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
 
 
 def test_command_nonexistent(monkeypatch, caplog):
