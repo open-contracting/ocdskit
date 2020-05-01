@@ -91,7 +91,7 @@ Changed
 -  ``compile`` errors if an ``ocid`` field is missing from a release (see :meth:`~ocdskit.packager.AbstractBackend.add_release`).
 -  ``upgrade`` upgrades records (see :meth:`~ocdskit.upgrade.upgrade_10_11`).
 
-0.2.2 (2019-01-07)
+0.2.2 (2020-01-07)
 ------------------
 
 Changed
