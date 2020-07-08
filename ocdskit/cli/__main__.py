@@ -60,9 +60,12 @@ def main():
                     warnings.showwarning = _showwarning
                     command.handle()
             except ijson.common.IncompleteJSONError as e:
-                if e.args and not isinstance(e.args[0], bytes):
-                    raise CommandError('JSON error: {}'.format(e))
-                _raise_encoding_error(e.args[0].decode(errors='backslashreplace'), args.encoding)
+                if e.args and isinstance(e.args[0], (bytes, UnicodeDecodeError)):
+                    message = e.args[0]
+                    if isinstance(e.args[0], bytes):  # YAJL backends
+                        message = e.args[0].decode(errors='backslashreplace')
+                    _raise_encoding_error(message, args.encoding)
+                raise CommandError('JSON error: {}'.format(e))
             except UnicodeDecodeError as e:
                 _raise_encoding_error(e, args.encoding)
         except CommandError as e:
