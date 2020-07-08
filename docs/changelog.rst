@@ -8,6 +8,7 @@ Fixed
 ~~~~~
 
 -  ``detect-format`` respects ``--root-path``.
+-  ``convert-to-oc4ids`` omits ``sector`` and ``documents`` if empty.
 
 0.2.8 (2020-04-29)
 ------------------

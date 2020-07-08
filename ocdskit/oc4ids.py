@@ -41,7 +41,6 @@ def cast_string(item):
     Cast to string if possible. Does not try to convert dict, list, or None to string.
     Returns empty string on failure so future processing works.
     """
-
     if isinstance(item, (str, float, int, decimal.Decimal)):
         return str(item)
 
@@ -51,7 +50,6 @@ def cast_string(item):
 
 
 def run_transforms(config, releases, project_id=None, records=None, output=None):
-
     """
     Transforms a list of OCDS releases into a OC4IDS project.
 
@@ -229,7 +227,6 @@ def copy_document(state, document):
     """
     Copies a document. If it finds clashing ids change ids to autoincrement numbers
     """
-
     output_documents = state.output.get("documents")
     if not output_documents:
         output_documents = []
@@ -249,27 +246,21 @@ def copy_document(state, document):
             doc["id"] = str(num + 1)
 
 
-def copy_document_by_type(state, document_type):
-
+def copy_document_by_type(state, documents, document_type):
     """
     Copies documents of specific documentType from planning.documents to documents
     """
-
-    for compiled_release in state.compiled_releases:
-        documents = resolve_pointer(compiled_release, "/planning/documents", [])
-        for document in check_type(documents, list):
-            document = check_type(document, dict)
-            if document_type == document.get("documentType"):
-                copy_document(state, document)
+    for document in check_type(documents, list):
+        document = check_type(document, dict)
+        if document_type == document.get("documentType"):
+            copy_document(state, document)
 
 
 def concat_ocid_and_string(state, path_to_string):
-
     """
     Places the ocid of a release in front of a string (eg. description or title)
     so that it can be joined unambiguously with others, separated by new lines
     """
-
     strings = ""
     for compiled_release in state.compiled_releases:
 
@@ -310,7 +301,8 @@ def sector(state):
         else:
             sector_name = sector_id
 
-        sectors.append(sector_name)
+        if sector_name:
+            sectors.append(sector_name)
 
     if sectors:
         state.output["sector"] = list(set(sectors))
@@ -367,9 +359,10 @@ def title_from_tender(state):
 
 
 def contracting_process_setup(state):
-    """ This will initailly create the contracting process objects and the summary object
-    within.  All transforms that use contracting processes need to run this tranform first."""
-
+    """
+    This will initailly create the contracting process objects and the summary object within. All transforms that use
+    contracting processes need to run this tranform first.
+    """
     state.output["contractingProcesses"] = []
 
     for compiled_release in state.compiled_releases:
@@ -608,7 +601,6 @@ def budget(state):
     """
     CoST IDS element: Budget
     """
-
     if len(state.compiled_releases) == 1:
         budget_value = resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
         if budget_value:
@@ -635,21 +627,21 @@ def budget_approval(state):
     """
     CoST IDS element: Project budget approval date
     """
-    copy_document_by_type(state, "budgetApproval")
+    copy_document_by_type(state, _planning_documents, "budgetApproval")
 
 
 def environmental_impact(state):
     """
     CoST IDS element: Environmental impact
     """
-    copy_document_by_type(state, "environmentalImpact")
+    copy_document_by_type(state, _planning_documents, "environmentalImpact")
 
 
 def land_and_settlement_impact(state):
     """
     CoST IDS element: Land and settlement impact
     """
-    copy_document_by_type(state, "landAndSettlementImpact")
+    copy_document_by_type(state, _planning_documents, "landAndSettlementImpact")
 
 
 def purpose(state):
@@ -670,7 +662,7 @@ def purpose_needs_assessment(state):
     """
     CoST IDS element: Purpose
     """
-    copy_document_by_type(state, "needsAssessment")
+    copy_document_by_type(state, _planning_documents, "needsAssessment")
 
 
 def description(state):
@@ -719,7 +711,6 @@ def funding_sources(state):
     """
     CoST IDS element: Funding sources
     """
-
     found_funding_source = False
     for compiled_release in state.compiled_releases:
 
@@ -944,7 +935,7 @@ def project_scope(state):
     """
     CoST IDS element: Project Scope (main output) and Project Scope (projected)
     """
-    copy_document_by_type(state, "projectScope")
+    copy_document_by_type(state, _planning_documents, "projectScope")
 
 
 def project_scope_summary(state):
@@ -971,18 +962,19 @@ def final_audit(state):
     """
     CoST IDS element: Reference to audit and evaluation reports
     """
-    if not state.output.get("documents"):
-        state.output["documents"] = []
+    copy_document_by_type(state, _contract_implementation_documents, "finalAudit")
 
+
+def _contract_implementation_documents(state):
     for compiled_release in state.compiled_releases:
-
         contracts = resolve_pointer(compiled_release, "/contracts", [])
         for contract in contracts:
-            documents = resolve_pointer(contract, "/implementation/documents", [])
-            for document in check_type(documents, list):
-                document = check_type(document, dict)
-                if document.get("documentType") == "finalAudit":
-                    state.output["documents"].append(document)
+            yield from resolve_pointer(contract, "/implementation/documents", [])
+
+
+def _planning_documents(state):
+    for compiled_release in state.compiled_releases:
+        yield from resolve_pointer(compiled_release, "/planning/documents", [])
 
 
 TRANSFORM_LIST = [
