@@ -250,7 +250,7 @@ def copy_document_by_type(state, documents, document_type):
     """
     Copies documents of specific documentType from planning.documents to documents
     """
-    for document in check_type(documents, list):
+    for document in documents(state):
         document = check_type(document, dict)
         if document_type == document.get("documentType"):
             copy_document(state, document)
@@ -969,12 +969,14 @@ def _contract_implementation_documents(state):
     for compiled_release in state.compiled_releases:
         contracts = resolve_pointer(compiled_release, "/contracts", [])
         for contract in contracts:
-            yield from resolve_pointer(contract, "/implementation/documents", [])
+            documents = check_type(resolve_pointer(contract, "/implementation/documents", []), list)
+            yield from documents
 
 
 def _planning_documents(state):
     for compiled_release in state.compiled_releases:
-        yield from resolve_pointer(compiled_release, "/planning/documents", [])
+        documents = check_type(resolve_pointer(compiled_release, "/planning/documents", []), list)
+        yield from documents
 
 
 TRANSFORM_LIST = [
