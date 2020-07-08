@@ -1,7 +1,7 @@
 import pytest
 
 from ocdskit.cli.__main__ import main
-from tests import assert_command, path, run_command
+from tests import assert_command, assert_command_error, path, run_command
 
 
 @pytest.mark.parametrize('filename,result', [
@@ -28,6 +28,14 @@ def test_command(filename, result, monkeypatch):
 def test_command_root_path(filename, root_path, result, monkeypatch):
     expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
     assert_command(monkeypatch, main, ['detect-format', '--root-path', root_path, path(filename)], expected)
+
+
+def test_command_root_path_nonexistent(monkeypatch, caplog):
+    assert_command_error(monkeypatch, main, ['detect-format', '--root-path', 'nonexistent',
+                                             path('record_minimal.json')], error=StopIteration)
+
+    assert len(caplog.records) == 0
+
 
 def test_command_recursive(monkeypatch, caplog, tmpdir):
     content = b'{"records":[]}'
