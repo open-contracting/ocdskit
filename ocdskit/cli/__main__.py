@@ -60,9 +60,9 @@ def main():
                     warnings.showwarning = _showwarning
                     command.handle()
             except ijson.common.IncompleteJSONError as e:
-                if str(e):
+                if e.args and not isinstance(e.args[0], bytes):
                     raise CommandError('JSON error: {}'.format(e))
-                _raise_encoding_error(e, args.encoding)
+                _raise_encoding_error(e.args[0].decode(errors='backslashreplace'), args.encoding)
             except UnicodeDecodeError as e:
                 _raise_encoding_error(e, args.encoding)
         except CommandError as e:
