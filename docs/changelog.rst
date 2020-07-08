@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.9 (Unreleased)
+------------------
+
+Fixed
+~~~~~
+
+-  ``detect-format`` respects ``--root-path``.
+
 0.2.8 (2020-04-29)
 ------------------
 
