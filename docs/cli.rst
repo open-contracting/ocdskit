@@ -5,7 +5,7 @@ To see all commands available, run::
 
     ocdskit --help
 
-Users on Windows should run ``set PYTHONIOENCODING=utf-8`` in the terminal before running any ``ocdskit`` commands.
+Users on Windows should run ``set PYTHONIOENCODING=utf-8`` in each terminal session before running any ``ocdskit`` commands. To set the environment variable for all future sessions run ``setx PYTHONIOENCODING utf-8``.
 
 To process a remote file::
 
