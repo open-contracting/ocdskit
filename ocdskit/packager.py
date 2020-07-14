@@ -1,4 +1,5 @@
 import itertools
+import os
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 
@@ -218,7 +219,7 @@ class SQLiteBackend(AbstractBackend):
     # Note: We never commit changes. SQLite manages the memory usage of uncommitted changes.
     # https://sqlite.org/atomiccommit.html#_cache_spill_prior_to_commit
     def __init__(self):
-        self.file = NamedTemporaryFile()
+        self.file = NamedTemporaryFile(delete=False)
 
         # https://docs.python.org/3/library/sqlite3.html#sqlite3.PARSE_DECLTYPES
         self.connection = sqlite3.connect(self.file.name, detect_types=sqlite3.PARSE_DECLTYPES)
@@ -247,3 +248,4 @@ class SQLiteBackend(AbstractBackend):
     def close(self):
         self.file.close()
         self.connection.close()
+        os.unlink(self.file.name)
