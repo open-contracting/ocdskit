@@ -291,7 +291,7 @@ The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, et
 tabulate
 --------
 
-Load packages into a database.
+Reads packages from standard input, flattens them and stores data in a relational database.
 
 Mandatory positional arguments:
 
@@ -307,6 +307,40 @@ Optional arguments:
     cat release_package.json | ocdskit tabulate sqlite:///data.db
 
 For the format of ``database_url``, see the `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/rel_1_1/core/engines.html#database-urls>`__.
+
+Database structure
+~~~~~~~~~~~~~~~~~~
+
+The structure of the database is based on the specified schema. By default the `latest OCDS release schema <https://standard.open-contracting.org/latest/en/release-schema.json>`__ is used.
+
+The main table is the ``releases`` table and separate tables are generated for each array in the schema, for example ``parties`` and ``awards``.
+
+Naming conventions
+~~~~~~~~~~~~~~~~~~
+
+Table and column names in the database are generated from the object and property names in the JSON data, separated by underscores. For example, data from ``tender/title`` is stored in ``releases.tender_title`` and data from ``awards/items/description`` is stored in ``award_items.description``.
+
+Identifiers
+~~~~~~~~~~~
+
+The ``ocid`` and release ``id`` columns are present in all tables, so that data from the same contracting process and release can be joined. Where a table represents a property of an array in the JSON data, a column with the ``id`` of the parent object is also provided. For example, the ``award_id`` column is present in the ``awards_suppliers`` table so that it can be joined to the ``awards`` table.
+
+Additional fields
+~~~~~~~~~~~~~~~~~
+
+Properties in the JSON data which are not specified in the schema are treated as follows:
+
+* If the property is a scalar value or object it stored as a property of a JSON object in the ``extras`` column of the table for the parent object. For example, ``awards/additionalField`` would be stored in ``awards/extras``.
+* If the property is an array, it is dropped and OCDS Kit reports a warning. For example, ``table tender_participationFees does not exist``.
+
+To flatten additional fields, use the ``--schema`` option to specify an extended schema which includes the fields.
+
+Alternative approaches
+~~~~~~~~~~~~~~~~~~~~~~
+
+`OCDS Kingfisher Process <https://kingfisher-process.readthedocs.io/en/latest/>`__ provides an alternative approach to storing OCDS data in a database, and includes a pre-processing pipeline with support for validating and compiling data.
+
+`Flatten-tool <https://flatten-tool.readthedocs.io/en/latest/>`__ provides an alternative approach to flattening OCDS data and includes support for additional fields and arrays.
 
 validate
 --------
@@ -398,7 +432,7 @@ Transforms
 
 The transforms that are run are described here.
 
-* ``additional_classifications``, ``description``, ``sector``, ``title``: populate top-level fields with their equivalents from ``planning.project`` 
+* ``additional_classifications``, ``description``, ``sector``, ``title``: populate top-level fields with their equivalents from ``planning.project``
 * ``administrative_entity``, ``public_authority_role``, ``procuring_entity``, ``suppliers``: populate the ``parties`` field according to the party ``role``
 * ``budget``: populates ``budget.amount`` with its equivalent
 * ``budget_approval``, ``environmental_impact``, ``land_and_settlement_impact`` and ``project_scope``: populate the ``documents`` field from ``planning.documents`` according to the ``documentType``
