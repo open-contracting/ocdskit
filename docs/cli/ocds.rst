@@ -291,7 +291,7 @@ The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, et
 tabulate
 --------
 
-Reads packages from standard input, flattens them and stores data in a relational database.
+Reads packages, records or releases from standard input and stores releases in a relational database.
 
 Mandatory positional arguments:
 
@@ -311,36 +311,45 @@ For the format of ``database_url``, see the `SQLAlchemy documentation <https://d
 Database structure
 ~~~~~~~~~~~~~~~~~~
 
-The structure of the database is based on the specified schema. By default the `latest OCDS release schema <https://standard.open-contracting.org/latest/en/release-schema.json>`__ is used.
+The database structure follows the specified schema. By default, the `latest OCDS release schema <https://standard.open-contracting.org/latest/en/release-schema.json>`__ is used.
 
-The main table is the ``releases`` table and separate tables are generated for each array in the schema, for example ``parties`` and ``awards``.
+The primary table is the ``releases`` table. Secondary tables are created for each array in the schema: for example, there is an ``awards`` table and an ``awards_suppliers`` table.
 
 Naming conventions
 ~~~~~~~~~~~~~~~~~~
 
-Table and column names in the database are generated from the object and property names in the JSON data, separated by underscores. For example, data from ``tender/title`` is stored in ``releases.tender_title`` and data from ``awards/items/description`` is stored in ``award_items.description``.
+Table names are based on the JSON paths to the arrays, separated by underscores. For example, the data in the ``/contracts/*/implementation/documents`` array is stored in the ``contracts_implementation_documents`` table.
 
-Identifiers
-~~~~~~~~~~~
+Column names are based on the JSON paths to the fields, relative to their containing arrays, separated by underscores. For example, the data in the ``/parties/*/address/region`` field is stored in the ``address_region`` column of the ``parties`` table.
 
-The ``ocid`` and release ``id`` columns are present in all tables, so that data from the same contracting process and release can be joined. Where a table represents a property of an array in the JSON data, a column with the ``id`` of the parent object is also provided. For example, the ``award_id`` column is present in the ``awards_suppliers`` table so that it can be joined to the ``awards`` table.
+Foreign keys
+~~~~~~~~~~~~
+
+Foreign keys are used to ``JOIN`` rows that relate to the same object across tables.
+
+Every table has an ``ocid`` column to identify the contracting process, and a ``release_id`` column to identify the release.
+
+Secondary tables have additional foreign keys to identify a specific object in a given array. The column names follow the pattern ``{singular}_id``, where ``singular`` is all but the last character of the table name. For example:
+
+* The ``awards`` table has an ``award_id`` column to identify the award object by its ``/awards/*/id`` value.
+* The ``awards_suppliers`` table has an ``award_id`` column to identify the award object by its ``/awards/*/id`` value, and a ``supplier_id`` column to identify the supplier by its ``/awards/*/suppliers/*/id`` value.
 
 Additional fields
 ~~~~~~~~~~~~~~~~~
 
-Properties in the JSON data which are not specified in the schema are treated as follows:
+Fields in the JSON data that aren't described by the provided schema are treated as follows:
 
-* If the property is a scalar value or object it stored as a property of a JSON object in the ``extras`` column of the table for the parent object. For example, ``awards/additionalField`` would be stored in ``awards/extras``.
-* If the property is an array, it is dropped and OCDS Kit reports a warning. For example, ``table tender_participationFees does not exist``.
+* If the field is an array, it is ignored and a warning is reported, for example: ``table tender_participationFees does not exist``.
+* Otherwise, it is stored in a JSON object in an ``extras`` column. For example, an ``/awards/*/exchangeRate`` value is stored in the ``extras`` column of the ``awards`` as a JSON object like ``{"exchangeRate": 1.23}``.
 
-To flatten additional fields, use the ``--schema`` option to specify an extended schema which includes the fields.
+To limit the number of fields that are stored in the ``extras`` column, extend the release schema with all relevant extensions, and then use the ``--schema`` option.
 
 Alternative approaches
 ~~~~~~~~~~~~~~~~~~~~~~
 
-`OCDS Kingfisher Process <https://kingfisher-process.readthedocs.io/en/latest/>`__ provides an alternative approach to storing OCDS data in a database, and includes a pre-processing pipeline with support for validating and compiling data.
+`Kingfisher Process <https://kingfisher-process.readthedocs.io/en/latest/>`__ stores OCDS releases as JSON blobs in a single column.
 
-`Flatten-tool <https://flatten-tool.readthedocs.io/en/latest/>`__ provides an alternative approach to flattening OCDS data and includes support for additional fields and arrays.
+`Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/>`__ flattens JSON data into CSV and Excel files and supports additional fields, additional arrays and many other ways to customize the output.
 
 validate
 --------
