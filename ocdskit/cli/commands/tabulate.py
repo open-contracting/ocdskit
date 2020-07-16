@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.util import json_dumps
+from ocdskit.util import is_record, is_record_package, is_release_package, json_dumps
 
 
 class Command(OCDSCommand):
@@ -19,7 +19,18 @@ class Command(OCDSCommand):
     def handle(self):
         deref_schema = jsonref.load_uri(self.args.schema)
         metadata, engine = self.create_db(self.args.database_url, deref_schema, drop=self.args.drop)
-        self.upload_files(metadata, engine, deref_schema)
+
+        for i, data in enumerate(self.items()):
+            if is_record_package(data):
+                releases = []
+                for record in data['records']:
+                    releases.extend(record['releases'])
+            elif is_release_package(data) or is_record(data):
+                releases = data['releases']
+            else:  # release
+                releases = [data]
+
+            self.upload_file(metadata, engine, deref_schema, releases)
 
     def process_schema_object(self, path, current_name, flattened, obj):
         """
@@ -121,17 +132,6 @@ class Command(OCDSCommand):
             else:
                 flat_obj[current_name + key] = value
         return flattened
-
-    def upload_files(self, metadata, engine, deref_schema):
-        for package in self.items():
-            if 'releases' in package:
-                releases = package['releases']
-            elif 'records' in package:
-                releases = []
-                for record in package['records']:
-                    releases.extend(record['releases'])
-
-            self.upload_file(metadata, engine, deref_schema, releases)
 
     def upload_file(self, metadata, engine, deref_schema, releases):
         conn = engine.connect()
