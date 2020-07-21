@@ -45,9 +45,10 @@ def main():
     for module in COMMAND_MODULES:
         try:
             command = importlib.import_module(module).Command(subparsers)
-            subcommands[command.name] = command
         except ImportError as e:
             logger.error('exception "%s" prevented loading of %s module', e, module)
+        else:
+            subcommands[command.name] = command
 
     args = parser.parse_args()
 
