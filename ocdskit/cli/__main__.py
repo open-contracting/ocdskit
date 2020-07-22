@@ -24,6 +24,7 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.schema_report',
     'ocdskit.cli.commands.schema_strict',
     'ocdskit.cli.commands.set_closed_codelist_enums',
+    'ocdskit.cli.commands.split_project_packages',
     'ocdskit.cli.commands.split_record_packages',
     'ocdskit.cli.commands.split_release_packages',
     'ocdskit.cli.commands.tabulate',
