@@ -23,6 +23,15 @@ def test_indent(monkeypatch, tmpdir):
     assert p.read() == '{\n    "lorem": "ipsum"\n}\n'
 
 
+def test_ascii(monkeypatch, tmpdir):
+    p = tmpdir.join('test.json')
+    p.write(b'{"lorem":"ips\\u00fam"}')
+
+    assert_command(monkeypatch, main, ['--ascii', 'indent', str(p)], '')
+
+    assert p.read() == '{\n  "lorem": "ips\\u00fam"\n}\n'
+
+
 def test_command_recursive(monkeypatch, tmpdir):
     tmpdir.join('test.json').write(content)
     tmpdir.join('test.txt').write(content)

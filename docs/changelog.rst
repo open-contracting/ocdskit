@@ -7,6 +7,7 @@ Changelog
 Changed
 ~~~~~~~
 
+-  ``indent`` respects ``--ascii``.
 -  ``tabulate`` supports any OCDS data.
 
 0.2.9 (2020-07-08)
