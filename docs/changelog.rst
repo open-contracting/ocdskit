@@ -10,6 +10,11 @@ Changed
 -  ``indent`` respects ``--ascii``.
 -  ``tabulate`` supports any OCDS data.
 
+Fixed
+~~~~~
+
+-  ``compile`` no longer errors on Windows when using the SQLite backend.
+
 0.2.9 (2020-07-08)
 ------------------
 
