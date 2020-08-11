@@ -56,7 +56,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
         prop = field.schema
         field.sep = '/'
 
-        # If the field uses `$ref`, add an extra row for it.
+        # If the field uses `$ref`, add an extra row for it. This makes it easier to use as a header for the object.
+        # It also preserves the different titles and descriptions of the referrer and referee.
         if hasattr(prop, '__reference__'):
             reference = copy.copy(prop.__reference__)
             if 'type' not in reference and 'type' in prop:
@@ -65,7 +66,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
 
         rows.append(_make_row(field, prop, infer_required, extension_field))
 
-        # If the field is an array, add an extra row for it.
+        # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
             rows.append({
                 'path': field.path,
