@@ -18,23 +18,26 @@ def test_command_order_by(monkeypatch):
 
 @pytest.mark.vcr()
 def test_command_extension(monkeypatch):
-    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', path('release-schema.json'), '--extension', url],
                    'mapping-sheet_extension.csv')
 
 
+@pytest.mark.vcr()
 def test_command_extension_field(monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
+
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
-                    path('release-schema-patched.json')],
+                    path('release-schema.json'), '--extension', url],
                    'mapping-sheet_extension-field.csv')
 
 
 @pytest.mark.vcr()
 def test_command_extension_and_extension_field(monkeypatch):
-    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/master.zip'
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',

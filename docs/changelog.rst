@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.11 (Unreleased)
+-------------------
+
+Changed
+~~~~~~~
+
+-   ``mapping-sheet``: The ``extension`` column is now the name of the extension that introduced the JSON path, not the name of the extension that defined the field.
+
 0.2.10 (2020-07-28)
 -------------------
 

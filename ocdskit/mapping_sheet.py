@@ -44,11 +44,12 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :``links``: The URLs extracted from the field's ``description``
     :``deprecated``: The OCDS minor version in which the field (or its parent) was deprecated
     :``deprecationNotes``: The explanation for the deprecation of the field
-    :``extension``: The name of the extension in which the field was defined (see the ``extension_field`` parameter)
+    :``extension``: The name of the extension that introduced the JSON path (see the ``extension_field`` parameter)
 
     :raises MissingColumnError: if the column by which to order is missing
     """
     rows = []
+    rows_by_path = {}
     for field in get_schema_fields(schema):
         if field.definition_pointer_components:
             continue
@@ -62,13 +63,13 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
             reference = copy.copy(prop.__reference__)
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
-            rows.append(_make_row(field, reference, infer_required, extension_field))
+            _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required)
 
-        rows.append(_make_row(field, prop, infer_required, extension_field))
+        _add_row(rows, rows_by_path, field, prop, extension_field, infer_required=infer_required)
 
         # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
-            rows.append({
+            _add_row(rows, rows_by_path, field, prop['items'], extension_field, row={
                 'path': field.path,
                 'title': prop['items']['title'],
                 'description': prop['items'].get('description', ''),
@@ -91,7 +92,21 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     w.writerows(rows)
 
 
-def _make_row(field, schema, infer_required, extension_field):
+def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, row=None):
+    parent = rows_by_path.get(field.path_components[:-1], {})
+    if not row:
+        row = _make_row(field, schema, infer_required)
+
+    if extension_field in schema:
+        row['extension'] = schema[extension_field]
+    elif 'extension' in parent:
+        row['extension'] = parent['extension']
+
+    rows.append(row)
+    rows_by_path[field.path_components] = row
+
+
+def _make_row(field, schema, infer_required):
     row = {
         'path': field.path,
         'title': schema.get('title', field.path_components[-1] + '*'),
@@ -153,8 +168,5 @@ def _make_row(field, schema, infer_required, extension_field):
     if 'deprecated' in schema:
         row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
-
-    if extension_field in schema:
-        row['extension'] = schema[extension_field]
 
     return row
