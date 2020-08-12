@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.12 (Unreleased)
+-------------------
+
+Changed
+~~~~~~~
+
+-  :meth:`ocdskit.util.get_ocds_minor_version` now supports records.
+
 0.2.11 (2020-08-12)
 -------------------
 

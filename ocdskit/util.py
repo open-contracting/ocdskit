@@ -89,11 +89,15 @@ def json_dumps(data, ensure_ascii=False, **kwargs):
 
 def get_ocds_minor_version(data):
     """
-    Returns the OCDS minor version of the release package, record package or release.
+    Returns the OCDS minor version of the record package, release package, record or release.
     """
     if is_package(data):
         if 'version' in data:
             return data['version']
+        return '1.0'
+    elif is_record(data):
+        if any('parties' in release for release in data['releases']):
+            return '1.1'
         return '1.0'
     else:  # release
         if 'parties' in data:
