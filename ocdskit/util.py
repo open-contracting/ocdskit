@@ -74,24 +74,18 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
     """
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
     if not using_orjson or ensure_ascii or indent and indent != 2 or kwargs:
-        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, **kwargs)
-
-    kwargs = {}
-    if using_orjson:
-        if indent:
-            kwargs['option'] |= orjson.OPT_INDENT_2
-        if sort_keys:
-            kwargs['option'] |= orjson.OPT_SORT_KEYS
-    else:
-        if indent:
-            kwargs['indent'] = indent
-        else:
+        if not indent:
             kwargs['separators'] = (',', ':')
-        if sort_keys:
-            kwargs['sort_keys'] = sort_keys
+        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys, **kwargs)
+
+    option = 0
+    if indent:
+        option |= orjson.OPT_INDENT_2
+    if sort_keys:
+        option |= orjson.OPT_SORT_KEYS
 
     # orjson dumps to bytes.
-    return orjson.dumps(data, default=_default, **kwargs).decode()
+    return orjson.dumps(data, default=_default, option=option).decode()
 
 
 def get_ocds_minor_version(data):
