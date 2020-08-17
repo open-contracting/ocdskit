@@ -76,7 +76,8 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
     if not using_orjson or ensure_ascii or indent and indent != 2 or kwargs:
         if not indent:
             kwargs['separators'] = (',', ':')
-        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys, **kwargs)
+        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
+                          **kwargs)
 
     option = 0
     if indent:
