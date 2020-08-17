@@ -27,7 +27,7 @@ setup(
     ],
     extras_require={
         'perf': [
-            'orjson',
+            'orjson>=3',
         ],
         'test': [
             'coveralls',

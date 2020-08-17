@@ -41,8 +41,6 @@ class SerializableGenerator(list):
 
 
 def _default(obj):
-    if type(obj) in (IdDict, OrderedDict):  # needed by orjson, but not json
-        return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
     # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
@@ -73,18 +71,30 @@ def json_dump(data, io, ensure_ascii=False, **kwargs):
     json.dump(data, io, ensure_ascii=ensure_ascii, default=_default, **kwargs)
 
 
-def json_dumps(data, ensure_ascii=False, **kwargs):
+def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
-    # orjson doesn't support `ensure_ascii`, `indent` or `separators`.
-    if not using_orjson or ensure_ascii or kwargs:
-        if 'indent' not in kwargs:
-            kwargs['separators'] = (',', ':')
+    # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
+    if not using_orjson or ensure_ascii or indent and indent != 2 or kwargs:
         return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, **kwargs)
 
+    kwargs = {}
+    if using_orjson:
+        if indent:
+            kwargs['option'] |= orjson.OPT_INDENT_2
+        if sort_keys:
+            kwargs['option'] |= orjson.OPT_SORT_KEYS
+    else:
+        if indent:
+            kwargs['indent'] = indent
+        else:
+            kwargs['separators'] = (',', ':')
+        if sort_keys:
+            kwargs['sort_keys'] = sort_keys
+
     # orjson dumps to bytes.
-    return orjson.dumps(data, default=_default).decode()
+    return orjson.dumps(data, default=_default, **kwargs).decode()
 
 
 def get_ocds_minor_version(data):
