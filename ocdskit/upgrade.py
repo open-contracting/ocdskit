@@ -214,8 +214,7 @@ def upgrade_amendments_10_11(release):
 
 def _upgrade_amendment_10_11(block):
     if 'amendment' in block:
-        if 'amendments' not in block:
-            block['amendments'] = []
+        block.setdefault('amendments', [])
         if block['amendment'] not in block['amendments']:
             block['amendments'].append(block['amendment'])
         del block['amendment']

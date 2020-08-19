@@ -23,18 +23,14 @@ class Command(BaseCommand):
                 if 'type' in data:
                     if ('string' in data['type'] and 'enum' not in data and 'format' not in data
                             and 'pattern' not in data):
-                        if 'minLength' not in data:
-                            data['minLength'] = 1
+                        data.setdefault('minLength', 1)
                     if 'array' in data['type']:
-                        if 'minItems' not in data:
-                            data['minItems'] = 1
+                        data.setdefault('minItems', 1)
                         if not self.args.no_unique_items:
-                            if 'uniqueItems' not in data:
-                                data['uniqueItems'] = True
+                            data.setdefault('uniqueItems', True)
 
                     if 'object' in data['type']:
-                        if 'minProperties' not in data:
-                            data['minProperties'] = 1
+                        data.setdefault('minProperties', 1)
 
                 for value in data.values():
                     recurse(value)

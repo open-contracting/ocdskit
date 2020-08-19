@@ -13,8 +13,7 @@ from ocdskit.util import (_default_version, _empty_record_package, _empty_releas
 def _package(key, items, uri, publisher, published_date, version, extensions=None):
     if publisher is None:
         publisher = {}
-    if 'name' not in publisher:
-        publisher['name'] = ''
+    publisher.setdefault('name', '')
 
     output = {
         'uri': uri,
