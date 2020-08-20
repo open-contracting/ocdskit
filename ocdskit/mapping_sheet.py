@@ -1,4 +1,3 @@
-import copy
 import csv
 import re
 
@@ -60,7 +59,10 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
         # If the field uses `$ref`, add an extra row for it. This makes it easier to use as a header for the object.
         # It also preserves the different titles and descriptions of the referrer and referee.
         if hasattr(prop, '__reference__'):
-            reference = copy.copy(prop.__reference__)
+            reference = dict(prop.__reference__)
+            prop = dict(prop)
+            if extension_field in reference:
+                prop[extension_field] = reference[extension_field]
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
             _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required)
@@ -128,16 +130,17 @@ def _make_row(field, schema, infer_required):
     required = False
 
     if 'type' in schema:
-        type_ = copy.copy(schema['type'])
+        if isinstance(schema['type'], str):
+            type_ = [schema['type']]
+        else:
+            type_ = list(schema['type'])
+
         if 'null' in type_:
             type_.remove('null')
         elif infer_required:
             required = 'string' in type_ or 'integer' in type_
 
-        if type(type_) in (tuple, list):
-            row['type'] = ', '.join(type_)
-        else:
-            row['type'] = type_
+        row['type'] = ', '.join(type_)
     else:
         row['type'] = 'unknown'
 
@@ -153,12 +156,12 @@ def _make_row(field, schema, infer_required):
     elif 'pattern' in schema:
         row['values'] = 'Pattern: ' + schema['pattern']
     elif 'enum' in schema:
-        values = copy.copy(schema['enum'])
+        values = list(schema['enum'])
         if None in values:
             values.remove(None)
         row['values'] = 'Enum: ' + ', '.join(values)
     elif 'items' in schema and 'enum' in schema['items']:
-        values = copy.copy(schema['items']['enum'])
+        values = list(schema['items']['enum'])
         if None in values:
             values.remove(None)
         row['values'] = 'Enum: ' + ', '.join(values)

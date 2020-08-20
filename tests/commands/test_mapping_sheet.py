@@ -25,13 +25,12 @@ def test_command_extension(monkeypatch):
                    'mapping-sheet_extension.csv')
 
 
-@pytest.mark.vcr()
 def test_command_extension_field(monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
-                    path('release-schema.json'), '--extension', url],
+                    path('release-schema.json')],
                    'mapping-sheet_extension-field.csv')
 
 
@@ -42,7 +41,17 @@ def test_command_extension_and_extension_field(monkeypatch):
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
                     path('release-schema.json'), '--extension', url],
-                   'mapping-sheet_extension-field.csv')
+                   'mapping-sheet_extension_extension-field.csv')
+
+
+@pytest.mark.vcr()
+def test_command_extension_and_extension_field_location(monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_location_extension/archive/v1.1.4.zip'
+
+    assert_command(monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
+                    path('release-schema.json'), '--extension', url],
+                   'mapping-sheet_extension_extension-field_location.csv')
 
 
 def test_command_oc4ids(monkeypatch):
