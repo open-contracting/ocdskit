@@ -26,8 +26,6 @@ def test_command_extension(monkeypatch):
 
 
 def test_command_extension_field(monkeypatch):
-    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
-
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
                     path('release-schema.json')],
