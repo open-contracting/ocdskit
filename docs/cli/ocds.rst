@@ -240,6 +240,10 @@ If you need to create a single package that is too large to hold in your system'
 
 For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
 
+.. note::
+
+   A warning is issued if a package's ``"records"`` field isn't set.
+
 combine-release-packages
 ------------------------
 
@@ -265,6 +269,10 @@ Optional arguments:
 If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
 
 For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
+
+.. note::
+
+   A warning is issued if a package's ``"releases"`` field isn't set.
 
 .. _split-record-packages:
 
