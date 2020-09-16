@@ -101,7 +101,7 @@ def test_command_no_unique_items(monkeypatch, tmpdir):
 
 
 @patch('sys.stderr', new_callable=StringIO)
-def test_command(stderr, monkeypatch):
+def test_command_check(stderr, monkeypatch):
     with open(path('schema-strict.json'), 'rb') as f:
         expected = f.read()
 
