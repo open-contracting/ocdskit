@@ -21,8 +21,12 @@ class Command(BaseCommand):
                     recurse(item)
             elif isinstance(data, dict):
                 if 'type' in data:
-                    if ('string' in data['type'] and 'enum' not in data and 'format' not in data
-                            and 'pattern' not in data):
+                    if (
+                        'string' in data['type']
+                        and 'enum' not in data
+                        and 'format' not in data
+                        and 'pattern' not in data
+                    ):
                         data.setdefault('minLength', 1)
                     if 'array' in data['type']:
                         data.setdefault('minItems', 1)

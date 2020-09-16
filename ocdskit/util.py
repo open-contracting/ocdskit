@@ -4,6 +4,7 @@ from decimal import Decimal
 
 try:
     import orjson
+
     jsonlib = orjson
     using_orjson = True
 except ImportError:

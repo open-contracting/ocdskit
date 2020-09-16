@@ -144,8 +144,11 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
         for offset in (2, 1):
             end = -LANGUAGE_CODE_SUFFIX_LEN - offset
             # The pattern must be anchored and the suffix must occur at the end.
-            if (key[end:-offset] == LANGUAGE_CODE_SUFFIX and
-                    key[:offset] == '^('[:offset] and key[-offset:] == ')$'[-offset:]):
+            if (
+                key[end:-offset] == LANGUAGE_CODE_SUFFIX
+                and key[:offset] == '^('[:offset]
+                and key[-offset:] == ')$'[-offset:]
+            ):
                 multilingual.add(key[offset:end])
                 hidden.add(key)
                 break
