@@ -82,6 +82,7 @@ Adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and 
 Optional arguments:
 
 * ``--no-unique-items`` don't add "uniqueItems" properties to array fields
+* ``--check`` check the file for missing properties without modifying the file
 
 ::
 
