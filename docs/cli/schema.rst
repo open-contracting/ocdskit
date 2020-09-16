@@ -55,6 +55,10 @@ For a description of the columns of the spreadsheet, see the :doc:`../api/mappin
 
 For the Python API, see :meth:`ocdskit.mapping_sheet.mapping_sheet`.
 
+.. note::
+
+   An error is raised if the ``--order-by`` column doesn't exist.
+
 schema-report
 -------------
 
