@@ -7,9 +7,13 @@ Changelog
 Added
 ~~~~~
 
-New CLI options:
+New CLI option:
 
 -  ``schema-strict``: ``--check``
+
+New library method:
+
+-  :meth:`ocdskit.schema.add_validation_properties`
 
 0.2.13 (2020-09-16)
 -------------------

@@ -199,3 +199,35 @@ def _deprecated(value):
     if value is None:
         return {}
     return value.get('deprecated') or hasattr(value, '__reference__') and value.__reference__.get('deprecated') or {}
+
+
+def add_validation_properties(schema, unique_items=True):
+    """
+    Adds "minItems" and "uniqueItems" if an array, adds "minProperties" if an object, and adds "minLength" if a string
+    and if "enum", "format" and "pattern" aren't set.
+
+    :param dict schema: a JSON schema
+    :param bool unique_items: whether to add "uniqueItems" properties to array fields
+    """
+    if isinstance(schema, list):
+        for item in schema:
+            add_validation_properties(item, unique_items=unique_items)
+    elif isinstance(schema, dict):
+        if 'type' in schema:
+            if (
+                'string' in schema['type']
+                and 'enum' not in schema
+                and 'format' not in schema
+                and 'pattern' not in schema
+            ):
+                schema.setdefault('minLength', 1)
+            if 'array' in schema['type']:
+                schema.setdefault('minItems', 1)
+                if unique_items:
+                    schema.setdefault('uniqueItems', True)
+
+            if 'object' in schema['type']:
+                schema.setdefault('minProperties', 1)
+
+        for value in schema.values():
+            add_validation_properties(value, unique_items=unique_items)
