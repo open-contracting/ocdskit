@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.13 (Unreleased)
+-------------------
+
+Fixed
+~~~~~
+
+-  ``convert-to-oc4ids`` no longer errors if a party ``id`` isn't set.
+
 0.2.12 (2020-08-19)
 -------------------
 

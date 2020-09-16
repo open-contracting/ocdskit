@@ -192,7 +192,7 @@ class InitialTransformState:
                         party["party"]["id"] = str(party_num)
                         party_num += 1
                 unique_parties.append(party)
-            party["original_party"]["_new_id"] = party["party"]["id"]
+            party["original_party"]["_new_id"] = party["party"].get("id")
 
         self.parties = [party["party"] for party in unique_parties]
 
