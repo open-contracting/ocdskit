@@ -20,7 +20,7 @@ Changed
 Fixed
 ~~~~~
 
--  ``mapping-sheet`` correctly populates the ``extension`` column for extension fields on OCDS objects that ``$ref``erence OCDS definitions.
+-  ``mapping-sheet`` correctly populates the ``extension`` column for extension fields on OCDS objects that ``$ref``'erence OCDS definitions.
 
 0.2.11 (2020-08-12)
 -------------------
