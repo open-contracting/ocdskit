@@ -1,0 +1,59 @@
+{
+  "required": [
+    "array",
+    "minItemsArray",
+    "object",
+    "minPropertiesObject",
+    "string",
+    "minLengthString",
+    "enumString",
+    "formatString",
+    "patternString"
+  ],
+  "properties": {
+    "optionalArray": {
+      "type": "array"
+    },
+    "array": {
+      "type": "array"
+    },
+    "minItemsArray": {
+      "type": "array",
+      "minItems": 2
+    },
+    "optionalObject": {
+      "type": "object"
+    },
+    "object": {
+      "type": "object"
+    },
+    "minPropertiesObject": {
+      "type": "object",
+      "minProperties": 2
+    },
+    "optionalString": {
+      "type": "string"
+    },
+    "string": {
+      "type": "string"
+    },
+    "minLengthString": {
+      "type": "string",
+      "minLength": 2
+    },
+    "enumString": {
+      "type": "string",
+      "enum": [
+        "a"
+      ]
+    },
+    "formatString": {
+      "type": "string",
+      "format": "uri"
+    },
+    "patternString": {
+      "type": "string",
+      "pattern": "."
+    }
+  }
+}
