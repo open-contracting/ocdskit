@@ -1,3 +1,6 @@
+# The following document was used during development:
+# https://docs.google.com/spreadsheets/d/1xyKXbNktcfKm6siSzM_C7aHCOsOjWUQro5aU8ZYIHyc/edit#gid=1993217545
+
 import copy
 import datetime
 import decimal
