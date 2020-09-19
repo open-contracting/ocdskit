@@ -7,6 +7,9 @@ Changelog
 Added
 ~~~~~
 
+New CLI options:
+
+-  ``mapping-sheet``: ``--no-deprecated``, ``--no-replace-refs``
 
 0.2.14 (2020-09-16)
 -------------------
