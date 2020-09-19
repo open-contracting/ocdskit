@@ -8,7 +8,8 @@ from ocdskit.schema import get_schema_fields
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None):
+def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None, include_deprecated=True,
+                  include_definitions=False):
     """
     Writes information about all field paths in a JSON Schema to a CSV file.
 
@@ -18,6 +19,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
                                 field was defined
+    :param bool include_deprecated: whether to include any deprecated fields
+    :param bool include_definitions: whether to traverse the "definitions" property
 
     The CSV's columns are:
 
@@ -50,7 +53,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     rows = []
     rows_by_path = {}
     for field in get_schema_fields(schema):
-        if field.definition_pointer_components:
+        if not include_definitions and field.definition_pointer_components:
             continue
 
         prop = field.schema
@@ -65,9 +68,11 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
                 prop[extension_field] = reference[extension_field]
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
-            _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required)
+            _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required,
+                     include_deprecated=include_deprecated)
 
-        _add_row(rows, rows_by_path, field, prop, extension_field, infer_required=infer_required)
+        _add_row(rows, rows_by_path, field, prop, extension_field, infer_required=infer_required,
+                 include_deprecated=include_deprecated)
 
         # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
@@ -76,7 +81,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
                 'title': prop['items']['title'],
                 'description': prop['items'].get('description', ''),
                 'type': prop['items']['type'],
-            })
+            }, include_deprecated=include_deprecated)
 
     if order_by:
         try:
@@ -94,7 +99,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     w.writerows(rows)
 
 
-def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, row=None):
+def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, include_deprecated=True,
+             row=None):
     parent = rows_by_path.get(field.path_components[:-1], {})
     if not row:
         row = _make_row(field, schema, infer_required)
@@ -104,7 +110,9 @@ def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_requir
     elif 'extension' in parent:
         row['extension'] = parent['extension']
 
-    rows.append(row)
+    if include_deprecated or not row['deprecated']:
+        rows.append(row)
+
     rows_by_path[field.path_components] = row
 
 
@@ -118,7 +126,7 @@ def _make_row(field, schema, infer_required):
     if len(field.path_components) > 1:
         row['section'] = field.path_components[0]
     else:
-        row['section'] = ''
+        row['section'] = field.definition_path
 
     if 'description' in schema:
         links = dict(INLINE_LINK_RE.findall(schema['description']))

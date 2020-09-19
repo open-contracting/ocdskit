@@ -49,6 +49,9 @@ class Command(BaseCommand):
         self.add_argument('--extension', nargs='*', help='patch the release schema with this extension')
         self.add_argument('--extension-field', help='add an "extension" column for the name of the extension in which '
                           'each field was defined')
+        self.add_argument('--no-deprecated', action='store_true', help="don't include deprecated fields")
+        self.add_argument('--no-replace-refs', action='store_true', help="don't replace schema with $ref properties "
+                          'with the referenced schema')
 
     def handle(self):
         with open(self.args.file) as f:
@@ -59,10 +62,12 @@ class Command(BaseCommand):
             schema = builder.patched_release_schema(schema=schema, extension_field=self.args.extension_field)
 
         base_uri = pathlib.Path(os.path.realpath(self.args.file)).as_uri()
-        schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
+        if not self.args.no_replace_refs:
+            schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
 
         try:
             mapping_sheet(schema, sys.stdout, order_by=self.args.order_by, infer_required=self.args.infer_required,
-                          extension_field=self.args.extension_field)
+                          extension_field=self.args.extension_field, include_deprecated=not self.args.no_deprecated,
+                          include_definitions=self.args.no_replace_refs)
         except MissingColumnError as e:
             raise CommandError(str(e))

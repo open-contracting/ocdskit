@@ -29,6 +29,8 @@ Optional arguments:
 * ``--infer-required`` infer whether fields are required (use with OCDS schema)
 * ``--extension`` patch the release schema with this extension
 * ``--extension-field`` add an "extension" column for the name of the extension in which each field was defined
+* ``--no-deprecated``: don't include deprecated fields
+* ``--no-replace-refs``: don't replace schema with $ref properties with the referenced schema
 
 The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example::
 
