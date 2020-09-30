@@ -4,6 +4,11 @@ Changelog
 0.2.15 (Unreleased)
 -------------------
 
+Changed
+~~~~~~~
+
+-  ``upgrade``: If a party's ``roles`` field is a string, it is coerced to an array.
+
 Added
 ~~~~~
 
