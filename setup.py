@@ -19,7 +19,7 @@ setup(
         'jsonref',
         'jsonschema',
         'ocdsmerge>=0.6',
-        'ocdsextensionregistry>=0.0.14',
+        'ocdsextensionregistry>=0.0.23',
         'requests',
         'rfc3987',
         'sqlalchemy',
