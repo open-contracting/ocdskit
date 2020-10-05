@@ -10,6 +10,10 @@ Changed
 -  ``indent`` respects ``--ascii``.
 -  ``tabulate`` supports any OCDS data.
 
+New CLI commands:
+
+-  ``split-project-packages``
+
 0.2.9 (2020-07-08)
 ------------------
 

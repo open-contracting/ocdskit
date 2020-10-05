@@ -13,6 +13,8 @@ The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streami
 Handling edge cases
 -------------------
 
+.. _large-packages:
+
 Large packages
 ~~~~~~~~~~~~~~
 
