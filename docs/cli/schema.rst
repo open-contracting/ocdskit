@@ -29,6 +29,8 @@ Optional arguments:
 * ``--infer-required`` infer whether fields are required (use with OCDS schema)
 * ``--extension`` patch the release schema with this extension
 * ``--extension-field`` add an "extension" column for the name of the extension in which each field was defined
+* ``--no-deprecated``: don't include deprecated fields
+* ``--no-replace-refs``: don't replace schema with $ref properties with the referenced schema
 
 The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example::
 
@@ -55,6 +57,10 @@ For a description of the columns of the spreadsheet, see the :doc:`../api/mappin
 
 For the Python API, see :meth:`ocdskit.mapping_sheet.mapping_sheet`.
 
+.. note::
+
+   An error is raised if the ``--order-by`` column doesn't exist.
+
 schema-report
 -------------
 
@@ -78,6 +84,7 @@ Adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and 
 Optional arguments:
 
 * ``--no-unique-items`` don't add "uniqueItems" properties to array fields
+* ``--check`` check the file for missing properties without modifying the file
 
 ::
 

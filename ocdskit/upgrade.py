@@ -168,6 +168,10 @@ def _add_party(parties, party, role):
         parties[_id]['roles'] = []
         _move_to_top(parties[_id], ('id', 'roles'))
 
+    # If the data is invalid:
+    if isinstance(parties[_id]['roles'], str):
+        parties[_id]['roles'] = [parties[_id]['roles']]
+
     if role not in parties[_id]['roles']:
         # Update the `roles` of the party in the `parties` array.
         parties[_id]['roles'].append(role)
@@ -214,8 +218,7 @@ def upgrade_amendments_10_11(release):
 
 def _upgrade_amendment_10_11(block):
     if 'amendment' in block:
-        if 'amendments' not in block:
-            block['amendments'] = []
+        block.setdefault('amendments', [])
         if block['amendment'] not in block['amendments']:
             block['amendments'].append(block['amendment'])
         del block['amendment']

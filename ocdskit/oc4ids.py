@@ -1,3 +1,6 @@
+# The following document was used during development:
+# https://docs.google.com/spreadsheets/d/1xyKXbNktcfKm6siSzM_C7aHCOsOjWUQro5aU8ZYIHyc/edit#gid=1993217545
+
 import copy
 import datetime
 import decimal
@@ -192,7 +195,7 @@ class InitialTransformState:
                         party["party"]["id"] = str(party_num)
                         party_num += 1
                 unique_parties.append(party)
-            party["original_party"]["_new_id"] = party["party"]["id"]
+            party["original_party"]["_new_id"] = party["party"].get("id")
 
         self.parties = [party["party"] for party in unique_parties]
 

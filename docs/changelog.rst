@@ -1,7 +1,75 @@
 Changelog
 =========
 
-0.2.10 (Unreleased)
+0.2.16 (unreleased)
+-------------------
+
+Added
+~~~~~
+
+New CLI commands:
+
+-  ``split-project-packages``
+
+0.2.15 (2020-09-30)
+-------------------
+
+Changed
+~~~~~~~
+
+-  ``upgrade``: If a party's ``roles`` field is a string, it is coerced to an array.
+
+Added
+~~~~~
+
+New CLI options:
+
+-  ``mapping-sheet``: ``--no-deprecated``, ``--no-replace-refs``
+
+0.2.14 (2020-09-16)
+-------------------
+
+Added
+~~~~~
+
+New CLI option:
+
+-  ``schema-strict``: ``--check``
+
+New library method:
+
+-  :meth:`ocdskit.schema.add_validation_properties`
+
+0.2.13 (2020-09-16)
+-------------------
+
+Fixed
+~~~~~
+
+-  ``convert-to-oc4ids`` no longer errors if a party ``id`` isn't set.
+
+0.2.12 (2020-08-19)
+-------------------
+
+Changed
+~~~~~~~
+
+-  :meth:`ocdskit.util.get_ocds_minor_version` now supports records.
+
+Fixed
+~~~~~
+
+-  ``mapping-sheet`` correctly populates the ``extension`` column for extension fields on OCDS objects that ``$ref``'erence OCDS definitions.
+
+0.2.11 (2020-08-12)
+-------------------
+
+Changed
+~~~~~~~
+
+-  ``mapping-sheet``: The ``extension`` column is now the name of the extension that introduced the JSON path, not the name of the extension that defined the field.
+
+0.2.10 (2020-07-28)
 -------------------
 
 Changed
@@ -10,9 +78,10 @@ Changed
 -  ``indent`` respects ``--ascii``.
 -  ``tabulate`` supports any OCDS data.
 
-New CLI commands:
+Fixed
+~~~~~
 
--  ``split-project-packages``
+-  ``compile`` no longer errors on Windows when using the SQLite backend.
 
 0.2.9 (2020-07-08)
 ------------------

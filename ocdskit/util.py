@@ -1,12 +1,10 @@
 import itertools
 import json
-from collections import OrderedDict
 from decimal import Decimal
-
-from ocdsmerge.flatten import IdDict
 
 try:
     import orjson
+
     jsonlib = orjson
     using_orjson = True
 except ImportError:
@@ -41,8 +39,6 @@ class SerializableGenerator(list):
 
 
 def _default(obj):
-    if type(obj) in (IdDict, OrderedDict):  # needed by orjson, but not json
-        return dict(obj)
     if isinstance(obj, Decimal):
         return float(obj)
     # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
@@ -73,27 +69,38 @@ def json_dump(data, io, ensure_ascii=False, **kwargs):
     json.dump(data, io, ensure_ascii=ensure_ascii, default=_default, **kwargs)
 
 
-def json_dumps(data, ensure_ascii=False, **kwargs):
+def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
-    # orjson doesn't support `ensure_ascii`, `indent` or `separators`.
-    if not using_orjson or ensure_ascii or kwargs:
-        if 'indent' not in kwargs:
+    # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
+    if not using_orjson or ensure_ascii or indent and indent != 2 or kwargs:
+        if not indent:
             kwargs['separators'] = (',', ':')
-        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, **kwargs)
+        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
+                          **kwargs)
+
+    option = 0
+    if indent:
+        option |= orjson.OPT_INDENT_2
+    if sort_keys:
+        option |= orjson.OPT_SORT_KEYS
 
     # orjson dumps to bytes.
-    return orjson.dumps(data, default=_default).decode()
+    return orjson.dumps(data, default=_default, option=option).decode()
 
 
 def get_ocds_minor_version(data):
     """
-    Returns the OCDS minor version of the release package, record package or release.
+    Returns the OCDS minor version of the record package, release package, record or release.
     """
     if is_package(data):
         if 'version' in data:
             return data['version']
+        return '1.0'
+    elif is_record(data):
+        if any('parties' in release for release in data['releases']):
+            return '1.1'
         return '1.0'
     else:  # release
         if 'parties' in data:

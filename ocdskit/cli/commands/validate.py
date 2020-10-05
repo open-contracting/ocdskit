@@ -31,6 +31,7 @@ class Command(OCDSCommand):
 
         format_checker = FormatChecker()
         if self.args.check_urls:
+
             def check_url(instance):
                 # See https://github.com/Julian/jsonschema/blob/master/jsonschema/_format.py
                 if not isinstance(instance, str_types):

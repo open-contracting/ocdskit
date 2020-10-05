@@ -10,6 +10,10 @@ Optional arguments for all commands are:
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
+.. note::
+
+   An error is raised if the JSON is malformed or if the ``--encoding`` is incorrect.
+
 Handling edge cases
 -------------------
 
@@ -115,6 +119,10 @@ If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the o
 
 For the Python API, see :meth:`ocdskit.combine.merge`.
 
+.. note::
+
+   An error is raised if a release is missing an ``ocid`` field, or if the values of the release packages' ``version`` fields are inconsistent.
+
 upgrade
 -------
 
@@ -135,6 +143,10 @@ Mandatory positional arguments:
 For the Python API, see :doc:`../api/upgrade`.
 
 If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+
+.. note::
+
+   An error is raised if upgrading between the specified ``versions`` is not implemented.
 
 .. _package-records:
 
@@ -230,6 +242,10 @@ If you need to create a single package that is too large to hold in your system'
 
 For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
 
+.. note::
+
+   A warning is issued if a package's ``"records"`` field isn't set.
+
 combine-release-packages
 ------------------------
 
@@ -255,6 +271,10 @@ Optional arguments:
 If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
 
 For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
+
+.. note::
+
+   A warning is issued if a package's ``"releases"`` field isn't set.
 
 .. _split-record-packages:
 

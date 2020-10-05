@@ -368,9 +368,7 @@ def test_contracting_process_setup_releases():
         },
     ]
 
-    output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup]
-    )
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup])
 
     expected = """
     {
@@ -493,7 +491,7 @@ def test_procuring_entity():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity]
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -510,7 +508,7 @@ def test_procuring_entity():
         },
     ]
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity]
     )
 
     assert output["parties"][0]["id"] == "1"
@@ -534,7 +532,7 @@ def test_procuring_entity():
         },
     ]
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity]
     )
 
     assert output["parties"][0]["id"] == "a-a"
@@ -558,7 +556,7 @@ def test_procuring_entity():
         },
     ]
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procuring_entity]
     )
 
     assert output["parties"][0]["id"] == "1"
@@ -580,9 +578,7 @@ def test_administrative_entity():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases),
-        "1",
-        transforms=[oc4ids.contracting_process_setup, oc4ids.administrative_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.administrative_entity]
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -604,9 +600,7 @@ def test_multiple_administrative_entity_in_process():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases),
-        "1",
-        transforms=[oc4ids.contracting_process_setup, oc4ids.administrative_entity],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.administrative_entity]
     )
 
     assert output["parties"] == releases[0]["parties"]
@@ -664,7 +658,7 @@ def test_contract_status_pre_award():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status]
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "pre-award"
@@ -724,7 +718,7 @@ def test_contract_status_active():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status]
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "active"
@@ -802,7 +796,7 @@ def test_contract_status_closed():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_status]
     )
 
     assert output["contractingProcesses"][0]["summary"]["status"] == "closed"
@@ -827,9 +821,7 @@ def test_procurment_process():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases),
-        "1",
-        transforms=[oc4ids.contracting_process_setup, oc4ids.procurement_process],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.procurement_process]
     )
 
     assert output["contractingProcesses"][0]["summary"]["tender"] == releases[0]["tender"]
@@ -848,9 +840,7 @@ def test_number_of_tenderers():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases),
-        "1",
-        transforms=[oc4ids.contracting_process_setup, oc4ids.number_of_tenderers],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.contracting_process_setup, oc4ids.number_of_tenderers]
     )
 
     assert output["contractingProcesses"][0]["summary"]["tender"]["numberOfTenderers"] == 123
@@ -867,7 +857,7 @@ def test_location():
         }
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location])
 
     assert output["locations"] == [{"description": "Mars"}]
 
@@ -890,7 +880,7 @@ def test_location_multiple_releases():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location])
 
     assert output["locations"] == [{"description": "Mars"}, {"description": "Jupiter"}, {"description": "Earth"}]
 
@@ -917,7 +907,7 @@ def test_location_from_item_location():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items]
     )
     assert output["locations"] == [releases[0]["tender"]["items"][0]["deliveryLocation"]]
 
@@ -947,7 +937,7 @@ def test_location_from_delivery_address():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items]
     )
 
     assert output["locations"] == [{"address": releases[0]["tender"]["items"][0]["deliveryAddress"]}]
@@ -982,7 +972,7 @@ def test_location_multiple():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.location, oc4ids.location_from_items]
     )
 
     assert output["locations"] == [
@@ -1019,7 +1009,7 @@ def test_location_not_inferred():
         }
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.location])
 
     assert "locations" not in output
 
@@ -1035,7 +1025,7 @@ def test_budget():
         }
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget])
     assert output["budget"]["amount"] == releases[0]["planning"]["budget"]["amount"]
 
 
@@ -1057,7 +1047,7 @@ def test_budget_multiple():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget])
     total = float(releases[0]["planning"]["budget"]["amount"]["amount"]) + float(
         releases[1]["planning"]["budget"]["amount"]["amount"]
     )
@@ -1083,7 +1073,7 @@ def test_budget_fail():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget])
     # Different currencies could not be totalled
     assert "budget" not in output
 
@@ -1104,7 +1094,7 @@ def test_budget_approval():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget_approval],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget_approval])
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
     # duplicate document id in different process, auto increment new doc ids.
@@ -1120,7 +1110,7 @@ def test_budget_approval():
         }
     )
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget_approval],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.budget_approval])
 
     assert len(output["documents"]) == 2
     assert output["documents"][0]["id"] == "1"
@@ -1138,7 +1128,7 @@ def test_purpose_one():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.purpose],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.purpose])
     assert output["purpose"] == releases[0]["planning"]["rationale"]
 
 
@@ -1162,7 +1152,7 @@ def test_purpose_multiple():
 
     rationales = "<ocds-213czf-1> We were hungry.\n<ocds-213czf-2> There are never enough post-its.\n"
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.purpose],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.purpose])
     assert output["purpose"] == rationales
 
 
@@ -1182,9 +1172,7 @@ def test_needs_assessment():
         },
     ]
 
-    output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.purpose_needs_assessment],
-    )
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.purpose_needs_assessment])
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
 
@@ -1199,7 +1187,7 @@ def test_description_one():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description])
     assert output["description"] == releases[0]["planning"]["project"]["description"]
 
 
@@ -1221,13 +1209,13 @@ def test_description_multiple():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description])
     assert output["description"] == releases[0]["planning"]["project"]["description"]
 
     # contraditing descriptions
     releases[0]["planning"]["project"]["description"] = "another description"
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.description])
 
     assert "description" not in output
 
@@ -1244,7 +1232,7 @@ def test_description_tender():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender]
     )
     assert output["description"] == releases[0]["tender"]["description"]
 
@@ -1258,7 +1246,7 @@ def test_description_tender():
         }
     )
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender]
     )
     assert (
         output["description"] == "<ocds-213czf-1> A project description\n<ocds-213czf-2> A new project description\n"
@@ -1278,7 +1266,7 @@ def test_description_not_tender():
     ]
 
     output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender],
+        copy.deepcopy(releases), "1", transforms=[oc4ids.description, oc4ids.description_tender]
     )
     assert output["description"] == releases[0]["planning"]["project"]["description"]
 
@@ -1299,7 +1287,7 @@ def test_environmental_impact():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.environmental_impact],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.environmental_impact])
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
 
@@ -1319,9 +1307,7 @@ def test_land_and_settlement_impact():
         },
     ]
 
-    output = oc4ids._run_transforms(
-        copy.deepcopy(releases), "1", transforms=[oc4ids.land_and_settlement_impact],
-    )
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.land_and_settlement_impact])
     assert output["documents"] == [releases[0]["planning"]["documents"][1]]
 
 
@@ -1341,7 +1327,7 @@ def test_project_scope():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.project_scope],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.project_scope])
     assert output["documents"] == [releases[0]["planning"]["documents"][0]]
 
 
@@ -1361,7 +1347,7 @@ def test_project_scope_summary():
     ]
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.project_scope_summary],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.project_scope_summary]
     )
 
     assert "items" in output["contractingProcesses"][0]["summary"]["tender"]
@@ -1414,7 +1400,7 @@ def test_funders_budget():
         }
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.funding_sources],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.funding_sources])
 
     assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
     assert output["parties"][0]["details"] == "This is just a test."
@@ -1445,7 +1431,7 @@ def test_funders():
         }
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.funding_sources],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.funding_sources])
 
     assert output["parties"][0]["id"] == "GB-LAC-E09000003-557"
     assert output["parties"][0]["details"] == "This is just a test."
@@ -1471,18 +1457,14 @@ def test_cost_estimate():
         },
     ]
 
-    output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate],
-    )
+    output = oc4ids._run_transforms(releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate])
 
     assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 10}
 
     # reverse releases
     releases[0]["date"], releases[1]["date"] = releases[1]["date"], releases[0]["date"]
 
-    output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate],
-    )
+    output = oc4ids._run_transforms(releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate])
 
     assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 1}
 
@@ -1497,9 +1479,7 @@ def test_cost_estimate():
     )
 
     # last releases is not planning
-    output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate],
-    )
+    output = oc4ids._run_transforms(releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.cost_estimate])
     assert output["contractingProcesses"][0]["summary"]["tender"]["costEstimate"] == {"amount": 1}
 
 
@@ -1518,7 +1498,7 @@ def test_contract_title():
     ]
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title]
     )
 
     assert output["contractingProcesses"][0]["summary"]["title"] == "a"
@@ -1527,7 +1507,7 @@ def test_contract_title():
     releases[0]["contracts"].append({"title": "a"})
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title]
     )
 
     assert output["contractingProcesses"][0]["summary"]["title"] == "c"
@@ -1536,7 +1516,7 @@ def test_contract_title():
     releases[0].pop("contracts")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_title]
     )
 
     assert output["contractingProcesses"][0]["summary"]["title"] == "b"
@@ -1557,9 +1537,7 @@ def test_supplier():
         }
     ]
 
-    output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.suppliers],
-    )
+    output = oc4ids._run_transforms(releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.suppliers])
 
     assert output["parties"] == releases[0]["parties"]
 
@@ -1586,7 +1564,7 @@ def test_contract_value():
     ]
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_price],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_price]
     )
 
     assert output["contractingProcesses"][0]["summary"]["contractValue"] == {"amount": 30, "currency": "USD"}
@@ -1595,7 +1573,7 @@ def test_contract_value():
     releases[0]["awards"][1]["value"]["currency"] = "CAD"
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_price],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_price]
     )
 
     assert "contractValue" not in output["contractingProcesses"][0]["summary"]
@@ -1616,7 +1594,7 @@ def test_contracting_process_description():
     ]
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "a"
@@ -1625,7 +1603,7 @@ def test_contracting_process_description():
     releases[0]["contracts"][0].pop("description")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_a"
@@ -1634,7 +1612,7 @@ def test_contracting_process_description():
     releases[0].pop("contracts")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "b"
@@ -1643,7 +1621,7 @@ def test_contracting_process_description():
     releases[0]["awards"][0].pop("description")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_b"
@@ -1653,7 +1631,7 @@ def test_contracting_process_description():
     releases[0]["awards"][0]["items"].append({"description": "item_b"})
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert "description" not in output["contractingProcesses"][0]["summary"]
@@ -1662,7 +1640,7 @@ def test_contracting_process_description():
     releases[0]["awards"].append({"description": "b"})
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "c"
@@ -1671,7 +1649,7 @@ def test_contracting_process_description():
     releases[0]["tender"].pop("description")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert output["contractingProcesses"][0]["summary"]["description"] == "item_c"
@@ -1680,7 +1658,7 @@ def test_contracting_process_description():
     releases[0]["tender"]["items"].append({"description": "item_c"})
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_process_description]
     )
 
     assert "description" not in output["contractingProcesses"][0]["summary"]
@@ -1703,7 +1681,7 @@ def test_contracting_period():
     ]
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_period],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_period]
     )
 
     assert output["contractingProcesses"][0]["summary"]["contractPeriod"] == {
@@ -1715,7 +1693,7 @@ def test_contracting_period():
     releases[0].pop("awards")
 
     output = oc4ids._run_transforms(
-        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_period],
+        releases, "1", transforms=[oc4ids.contracting_process_setup, oc4ids.contract_period]
     )
 
     assert output["contractingProcesses"][0]["summary"]["contractPeriod"] == releases[0]["tender"]["contractPeriod"]
@@ -1749,7 +1727,7 @@ def test_final_audit():
         },
     ]
 
-    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.final_audit],)
+    output = oc4ids._run_transforms(copy.deepcopy(releases), "1", transforms=[oc4ids.final_audit])
     assert output["documents"] == [
         releases[0]["contracts"][0]["implementation"]["documents"][0],
         releases[0]["contracts"][1]["implementation"]["documents"][0],

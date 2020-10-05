@@ -3,6 +3,8 @@ OCDS Kit |release|
 
 .. include:: ../README.rst
 
+Check out the `tutorial <https://www.open-contracting.org/resources/ocds-kit-tutorial/>`__ for an interactive guide to installing and using OCDS Kit.
+
 To install::
 
     pip install ocdskit

@@ -1,4 +1,3 @@
-import copy
 import csv
 import re
 
@@ -9,7 +8,8 @@ from ocdskit.schema import get_schema_fields
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None):
+def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None, include_deprecated=True,
+                  include_definitions=False):
     """
     Writes information about all field paths in a JSON Schema to a CSV file.
 
@@ -19,6 +19,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
                                 field was defined
+    :param bool include_deprecated: whether to include any deprecated fields
+    :param bool include_definitions: whether to traverse the "definitions" property
 
     The CSV's columns are:
 
@@ -44,35 +46,42 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :``links``: The URLs extracted from the field's ``description``
     :``deprecated``: The OCDS minor version in which the field (or its parent) was deprecated
     :``deprecationNotes``: The explanation for the deprecation of the field
-    :``extension``: The name of the extension in which the field was defined (see the ``extension_field`` parameter)
+    :``extension``: The name of the extension that introduced the JSON path (see the ``extension_field`` parameter)
 
     :raises MissingColumnError: if the column by which to order is missing
     """
     rows = []
+    rows_by_path = {}
     for field in get_schema_fields(schema):
-        if field.definition_pointer_components:
+        if not include_definitions and field.definition_pointer_components:
             continue
 
         prop = field.schema
         field.sep = '/'
 
-        # If the field uses `$ref`, add an extra row for it.
+        # If the field uses `$ref`, add an extra row for it. This makes it easier to use as a header for the object.
+        # It also preserves the different titles and descriptions of the referrer and referee.
         if hasattr(prop, '__reference__'):
-            reference = copy.copy(prop.__reference__)
+            reference = dict(prop.__reference__)
+            prop = dict(prop)
+            if extension_field in reference:
+                prop[extension_field] = reference[extension_field]
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
-            rows.append(_make_row(field, reference, infer_required, extension_field))
+            _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required,
+                     include_deprecated=include_deprecated)
 
-        rows.append(_make_row(field, prop, infer_required, extension_field))
+        _add_row(rows, rows_by_path, field, prop, extension_field, infer_required=infer_required,
+                 include_deprecated=include_deprecated)
 
-        # If the field is an array, add an extra row for it.
+        # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
-            rows.append({
+            _add_row(rows, rows_by_path, field, prop['items'], extension_field, row={
                 'path': field.path,
                 'title': prop['items']['title'],
                 'description': prop['items'].get('description', ''),
                 'type': prop['items']['type'],
-            })
+            }, include_deprecated=include_deprecated)
 
     if order_by:
         try:
@@ -90,7 +99,24 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     w.writerows(rows)
 
 
-def _make_row(field, schema, infer_required, extension_field):
+def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, include_deprecated=True,
+             row=None):
+    parent = rows_by_path.get(field.path_components[:-1], {})
+    if not row:
+        row = _make_row(field, schema, infer_required)
+
+    if extension_field in schema:
+        row['extension'] = schema[extension_field]
+    elif 'extension' in parent:
+        row['extension'] = parent['extension']
+
+    if include_deprecated or not row['deprecated']:
+        rows.append(row)
+
+    rows_by_path[field.path_components] = row
+
+
+def _make_row(field, schema, infer_required):
     row = {
         'path': field.path,
         'title': schema.get('title', field.path_components[-1] + '*'),
@@ -100,7 +126,7 @@ def _make_row(field, schema, infer_required, extension_field):
     if len(field.path_components) > 1:
         row['section'] = field.path_components[0]
     else:
-        row['section'] = ''
+        row['section'] = field.definition_path
 
     if 'description' in schema:
         links = dict(INLINE_LINK_RE.findall(schema['description']))
@@ -112,16 +138,17 @@ def _make_row(field, schema, infer_required, extension_field):
     required = False
 
     if 'type' in schema:
-        type_ = copy.copy(schema['type'])
+        if isinstance(schema['type'], str):
+            type_ = [schema['type']]
+        else:
+            type_ = list(schema['type'])
+
         if 'null' in type_:
             type_.remove('null')
         elif infer_required:
             required = 'string' in type_ or 'integer' in type_
 
-        if type(type_) in (tuple, list):
-            row['type'] = ', '.join(type_)
-        else:
-            row['type'] = type_
+        row['type'] = ', '.join(type_)
     else:
         row['type'] = 'unknown'
 
@@ -137,12 +164,12 @@ def _make_row(field, schema, infer_required, extension_field):
     elif 'pattern' in schema:
         row['values'] = 'Pattern: ' + schema['pattern']
     elif 'enum' in schema:
-        values = copy.copy(schema['enum'])
+        values = list(schema['enum'])
         if None in values:
             values.remove(None)
         row['values'] = 'Enum: ' + ', '.join(values)
     elif 'items' in schema and 'enum' in schema['items']:
-        values = copy.copy(schema['items']['enum'])
+        values = list(schema['items']['enum'])
         if None in values:
             values.remove(None)
         row['values'] = 'Enum: ' + ', '.join(values)
@@ -152,8 +179,5 @@ def _make_row(field, schema, infer_required, extension_field):
     if 'deprecated' in schema:
         row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
-
-    if extension_field in schema:
-        row['extension'] = schema[extension_field]
 
     return row

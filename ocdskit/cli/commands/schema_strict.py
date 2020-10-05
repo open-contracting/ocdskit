@@ -1,6 +1,9 @@
 import json
+import sys
+from copy import deepcopy
 
 from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.schema import add_validation_properties
 from ocdskit.util import json_dump
 
 
@@ -13,37 +16,20 @@ class Command(BaseCommand):
         self.add_argument('file', help='the schema file')
         self.add_argument('--no-unique-items', action='store_true',
                           help="""don't add "uniqueItems" properties to array fields""")
+        self.add_argument('--check', action='store_true',
+                          help='check the file for missing properties without modifying the file')
 
     def handle(self):
-        def recurse(data):
-            if isinstance(data, list):
-                for item in data:
-                    recurse(item)
-            elif isinstance(data, dict):
-                if 'type' in data:
-                    if ('string' in data['type'] and 'enum' not in data and 'format' not in data
-                            and 'pattern' not in data):
-                        if 'minLength' not in data:
-                            data['minLength'] = 1
-                    if 'array' in data['type']:
-                        if 'minItems' not in data:
-                            data['minItems'] = 1
-                        if not self.args.no_unique_items:
-                            if 'uniqueItems' not in data:
-                                data['uniqueItems'] = True
-
-                    if 'object' in data['type']:
-                        if 'minProperties' not in data:
-                            data['minProperties'] = 1
-
-                for value in data.values():
-                    recurse(value)
-
         with open(self.args.file) as f:
             schema = json.load(f)
 
-        recurse(schema)
+        original = deepcopy(schema)
+        add_validation_properties(schema, unique_items=not self.args.no_unique_items)
 
-        with open(self.args.file, 'w') as f:
-            json_dump(schema, f, indent=2)
-            f.write('\n')
+        if self.args.check:
+            if schema != original:
+                print('ERROR: {} is missing validation properties'.format(self.args.file), file=sys.stderr)
+        else:
+            with open(self.args.file, 'w') as f:
+                json_dump(schema, f, indent=2)
+                f.write('\n')

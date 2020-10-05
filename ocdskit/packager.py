@@ -9,6 +9,7 @@ from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata
 
 try:
     import sqlite3
+
     using_sqlite = True
 
     def adapt_json(d):
@@ -29,6 +30,7 @@ class Packager:
     releases. Release packages and/or individual releases can be added to the packager. All releases should use the
     same version of OCDS.
     """
+
     def __enter__(self):
         self.package = _empty_record_package()
         self.version = None
@@ -170,7 +172,7 @@ class AbstractBackend:
         """
         Adds a release to the backend. (The release might be added to an internal buffer.)
 
-        :raises MissingOcidKeyError: if the release is missing an ``ocid`` key
+        :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
         """
         try:
             self._add_release(release['ocid'], package_uri, release)
