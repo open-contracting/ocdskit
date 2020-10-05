@@ -24,7 +24,7 @@ class UnknownFormatError(OCDSKitError):
 
 
 class MissingOcidKeyError(OCDSKitError, KeyError):
-    """Raised if a release to be merged is missing an ``ocid`` key"""
+    """Raised if a release to be merged is missing an ``ocid`` field"""
 
 
 class OCDSKitWarning(UserWarning):

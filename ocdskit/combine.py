@@ -13,8 +13,7 @@ from ocdskit.util import (_default_version, _empty_record_package, _empty_releas
 def _package(key, items, uri, publisher, published_date, version, extensions=None):
     if publisher is None:
         publisher = {}
-    if 'name' not in publisher:
-        publisher['name'] = ''
+    publisher.setdefault('name', '')
 
     output = {
         'uri': uri,
@@ -151,7 +150,7 @@ def merge(data, uri='', publisher=None, published_date='', version=_default_vers
     :param bool streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
         if the calling code exhausts the generator before ``merge`` returns)
     :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
-    :raises MissingOcidKeyError: if the release is missing an ``ocid`` key
+    :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
     """
     with Packager() as packager:
         packager.add(data)
