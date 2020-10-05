@@ -14,6 +14,8 @@ The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streami
 
    An error is raised if the JSON is malformed or if the ``--encoding`` is incorrect.
 
+.. _handling-edge-cases:
+
 Handling edge cases
 -------------------
 

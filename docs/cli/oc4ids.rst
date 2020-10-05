@@ -13,7 +13,7 @@ The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streami
 Handling edge cases
 -------------------
 
-See the guidance for handling :ref:`large packages <large-packages>` and :ref:`embedded data <embedded-data>` in OCDS, you can use the same approaches with OC4IDS data.
+See the guidance for :ref:`handling-edge-cases` in OCDS. You can use the same approaches with OC4IDS data.
 
 .. _split-project-packages:
 
