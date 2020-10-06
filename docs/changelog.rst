@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.2.16 (2020-10-06)
+-------------------
+
+Fixed
+~~~~~
+
+-  ``upgrade``: If a party's ``roles`` field isn't a list of strings, no error occurs.
+
+Added
+~~~~~
+
+New CLI commands:
+
+-  ``split-project-packages``
+
 0.2.15 (2020-09-30)
 -------------------
 
