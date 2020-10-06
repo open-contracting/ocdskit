@@ -13,10 +13,6 @@ class Command(OCDSCommand):
         for package in self.items():
             projects = package['projects']
 
-            # We can't determine which projects came from which packages.
-            if 'packages' in package:
-                del package['packages']
-
             for i in range(0, len(projects), self.args.size):
                 package.update(projects=projects[i:i + self.args.size])
 
