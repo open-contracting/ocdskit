@@ -1,8 +1,13 @@
 Changelog
 =========
 
-0.2.16 (unreleased)
+0.2.16 (Unreleased)
 -------------------
+
+Fixed
+~~~~~
+
+-  ``upgrade``: If a party's ``roles`` field isn't a list of strings, no error occurs.
 
 Added
 ~~~~~

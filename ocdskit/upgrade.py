@@ -161,8 +161,8 @@ def _add_party(parties, party, role):
         other = deepcopy(parties[_id])
         roles = other.pop('roles')
         if dict(party) != dict(other):
-            logger.warning('party differs in "{}" role than in "{}" roles:\n{}\n{}'.format(
-                role, ', '.join(roles), json.dumps(party), json.dumps(other)))
+            logger.warning('party in "{}" role differs from party in {} roles:\n{}\n{}'.format(
+                role, json.dumps(roles), json.dumps(party), json.dumps(other)))
 
     if 'roles' not in parties[_id]:
         parties[_id]['roles'] = []
