@@ -30,7 +30,6 @@ def test_run_all():
     assert output["parties"] == releases[0]["parties"]
 
 
-
 @pytest.mark.vcr()
 def test_run_all_release_package():
     releases_package_1 = [
