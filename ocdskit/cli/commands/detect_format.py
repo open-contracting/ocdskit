@@ -1,4 +1,4 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
+# pylint: disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
 
 import logging
 import os.path
@@ -24,14 +24,14 @@ class Command(OCDSCommand):
             if os.path.isfile(file):
                 self.detect_format(file)
             elif self.args.recursive:
-                for root, dirs, files in os.walk(file):
+                for root, _, files in os.walk(file):
                     for name in files:
                         if not name.startswith('.'):
                             self.detect_format(os.path.join(root, name))
             elif os.path.isdir(file):
-                logger.warning('{} is a directory. Set --recursive to recurse into directories.'.format(file))
+                logger.warning('%s is a directory. Set --recursive to recurse into directories.', file)
             else:
-                logger.error('{}: No such file or directory'.format(file))
+                logger.error('%s: No such file or directory', file)
 
     def detect_format(self, path):
         try:
@@ -79,7 +79,7 @@ class Command(OCDSCommand):
 
                 return _print(path, False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
         except UnknownFormatError as e:
-            logger.warning('{}: unknown ({})'.format(path, e))
+            logger.warning('%s: unknown (%s)', path, e)
 
 
 def _print(path, is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):

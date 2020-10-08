@@ -27,18 +27,17 @@ class BaseCommand:
         self.subparser = subparsers.add_parser(self.name, description=self.help, **self.kwargs)
         self.add_base_arguments()
         self.add_arguments()
+        self.args = None
 
     def add_base_arguments(self):
         """
         Adds default arguments to all commands.
         """
-        pass
 
     def add_arguments(self):
         """
         Adds arguments specific to this command.
         """
-        pass
 
     def add_argument(self, *args, **kwargs):
         """

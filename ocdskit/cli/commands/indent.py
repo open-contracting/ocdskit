@@ -1,4 +1,4 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
+# pylint: disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
 
 import json
 import logging
@@ -24,14 +24,14 @@ class Command(BaseCommand):
             if os.path.isfile(file):
                 self.indent(file)
             elif self.args.recursive:
-                for root, dirs, files in os.walk(file):
+                for root, _, files in os.walk(file):
                     for name in files:
                         if name.endswith('.json'):
                             self.indent(os.path.join(root, name))
             elif os.path.isdir(file):
-                logger.warning('{} is a directory. Set --recursive to recurse into directories.'.format(file))
+                logger.warning('%s is a directory. Set --recursive to recurse into directories.', file)
             else:
-                logger.error('{}: No such file or directory'.format(file))
+                logger.error('%s: No such file or directory', file)
 
     def indent(self, path):
         try:
@@ -42,4 +42,4 @@ class Command(BaseCommand):
                 json_dump(data, f, indent=self.args.indent, ensure_ascii=self.args.ascii)
                 f.write('\n')
         except json.decoder.JSONDecodeError as e:
-            logger.error('{} is not valid JSON. (json.decoder.JSONDecodeError: {})'.format(path, e))
+            logger.error('%s is not valid JSON. (json.decoder.JSONDecodeError: %s)', path, e)

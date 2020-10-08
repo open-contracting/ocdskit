@@ -72,4 +72,4 @@ class Command(BaseCommand):
                           extension_field=self.args.extension_field, include_deprecated=not self.args.no_deprecated,
                           include_definitions=self.args.no_replace_refs)
         except MissingColumnError as e:
-            raise CommandError(str(e))
+            raise CommandError(str(e)) from e

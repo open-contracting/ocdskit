@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
         def add_definition(data):
             if '$ref' not in data:
-                definition = {k: v for k, v in sorted(data.items()) if k not in keywords_to_ignore}
+                definition = {key: value for key, value in sorted(data.items()) if key not in keywords_to_ignore}
                 definitions[repr(definition)] += 1
 
         def recurse(data):
@@ -61,8 +61,8 @@ class Command(BaseCommand):
                     # like the `id`'s of objects in arrays that are not `wholeListMerge`, should be excluded, but it's
                     # too much work with too little advantage to do so.
                     if key in ('definitions', 'properties'):
-                        for k, v in value.items():
-                            add_definition(v)
+                        for definition in value.values():
+                            add_definition(definition)
                     recurse(value)
 
         with open(self.args.file) as f:

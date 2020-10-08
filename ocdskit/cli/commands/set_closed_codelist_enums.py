@@ -1,4 +1,4 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
+# pylint: disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
 
 import csv
 import itertools
@@ -42,15 +42,15 @@ class Command(BaseCommand):
             self.update_json_schema(directory)
 
         codelists_not_seen = []
-        for codelist in self.codelists.keys():
+        for codelist in self.codelists:
             if codelist not in self.codelists_seen:
                 codelists_not_seen.append(codelist)
 
         if codelists_not_seen:
-            logger.error('unused codelists: {}'.format(' '.join(codelists_not_seen)))
+            logger.error('unused codelists: %s', ' '.join(codelists_not_seen))
 
     def collect_codelists(self, directory):
-        for root, dirs, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for name in files:
                 if name.endswith('.csv'):
                     with open(os.path.join(root, name)) as f:
@@ -70,7 +70,7 @@ class Command(BaseCommand):
                             self.codelists[name[1:]] = [code for code in self.codelists[name[1:]] if code not in codes]
                         elif name in self.codelists:
                             if self.codelists[name] != codes:
-                                logger.error('conflicting codelists: {}'.format(name))
+                                logger.error('conflicting codelists: %s', name)
                         else:
                             self.codelists[name] = codes
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
         return data
 
     def update_json_schema(self, directory):
-        for root, dirs, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for name in files:
                 if name.endswith('.json') and name not in meta_schema_exceptions:
                     path = os.path.join(root, name)

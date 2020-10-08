@@ -25,8 +25,9 @@ class Command(OCDSCommand):
 
         try:
             upgrade_method = getattr(upgrade, 'upgrade_{}'.format(versions.replace('.', '').replace(':', '_')))
-        except AttributeError:
-            raise CommandError('{}grade from {} is not supported'.format(direction, versions.replace(':', ' to ')))
+        except AttributeError as e:
+            message = '{}grade from {} is not supported'.format(direction, versions.replace(':', ' to '))
+            raise CommandError(message) from e
 
         for data in self.items(map_type=OrderedDict):
             data = upgrade_method(data)

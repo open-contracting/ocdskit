@@ -41,12 +41,13 @@ class Command(OCDSCommand):
         try:
             for output in merge(self.items(), streaming=True, **kwargs):
                 self.print(output, streaming=self.args.package)
-        except MissingOcidKeyError:
-            raise CommandError('The `ocid` field of at least one release is missing.')
+        except MissingOcidKeyError as e:
+            raise CommandError('The `ocid` field of at least one release is missing.') from e
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]
             if versions[1] < versions[0]:
                 versions.reverse()
 
-            raise CommandError('{}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit '
-                               'upgrade {}:{} | ocdskit compile {}'.format(str(e), *versions, ' '.join(sys.argv[2:])))
+            message = '{}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit upgrade ' \
+                      '{}:{} | ocdskit compile {}'.format(str(e), *versions, ' '.join(sys.argv[2:]))
+            raise CommandError(message) from e

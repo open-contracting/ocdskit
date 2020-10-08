@@ -1,4 +1,4 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
+# pylint: disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
 
 import jsonref
 import sqlalchemy
@@ -22,7 +22,7 @@ class Command(OCDSCommand):
         deref_schema = jsonref.load_uri(self.args.schema)
         metadata, engine = self.create_db(self.args.database_url, deref_schema, drop=self.args.drop)
 
-        for i, data in enumerate(self.items()):
+        for data in self.items():
             if is_record_package(data):
                 releases = []
                 for record in data['records']:
@@ -32,7 +32,7 @@ class Command(OCDSCommand):
             else:  # release
                 releases = [data]
 
-            self.upload_file(metadata, engine, deref_schema, releases)
+            self.upload_file(metadata, engine, releases)
 
     def process_schema_object(self, path, current_name, flattened, obj):
         """
@@ -135,7 +135,7 @@ class Command(OCDSCommand):
                 flat_obj[current_name + key] = value
         return flattened
 
-    def upload_file(self, metadata, engine, deref_schema, releases):
+    def upload_file(self, metadata, engine, releases):
         conn = engine.connect()
 
         tabulated = {}
