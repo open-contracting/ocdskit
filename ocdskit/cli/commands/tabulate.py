@@ -1,3 +1,5 @@
+# pylint: disable = missing-module-docstring, missing-class-docstring
+
 import jsonref
 import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB

@@ -1,3 +1,5 @@
+# pylint: disable = missing-module-docstring, missing-class-docstring
+
 from collections import OrderedDict
 
 from ocdskit import upgrade

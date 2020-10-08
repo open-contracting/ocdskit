@@ -1,3 +1,5 @@
+# pylint: disable = missing-module-docstring, missing-class-docstring
+
 import csv
 import itertools
 import json
