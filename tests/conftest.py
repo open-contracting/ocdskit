@@ -16,4 +16,4 @@ def vcr_cassette_name(request):
 
 @pytest.fixture(params=[True, False])
 def sqlite(request, monkeypatch):
-    ocdskit.packager.using_sqlite = request.param
+    ocdskit.packager.USING_SQLITE = request.param

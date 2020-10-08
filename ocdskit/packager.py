@@ -10,7 +10,7 @@ from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata
 try:
     import sqlite3
 
-    using_sqlite = True
+    USING_SQLITE = True
 
     def adapt_json(data):
         return json_dumps(data)
@@ -21,7 +21,7 @@ try:
     sqlite3.register_adapter(dict, adapt_json)
     sqlite3.register_converter('json', convert_json)
 except ImportError:
-    using_sqlite = False
+    USING_SQLITE = False
 
 
 class Packager:
@@ -34,14 +34,14 @@ class Packager:
         self.package = _empty_record_package()
         self.version = None
 
-        if using_sqlite:
+        if USING_SQLITE:
             self.backend = SQLiteBackend()
         else:
             self.backend = PythonBackend()
 
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         self.backend.close()
 
     def add(self, data):
@@ -145,7 +145,7 @@ class Packager:
         :param ocdsmerge.merge.Merger merger: a merger
         :param bool return_versioned_release: whether to yield versioned releases instead of compiled releases
         """
-        for ocid, rows in self.backend.get_releases_by_ocid():
+        for _, rows in self.backend.get_releases_by_ocid():
             releases = (row[-1] for row in rows)
 
             if return_versioned_release:
@@ -175,8 +175,8 @@ class AbstractBackend:
         """
         try:
             self._add_release(release['ocid'], package_uri, release)
-        except KeyError:
-            raise MissingOcidKeyError('ocid')
+        except KeyError as e:
+            raise MissingOcidKeyError('ocid') from e
 
     def _add_release(self, ocid, package_uri, release):
         raise NotImplementedError
@@ -193,13 +193,11 @@ class AbstractBackend:
         """
         Flushes the internal buffer of releases. This may be a no-op on some backends.
         """
-        pass
 
     def close(self):
         """
         Tidies up any resources used by the backend. This may be a no-op on some backends.
         """
-        pass
 
 
 class PythonBackend(AbstractBackend):

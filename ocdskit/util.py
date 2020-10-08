@@ -6,10 +6,10 @@ try:
     import orjson
 
     jsonlib = orjson
-    using_orjson = True
+    USING_ORJSON = True
 except ImportError:
     jsonlib = json
-    using_orjson = False
+    USING_ORJSON = False
 
 _default_version = '1.1'  # fields might be deprecated
 
@@ -74,7 +74,7 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
     Dumps JSON to a string, and returns it.
     """
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
-    if not using_orjson or ensure_ascii or indent and indent != 2 or kwargs:
+    if not USING_ORJSON or ensure_ascii or indent and indent != 2 or kwargs:
         if not indent:
             kwargs['separators'] = (',', ':')
         return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
@@ -98,14 +98,14 @@ def get_ocds_minor_version(data):
         if 'version' in data:
             return data['version']
         return '1.0'
-    elif is_record(data):
+    if is_record(data):
         if any('parties' in release for release in data['releases']):
             return '1.1'
         return '1.0'
-    else:  # release
-        if 'parties' in data:
-            return '1.1'
-        return '1.0'
+    # release
+    if 'parties' in data:
+        return '1.1'
+    return '1.0'
 
 
 def is_package(data):
