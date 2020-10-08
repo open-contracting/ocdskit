@@ -94,9 +94,9 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     if extension_field:
         fieldnames.append(extension_field)
 
-    w = csv.DictWriter(io, fieldnames)
-    w.writeheader()
-    w.writerows(rows)
+    writer = csv.DictWriter(io, fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
 
 
 def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, include_deprecated=True,

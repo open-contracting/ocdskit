@@ -12,11 +12,11 @@ try:
 
     using_sqlite = True
 
-    def adapt_json(d):
-        return json_dumps(d)
+    def adapt_json(data):
+        return json_dumps(data)
 
-    def convert_json(s):
-        return jsonlib.loads(s)
+    def convert_json(string):
+        return jsonlib.loads(string)
 
     sqlite3.register_adapter(dict, adapt_json)
     sqlite3.register_converter('json', convert_json)
@@ -30,7 +30,6 @@ class Packager:
     releases. Release packages and/or individual releases can be added to the packager. All releases should use the
     same version of OCDS.
     """
-
     def __enter__(self):
         self.package = _empty_record_package()
         self.version = None

@@ -93,22 +93,22 @@ class Field:
         :param list sep: the separator to use in string representations of paths, overriding ``self.sep``
         :param list exclude: a list of keys to exclude from the dict
         """
-        d = {}
+        data = {}
 
         exclude = exclude or ()
         sep = sep or self.sep
 
-        for k, v in self.__dict__.items():
-            if k not in exclude and not k.startswith('_') and not k.endswith('_components'):
-                d[k] = v
-        for k in ('pointer', 'definition_pointer'):
-            if k not in exclude:
-                d[k] = getattr(self, k)
-        for k in ('path', 'definition_path'):
-            if k not in exclude:
-                d[k] = sep.join(getattr(self, '{}_components'.format(k)))
+        for key, value in self.__dict__.items():
+            if key not in exclude and not key.startswith('_') and not key.endswith('_components'):
+                data[key] = value
+        for key in ('pointer', 'definition_pointer'):
+            if key not in exclude:
+                data[key] = getattr(self, key)
+        for key in ('path', 'definition_path'):
+            if key not in exclude:
+                data[key] = sep.join(getattr(self, '{}_components'.format(key)))
 
-        return d
+        return data
 
 
 # This code is similar to `add_versioned` in `make_versioned_release_schema.py` in the `standard` repository.
