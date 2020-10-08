@@ -1,5 +1,3 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
-
 from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.combine import combine_record_packages
 

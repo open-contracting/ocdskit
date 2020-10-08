@@ -1,5 +1,3 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
-
 import json
 from urllib.parse import urlparse
 

@@ -1,5 +1,3 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring, missing-function-docstring
-
 import json
 import logging
 import os.path

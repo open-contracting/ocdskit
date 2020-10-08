@@ -1,5 +1,3 @@
-# pylint: disable = missing-module-docstring, missing-class-docstring
-
 import logging
 
 from ocdskit import oc4ids
