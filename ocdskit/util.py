@@ -11,8 +11,6 @@ except ImportError:
     jsonlib = json
     USING_ORJSON = False
 
-_default_version = '1.1'  # fields might be deprecated
-
 
 # See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
 def grouper(iterable, n, fillvalue=None):

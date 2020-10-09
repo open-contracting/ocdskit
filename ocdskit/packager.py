@@ -1,5 +1,6 @@
 import itertools
 import os
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
 
@@ -30,7 +31,7 @@ class Packager:
     releases. Release packages and/or individual releases can be added to the packager. All releases should use the
     same version of OCDS.
     """
-    def __enter__(self):
+    def __init__(self):
         self.package = _empty_record_package()
         self.version = None
 
@@ -39,6 +40,7 @@ class Packager:
         else:
             self.backend = PythonBackend()
 
+    def __enter__(self):
         return self
 
     def __exit__(self, type_, value, traceback):
@@ -160,13 +162,7 @@ class Packager:
 # * Store each release's package URI
 #
 # For a PostgreSQL backend, see https://github.com/open-contracting/ocdskit/issues/116
-class AbstractBackend:
-    def __init__(self):
-        """
-        Initializes the backend.
-        """
-        raise NotImplementedError
-
+class AbstractBackend(ABC):
     def add_release(self, release, package_uri):
         """
         Adds a release to the backend. (The release might be added to an internal buffer.)
@@ -178,16 +174,17 @@ class AbstractBackend:
         except KeyError as e:
             raise MissingOcidKeyError('ocid') from e
 
+    @abstractmethod
     def _add_release(self, ocid, package_uri, release):
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_releases_by_ocid(self):
         """
         Yields an OCIDs and an iterable of tuples of ``(ocid, package_uri, release)``.
 
         OCIDs are yielded in alphabetical order. The iterable is in any order.
         """
-        raise NotImplementedError
 
     def flush(self):
         """

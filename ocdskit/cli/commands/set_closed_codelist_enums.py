@@ -20,19 +20,22 @@ class Command(BaseCommand):
     name = 'set-closed-codelist-enums'
     help = 'sets the enum in a JSON Schema to match the codes in the CSV files of closed codelists'
 
+    def __init__(self, subparsers):
+        super().__init__(subparsers)
+
+        self.codelists = {}
+        self.codelists_seen = set()
+
     def add_arguments(self):
         self.add_argument('standard', help='path to directory containing standard JSON Schema files')
         self.add_argument('extension', help='paths to directories containing extension JSON Schema files', nargs='*')
 
     def handle(self):
-        self.codelists = {}
-
         if self.args.extension:
             self.collect_codelists(self.args.standard)
             self.codelists_seen = set(self.codelists)
             directories = self.args.extension
         else:
-            self.codelists_seen = set()
             directories = [self.args.standard]
 
         for directory in directories:

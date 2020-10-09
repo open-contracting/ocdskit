@@ -32,7 +32,7 @@ class Command(OCDSCommand):
         kwargs['use_linked_releases'] = self.args.linked_releases
         kwargs['return_versioned_release'] = self.args.versioned
 
-        if not ocdskit.packager.using_sqlite:
+        if not ocdskit.packager.USING_SQLITE:
             logger.warning('sqlite3 is unavailable, so the command will run in memory. If input files are too large, '
                            'the command might exceed available memory.')
 

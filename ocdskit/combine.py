@@ -6,8 +6,11 @@ from ocdsmerge.util import get_release_schema_url, get_tags
 
 from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning
 from ocdskit.packager import Packager
-from ocdskit.util import (_default_version, _empty_record_package, _empty_release_package,
-                          _remove_empty_optional_metadata, _resolve_metadata, _update_package_metadata)
+from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
+                          _resolve_metadata, _update_package_metadata)
+
+
+DEFAULT_VERSION = '1.1'  # fields might be deprecated
 
 
 def _package(key, items, uri, publisher, published_date, version, extensions=None):
@@ -30,7 +33,7 @@ def _package(key, items, uri, publisher, published_date, version, extensions=Non
     return output
 
 
-def package_records(records, uri='', publisher=None, published_date='', version=_default_version, extensions=None):
+def package_records(records, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
     """
     Wraps records in a record package.
 
@@ -44,7 +47,7 @@ def package_records(records, uri='', publisher=None, published_date='', version=
     return _package('records', records, uri, publisher, published_date, version, extensions)
 
 
-def package_releases(releases, uri='', publisher=None, published_date='', version=_default_version, extensions=None):
+def package_releases(releases, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
     """
     Wraps releases in a release package.
 
@@ -58,7 +61,7 @@ def package_releases(releases, uri='', publisher=None, published_date='', versio
     return _package('releases', releases, uri, publisher, published_date, version, extensions)
 
 
-def combine_record_packages(packages, uri='', publisher=None, published_date='', version=_default_version):
+def combine_record_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
     """
     Collects the packages and records from the record packages into one record package.
 
@@ -93,7 +96,7 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='',
     return output
 
 
-def combine_release_packages(packages, uri='', publisher=None, published_date='', version=_default_version):
+def combine_release_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
     """
     Collects the releases from the release packages into one release package.
 
@@ -124,7 +127,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     return output
 
 
-def merge(data, uri='', publisher=None, published_date='', version=_default_version, schema=None,
+def merge(data, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, schema=None,
           return_versioned_release=False, return_package=False, use_linked_releases=False, streaming=False):
     """
     Merges release packages and individual releases.

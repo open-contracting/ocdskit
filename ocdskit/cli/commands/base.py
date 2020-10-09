@@ -1,5 +1,6 @@
 import os
 import sys
+from abc import ABC, abstractmethod
 
 import ijson
 
@@ -17,7 +18,7 @@ class StandardInputReader:
         return data.decode(self.encoding).encode('utf-8')
 
 
-class BaseCommand:
+class BaseCommand(ABC):
     kwargs = {}
 
     def __init__(self, subparsers):
@@ -45,11 +46,11 @@ class BaseCommand:
         """
         self.subparser.add_argument(*args, **kwargs)
 
+    @abstractmethod
     def handle(self):
         """
         Runs the command.
         """
-        raise NotImplementedError('commands must implement handle()')
 
     def prefix(self):
         """
@@ -92,7 +93,7 @@ class BaseCommand:
             sys.exit(1)
 
 
-class OCDSCommand(BaseCommand):
+class OCDSCommand(BaseCommand, ABC):
     def add_base_arguments(self):
         self.add_argument('--root-path', type=str, default='',
                           help='the path to the items to process within each input')

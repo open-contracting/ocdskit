@@ -67,7 +67,7 @@ def main():
                     if isinstance(e.args[0], bytes):  # YAJL backends
                         message = e.args[0].decode(errors='backslashreplace')
                     _raise_encoding_error(message, args.encoding)
-                raise CommandError('JSON error: {}'.format(e))
+                raise CommandError('JSON error: {}'.format(e)) from e
             except UnicodeDecodeError as e:
                 _raise_encoding_error(e, args.encoding)
         except CommandError as e:
