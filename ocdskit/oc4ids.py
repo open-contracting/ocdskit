@@ -8,13 +8,26 @@ import json
 import logging
 from collections import defaultdict
 
-from jsonpointer import resolve_pointer
+import jsonpointer
 from ocdsmerge.util import sorted_releases
 
 from ocdskit.combine import merge
 from ocdskit.util import is_package
 
 logger = logging.getLogger("ocdskit")
+
+
+def resolve(doc, pointer):
+    return jsonpointer.resolve_pointer(doc, pointer, None)
+
+
+def resolve_list(doc, pointer):
+    return check_type(resolve(doc, pointer), list)
+
+
+def append_if(array, item):
+    if item:
+        array.append(item)
 
 
 def check_type(item, item_type):
@@ -24,7 +37,7 @@ def check_type(item, item_type):
     """
     if not isinstance(item, item_type):
         if item:
-            logger.warning("item {} is not of type {} so skipping".format(item, item_type.__name__))
+            logger.warning("item %s is not of type %s so skipping", item, item_type.__name__)
         return item_type()
     return item
 
@@ -35,7 +48,7 @@ def cast_number_or_zero(item):
         return decimal.Decimal(item)
     except (ValueError, TypeError):
         if item:
-            logger.warning("item {} is not a number treating as zero".format(item))
+            logger.warning("item %s is not a number treating as zero", item)
         return 0
 
 
@@ -48,7 +61,7 @@ def cast_string(item):
         return str(item)
 
     if item:
-        logger.warning("item {} is not able to be converted to a string".format(item))
+        logger.warning("item %s is not able to be converted to a string", item)
     return ""
 
 
@@ -87,7 +100,6 @@ def _run_transforms(releases, project_id=None, records=None, output=None, transf
 
 class InitialTransformState:
     def __init__(self, releases_or_release_packages, project_id=None, records=None, output=None):
-
         # coerce generator into list as we iterate over it twice.
         releases_or_release_packages = list(releases_or_release_packages)
         all_releases = []
@@ -105,7 +117,6 @@ class InitialTransformState:
                 self.releases_by_ocid[ocid].append(release)
 
         self.project_id = project_id
-        records = records
 
         if not records:
             record_package = next(merge(releases_or_release_packages, return_package=True, use_linked_releases=True))
@@ -113,14 +124,12 @@ class InitialTransformState:
 
         compiled_releases = []
         for record in records:
-            compiled_release = check_type(record.get("compiledRelease"), dict)
             # projects only have linked releases 'uri' is a good proxy for that.
             record_releases = check_type(record.get("releases"), list)
-            linked_releases = [release for release in record_releases if release.get("url")]
-            embedded_releases = [release for release in record_releases if not release.get("url")]
 
-            compiled_release["releases"] = linked_releases
-            compiled_release["embeddedReleases"] = embedded_releases
+            compiled_release = check_type(record.get("compiledRelease"), dict)
+            compiled_release["releases"] = [release for release in record_releases if release.get("url")]
+            compiled_release["embeddedReleases"] = [release for release in record_releases if not release.get("url")]
 
             compiled_releases.append(compiled_release)
 
@@ -134,7 +143,6 @@ class InitialTransformState:
         self.generate_document_ids = False
 
     def party_analysis(self):
-
         all_parties = []
         party_ids = set()
         duplicate_party_ids = False
@@ -154,7 +162,7 @@ class InitialTransformState:
                 identifier = check_type(party.get("identifier"), dict)
                 id_ = cast_string(identifier.get("id"))
                 scheme = cast_string(identifier.get("scheme"))
-                if identifier and scheme:
+                if id_ and scheme:
                     unique_identifier = scheme + "-" + id_
 
                 all_parties.append(
@@ -183,10 +191,9 @@ class InitialTransformState:
                     found_party = unique_party
                     break
             if found_party:
-                new_roles = set(
+                found_party["party"]["roles"] = list(set(
                     check_type(found_party["party"].get("roles"), list) + check_type(party["party"].get("roles"), list)
-                )
-                found_party["party"]["roles"] = list(new_roles)
+                ))
             else:
                 if duplicate_party_ids:
                     if party["unique_identifier"]:
@@ -255,7 +262,7 @@ def copy_document_by_type(state, documents, document_type):
     """
     for document in documents(state):
         document = check_type(document, dict)
-        if document_type == document.get("documentType"):
+        if document.get("documentType") == document_type:
             copy_document(state, document)
 
 
@@ -267,8 +274,8 @@ def concat_ocid_and_string(state, path_to_string):
     strings = ""
     for compiled_release in state.compiled_releases:
 
-        ocid = cast_string(resolve_pointer(compiled_release, "/ocid", None))
-        a_string = cast_string(resolve_pointer(compiled_release, path_to_string, None))
+        ocid = cast_string(resolve(compiled_release, "/ocid"))
+        a_string = cast_string(resolve(compiled_release, path_to_string))
 
         if a_string:
             concat = "<{}> {}\n".format(ocid, a_string)
@@ -297,8 +304,8 @@ def sector(state):
     """
     sectors = []
     for compiled_release in state.compiled_releases:
-        sector_id = cast_string(resolve_pointer(compiled_release, "/planning/project/sector/id", ""))
-        sector_scheme = cast_string(resolve_pointer(compiled_release, "/planning/project/sector/scheme", ""))
+        sector_id = cast_string(resolve(compiled_release, "/planning/project/sector/id"))
+        sector_scheme = cast_string(resolve(compiled_release, "/planning/project/sector/scheme"))
         if sector_scheme:
             sector_name = sector_scheme + "-" + sector_id
         else:
@@ -316,15 +323,13 @@ def additional_classifications(state):
     CoST IDS element: Subsector
     """
     for compiled_release in state.compiled_releases:
-        additional_classifications = resolve_pointer(
-            compiled_release, "/planning/project/additionalClassifications", None
-        )
-        if additional_classifications:
-            output_classifications = state.output.get("additionalClassifications", [])
-            state.output["additionalClassifications"] = output_classifications
-            for classification in additional_classifications:
-                if classification not in output_classifications:
-                    output_classifications.append(classification)
+        additionalclassifications = resolve(compiled_release, "/planning/project/additionalClassifications")
+        if additionalclassifications:
+            if "additionalClassifications" not in state.output:
+                state.output["additionalClassifications"] = []
+            for classification in additionalclassifications:
+                if classification not in state.output["additionalClassifications"]:
+                    state.output["additionalClassifications"].append(classification)
 
 
 def title(state):
@@ -333,14 +338,14 @@ def title(state):
     """
     found_title = None
     for compiled_release in state.compiled_releases:
-        title = resolve_pointer(compiled_release, "/planning/project/title", None)
-        if title:
-            if found_title and found_title != title:
-                logger.warning("Multiple differing titles found for project {}".format(state.project_id))
+        project_title = resolve(compiled_release, "/planning/project/title")
+        if project_title:
+            if found_title and found_title != project_title:
+                logger.warning("Multiple differing titles found for project %s", state.project_id)
                 return
-        found_title = title
+        found_title = project_title
     if found_title:
-        state.output["title"] = title
+        state.output["title"] = project_title
 
 
 def title_from_tender(state):
@@ -352,9 +357,7 @@ def title_from_tender(state):
 
     titles = []
     for compiled_release in state.compiled_releases:
-        title = resolve_pointer(compiled_release, "/tender/title", None)
-        if title:
-            titles.append(title)
+        append_if(titles, resolve(compiled_release, "/tender/title"))
     if len(titles) > 1:
         state.output["title"] = concat_ocid_and_string(state, "/tender/title")
     elif len(titles) == 1:
@@ -369,10 +372,12 @@ def contracting_process_setup(state):
     state.output["contractingProcesses"] = []
 
     for compiled_release in state.compiled_releases:
-        contracting_process = {}
-        contracting_process["id"] = compiled_release.get("ocid")
-        contracting_process["summary"] = {}
-        contracting_process["summary"]["ocid"] = compiled_release.get("ocid")
+        contracting_process = {
+            "id": compiled_release.get("ocid"),
+            "summary": {
+                "ocid": compiled_release.get("ocid"),
+            },
+        }
 
         releases = compiled_release.get("releases")
         if releases:
@@ -397,21 +402,17 @@ def procuring_entity(state):
             if "procuringEntity" in check_type(party.get("roles"), list):
                 procuring_entities.append(party)
         if len(procuring_entities) > 1:
-            logger.warning(
-                "More than one procuringEntity in contractingProcesses with ocid {} skipping tranform".format(
-                    compiled_release.get("ocid")
-                )
-            )
+            logger.warning("More than one procuringEntity in contractingProcesses with ocid %s skipping tranform",
+                           compiled_release.get("ocid"))
             continue
         if procuring_entities:
-            tender = check_type(contracting_process["summary"].get("tender"), dict)
-            procuring_entity = {}
-            procuring_entity["id"] = procuring_entities[0].get("_new_id")
+            if "tender" not in contracting_process["summary"]:
+                contracting_process["summary"]["tender"] = {}
+            organization_reference = {"id": procuring_entities[0].get("_new_id")}
             name = procuring_entities[0].get("name")
             if name:
-                procuring_entity["name"] = name
-            tender["procuringEntity"] = procuring_entity
-            contracting_process["summary"]["tender"] = tender
+                organization_reference["name"] = name
+            contracting_process["summary"]["tender"]["procuringEntity"] = organization_reference
 
 
 def administrative_entity(state):
@@ -426,19 +427,16 @@ def administrative_entity(state):
             if "administrativeEntity" in check_type(party.get("roles"), list):
                 administrative_entities.append(party)
         if len(administrative_entities) > 1:
-            logger.warning(
-                "More than one administrativeEntity in contractingProcesses with ocid {} skipping tranform".format(
-                    compiled_release.get("ocid")
-                )
-            )
+            logger.warning("More than one administrativeEntity in contractingProcesses with ocid %s skipping tranform",
+                           compiled_release.get("ocid"))
             continue
         if administrative_entities:
-            tender = check_type(contracting_process["summary"].get("tender"), dict)
-            administrative_entity = {}
-            administrative_entity["id"] = administrative_entities[0].get("_new_id")
-            administrative_entity["name"] = administrative_entities[0].get("name")
-            tender["administrativeEntity"] = administrative_entity
-            contracting_process["summary"]["tender"] = tender
+            if "tender" not in contracting_process["summary"]:
+                contracting_process["summary"]["tender"] = {}
+            contracting_process["summary"]["tender"]["administrativeEntity"] = {
+                "id": administrative_entities[0].get("_new_id"),
+                "name": administrative_entities[0].get("name"),
+            }
 
 
 def contract_status(state):
@@ -449,28 +447,22 @@ def contract_status(state):
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         tender = check_type(compiled_release.get("tender"), dict)
-        tender_status = tender.get("status")
-        closed_tender = tender_status in ("cancelled", "unsuccessful", "withdrawn")
         contracts = check_type(compiled_release.get("contracts"), list)
         awards = check_type(compiled_release.get("awards"), list)
 
+        closed_tender = tender.get("status") in ("cancelled", "unsuccessful", "withdrawn")
+
         contract_periods = []
         if tender:
-            tender_contract_period = check_type(tender.get("contractPeriod"), dict)
-            if tender_contract_period:
-                contract_periods.append(tender_contract_period)
+            append_if(contract_periods, check_type(tender.get("contractPeriod"), dict))
         for contract in contracts:
-            contract_contract_period = check_type(contract.get("period"), dict)
-            if contract_contract_period:
-                contract_periods.append(contract_contract_period)
+            append_if(contract_periods, check_type(contract.get("period"), dict))
         for award in awards:
-            award_contract_period = check_type(award.get("contractPeriod"), dict)
-            if award_contract_period:
-                contract_periods.append(award_contract_period)
+            append_if(contract_periods, check_type(award.get("contractPeriod"), dict))
 
         # pre-award
         if tender and not closed_tender:
-            if not compiled_release.get("awards") and not compiled_release.get("contracts"):
+            if not awards and not contracts:
                 contracting_process["summary"]["status"] = "pre-award"
                 continue
 
@@ -483,7 +475,7 @@ def contract_status(state):
 
             all_awards_in_future = all(cast_string(award.get("date")) > current_iso_datetime for award in awards)
 
-            award_period_start_date = cast_string(resolve_pointer(tender, "/awardPeriod/startDate", ""))
+            award_period_start_date = cast_string(resolve(tender, "/awardPeriod/startDate"))
             award_period_in_future = award_period_start_date > current_iso_datetime
 
             if all_awards_in_future and award_period_in_future:
@@ -497,8 +489,8 @@ def contract_status(state):
             continue
 
         if any(
-            (cast_string(period.get("startDate")) < current_iso_datetime)
-            and (current_iso_datetime < cast_string(period.get("endDate", "9999-12-31")))
+            cast_string(period.get("startDate")) < current_iso_datetime <
+            cast_string(period.get("endDate", "9999-12-31"))
             for period in contract_periods
             if period
         ):
@@ -535,15 +527,15 @@ def procurement_process(state):
         if input_tender:
             procurement_method = input_tender.get("procurementMethod")
             if procurement_method:
-                tender = contracting_process["summary"].get("tender", {})
-                tender["procurementMethod"] = procurement_method
-                contracting_process["summary"]["tender"] = tender
+                if "tender" not in contracting_process["summary"]:
+                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"]["tender"]["procurementMethod"] = procurement_method
 
             procurement_method_details = input_tender.get("procurementMethodDetails")
             if procurement_method_details:
-                tender = contracting_process["summary"].get("tender", {})
-                tender["procurementMethodDetails"] = procurement_method_details
-                contracting_process["summary"]["tender"] = tender
+                if "tender" not in contracting_process["summary"]:
+                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"]["tender"]["procurementMethodDetails"] = procurement_method_details
 
 
 def number_of_tenderers(state):
@@ -553,11 +545,11 @@ def number_of_tenderers(state):
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         input_tender = check_type(compiled_release.get("tender"), dict)
         if input_tender:
-            number_of_tenderers = input_tender.get("numberOfTenderers")
-            if number_of_tenderers:
-                tender = contracting_process["summary"].get("tender", {})
-                tender["numberOfTenderers"] = number_of_tenderers
-                contracting_process["summary"]["tender"] = tender
+            numberoftenderers = input_tender.get("numberOfTenderers")
+            if numberoftenderers:
+                if "tender" not in contracting_process["summary"]:
+                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"]["tender"]["numberOfTenderers"] = numberoftenderers
 
 
 def location(state):
@@ -566,7 +558,7 @@ def location(state):
     """
     all_locations = []
     for compiled_release in state.compiled_releases:
-        locations = resolve_pointer(compiled_release, "/planning/project/locations", None)
+        locations = resolve(compiled_release, "/planning/project/locations")
         if locations:
             all_locations.extend(locations)
 
@@ -584,14 +576,12 @@ def location_from_items(state):
     locations = []
     for compiled_release in state.compiled_releases:
 
-        items = resolve_pointer(compiled_release, "/tender/items", [])
+        items = resolve_list(compiled_release, "/tender/items")
         for item in check_type(items, list):
 
-            delivery_location = resolve_pointer(item, "/deliveryLocation", None)
-            if delivery_location:
-                locations.append(delivery_location)
+            append_if(locations, resolve(item, "/deliveryLocation"))
 
-            delivery_address = resolve_pointer(item, "/deliveryAddress", None)
+            delivery_address = resolve(item, "/deliveryAddress")
             if delivery_address:
                 locations.append({"address": delivery_address})
 
@@ -605,7 +595,7 @@ def budget(state):
     CoST IDS element: Budget
     """
     if len(state.compiled_releases) == 1:
-        budget_value = resolve_pointer(state.compiled_releases[0], "/planning/budget/amount", None)
+        budget_value = resolve(state.compiled_releases[0], "/planning/budget/amount")
         if budget_value:
             state.output["budget"] = {"amount": budget_value}
     else:
@@ -614,12 +604,12 @@ def budget(state):
 
         for compiled_release in state.compiled_releases:
             budget_amounts.append(
-                cast_number_or_zero(resolve_pointer(compiled_release, "/planning/budget/amount/amount", None))
+                cast_number_or_zero(resolve(compiled_release, "/planning/budget/amount/amount"))
             )
-            budget_currencies.add(resolve_pointer(compiled_release, "/planning/budget/amount/currency", None))
+            budget_currencies.add(resolve(compiled_release, "/planning/budget/amount/currency"))
 
         if len(budget_currencies) > 1:
-            logger.warning("Can't get budget total, {} different currencies found.".format(len(budget_currencies)))
+            logger.warning("Can't get budget total, %s different currencies found.", len(budget_currencies))
         else:
             state.output["budget"] = {
                 "amount": {"amount": sum(budget_amounts), "currency": next(iter(budget_currencies))}
@@ -652,7 +642,7 @@ def purpose(state):
     CoST IDS element: Purpose
     """
     if len(state.compiled_releases) == 1:
-        rationale = resolve_pointer(state.compiled_releases[0], "/planning/rationale", None)
+        rationale = resolve(state.compiled_releases[0], "/planning/rationale")
         if rationale:
             state.output["purpose"] = rationale
     else:
@@ -675,16 +665,13 @@ def description(state):
     output_description = None
 
     for compiled_release in state.compiled_releases:
-        description = resolve_pointer(compiled_release, "/planning/project/description", None)
-        if description:
-            if output_description and output_description != description:
-                logger.warning(
-                    "Multiple differing planning/project/descriptions found eg. {}, {}, skipping conversion".format(
-                        description, output_description
-                    )
-                )
+        project_description = resolve(compiled_release, "/planning/project/description")
+        if project_description:
+            if output_description and output_description != project_description:
+                logger.warning("Multiple differing planning/project/description found e.g. %s, %s, skipping transform",
+                               project_description, output_description)
                 return
-            output_description = description
+            output_description = project_description
 
     if output_description:
         state.output["description"] = output_description
@@ -698,9 +685,9 @@ def description_tender(state):
         return
 
     if len(state.compiled_releases) == 1:
-        description = resolve_pointer(state.compiled_releases[0], "/tender/description", None)
-        if description:
-            state.output["description"] = description
+        tender_description = resolve(state.compiled_releases[0], "/tender/description")
+        if tender_description:
+            state.output["description"] = tender_description
             return
 
     else:
@@ -716,29 +703,30 @@ def funding_sources(state):
     """
     found_funding_source = False
     for compiled_release in state.compiled_releases:
-
-        parties = check_type(resolve_pointer(compiled_release, "/parties", None), list)
+        parties = resolve_list(compiled_release, "/parties")
 
         # Get parties from budgetBreakdown.sourceParty
-        breakdowns = check_type(resolve_pointer(compiled_release, "/planning/budget/budgetBreakdown", None), list)
-        if breakdowns:
-            for breakdown in breakdowns:
-                source_party = check_type(resolve_pointer(breakdown, "/sourceParty", None), dict)
-                party_id = source_party.get("id")
-                # Look up party data by id in parties
-                if parties and party_id:
-                    for party in parties:
-                        party = check_type(party, dict)
-                        if party.get("id") == party_id:
-                            output_party = copy.deepcopy(party)
-                            # Add to parties and set funder in roles
-                            if check_type(output_party.get("roles"), list):
-                                output_party["roles"].append("funder")
-                            else:
-                                output_party["roles"] = ["funder"]
-                            output_party["id"] = output_party.pop("_new_id")
-                            copy_party_to_party_list(state, output_party)
-                            found_funding_source = True
+        breakdowns = resolve_list(compiled_release, "/planning/budget/budgetBreakdown")
+        if not breakdowns:
+            continue
+
+        for breakdown in breakdowns:
+            source_party = check_type(resolve(breakdown, "/sourceParty"), dict)
+            party_id = source_party.get("id")
+            # Look up party data by id in parties
+            if parties and party_id:
+                for party in parties:
+                    party = check_type(party, dict)
+                    if party.get("id") == party_id:
+                        output_party = copy.deepcopy(party)
+                        # Add to parties and set funder in roles
+                        if check_type(output_party.get("roles"), list):
+                            output_party["roles"].append("funder")
+                        else:
+                            output_party["roles"] = ["funder"]
+                        output_party["id"] = output_party.pop("_new_id")
+                        copy_party_to_party_list(state, output_party)
+                        found_funding_source = True
 
     # If no parties from the budget breakdown, copy from top level with 'funder' roles
     if not found_funding_source:
@@ -753,15 +741,15 @@ def cost_estimate(state):
         ocid = contracting_process.get("id")
         latest_planning_value = None
         for release in state.releases_by_ocid.get(ocid, []):
-            tender_status = resolve_pointer(release, "/tender/status", None)
-            tender_value = resolve_pointer(release, "/tender/value", None)
+            tender_status = resolve(release, "/tender/status")
+            tender_value = resolve(release, "/tender/value")
             if tender_status == "planning" and tender_value:
                 latest_planning_value = tender_value
 
         if latest_planning_value:
-            tender = contracting_process["summary"].get("tender", {})
-            tender["costEstimate"] = latest_planning_value
-            contracting_process["summary"]["tender"] = tender
+            if "tender" not in contracting_process["summary"]:
+                contracting_process["summary"]["tender"] = {}
+            contracting_process["summary"]["tender"]["costEstimate"] = latest_planning_value
 
 
 def contract_title(state):
@@ -769,29 +757,22 @@ def contract_title(state):
     CoST IDS element: Contract title
     """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        contracts = check_type(compiled_release.get("contracts"), list)
         awards = check_type(compiled_release.get("awards"), list)
+        contracts = check_type(compiled_release.get("contracts"), list)
 
-        if len(contracts) > 1 or len(awards) > 1:
-            tender_title = resolve_pointer(compiled_release, "/tender/title", None)
+        if len(awards) > 1 or len(contracts) > 1:
+            tender_title = resolve(compiled_release, "/tender/title")
 
             if tender_title:
                 contracting_process["summary"]["title"] = tender_title
             continue
 
-        if len(contracts) == 1:
-            contract = check_type(contracts[0], dict)
-            contract_title = contract.get("title")
-            if contract_title:
-                contracting_process["summary"]["title"] = contract_title
-            continue
-
-        if len(awards) == 1:
-            award = check_type(awards[0], dict)
-            award_title = award.get("title")
-            if award_title:
-                contracting_process["summary"]["title"] = award_title
-            continue
+        for entries in (contracts, awards):
+            if len(entries) == 1:
+                entry_title = check_type(entries[0], dict).get("title")
+                if entry_title:
+                    contracting_process["summary"]["title"] = entry_title
+                break
 
 
 def suppliers(state):
@@ -802,13 +783,13 @@ def suppliers(state):
 
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
         parties = check_type(compiled_release.get("parties"), list)
-        suppliers = []
+        organization_references = []
         for party in parties:
             if "supplier" in check_type(party.get("roles"), list):
-                suppliers.append({"id": party.get("id"), "name": party.get("name")})
+                organization_references.append({"id": party.get("id"), "name": party.get("name")})
 
-        if suppliers:
-            contracting_process["summary"]["suppliers"] = suppliers
+        if organization_references:
+            contracting_process["summary"]["suppliers"] = organization_references
 
 
 def contract_price(state):
@@ -821,16 +802,16 @@ def contract_price(state):
         award_amount = 0
         for award in awards:
             award = check_type(award, dict)
-            amount = cast_number_or_zero(resolve_pointer(award, "/value/amount", None))
+            amount = cast_number_or_zero(resolve(award, "/value/amount"))
             award_amount += amount
 
-            currency = cast_string(resolve_pointer(award, "/value/currency", None))
+            currency = cast_string(resolve(award, "/value/currency"))
             if currency:
                 if award_currency is None:
                     award_currency = currency
                 else:
                     if currency != award_currency:
-                        logger.warning("Multiple currencies not supported {}, {}".format(award_currency, currency))
+                        logger.warning("Multiple currencies not supported %s, %s", award_currency, currency)
                         award_amount = 0
                         break
 
@@ -843,8 +824,8 @@ def contract_process_description(state):
     CoST IDS element: Contract scope of work
     """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        contracts = check_type(compiled_release.get("contracts"), list)
         awards = check_type(compiled_release.get("awards"), list)
+        contracts = check_type(compiled_release.get("contracts"), list)
 
         if len(contracts) > 1 or len(awards) > 1:
             tender = check_type(compiled_release.get("tender"), dict)
@@ -856,53 +837,28 @@ def contract_process_description(state):
             tender_items_descriptions = []
             for tender_item in check_type(tender.get("items"), list):
                 tender_item = check_type(tender_item, dict)
-                tender_item_description = tender_item.get("description")
-                if tender_item_description:
-                    tender_items_descriptions.append(tender_item_description)
+                append_if(tender_items_descriptions, tender_item.get("description"))
 
             if len(tender_items_descriptions) == 1:
                 contracting_process["summary"]["description"] = tender_items_descriptions[0]
             continue
 
-        contract_descriptions = []
-        contract_items_descriptions = []
-        for contract in contracts:
-            contract = check_type(contract, dict)
-            contract_description = contract.get("description")
-            if contract_description:
-                contract_descriptions.append(contract_description)
-            for contract_item in check_type(contract.get("items"), list):
-                contract_item = check_type(contract_item, dict)
-                contract_item_description = contract_item.get("description")
-                if contract_item_description:
-                    contract_items_descriptions.append(contract_item_description)
+        for entries in (contracts, awards):
+            descriptions = []
+            items_descriptions = []
+            for entry in entries:
+                entry = check_type(entry, dict)
+                append_if(descriptions, entry.get("description"))
+                for item in check_type(entry.get("items"), list):
+                    item = check_type(item, dict)
+                    append_if(items_descriptions, item.get("description"))
 
-        if len(contract_descriptions) == 1:
-            contracting_process["summary"]["description"] = contract_descriptions[0]
-            continue
-        if len(contract_items_descriptions) == 1:
-            contracting_process["summary"]["description"] = contract_items_descriptions[0]
-            continue
-
-        award_descriptions = []
-        award_items_descriptions = []
-        for award in awards:
-            award = check_type(award, dict)
-            award_description = award.get("description")
-            if award_description:
-                award_descriptions.append(award_description)
-            for award_item in check_type(award.get("items"), list):
-                award_item = check_type(award_item, dict)
-                award_item_description = award_item.get("description")
-                if award_item_description:
-                    award_items_descriptions.append(award_item_description)
-
-        if len(award_descriptions) == 1:
-            contracting_process["summary"]["description"] = award_descriptions[0]
-            continue
-        if len(award_items_descriptions) == 1:
-            contracting_process["summary"]["description"] = award_items_descriptions[0]
-            continue
+            if len(descriptions) == 1:
+                contracting_process["summary"]["description"] = descriptions[0]
+                break
+            if len(items_descriptions) == 1:
+                contracting_process["summary"]["description"] = items_descriptions[0]
+                break
 
 
 def contract_period(state):
@@ -910,17 +866,14 @@ def contract_period(state):
     CoST IDS element: Contract start date and contract period (duration)
     """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-        awards = check_type(compiled_release.get("awards"), list)
         start_dates = []
         end_dates = []
-        for award in awards:
-            contract_period = check_type(award.get("contractPeriod"), dict)
-            start_date = cast_string(contract_period.get("startDate"))
-            if start_date:
-                start_dates.append(start_date)
-            end_date = cast_string(contract_period.get("endDate"))
-            if end_date:
-                end_dates.append(end_date)
+
+        for award in check_type(compiled_release.get("awards"), list):
+            period = check_type(award.get("contractPeriod"), dict)
+            append_if(start_dates, cast_string(period.get("startDate")))
+            append_if(end_dates, cast_string(period.get("endDate")))
+
         if start_dates and end_dates:
             contracting_process["summary"]["contractPeriod"] = {
                 "startDate": min(start_dates),
@@ -928,10 +881,9 @@ def contract_period(state):
             }
             continue
 
-        tender = check_type(compiled_release.get("tender"), dict)
-        contract_period = tender.get("contractPeriod")
-        if contract_period:
-            contracting_process["summary"]["contractPeriod"] = contract_period
+        period = resolve(compiled_release, "/tender/contractPeriod")
+        if period:
+            contracting_process["summary"]["contractPeriod"] = period
 
 
 def project_scope(state):
@@ -946,15 +898,13 @@ def project_scope_summary(state):
     CoST IDS element: Project Scope (main output)
     """
     for compiled_release, contracting_process in zip(state.compiled_releases, state.output["contractingProcesses"]):
-
         release_tender = compiled_release.get("tender", {})
-        items = check_type(release_tender.get("items"), list)
-        milestones = check_type(release_tender.get("milestones"), list)
-
         tender = contracting_process["summary"].get("tender", {})
 
+        items = check_type(release_tender.get("items"), list)
         if items:
             tender.setdefault("items", []).extend(items)
+        milestones = check_type(release_tender.get("milestones"), list)
         if milestones:
             tender.setdefault("milestones", []).extend(milestones)
 
@@ -970,16 +920,13 @@ def final_audit(state):
 
 def _contract_implementation_documents(state):
     for compiled_release in state.compiled_releases:
-        contracts = resolve_pointer(compiled_release, "/contracts", [])
-        for contract in contracts:
-            documents = check_type(resolve_pointer(contract, "/implementation/documents", []), list)
-            yield from documents
+        for contract in resolve_list(compiled_release, "/contracts"):
+            yield from resolve_list(contract, "/implementation/documents")
 
 
 def _planning_documents(state):
     for compiled_release in state.compiled_releases:
-        documents = check_type(resolve_pointer(compiled_release, "/planning/documents", []), list)
-        yield from documents
+        yield from resolve_list(compiled_release, "/planning/documents")
 
 
 TRANSFORM_LIST = [
