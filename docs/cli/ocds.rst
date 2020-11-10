@@ -89,7 +89,7 @@ Mandatory positional arguments:
 
 * ``file`` OCDS files
 
-::
+.. code-block:: bash
 
     ocdskit detect-format tests/fixtures/realdata/release-package-1.json tests/fixtures/realdata/record-package-1.json
 
@@ -115,7 +115,7 @@ Optional arguments:
 
 If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
 
@@ -138,7 +138,7 @@ Mandatory positional arguments:
 
 * ``versions`` the colon-separated old and new versions
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
 
@@ -172,7 +172,7 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` set the record package's ``publisher``'s ``uid`` to this value
 * ``--fake`` set the record package's required metadata to dummy values
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/record_*.json | ocdskit package-records > out.json
 
@@ -206,7 +206,7 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` set the release package's ``publisher``'s ``uid`` to this value
 * ``--fake`` set the release package's required metadata to dummy values
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
@@ -236,7 +236,7 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` set the record package's ``publisher``'s ``uid`` to this value
 * ``--fake`` set the record package's required metadata to dummy values
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
 
@@ -266,7 +266,7 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` set the release package's ``publisher``'s ``uid`` to this value
 * ``--fake`` set the release package's required metadata to dummy values
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
 
@@ -289,7 +289,7 @@ Mandatory positional arguments:
 
 * ``size`` the number of records per package
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/realdata/record-package-1-2.json | ocdskit split-record-packages 2 | split -l 1 -a 4
 
@@ -306,7 +306,7 @@ Mandatory positional arguments:
 
 * ``size`` the number of releases per package
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/realdata/release-package-1-2.json | ocdskit split-release-packages 2 | split -l 1 -a 4
 
@@ -326,7 +326,7 @@ Optional arguments:
 * ``--drop`` drop all tables before loading
 * ``--schema SCHEMA`` the release-schema.json to use
 
-::
+.. code-block:: bash
 
     cat release_package.json | ocdskit tabulate sqlite:///data.db
 
@@ -387,9 +387,21 @@ Optional arguments:
 * ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
 * ``--verbose`` print items without validation errors
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/* | ocdskit validate
+
+Using a remote schema file:
+
+.. code-block:: bash
+
+    cat tests/fixtures/* | ocdskit validate https://standard.open-contracting.org/latest/en/release-package-schema.json
+
+Using a local schema file:
+
+.. code-block:: bash
+
+    cat tests/fixtures/* | ocdskit validate file://path/to/schema.json
 
 .. _echo:
 
@@ -456,7 +468,7 @@ Optional arguments:
 * ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the project package's ``publisher``'s ``uid`` to this value
 * ``--fake`` if ``--package`` is set, set the project package's required metadata to dummy values
 
-::
+.. code-block:: bash
 
     cat releases.json | ocdskit convert-to-oc4ids > out.json
 
