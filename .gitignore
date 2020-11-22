@@ -1,8 +1,5 @@
-/.cache
+/*.egg-info
 /.coverage
-/.pytest_cache
-/build
 /dist
 /docs/_build
 /htmlcov
-/ocdskit.egg-info
