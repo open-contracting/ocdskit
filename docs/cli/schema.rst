@@ -32,9 +32,11 @@ Optional arguments:
 * ``--no-deprecated``: don't include deprecated fields
 * ``--no-replace-refs``: don't replace schema with $ref properties with the referenced schema
 
-The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example::
+The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example:
 
-    ocdskit mapping-sheet release-schema.json --extension \
+.. code-block:: bash
+
+   ocdskit mapping-sheet release-schema.json --extension \
       https://raw.githubusercontent.com/open-contracting-extensions/ocds_coveredBy_extension/master/extension.json \
       https://raw.githubusercontent.com/open-contracting-extensions/ocds_options_extension/master/ \
       https://github.com/open-contracting-extensions/ocds_techniques_extension/archive/master.zip \
@@ -48,7 +50,7 @@ The ``--extension-field`` option can be used with or without the ``--extension``
 
 For a description of the columns of the spreadsheet, see the :doc:`../api/mapping_sheet` module.
 
-::
+.. code-block:: bash
 
     ocdskit mapping-sheet path/to/project-schema.json > mapping-sheet.csv
     ocdskit mapping-sheet --infer-required path/to/release-schema.json > mapping-sheet.csv
@@ -72,7 +74,7 @@ Optional arguments:
 * ``--no-definitions`` skip reporting definitions that can use a common $ref in the versioned release schema
 * ``--min-occurrences`` report definitions that occur at least this many times (default 5)
 
-::
+.. code-block:: bash
 
     cat path/to/release-schema.json | ocdskit schema-report
 
@@ -86,7 +88,7 @@ Optional arguments:
 * ``--no-unique-items`` don't add "uniqueItems" properties to array fields
 * ``--check`` check the file for missing properties without modifying the file
 
-::
+.. code-block:: bash
 
     ocdskit schema-strict path/to/release-schema.json
 
@@ -95,6 +97,6 @@ set-closed-codelist-enums
 
 Sets the enum in a JSON Schema to match the codes in the CSV files of closed codelists.
 
-::
+.. code-block:: bash
 
     ocdskit set-closed-codelist-enums path/to/standard path/to/extension1 path/to/extension2

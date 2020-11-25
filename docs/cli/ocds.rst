@@ -33,7 +33,7 @@ Embedded data
 
 If you are working with files that embed OCDS data, use the ``--root-path ROOT_PATH`` option to indicate the "root" path to the items to process within each input. For example, if release packages are in an array under a ``results`` key, like so:
 
-.. code:: json
+.. code-block:: json
 
    {
      "results": [
@@ -53,7 +53,7 @@ If the ``results`` array is very large, you should run ``ocdskit <command> --roo
 
 For this next example, you can run ``ocdskit <command> --root-path results.item.ocdsReleasePackage``:
 
-.. code:: json
+.. code-block:: json
 
    {
      "results": [
@@ -176,7 +176,9 @@ Optional arguments:
 
     cat tests/fixtures/record_*.json | ocdskit package-records > out.json
 
-To convert record packages to a record package, you can use the ``--root-path`` option::
+To convert record packages to a record package, you can use the ``--root-path`` option:
+
+.. code-block:: bash
 
     cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records.item
 
@@ -210,7 +212,9 @@ Optional arguments:
 
     cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
-To convert record packages to a release package, you can use the ``--root-path`` option::
+To convert record packages to a release package, you can use the ``--root-path`` option:
+
+.. code-block:: bash
 
     cat tests/fixtures/realdata/record-package* | ocdskit package-releases --root-path records.item.releases.item
 
@@ -412,33 +416,47 @@ Repeats the input, applying ``--encoding``, ``--ascii``, ``--pretty`` and ``--ro
 
 You can use this command to reformat data:
 
--  Use UTF-8 encoding::
+-  Use UTF-8 encoding:
+
+   .. code-block:: bash
 
       cat iso-8859-1.json | ocdskit --encoding iso-8859-1 echo > utf-8.json
 
--  Use ASCII characters only::
+-  Use ASCII characters only:
+
+   .. code-block:: bash
 
       cat unicode.json | ocdskit --ascii echo > ascii.json
 
--  Use UTF-8 characters where possible::
+-  Use UTF-8 characters where possible:
+
+   .. code-block:: bash
 
       cat ascii.json | ocdskit echo > unicode.json
 
--  Pretty print::
+-  Pretty print:
+
+   .. code-block:: bash
 
       cat compact.json | ocdskit --pretty echo > pretty.json
 
--  Make compact::
+-  Make compact:
+
+   .. code-block:: bash
 
       cat pretty.json | ocdskit echo > compact.json
 
 You can also use this command to extract releases from release packages, and records from record packages. This is especially useful if a single package is too large to hold in memory.
 
--  Split a large record package into smaller packages of 100 records each::
+-  Split a large record package into smaller packages of 100 records each:
+
+   .. code-block:: bash
 
       cat large-record-package.json | ocdskit echo --root-path records.item | ocdskit package-records --size 100
 
--  Split a large release package into smaller packages of 1,000 releases each::
+-  Split a large release package into smaller packages of 1,000 releases each:
+
+   .. code-block:: bash
 
       cat large-release-package.json | ocdskit echo --root-path releases.item | ocdskit package-releases --size 1000
 

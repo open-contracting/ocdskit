@@ -26,7 +26,7 @@ Mandatory positional arguments:
 
 * ``size`` the number of projects per package
 
-::
+.. code-block:: bash
 
     cat tests/fixtures/oc4ids/project_package.json | ocdskit split-project-packages 1 | split -l 1 -a 4
 

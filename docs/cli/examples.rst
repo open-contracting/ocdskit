@@ -77,7 +77,9 @@ Split each line of a file into new files named ``xaaaa``, ``xaaab``, ``xaaac``, 
 
     cat filename.json | split -l 1 -a 4
 
-Add newlines to ends of files (Fish shell)::
+Add newlines to ends of files (fish shell):
+
+.. code-block:: fish
 
     for i in *.json; echo >> $i; end
 

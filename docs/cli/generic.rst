@@ -13,6 +13,6 @@ Optional arguments:
 * ``-r``, ``--recursive`` recursively indent JSON files
 * ``--indent INDENT`` indent level
 
-::
+.. code-block:: bash
 
     ocdskit indent --recursive file1 path/to/directory file2
