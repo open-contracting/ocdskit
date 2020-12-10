@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from ocdskit.util import (get_ocds_minor_version, is_compiled_release, is_linked_release, is_package, is_record,
-                          is_record_package, is_release, is_release_package, json_dump, detect)
-from tests import read, path
+from ocdskit.util import (detect, get_ocds_minor_version, is_compiled_release, is_linked_release, is_package,
+                          is_record, is_record_package, is_release, is_release_package, json_dump)
+from tests import path, read
 
 
 # Same fixture files as in test_detect_format.py, except for concatenated JSON files.
