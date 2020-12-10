@@ -3,8 +3,8 @@ import json
 import pytest
 
 from ocdskit.util import (get_ocds_minor_version, is_compiled_release, is_linked_release, is_package, is_record,
-                          is_record_package, is_release, is_release_package, json_dump)
-from tests import read
+                          is_record_package, is_release, is_release_package, json_dump, detect)
+from tests import read, path
 
 
 # Same fixture files as in test_detect_format.py, except for concatenated JSON files.
@@ -124,3 +124,20 @@ def test_json_dump(data, expected, tmpdir):
         json_dump(data, f)
 
     assert p.read() == expected
+
+
+@pytest.mark.parametrize('filename,expected', [
+    ('record-package_minimal.json', ('record package', False, False)),
+    ('release-package_minimal.json', ('release package', False, False)),
+    ('record_minimal.json', ('record', False, False)),
+    ('release_minimal.json', ('release', False, False)),
+    ('realdata/compiled-release-1.json', ('compiled release', False, False)),
+    ('realdata/versioned-release-1.json', ('versioned release', False, False)),
+    ('release-packages.json', ('release package', False, True)),
+    ('release-packages.jsonl', ('release package', True, True)),
+    ('detect-format_mixed.json', ('release', True, False)),
+    ('detect-format_whitespace.json', ('release', False, False)),
+])
+def test_detect(filename, expected):
+    result = detect(path(filename))
+    assert result == expected
