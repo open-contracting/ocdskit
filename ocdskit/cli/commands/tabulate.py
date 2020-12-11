@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.util import is_record, is_record_package, is_linked_release, is_release_package, json_dumps
+from ocdskit.util import is_linked_release, is_record, is_record_package, is_release_package, json_dumps
 
 
 class Command(OCDSCommand):
