@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy.dialects.postgresql import JSONB
 
 from ocdskit.cli.commands.base import OCDSCommand
-from ocdskit.util import is_record, is_record_package, is_release_package, json_dumps
+from ocdskit.util import is_record, is_record_package, is_linked_release, is_release_package, json_dumps
 
 
 class Command(OCDSCommand):
@@ -25,6 +25,8 @@ class Command(OCDSCommand):
                 releases = []
                 for record in data['records']:
                     releases.extend(record['releases'])
+                    if 'compiledRelease' in record:
+                        releases.append(record['compiledRelease'])
             elif is_release_package(data) or is_record(data):
                 releases = data['releases']
             else:  # release
@@ -138,7 +140,8 @@ class Command(OCDSCommand):
 
         tabulated = {}
         for release in releases:
-            tabulated = self.process_object(tuple(), '', tuple(), tabulated, release, None)
+            if not is_linked_release(release):
+                tabulated = self.process_object(tuple(), '', tuple(), tabulated, release, None)
 
         for table, rows in tabulated.items():
             if not table:

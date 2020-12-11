@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.17 (2020-12-11)
+-------------------
+
+Changed
+~~~~~~~
+
+-  ``tabulate``: Supports linked releases and compiled releases.
+
 0.2.16 (2020-10-06)
 -------------------
 
