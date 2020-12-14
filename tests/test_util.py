@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from ocdskit.util import (detect, get_ocds_minor_version, is_compiled_release, is_linked_release, is_package,
+from ocdskit.util import (detect_format, get_ocds_minor_version, is_compiled_release, is_linked_release, is_package,
                           is_record, is_record_package, is_release, is_release_package, json_dump)
 from tests import path, read
 
@@ -139,5 +139,5 @@ def test_json_dump(data, expected, tmpdir):
     ('detect-format_whitespace.json', ('release', False, False)),
 ])
 def test_detect(filename, expected):
-    result = detect(path(filename))
+    result = detect_format(path(filename))
     assert result == expected

@@ -186,7 +186,7 @@ def _empty_package(uri, publisher, published_date, version):
     }
 
 
-def detect(path, root_path=""):
+def detect_format(path, root_path=""):
     """
     Returns the file format with additional info whether the items are in array and/or concatenated.
 
