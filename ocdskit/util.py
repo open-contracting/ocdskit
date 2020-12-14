@@ -1,6 +1,9 @@
 import itertools
 import json
 from decimal import Decimal
+import ijson
+
+from ocdskit.exceptions import UnknownFormatError
 
 try:
     import orjson
@@ -181,6 +184,84 @@ def _empty_package(uri, publisher, published_date, version):
         'version': version,
         'extensions': {},
     }
+
+
+def detect_format(path, root_path=""):
+    """
+    Returns the file format with additional info whether the items are in array and/or concatenated.
+
+    :param str path: path to tested file
+    :param str root_path: ``json path`` within the file, where the tested items will be searched for
+    :return: a tuple (detected_format, is_concatenated, is_array)
+    :raises UnknownFormatError: if the format cannot be detected
+    """
+    with open(path, 'rb') as f:
+        events = iter(ijson.parse(f, multiple_values=True))
+
+        while True:
+            prefix, event, value = next(events)
+            if prefix == root_path:
+                break
+
+        if prefix:
+            prefix += '.'
+
+        if event == 'start_array':
+            prefix += 'item.'
+        elif event != 'start_map':
+            raise UnknownFormatError('top-level JSON value is a {}'.format(event))
+
+        records_prefix = '{}records'.format(prefix)
+        releases_prefix = '{}releases'.format(prefix)
+        ocid_prefix = '{}ocid'.format(prefix)
+        tag_item_prefix = '{}tag.item'.format(prefix)
+
+        has_records = False
+        has_releases = False
+        has_ocid = False
+        has_tag = False
+        is_compiled = False
+        is_array = event == 'start_array'
+
+        for prefix, event, value in events:
+            if prefix == records_prefix:
+                has_records = True
+            elif prefix == releases_prefix:
+                has_releases = True
+            elif prefix == ocid_prefix:
+                has_ocid = True
+            elif prefix == tag_item_prefix:
+                has_tag = True
+                if value == 'compiled':
+                    is_compiled = True
+            if not prefix and event not in ('end_array', 'end_map', 'map_key'):
+                return _process_detection_result(True, is_array, has_records, has_releases, has_ocid, has_tag,
+                                                 is_compiled)
+
+        return _process_detection_result(False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
+
+
+def _process_detection_result(is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):
+    if has_records:
+        detected_format = 'record package'
+    elif has_releases and has_ocid:
+        detected_format = 'record'
+    elif has_releases:
+        detected_format = 'release package'
+    elif is_compiled:
+        detected_format = 'compiled release'
+    elif has_tag:
+        detected_format = 'release'
+    elif has_ocid:
+        detected_format = 'versioned release'
+    else:
+        if is_array:
+            infix = 'array'
+        else:
+            infix = 'object'
+        raise UnknownFormatError('top-level JSON value is a non-OCDS {}'.format(infix))
+
+    return (detected_format, is_concatenated, is_array)
 
 
 def _empty_record_package(uri='', publisher=None, published_date='', version=None):
