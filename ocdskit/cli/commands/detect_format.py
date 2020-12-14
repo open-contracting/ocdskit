@@ -3,7 +3,7 @@ import os.path
 
 from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.exceptions import UnknownFormatError
-from ocdskit.util import detect
+from ocdskit.util import detect_format
 
 logger = logging.getLogger('ocdskit')
 
