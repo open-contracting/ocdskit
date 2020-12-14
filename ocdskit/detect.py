@@ -13,7 +13,8 @@ def detect_format(path, root_path=''):
 
     :param str path: the path to a file
     :param str root_path: the path to the OCDS data within the file
-    :return: a tuple (detected_format, is_concatenated, is_array)
+    :returns: a tuple of the format, whether data is concatenated, and whether data is in an array
+    :rtype: tuple
     :raises UnknownFormatError: if the format cannot be detected
     """
     return detect(path, root_path)
