@@ -32,8 +32,7 @@ class Command(OCDSCommand):
 
     def detect_format(self, path):
         try:
-            detection_result = detect(path, self.args.root_path)
-            return _print(path, *detection_result)
+            return _print(path, *detect_format(path, self.args.root_path))
         except UnknownFormatError as e:
             logger.warning('%s: unknown (%s)', path, e)
 
