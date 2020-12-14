@@ -186,13 +186,16 @@ def _empty_package(uri, publisher, published_date, version):
     }
 
 
-def detect_format(path, root_path=""):
+def detect_format(path, root_path=''):
     """
-    Returns the file format with additional info whether the items are in array and/or concatenated.
+    Returns the format of OCDS data, and whether the OCDS data is concatenated or in an array.
 
-    :param str path: path to tested file
-    :param str root_path: ``json path`` within the file, where the tested items will be searched for
-    :return: a tuple (detected_format, is_concatenated, is_array)
+    If the OCDS data is concatenated or in an array, assumes that all items have the same format as the first item.
+
+    :param str path: the path to a file
+    :param str root_path: the path to the OCDS data within the file
+    :returns: the format, whether data is concatenated, and whether data is in an array
+    :rtype: tuple
     :raises UnknownFormatError: if the format cannot be detected
     """
     with open(path, 'rb') as f:
@@ -235,13 +238,12 @@ def detect_format(path, root_path=""):
                 if value == 'compiled':
                     is_compiled = True
             if not prefix and event not in ('end_array', 'end_map', 'map_key'):
-                return _process_detection_result(True, is_array, has_records, has_releases, has_ocid, has_tag,
-                                                 is_compiled)
+                return _detect_format_result(True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
 
-        return _process_detection_result(False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
+        return _detect_format_result(False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
 
 
-def _process_detection_result(is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):
+def _detect_format_result(is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):
     if has_records:
         detected_format = 'record package'
     elif has_releases and has_ocid:

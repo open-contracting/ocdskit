@@ -138,6 +138,7 @@ def test_json_dump(data, expected, tmpdir):
     ('detect-format_mixed.json', ('release', True, False)),
     ('detect-format_whitespace.json', ('release', False, False)),
 ])
-def test_detect(filename, expected):
+def test_detect_format(filename, expected):
     result = detect_format(path(filename))
+
     assert result == expected
