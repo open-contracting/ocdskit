@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.2.18 (2020-12-15)
+-------------------
+
+Added
+~~~~~
+
+New library method:
+
+-  :meth:`ocdskit.util.detect_format`
+
 0.2.17 (2020-12-11)
 -------------------
 
