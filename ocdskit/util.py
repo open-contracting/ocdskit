@@ -59,7 +59,7 @@ def iterencode(data, ensure_ascii=False, **kwargs):
     """
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
-    return json.JSONEncoder(ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs).iterencode(data)
+    return JSONEncoder(ensure_ascii=ensure_ascii, **kwargs).iterencode(data)
 
 
 def json_dump(data, io, ensure_ascii=False, **kwargs):
@@ -89,7 +89,7 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
         option |= orjson.OPT_SORT_KEYS
 
     # orjson dumps to bytes.
-    return orjson.dumps(data, cls=JSONEncoder, option=option).decode()
+    return orjson.dumps(data, default=JSONEncoder().default, option=option).decode()
 
 
 def get_ocds_minor_version(data):
