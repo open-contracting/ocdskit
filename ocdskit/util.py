@@ -39,17 +39,18 @@ class SerializableGenerator(list):
         return itertools.chain(self.head, *self[:1])
 
 
-def _default(obj):
-    if isinstance(obj, Decimal):
-        return float(obj)
-    # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
-    try:
-        iter(obj)
-    except TypeError:
-        pass
-    else:
-        return SerializableGenerator(obj)
-    return json.JSONEncoder().default(obj)
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
+        try:
+            iter(obj)
+        except TypeError:
+            pass
+        else:
+            return SerializableGenerator(obj)
+        return json.JSONEncoder.default(self, obj)
 
 
 def iterencode(data, ensure_ascii=False, **kwargs):
@@ -58,7 +59,7 @@ def iterencode(data, ensure_ascii=False, **kwargs):
     """
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
-    return json.JSONEncoder(ensure_ascii=ensure_ascii, default=_default, **kwargs).iterencode(data)
+    return json.JSONEncoder(ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs).iterencode(data)
 
 
 def json_dump(data, io, ensure_ascii=False, **kwargs):
@@ -67,7 +68,7 @@ def json_dump(data, io, ensure_ascii=False, **kwargs):
     """
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
-    json.dump(data, io, ensure_ascii=ensure_ascii, default=_default, **kwargs)
+    json.dump(data, io, ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs)
 
 
 def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
@@ -78,7 +79,7 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
     if not USING_ORJSON or ensure_ascii or indent and indent != 2 or kwargs:
         if not indent:
             kwargs['separators'] = (',', ':')
-        return json.dumps(data, default=_default, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
+        return json.dumps(data, cls=JSONEncoder, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
                           **kwargs)
 
     option = 0
@@ -88,7 +89,7 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
         option |= orjson.OPT_SORT_KEYS
 
     # orjson dumps to bytes.
-    return orjson.dumps(data, default=_default, option=option).decode()
+    return orjson.dumps(data, cls=JSONEncoder, option=option).decode()
 
 
 def get_ocds_minor_version(data):
