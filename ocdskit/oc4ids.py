@@ -325,8 +325,7 @@ def additional_classifications(state):
     for compiled_release in state.compiled_releases:
         additionalclassifications = resolve(compiled_release, "/planning/project/additionalClassifications")
         if additionalclassifications:
-            if "additionalClassifications" not in state.output:
-                state.output["additionalClassifications"] = []
+            state.output.setdefault("additionalClassifications", [])
             for classification in additionalclassifications:
                 if classification not in state.output["additionalClassifications"]:
                     state.output["additionalClassifications"].append(classification)
@@ -406,8 +405,7 @@ def procuring_entity(state):
                            compiled_release.get("ocid"))
             continue
         if procuring_entities:
-            if "tender" not in contracting_process["summary"]:
-                contracting_process["summary"]["tender"] = {}
+            contracting_process["summary"].setdefault("tender", {})
             organization_reference = {"id": procuring_entities[0].get("_new_id")}
             name = procuring_entities[0].get("name")
             if name:
@@ -431,8 +429,7 @@ def administrative_entity(state):
                            compiled_release.get("ocid"))
             continue
         if administrative_entities:
-            if "tender" not in contracting_process["summary"]:
-                contracting_process["summary"]["tender"] = {}
+            contracting_process["summary"].setdefault("tender", {})
             contracting_process["summary"]["tender"]["administrativeEntity"] = {
                 "id": administrative_entities[0].get("_new_id"),
                 "name": administrative_entities[0].get("name"),
@@ -527,14 +524,12 @@ def procurement_process(state):
         if input_tender:
             procurement_method = input_tender.get("procurementMethod")
             if procurement_method:
-                if "tender" not in contracting_process["summary"]:
-                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"].setdefault("tender", {})
                 contracting_process["summary"]["tender"]["procurementMethod"] = procurement_method
 
             procurement_method_details = input_tender.get("procurementMethodDetails")
             if procurement_method_details:
-                if "tender" not in contracting_process["summary"]:
-                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"].setdefault("tender", {})
                 contracting_process["summary"]["tender"]["procurementMethodDetails"] = procurement_method_details
 
 
@@ -547,8 +542,7 @@ def number_of_tenderers(state):
         if input_tender:
             numberoftenderers = input_tender.get("numberOfTenderers")
             if numberoftenderers:
-                if "tender" not in contracting_process["summary"]:
-                    contracting_process["summary"]["tender"] = {}
+                contracting_process["summary"].setdefault("tender", {})
                 contracting_process["summary"]["tender"]["numberOfTenderers"] = numberoftenderers
 
 
@@ -747,8 +741,7 @@ def cost_estimate(state):
                 latest_planning_value = tender_value
 
         if latest_planning_value:
-            if "tender" not in contracting_process["summary"]:
-                contracting_process["summary"]["tender"] = {}
+            contracting_process["summary"].setdefault("tender", {})
             contracting_process["summary"]["tender"]["costEstimate"] = latest_planning_value
 
 
