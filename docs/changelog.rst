@@ -8,6 +8,7 @@ Fixed
 ~~~~~
 
 -  ``upgrade``: If a party's ``roles`` field isn't set, no error occurs.
+-  ``upgrade``: If an organization reference has fewer fields than an organization, no warning is issued.
 
 0.2.18 (2020-12-15)
 -------------------

@@ -158,11 +158,11 @@ def _add_party(parties, party, role):
         parties[_id] = party
     else:
         # Warn about data loss.
-        other = deepcopy(parties[_id])
-        roles = other.pop('roles', [])
-        if dict(party) != dict(other):
+        survivor = deepcopy(parties[_id])
+        roles = survivor.pop('roles', [])
+        if any(key not in survivor or party[key] != survivor[key] for key in party):
             logger.warning('party in "%s" role differs from party in %s roles:\n%s\n%s', role, json.dumps(roles),
-                           json.dumps(party), json.dumps(other))
+                           json.dumps(party), json.dumps(survivor))
 
     if 'roles' not in parties[_id]:
         parties[_id]['roles'] = []
