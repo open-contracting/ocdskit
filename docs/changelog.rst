@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.19 (2021-02-16)
+-------------------
+
+Fixed
+~~~~~
+
+-  ``upgrade``: If a party's ``roles`` field isn't set, no error occurs.
+
 0.2.18 (2020-12-15)
 -------------------
 

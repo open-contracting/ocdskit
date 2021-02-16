@@ -80,6 +80,19 @@ def test_command_release_party_id_missing(monkeypatch):
     run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
 
 
+def test_command_release_party_roles_missing(monkeypatch):
+    data = json.loads(read('release-package_minimal.json'))
+
+    data['releases'][0]['parties'] = [{'id': '1', 'name': 'Acme Inc.'}]
+    data['releases'][0]['buyer'] = {'id': '1'}
+    del data['version']
+
+    stdin = json.dumps(data).encode('utf-8')
+
+    # Should not raise an error.
+    run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
+
+
 def test_command_release_party_roles_str(monkeypatch):
     data = json.loads(read('release-package_minimal.json'))
 

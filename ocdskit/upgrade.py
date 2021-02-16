@@ -159,7 +159,7 @@ def _add_party(parties, party, role):
     else:
         # Warn about data loss.
         other = deepcopy(parties[_id])
-        roles = other.pop('roles')
+        roles = other.pop('roles', [])
         if dict(party) != dict(other):
             logger.warning('party in "%s" role differs from party in %s roles:\n%s\n%s', role, json.dumps(roles),
                            json.dumps(party), json.dumps(other))
