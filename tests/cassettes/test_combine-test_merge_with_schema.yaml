@@ -11,7 +11,7 @@ interactions:
       User-Agent:
       - python-requests/2.22.0
     method: GET
-    uri: https://raw.githubusercontent.com/open-contracting/extension_registry/master/extension_versions.csv
+    uri: https://raw.githubusercontent.com/open-contracting/extension_registry/main/extension_versions.csv
   response:
     body:
       string: !!binary |
