@@ -43,6 +43,16 @@ def test_command_extension_and_extension_field(monkeypatch):
 
 
 @pytest.mark.vcr()
+def test_command_extension_and_extension_field_and_language(monkeypatch):
+    url = 'https://extensions.open-contracting.org/es/extensions/lots/master/'
+
+    assert_command(monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
+                    path('release-schema.json'), '--extension', url, '--language', 'es'],
+                   'mapping-sheet_extension_extension-field_language.csv')
+
+
+@pytest.mark.vcr()
 def test_command_extension_and_extension_field_location(monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_location_extension/archive/v1.1.4.zip'
 

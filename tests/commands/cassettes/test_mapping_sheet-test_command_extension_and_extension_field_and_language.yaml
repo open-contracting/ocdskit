@@ -1,0 +1,178 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+    method: GET
+    uri: https://extensions.open-contracting.org/es/extensions/lots/master/release-schema.json
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1743'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 20 Feb 2021 00:06:13 GMT
+      ETag:
+      - W/"6030381b-2293"
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 1c32d433987a46f38a5cc3f8a5281d70ab6cff00
+      X-GitHub-Request-Id:
+      - E8B8:1038:309911:3C3F68:6030467A
+      X-Served-By:
+      - cache-yyz4547-YYZ
+      X-Timer:
+      - S1613779573.064862,VS0,VE31
+      expires:
+      - Fri, 19 Feb 2021 23:25:07 GMT
+      last-modified:
+      - Fri, 19 Feb 2021 22:13:47 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+    method: GET
+    uri: https://extensions.open-contracting.org/es/extensions/lots/master/extension.json
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA+1VsW7bMBDd8xUHz44Uo1umFslSIECzBB3aIjiTZ4uFRCokldQI8u99R8m2YhTI
+        0mwBDFgi3727e+8oPp8RLUzoes5u7VqXd4tL+oFFLK+q1QJPv5Y0gnxmk2+D8xmY5xEjHbsWrwvL
+        mT+HXvy5AiOQzm+rELeLEg6o504U+Q0gujqC6JZj9hJT43rN9zLms5JMdH12wc/S6fPiC2XxViL1
+        MRhJiQx7WgtZ9+isWEKFgdqQ05KeGolCa2cBn3DOUvD4CYVIXcC2Qiu6loxeEoUNCZtGV/fEyDMy
+        K1tFX7N04LbBDJ34nIg9ODM2aSOchyiJOt4RVjxF2SDIG9HXQor/HTHyRmk5gxXVDkmVmBZuQq7o
+        e6nch9kioQaf3cYhkUu0dY/il4X2kdsBScOwbbLSoWaIILGPogkYJfZ96wyvW9F9jXlqgr4UJauD
+        S5JU4Ts/aRvIomhnHLx3P4eLi80nTwmKDGInwV0ktInGpGjiNSCkKcgGFaOgoTmUyFzgAxoL1Cmj
+        rNIYXdEN4ixsaFvRB8hvuewdUpa6+hANxgJM/DAUCjvGYpDGVzOghKND2NrBoMg6Ajp2EkdcytDk
+        UF/DBsruDXNM3I7ZHwYhSSP3yhdHSgEWxBh3khYGFqnmDl4NmIugFia1wzql8fC56IjJ2ttpVKY5
+        67IoCFOLelbWKO7gJ0fQ4cgGeDpZis7hqmrFp2Ydnd3Ej7PzvmfH5Q+F30fh2bUwtcV6MdzF9vRu
+        aHLu02Vdyx/EJmBS9a9bqRY/g9SqcT3LMt1Vr5jRYjr5TN7oZ+vkgL2CjROBpexm7Mk0uDfT8aaF
+        iMJJzseN6nfCnXe8eZEjX0uvUuCrJLO4fbORn6qty82wHpJEbRUKVfhG1Ke9n8+aDsamewzc/WGt
+        RlXw5ajMWMq+m/+QbuM8Y9reTKndn72c/QUz5dVunwgAAA==
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '718'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 20 Feb 2021 00:06:13 GMT
+      ETag:
+      - W/"6030381b-89f"
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - e8b37b672463536e1fd1065b0e8e8365b3f3c1d3
+      X-GitHub-Request-Id:
+      - 4820:66D2:1D55B8:22DB29:6030467B
+      X-Served-By:
+      - cache-yyz4523-YYZ
+      X-Timer:
+      - S1613779573.144104,VS0,VE31
+      expires:
+      - Fri, 19 Feb 2021 23:25:07 GMT
+      last-modified:
+      - Fri, 19 Feb 2021 22:13:47 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

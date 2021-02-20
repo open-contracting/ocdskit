@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='ocdskit',
-    version='0.2.19',
+    version='0.2.20',
     author='Open Contracting Partnership',
     author_email='data@open-contracting.org',
     url='https://github.com/open-contracting/ocdskit',
@@ -19,7 +19,7 @@ setup(
         'jsonref',
         'jsonschema',
         'ocdsmerge>=0.6',
-        'ocdsextensionregistry>=0.0.23',
+        'ocdsextensionregistry>=0.1.2',
         'requests',
         'rfc3987',
         'sqlalchemy',
