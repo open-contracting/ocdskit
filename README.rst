@@ -18,7 +18,7 @@ If you are viewing this on GitHub or PyPi, open the `full documentation <https:/
    :target: https://pypi.org/project/ocdskit/
 .. |Build Status| image:: https://github.com/open-contracting/ocdskit/workflows/CI/badge.svg
 .. |Lint Status| image:: https://github.com/open-contracting/ocdskit/workflows/Lint/badge.svg
-.. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=master
-   :target: https://coveralls.io/github/open-contracting/ocdskit?branch=master
+.. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=main
+   :target: https://coveralls.io/github/open-contracting/ocdskit?branch=main
 .. |Python Version| image:: https://img.shields.io/pypi/pyversions/ocdskit.svg
    :target: https://pypi.org/project/ocdskit/
