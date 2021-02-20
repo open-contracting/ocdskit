@@ -33,7 +33,7 @@ class Command(OCDSCommand):
         if self.args.check_urls:
 
             def check_url(instance):
-                # See https://github.com/Julian/jsonschema/blob/master/jsonschema/_format.py
+                # See https://github.com/Julian/jsonschema/blob/main/jsonschema/_format.py
                 if not isinstance(instance, str_types):
                     return True
                 rfc3987.parse(instance, rule='URI')  # raises ValueError
