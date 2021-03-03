@@ -19,3 +19,5 @@ jobs:
     - run: curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
     - run: pip install .
     - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
+    - run: pip install .[test]
+    - run: pytest /tmp/test_requirements.py
