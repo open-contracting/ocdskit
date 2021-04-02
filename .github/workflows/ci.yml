@@ -2,6 +2,7 @@ name: CI
 on: [push, pull_request]
 jobs:
   build:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -11,39 +12,39 @@ jobs:
           - ''
           - libyajl-dev
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    # https://github.com/actions/cache/blob/main/examples.md#using-a-script-to-get-cache-location
-    - id: pip-cache
-      run: python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.pip-cache.outputs.dir }}
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install YAJL (Linux)
-      if: matrix.packages && matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install libyajl-dev
-    - name: Install YAJL (macOS)
-      if: matrix.packages && matrix.os == 'macos-latest'
-      run: brew install yajl
-    - name: Install YAJL (Windows)
-      if: matrix.packages && matrix.os == 'windows-latest'
-      # https://github.com/ICRAR/ijson/blob/master/.appveyor.yml
-      run: |
-        git clone https://github.com/lloyd/yajl
-        mkdir yajl\yajl
-        xcopy yajl\src\api\*.* yajl\yajl
-    - run: pip install .[test]
-    - name: Test
-      run: |
-        coverage run --append --source=ocdskit -m pytest --vcr-record=none
-        pip install orjson
-        coverage run --append --source=ocdskit -m pytest --vcr-record=none
-        pip uninstall -y orjson
-    - env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: coveralls --service=github
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      # https://github.com/actions/cache/blob/main/examples.md#using-a-script-to-get-cache-location
+      - id: pip-cache
+        run: python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install YAJL (Linux)
+        if: matrix.packages && matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install libyajl-dev
+      - name: Install YAJL (macOS)
+        if: matrix.packages && matrix.os == 'macos-latest'
+        run: brew install yajl
+      - name: Install YAJL (Windows)
+        if: matrix.packages && matrix.os == 'windows-latest'
+        # https://github.com/ICRAR/ijson/blob/master/.appveyor.yml
+        run: |
+          git clone https://github.com/lloyd/yajl
+          mkdir yajl\yajl
+          xcopy yajl\src\api\*.* yajl\yajl
+      - run: pip install .[test]
+      - name: Test
+        run: |
+          coverage run --append --source=ocdskit -m pytest --vcr-record=none
+          pip install orjson
+          coverage run --append --source=ocdskit -m pytest --vcr-record=none
+          pip uninstall -y orjson
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
