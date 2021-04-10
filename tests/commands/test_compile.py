@@ -37,7 +37,6 @@ def test_command(monkeypatch):
                            ['realdata/compiled-release-1.json', 'realdata/compiled-release-2.json'])
 
 
-@pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_extensions_with_packages(monkeypatch):
     assert_streaming(monkeypatch, main, ['compile'],
