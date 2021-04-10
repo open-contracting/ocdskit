@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='ocdskit',
-    version='0.2.20',
+    version='0.2.21',
     author='Open Contracting Partnership',
     author_email='data@open-contracting.org',
     url='https://github.com/open-contracting/ocdskit',
@@ -13,6 +13,7 @@ setup(
     license='BSD',
     packages=find_packages(exclude=['tests', 'tests.*']),
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     install_requires=[
         'ijson>=2.5',
         'jsonpointer',
