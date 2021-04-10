@@ -17,14 +17,15 @@ def test_command(monkeypatch):
 
 @pytest.mark.vcr()
 def test_command_invalid_json(monkeypatch, caplog):
-    with caplog.at_level(logging.INFO):
-        stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
+    caplog.set_level(logging.WARNING)
 
-        assert_streaming_error(monkeypatch, main, ['validate'], stdin)
+    stdin = read('release-package_minimal.json', 'rb') + b'\n{\n'
 
-        assert len(caplog.records) == 1
-        assert caplog.records[0].levelname == 'CRITICAL'
-        assert caplog.records[0].message.startswith('JSON error: ')
+    assert_streaming_error(monkeypatch, main, ['validate'], stdin)
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == 'CRITICAL'
+    assert caplog.records[0].message.startswith('JSON error: ')
 
 
 @pytest.mark.vcr()
