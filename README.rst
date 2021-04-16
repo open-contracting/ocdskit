@@ -12,7 +12,7 @@ A suite of command-line tools for working with OCDS data to:
 * validate JSON data against a JSON schema
 * generate a spreadsheet version of a JSON schema
 
-If you are viewing this on GitHub or PyPi, open the `full documentation <https://ocdskit.readthedocs.io/>`__ for additional details.
+If you are viewing this on GitHub or PyPI, open the `full documentation <https://ocdskit.readthedocs.io/>`__ for additional details.
 
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/ocdskit.svg
    :target: https://pypi.org/project/ocdskit/
