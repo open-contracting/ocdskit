@@ -407,6 +407,10 @@ Using a local schema file:
 
     cat tests/fixtures/* | ocdskit validate file://path/to/schema.json
 
+.. note::
+
+   This tool performs JSON Schema validation only. Use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__ to perform additional checks.
+
 .. _echo:
 
 echo
