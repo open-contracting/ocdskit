@@ -301,3 +301,9 @@ def _remove_empty_optional_metadata(output):
     for field in ('license', 'publicationPolicy', 'version'):
         if output[field] is None:
             del output[field]
+
+
+def _cast_as_list(value):
+    if isinstance(value, str):
+        return [value]
+    return sorted(value)

@@ -6,7 +6,7 @@ import os.path
 from copy import deepcopy
 
 from ocdskit.cli.commands.base import BaseCommand
-from ocdskit.util import json_dump
+from ocdskit.util import _cast_as_list, json_dump
 
 logger = logging.getLogger('ocdskit')
 
@@ -89,10 +89,7 @@ class Command(BaseCommand):
             if not data['openCodelist']:
                 codes = self.codelists[data['codelist']]
 
-                if isinstance(data['type'], str):
-                    types = [data['type']]
-                else:
-                    types = data['type']
+                types = _cast_as_list(data['type'])
 
                 if 'string' in types:
                     if 'null' in types:

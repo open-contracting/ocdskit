@@ -138,17 +138,14 @@ def _make_row(field, schema, infer_required):
     required = False
 
     if 'type' in schema:
-        if isinstance(schema['type'], str):
-            type_ = [schema['type']]
-        else:
-            type_ = list(schema['type'])
+        types = _cast_as_list(schema['type'])
 
-        if 'null' in type_:
-            type_.remove('null')
+        if 'null' in types:
+            types.remove('null')
         elif infer_required:
-            required = 'string' in type_ or 'integer' in type_
+            required = 'string' in types or 'integer' in types
 
-        row['type'] = ', '.join(type_)
+        row['type'] = ', '.join(types)
     else:
         row['type'] = 'unknown'
 
