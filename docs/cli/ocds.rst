@@ -71,6 +71,8 @@ For this next example, you can run ``ocdskit <command> --root-path results.item.
 
 The root path, in this case, is the ``results`` key joined to the ``item`` literal, joined to the ``ocdsReleasePackage`` key.
 
+.. _detect-format:
+
 detect-format
 -------------
 
@@ -92,6 +94,8 @@ Mandatory positional arguments:
 .. code-block:: bash
 
     ocdskit detect-format tests/fixtures/realdata/release-package-1.json tests/fixtures/realdata/record-package-1.json
+
+.. _compile:
 
 compile
 -------
@@ -124,6 +128,8 @@ For the Python API, see :meth:`ocdskit.combine.merge`.
 .. note::
 
    An error is raised if a release is missing an ``ocid`` field, or if the values of the release packages' ``version`` fields are inconsistent.
+
+.. _upgrade:
 
 upgrade
 -------
@@ -222,6 +228,8 @@ If ``--uri`` and ``--published-date`` are not set, the output package will be in
 
 For the Python API, see :meth:`ocdskit.combine.package_releases`.
 
+.. _combine-record-packages:
+
 combine-record-packages
 -----------------------
 
@@ -251,6 +259,8 @@ For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
 .. note::
 
    A warning is issued if a package's ``"records"`` field isn't set.
+
+.. _combine-release-packages:
 
 combine-release-packages
 ------------------------
@@ -316,6 +326,8 @@ Mandatory positional arguments:
 
 The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
+.. _tabulate:
+
 tabulate
 --------
 
@@ -378,6 +390,8 @@ Alternative approaches
 `Kingfisher Process <https://kingfisher-process.readthedocs.io/en/latest/>`__ stores OCDS releases as JSON blobs in a single column.
 
 `Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/>`__ flattens JSON data into CSV and Excel files and supports additional fields, additional arrays and many other ways to customize the output.
+
+.. _validate:
 
 validate
 --------
@@ -467,6 +481,8 @@ You can also use this command to extract releases from release packages, and rec
 Note that the package metadata from the large package won't be retained in the smaller packages; you can use the optional arguments of the :ref:`package-records` and :ref:`package-releases` commands to set the package metadata.
 
 If the single package is small enough to hold in memory, you can use the :ref:`split-record-packages` and :ref:`split-release-packages` commands instead, which retain the package metadata.
+
+.. _convert-to-oc4ids:
 
 convert-to-oc4ids
 -----------------

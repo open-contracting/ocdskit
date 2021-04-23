@@ -14,6 +14,8 @@ Optional arguments for all commands (if relevant) are:
 * ``--ascii`` print escape sequences instead of UTF-8 characters
 * ``--pretty`` pretty print output
 
+.. _mapping-sheet:
+
 mapping-sheet
 -------------
 
@@ -64,6 +66,8 @@ For the Python API, see :meth:`ocdskit.mapping_sheet.mapping_sheet`.
 
    An error is raised if the ``--order-by`` column doesn't exist.
 
+.. _schema-report:
+
 schema-report
 -------------
 
@@ -79,6 +83,8 @@ Optional arguments:
 
     cat path/to/release-schema.json | ocdskit schema-report
 
+.. _schema-strict:
+
 schema-strict
 -------------
 
@@ -92,6 +98,8 @@ Optional arguments:
 .. code-block:: bash
 
     ocdskit schema-strict path/to/release-schema.json
+
+.. _set-closed-codelist-enums:
 
 set-closed-codelist-enums
 -------------------------

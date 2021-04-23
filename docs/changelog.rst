@@ -17,7 +17,7 @@ Added
 
 New CLI options:
 
--  ``mapping-sheet``: ``language``
+-  :ref:`mapping-sheet`: ``--language``
 
 0.2.19 (2021-02-16)
 -------------------
@@ -25,8 +25,8 @@ New CLI options:
 Fixed
 ~~~~~
 
--  ``upgrade``: If a party's ``roles`` field isn't set, no error occurs.
--  ``upgrade``: If an organization reference has fewer fields than an organization, no warning is issued.
+-  :ref:`upgrade`: If a party's ``roles`` field isn't set, no error occurs.
+-  :ref:`upgrade`: If an organization reference has fewer fields than an organization, no warning is issued.
 
 0.2.18 (2020-12-15)
 -------------------
@@ -44,7 +44,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  ``tabulate``: Supports linked releases and compiled releases.
+-  :ref:`tabulate`: Supports linked releases and compiled releases.
 
 0.2.16 (2020-10-06)
 -------------------
@@ -52,14 +52,14 @@ Changed
 Fixed
 ~~~~~
 
--  ``upgrade``: If a party's ``roles`` field isn't a list of strings, no error occurs.
+-  :ref:`upgrade`: If a party's ``roles`` field isn't a list of strings, no error occurs.
 
 Added
 ~~~~~
 
 New CLI commands:
 
--  ``split-project-packages``
+-  :ref:`split-project-packages`
 
 0.2.15 (2020-09-30)
 -------------------
@@ -67,14 +67,14 @@ New CLI commands:
 Changed
 ~~~~~~~
 
--  ``upgrade``: If a party's ``roles`` field is a string, it is coerced to an array.
+-  :ref:`upgrade`: If a party's ``roles`` field is a string, it is coerced to an array.
 
 Added
 ~~~~~
 
 New CLI options:
 
--  ``mapping-sheet``: ``--no-deprecated``, ``--no-replace-refs``
+-  :ref:`mapping-sheet`: ``--no-deprecated``, ``--no-replace-refs``
 
 0.2.14 (2020-09-16)
 -------------------
@@ -84,7 +84,7 @@ Added
 
 New CLI option:
 
--  ``schema-strict``: ``--check``
+-  :ref:`schema-strict`: ``--check``
 
 New library method:
 
@@ -96,7 +96,7 @@ New library method:
 Fixed
 ~~~~~
 
--  ``convert-to-oc4ids`` no longer errors if a party ``id`` isn't set.
+-  :ref:`convert-to-oc4ids` no longer errors if a party's ``id`` field isn't set.
 
 0.2.12 (2020-08-19)
 -------------------
@@ -109,7 +109,7 @@ Changed
 Fixed
 ~~~~~
 
--  ``mapping-sheet`` correctly populates the ``extension`` column for extension fields on OCDS objects that ``$ref``'erence OCDS definitions.
+-  :ref:`mapping-sheet` correctly populates the ``extension`` column for extension fields on OCDS objects that ``$ref``'erence OCDS definitions.
 
 0.2.11 (2020-08-12)
 -------------------
@@ -117,7 +117,7 @@ Fixed
 Changed
 ~~~~~~~
 
--  ``mapping-sheet``: The ``extension`` column is now the name of the extension that introduced the JSON path, not the name of the extension that defined the field.
+-  :ref:`mapping-sheet`: The ``extension`` column is now the name of the extension that introduced the JSON path, not the name of the extension that defined the field.
 
 0.2.10 (2020-07-28)
 -------------------
@@ -125,13 +125,13 @@ Changed
 Changed
 ~~~~~~~
 
--  ``indent`` respects ``--ascii``.
--  ``tabulate`` supports any OCDS data.
+-  :ref:`indent` respects ``--ascii``.
+-  :ref:`tabulate` supports any OCDS data.
 
 Fixed
 ~~~~~
 
--  ``compile`` no longer errors on Windows when using the SQLite backend.
+-  :ref:`compile` no longer errors on Windows when using the SQLite backend.
 
 0.2.9 (2020-07-08)
 ------------------
@@ -139,8 +139,8 @@ Fixed
 Fixed
 ~~~~~
 
--  ``detect-format`` respects ``--root-path``.
--  ``convert-to-oc4ids`` omits ``sector`` and ``documents`` if empty.
+-  :ref:`detect-format` respects ``--root-path``.
+-  :ref:`convert-to-oc4ids` omits ``sector`` and ``documents`` if empty.
 
 0.2.8 (2020-04-29)
 ------------------
@@ -148,8 +148,8 @@ Fixed
 Changed
 ~~~~~~~
 
--  ``schema-strict`` accepts a filename as a positional argument, instead of a schema as standard input.
--  ``schema-strict`` adds constraints to all fields, not only required fields.
+-  :ref:`schema-strict` accepts a filename as a positional argument, instead of a schema as standard input.
+-  :ref:`schema-strict` adds constraints to all fields, not only required fields.
 
 0.2.7 (2020-04-23)
 ------------------
@@ -159,12 +159,12 @@ Added
 
 New CLI options:
 
--  ``combine-record-packages``: ``--version``
--  ``combine-release-packages``: ``--version``
--  ``compile``: ``--version``
--  ``convert-to-oc4ids``: ``--version``
--  ``package-records``: ``--version``
--  ``package-releases``: ``--version``
+-  :ref:`combine-record-packages`: ``--version``
+-  :ref:`combine-release-packages`: ``--version``
+-  :ref:`compile`: ``--version``
+-  :ref:`convert-to-oc4ids`: ``--version``
+-  :ref:`package-records`: ``--version``
+-  :ref:`package-releases`: ``--version``
 
 New library method:
 
@@ -173,13 +173,13 @@ New library method:
 Changed
 ~~~~~~~
 
--  ``merge`` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
--  ``package-records`` and ``package-releases`` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
+-  :ref:`merge` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
+-  :ref:`package-records` and :ref:`package-releases` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
 
 Fixed
 ~~~~~
 
--  ``convert-to-oc4ids`` sets the ``publishedDate`` field, not the ``published_date`` field.
+-  :ref:`convert-to-oc4ids` sets the ``publishedDate`` field, not the ``published_date`` field.
 
 0.2.6 (2020-04-15)
 ------------------
@@ -194,7 +194,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  ``combine-record-packages`` and ``combine-release-packages`` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-record-packages` and :ref:`combine-release-packages` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
 
 0.2.5 (2020-04-14)
 ------------------
@@ -202,7 +202,7 @@ Changed
 Fixed
 ~~~~~
 
--  ``combine-record-packages`` and ``combine-release-packages`` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-record-packages` and :ref:`combine-release-packages` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
 
 0.2.4 (2020-03-19)
 ------------------
@@ -210,7 +210,7 @@ Fixed
 Fixed
 ~~~~~
 
--  ``convert-to-oc4ids`` no longer errors.
+-  :ref:`convert-to-oc4ids` no longer errors.
 
 0.2.3 (2020-03-19)
 ------------------
@@ -220,7 +220,7 @@ Added
 
 New CLI commands:
 
--  ``convert-to-oc4ids``
+-  :ref:`convert-to-oc4ids`
 
 New library module:
 
@@ -229,8 +229,8 @@ New library module:
 Changed
 ~~~~~~~
 
--  ``compile`` errors if an ``ocid`` field is missing from a release (see :meth:`~ocdskit.packager.AbstractBackend.add_release`).
--  ``upgrade`` upgrades records (see :meth:`~ocdskit.upgrade.upgrade_10_11`).
+-  :ref:`compile` errors if an ``ocid`` field is missing from a release (see :meth:`~ocdskit.packager.AbstractBackend.add_release`).
+-  :ref:`upgrade` upgrades records (see :meth:`~ocdskit.upgrade.upgrade_10_11`).
 
 0.2.2 (2020-01-07)
 ------------------
@@ -239,8 +239,8 @@ Changed
 ~~~~~~~
 
 -  Avoid exception when piping output to tools like ``head``.
--  ``package-records``, ``package-releases``: Use fast writer if ``--size`` is set.
--  ``echo``: Use fast writer (assuming ``--root-path`` is set anytime input is too large).
+-  :ref:`package-records`, :ref:`package-releases`: Use fast writer if ``--size`` is set.
+-  :ref:`echo`: Use fast writer (assuming ``--root-path`` is set anytime input is too large).
 
 0.2.1 (2020-01-06)
 ------------------
@@ -250,23 +250,23 @@ Added
 
 New CLI options:
 
--  ``package-records``: ``--size``
--  ``package-releases``: ``--size``
+-  :ref:`package-records`: ``--size``
+-  :ref:`package-releases`: ``--size``
 
 New CLI commands:
 
--  ``echo``
+-  :ref:`echo`
 
 Changed
 ~~~~~~~
 
 -  Implement iterative JSON writer.
--  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in ``compile`` command (see :mod:`ocdskit.packager`).
+-  Use ``orjson`` if available to improve performance of dumping/loading JSON, especially to/from SQL in :ref:`compile` command (see :mod:`ocdskit.packager`).
 
 Fixed
 ~~~~~
 
--  ``combine-record-packages`` no longer duplicates release package URLs in ``packages`` (see :meth:`ocdskit.combine.combine_record_packages`).
+-  :ref:`combine-record-packages` no longer duplicates release package URLs in ``packages`` field (see :meth:`ocdskit.combine.combine_record_packages`).
 
 0.2.0 (2019-12-31)
 ------------------
@@ -283,8 +283,8 @@ Changed
 
 CLI:
 
--  ``compile`` accepts either release packages or individual releases (see :meth:`~ocdskit.combine.merge`).
--  ``compile`` is memory efficient if given a long list of inputs (see :meth:`~ocdskit.combine.merge`).
+-  :ref:`compile` accepts either release packages or individual releases (see :meth:`~ocdskit.combine.merge`).
+-  :ref:`compile` is memory efficient if given a long list of inputs (see :meth:`~ocdskit.combine.merge`).
 
 Library:
 
@@ -316,15 +316,15 @@ Added
 
 New CLI options:
 
--  ``combine-record-packages``: ``--fake``
--  ``combine-release-packages``: ``--fake``
--  ``compile``: ``--fake``
--  ``package-records``: ``--fake``
--  ``package-releases``: ``--fake``
+-  :ref:`combine-record-packages`: ``--fake``
+-  :ref:`combine-release-packages`: ``--fake``
+-  :ref:`compile`: ``--fake``
+-  :ref:`package-records`: ``--fake``
+-  :ref:`package-releases`: ``--fake``
 
 New CLI commands:
 
--  ``package-records``
+-  :ref:`package-records`
 
 New library methods:
 
@@ -333,12 +333,12 @@ New library methods:
 Changed
 ~~~~~~~
 
--  ``mapping-sheet``: Improve documentation of ``--extension`` and ``--extension-field``.
+-  :ref:`mapping-sheet`: Improve documentation of ``--extension`` and ``--extension-field``.
 
 Fixed
 ~~~~~
 
--  ``detect-format`` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
+-  :ref:`detect-format` correctly detects concatenated JSON, even if subsequent JSON values are non-OCDS values.
 
 0.1.3 (2019-09-26)
 ------------------
@@ -362,8 +362,8 @@ Changed
 Fixed
 ~~~~~
 
--  ``upgrade`` no longer errors if specific fields are ``null``.
--  ``upgrade`` no longer errors on packages that have ``parties`` without ``id`` fields and that declare no version or a version of "1.0".
+-  :ref:`upgrade` no longer errors if specific fields are ``null``.
+-  :ref:`upgrade` no longer errors on packages that have ``parties`` values without ``id`` fields and that declare no version or a version of "1.0".
 
 0.1.0 (2019-09-17)
 ------------------
@@ -375,11 +375,11 @@ Added
 
 New CLI commands:
 
--  ``detect-format``
+-  :ref:`detect-format`
 
 New CLI options:
 
--  ``package-releases``:
+-  :ref:`package-releases`:
 
    -  ``--uri``
    -  ``--published-date``
@@ -388,28 +388,28 @@ New CLI options:
    -  ``--publisher-scheme``
    -  ``--publisher-uid``
 
--  ``compile``:
+-  :ref:`compile`:
 
    -  ``--publisher-name``
    -  ``--publisher-uri``
    -  ``--publisher-scheme``
    -  ``--publisher-uid``
 
--  ``combine-record-packages``:
+-  :ref:`combine-record-packages`:
 
    -  ``--publisher-name``
    -  ``--publisher-uri``
    -  ``--publisher-scheme``
    -  ``--publisher-uid``
 
--  ``combine-release-packages``:
+-  :ref:`combine-release-packages`:
 
    -  ``--publisher-name``
    -  ``--publisher-uri``
    -  ``--publisher-scheme``
    -  ``--publisher-uid``
 
--  ``mapping-sheet``:
+-  :ref:`mapping-sheet`:
 
    -  ``--order-by``
    -  ``--infer-required``
@@ -431,24 +431,24 @@ Changed
 ~~~~~~~
 
 -  **Backwards-incompatible**: :meth:`~ocdskit.upgrade.upgrade_10_10`, :meth:`~ocdskit.upgrade.upgrade_11_11` and :meth:`~ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
--  **Backwards-incompatible**: ``mapping-sheet`` and ``schema-report`` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
--  ``mapping-sheet`` and ``schema-report`` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
--  ``mapping-sheet`` outputs:
+-  **Backwards-incompatible**: :ref:`mapping-sheet` and :ref:`schema-report` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
+-  :ref:`mapping-sheet` and :ref:`schema-report` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
+-  :ref:`mapping-sheet` outputs:
 
    -  ``enum`` values of ``items``
    -  ``enum`` as “Enum:” instead of “Codelist:”
    -  ``pattern`` as “Pattern:”
 
--  ``schema-strict`` adds ``"uniqueItems": true`` to all arrays, unless ``--no-unique-items`` is set.
+-  :ref:`schema-strict` adds ``"uniqueItems": true`` to all arrays, unless ``--no-unique-items`` is set.
 -  Use ``https://`` instead of ``http://`` for ``standard.open-contracting.org``.
 
 Fixed
 ~~~~~
 
--  ``compile`` merges extensions' schema into the release schema before merging releases.
--  ``mapping-sheet`` fills in the deprecated column if an object field uses ``$ref``.
--  ``schema-strict`` no longer errors if a required field uses ``$ref``.
--  ``upgrade`` no longer errors if ``awards`` or ``contracts`` is ``null``.
+-  :ref:`compile` merges extensions' schema into the release schema before merging releases.
+-  :ref:`mapping-sheet` fills in the deprecated column if an object field uses ``$ref``.
+-  :ref:`schema-strict` no longer errors if a required field uses ``$ref``.
+-  :ref:`upgrade` no longer errors if ``awards`` or ``contracts`` is ``null``.
 
 0.0.5 (2019-01-11)
 ------------------
@@ -458,7 +458,7 @@ Added
 
 New CLI options:
 
--  ``compile``:
+-  :ref:`compile`:
 
    -  ``--schema``: You can create compiled releases and versioned releases using a specific release schema.
    -  ``--linked-releases``: You can have the record package use linked releases instead of full releases.
@@ -466,26 +466,26 @@ New CLI options:
 
       -  If not set, these will be ``null`` instead of the ``uri`` and ``publishedDate`` of the last package.
 
--  ``combine-record-packages``: ``--uri``, ``--published-date``
--  ``combine-release-packages``: ``--uri``, ``--published-date``
+-  :ref:`combine-record-packages`: ``--uri``, ``--published-date``
+-  :ref:`combine-release-packages`: ``--uri``, ``--published-date``
 
 New CLI commands:
 
--  ``upgrade``
+-  :ref:`upgrade`
 
 Changed
 ~~~~~~~
 
--  ``compile`` raises an error if the release packages use different versions.
--  ``compile`` determines the version of the release schema to use if ``--schema`` isn’t set.
--  ``compile``, ``combine-record-packages`` and ``combine-release-packages`` have a predictable field order.
+-  :ref:`compile` raises an error if the release packages use different versions.
+-  :ref:`compile` determines the version of the release schema to use if ``--schema`` isn’t set.
+-  :ref:`compile`, :ref:`combine-record-packages` and :ref:`combine-release-packages` have a predictable field order.
 -  ``measure`` is removed.
 
 Fixed
 ~~~~~
 
--  ``indent`` prints an error if a path doesn’t exist.
--  ``compile``, ``combine-record-packages`` and ``combine-release-packages`` succeed if the required ``publisher`` field is missing.
+-  :ref:`indent` prints an error if a path doesn’t exist.
+-  :ref:`compile`, :ref:`combine-record-packages` and :ref:`combine-release-packages` succeed if the required ``publisher`` field is missing.
 
 0.0.4 (2018-11-23)
 ------------------
@@ -495,13 +495,13 @@ Added
 
 New CLI options:
 
--  ``schema-report``: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
+-  :ref:`schema-report`: ``--no-codelists``, ``--no-definitions``, ``--min-occurrences``
 
 Changed
 ~~~~~~~
 
--  ``schema-report`` reports definitions that can use a common ``$ref`` in the versioned release schema.
--  ``schema-report`` reports open and closed codelists in CSV format.
+-  :ref:`schema-report` reports definitions that can use a common ``$ref`` in the versioned release schema.
+-  :ref:`schema-report` reports open and closed codelists in CSV format.
 
 0.0.3 (2018-11-01)
 ------------------
@@ -511,13 +511,13 @@ Added
 
 New CLI options:
 
--  ``compile``: ``--package``, ``--versioned``
+-  :ref:`compile`: ``--package``, ``--versioned``
 
 New CLI commands:
 
--  ``package-releases``
--  ``split-record-packages``
--  ``split-release-packages``
+-  :ref:`package-releases`
+-  :ref:`split-record-packages`
+-  :ref:`split-release-packages`
 
 Changed
 ~~~~~~~
@@ -525,11 +525,11 @@ Changed
 -  Add helpful error messages if:
 
    -  the input is not `line-delimited JSON <https://en.wikipedia.org/wiki/JSON_streaming>`__ data.
-   -  the input to the ``indent`` command is not valid JSON.
+   -  the input to the :ref:`indent` command is not valid JSON.
 
 -  Change default behavior to print UTF-8 characters instead of escape sequences.
 -  Add ``--ascii`` option to print escape sequences instead of UTF-8 characters.
--  Rename base exception class from ``ReportError`` to ``OCDSKitError``.
+-  Rename base exception class from ``ReportError`` to :class:`OCDSKitError`.
 
 0.0.2 (2018-03-14)
 ------------------
@@ -539,14 +539,14 @@ Added
 
 New CLI options:
 
--  ``validate``: ``--check-urls`` and ``--timeout``
+-  :ref:`validate`: ``--check-urls`` and ``--timeout``
 
 New CLI commands:
 
--  ``indent``
--  ``schema-report``
--  ``schema-strict``
--  ``set-closed-codelist-enums``
+-  :ref:`indent`
+-  :ref:`schema-report`
+-  :ref:`schema-strict`
+-  :ref:`set-closed-codelist-enums`
 
 0.0.1 (2017-12-25)
 ------------------
@@ -556,10 +556,10 @@ Added
 
 New CLI commands:
 
--  ``combine-record-packages``
--  ``combine-release-packages``
--  ``compile``
--  ``mapping-sheet``
+-  :ref:`combine-record-packages`
+-  :ref:`combine-release-packages`
+-  :ref:`compile`
+-  :ref:`mapping-sheet`
 -  ``measure``
--  ``tabulate``
--  ``validate``
+-  :ref:`tabulate`
+-  :ref:`validate`
