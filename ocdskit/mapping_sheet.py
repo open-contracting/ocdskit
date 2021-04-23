@@ -3,6 +3,7 @@ import re
 
 from ocdskit.exceptions import MissingColumnError
 from ocdskit.schema import get_schema_fields
+from ocdskit.util import _cast_as_list
 
 # See https://stackoverflow.com/questions/30734682/extracting-url-and-anchor-text-from-markdown-using-python
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
