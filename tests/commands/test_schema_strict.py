@@ -70,6 +70,17 @@ expected = '''{
     "patternString": {
       "type": "string",
       "pattern": "."
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": [
+          "number",
+          "array"
+        ],
+        "minItems": 1
+      },
+      "minItems": 1
     }
   }
 }

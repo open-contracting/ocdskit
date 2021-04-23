@@ -201,13 +201,14 @@ def _deprecated(value):
     return value.get('deprecated') or hasattr(value, '__reference__') and value.__reference__.get('deprecated') or {}
 
 
-def add_validation_properties(schema, unique_items=True):
+def add_validation_properties(schema, unique_items=True, coordinates=False):
     """
     Adds "minItems" and "uniqueItems" if an array, adds "minProperties" if an object, and adds "minLength" if a string
     and if "enum", "format" and "pattern" aren't set.
 
     :param dict schema: a JSON schema
     :param bool unique_items: whether to add "uniqueItems" properties to array fields
+    :param bool coordinates: whether the parent is a geospatial coordinates field
     """
     if isinstance(schema, list):
         for item in schema:
@@ -221,13 +222,17 @@ def add_validation_properties(schema, unique_items=True):
                 and 'pattern' not in schema
             ):
                 schema.setdefault('minLength', 1)
+
             if 'array' in schema['type']:
                 schema.setdefault('minItems', 1)
-                if unique_items:
+                # Allow non-unique items for coordinates fields (e.g. closed polygons).
+                if sorted(schema.get('items', {}).get('type', [])) == ['array', 'number']:
+                    coordinates = True
+                if unique_items and not coordinates:
                     schema.setdefault('uniqueItems', True)
 
             if 'object' in schema['type']:
                 schema.setdefault('minProperties', 1)
 
         for value in schema.values():
-            add_validation_properties(value, unique_items=unique_items)
+            add_validation_properties(value, unique_items=unique_items, coordinates=coordinates)

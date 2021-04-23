@@ -54,6 +54,15 @@
     "patternString": {
       "type": "string",
       "pattern": "."
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": [
+          "number",
+          "array"
+        ]
+      }
     }
   }
 }

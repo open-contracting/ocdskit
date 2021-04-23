@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.22 (2021-04-23)
+-------------------
+
+Fixed
+~~~~~
+
+-   :ref:`schema-strict`: Don't add ``"uniqueItems": true`` to coordinates fields.
+
 0.2.21 (2021-04-10)
 -------------------
 
