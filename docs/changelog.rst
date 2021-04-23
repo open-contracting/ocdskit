@@ -181,7 +181,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  :ref:`merge` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
+-  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
 -  :ref:`package-records` and :ref:`package-releases` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
 
 Fixed

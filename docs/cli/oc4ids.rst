@@ -3,10 +3,10 @@ OC4IDS Commands
 
 Optional arguments for all commands are:
 
-* ``--encoding ENCODING`` the file encoding
-* ``--ascii`` print escape sequences instead of UTF-8 characters
-* ``--pretty`` pretty print output
-* ``--root-path ROOT_PATH`` the path to the items to process within each input
+--encoding ENCODING     the file encoding
+--ascii                 print escape sequences instead of UTF-8 characters
+--pretty                pretty print output
+--root-path ROOT_PATH   the path to the items to process within each input
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 

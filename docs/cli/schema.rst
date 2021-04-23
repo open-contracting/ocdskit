@@ -10,9 +10,9 @@ The following commands may be used when working with:
 
 Optional arguments for all commands (if relevant) are:
 
-* ``--encoding ENCODING`` the file encoding
-* ``--ascii`` print escape sequences instead of UTF-8 characters
-* ``--pretty`` pretty print output
+--encoding ENCODING     the file encoding
+--ascii                 print escape sequences instead of UTF-8 characters
+--pretty                pretty print output
 
 .. _mapping-sheet:
 
@@ -27,13 +27,13 @@ Required arguments:
 
 Optional arguments:
 
-* ``--order-by COLUMN`` sort the spreadsheet's rows by this column
-* ``--infer-required`` infer whether fields are required (use with OCDS schema)
-* ``--extension`` patch the release schema with this extension
-* ``--extension-field`` add an "extension" column for the name of the extension in which each field was defined
-* ``--language`` the language to use for the name of the extension
-* ``--no-deprecated`` don't include deprecated fields
-* ``--no-replace-refs`` don't replace schema with $ref properties with the referenced schema
+--order-by COLUMN       sort the spreadsheet's rows by this column
+--infer-required        infer whether fields are required (use with OCDS schema)
+--extension             patch the release schema with this extension
+--extension-field       add an "extension" column for the name of the extension in which each field was defined
+--language              the language to use for the name of the extension
+--no-deprecated         don't include deprecated fields
+--no-replace-refs       don't replace schema with $ref properties with the referenced schema
 
 The ``--extension`` option must be declared after the ``file`` argument. The ``--extension`` option accepts multiple values, which can be extension metadata URLs, base URLs and/or download URLs. For example:
 
@@ -75,9 +75,9 @@ Reports details of a JSON Schema (open and closed codelists, definitions that ca
 
 Optional arguments:
 
-* ``--no-codelists`` skip reporting open and closed codelists
-* ``--no-definitions`` skip reporting definitions that can use a common $ref in the versioned release schema
-* ``--min-occurrences`` report definitions that occur at least this many times (default 5)
+--no-codelists          skip reporting open and closed codelists
+--no-definitions        skip reporting definitions that can use a common $ref in the versioned release schema
+--min-occurrences       report definitions that occur at least this many times (default 5)
 
 .. code-block:: bash
 
@@ -92,8 +92,8 @@ Adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and 
 
 Optional arguments:
 
-* ``--no-unique-items`` don't add "uniqueItems" properties to array fields
-* ``--check`` check the file for missing properties without modifying the file
+--no-unique-items       don't add "uniqueItems" properties to array fields
+--check                 check the file for missing properties without modifying the file
 
 .. code-block:: bash
 

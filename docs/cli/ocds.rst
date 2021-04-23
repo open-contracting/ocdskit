@@ -3,10 +3,10 @@ OCDS Commands
 
 Optional arguments for all commands are:
 
-* ``--encoding ENCODING`` the file encoding
-* ``--ascii`` print escape sequences instead of UTF-8 characters
-* ``--pretty`` pretty print output
-* ``--root-path ROOT_PATH`` the path to the items to process within each input
+--encoding ENCODING     the file encoding
+--ascii                 print escape sequences instead of UTF-8 characters
+--pretty                pretty print output
+--root-path ROOT_PATH   the path to the items to process within each input
 
 The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
 
@@ -104,18 +104,18 @@ Reads release packages and individual releases from standard input, merges the r
 
 Optional arguments:
 
-* ``--schema SCHEMA`` the URL or path of the release schema to use
-* ``--package`` wrap the compiled releases in a record package
-* ``--linked-releases`` if ``--package`` is set, use linked releases instead of full releases, if the input is a release package
-* ``--versioned`` if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
-* ``--uri URI`` if ``--package`` is set, set the record package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the record package's ``publishedDate`` to this value
-* ``--version VERSION`` if ``--package`` is set, set the record package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the record package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the record package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the record package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the record package's ``publisher``'s ``uid`` to this value
-* ``--fake`` if ``--package`` is set, set the record package's required metadata to dummy values
+--schema SCHEMA                       the URL or path of the release schema to use
+--package                             wrap the compiled releases in a record package
+--linked-releases                     if ``--package`` is set, use linked releases instead of full releases, if the input is a release package
+--versioned                           if ``--package`` is set, include versioned releases in the record package; otherwise, print versioned releases instead of compiled releases
+--uri URI                             if ``--package`` is set, set the record package's ``uri`` to this value
+--published-date PUBLISHED_DATE       if ``--package`` is set, set the record package's ``publishedDate`` to this value
+--version VERSION                     if ``--package`` is set, set the record package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       if ``--package`` is set, set the record package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         if ``--package`` is set, set the record package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   if ``--package`` is set, set the record package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         if ``--package`` is set, set the record package's ``publisher``'s ``uid`` to this value
+--fake                                if ``--package`` is set, set the record package's required metadata to dummy values
 
 If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
@@ -169,14 +169,14 @@ Optional positional arguments:
 
 Optional arguments:
 
-* ``--uri URL`` set the record package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
-* ``--version VERSION`` set the record package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` set the record package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` set the record package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` set the record package's ``publisher``'s ``uid`` to this value
-* ``--fake`` set the record package's required metadata to dummy values
+--uri URL                             set the record package's ``uri`` to this value
+--published-date PUBLISHED_DATE       set the record package's ``publishedDate`` to this value
+--version VERSION                     set the record package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       set the record package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         set the record package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   set the record package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         set the record package's ``publisher``'s ``uid`` to this value
+--fake                                set the record package's required metadata to dummy values
 
 .. code-block:: bash
 
@@ -205,14 +205,14 @@ Optional positional arguments:
 
 Optional arguments:
 
-* ``--uri URL`` set the release package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
-* ``--version VERSION`` set the release package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` set the release package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` set the release package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` set the release package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` set the release package's ``publisher``'s ``uid`` to this value
-* ``--fake`` set the release package's required metadata to dummy values
+--uri URL                             set the release package's ``uri`` to this value
+--published-date PUBLISHED_DATE       set the release package's ``publishedDate`` to this value
+--version VERSION                     set the release package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       set the release package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         set the release package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   set the release package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         set the release package's ``publisher``'s ``uid`` to this value
+--fake                                set the release package's required metadata to dummy values
 
 .. code-block:: bash
 
@@ -239,14 +239,14 @@ If the ``--publisher-*`` options aren't used, the output package will have the s
 
 Optional arguments:
 
-* ``--uri URL`` set the record package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` set the record package's ``publishedDate`` to this value
-* ``--version VERSION`` set the record package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` set the record package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` set the record package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` set the record package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` set the record package's ``publisher``'s ``uid`` to this value
-* ``--fake`` set the record package's required metadata to dummy values
+--uri URL                             set the record package's ``uri`` to this value
+--published-date PUBLISHED_DATE       set the record package's ``publishedDate`` to this value
+--version VERSION                     set the record package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       set the record package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         set the record package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   set the record package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         set the record package's ``publisher``'s ``uid`` to this value
+--fake                                set the record package's required metadata to dummy values
 
 .. code-block:: bash
 
@@ -271,14 +271,14 @@ If the ``--publisher-*`` options aren't used, the output package will have the s
 
 Optional arguments:
 
-* ``--uri URL`` set the release package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` set the release package's ``publishedDate`` to this value
-* ``--version VERSION`` set the release package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` set the release package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` set the release package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` set the release package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` set the release package's ``publisher``'s ``uid`` to this value
-* ``--fake`` set the release package's required metadata to dummy values
+--uri URL                             set the release package's ``uri`` to this value
+--published-date PUBLISHED_DATE       set the release package's ``publishedDate`` to this value
+--version VERSION                     set the release package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       set the release package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         set the release package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   set the release package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         set the release package's ``publisher``'s ``uid`` to this value
+--fake                                set the release package's required metadata to dummy values
 
 .. code-block:: bash
 
@@ -339,8 +339,8 @@ Mandatory positional arguments:
 
 Optional arguments:
 
-* ``--drop`` drop all tables before loading
-* ``--schema SCHEMA`` the release-schema.json to use
+--drop                  drop all tables before loading
+--schema SCHEMA         the release-schema.json to use
 
 .. code-block:: bash
 
@@ -400,10 +400,10 @@ Reads JSON data from standard input, validates it against the schema, and prints
 
 Optional arguments:
 
-* ``--schema SCHEMA`` the URL or path of the schema to validate against
-* ``--check-urls`` check the HTTP status code if "format": "uri"
-* ``--timeout TIMEOUT`` timeout (seconds) to GET a URL
-* ``--verbose`` print items without validation errors
+--schema SCHEMA         the URL or path of the schema to validate against
+--check-urls            check the HTTP status code if "format": "uri"
+--timeout TIMEOUT       timeout (seconds) to GET a URL
+--verbose               print items without validation errors
 
 .. code-block:: bash
 
@@ -493,18 +493,18 @@ Reads individual releases or release packages from standard input, and prints a 
 
 Optional arguments:
 
-* ``--project-id PROJECT_ID`` set the project's ``id`` to this value
-* ``--all-transforms`` run all optional transforms
-* ``--transforms OPTIONS`` comma-separated list of optional transforms to run
-* ``--package`` wrap the project in a project package
-* ``--uri URI`` if ``--package`` is set, set the project package's ``uri`` to this value
-* ``--published-date PUBLISHED_DATE`` if ``--package`` is set, set the project package's ``publishedDate`` to this value
-* ``--version VERSION`` if ``--package`` is set, set the project package's ``version`` to this value
-* ``--publisher-name PUBLISHER_NAME`` if ``--package`` is set, set the project package's ``publisher``'s ``name`` to this value
-* ``--publisher-uri PUBLISHER_URI`` if ``--package`` is set, set the project package's ``publisher``'s ``uri`` to this value
-* ``--publisher-scheme PUBLISHER_SCHEME`` if ``--package`` is set, set the project package's ``publisher``'s ``scheme`` to this value
-* ``--publisher-uid PUBLISHER_UID`` if ``--package`` is set, set the project package's ``publisher``'s ``uid`` to this value
-* ``--fake`` if ``--package`` is set, set the project package's required metadata to dummy values
+--project-id PROJECT_ID               set the project's ``id`` to this value
+--all-transforms                      run all optional transforms
+--transforms OPTIONS                  comma-separated list of optional transforms to run
+--package                             wrap the project in a project package
+--uri URI                             if ``--package`` is set, set the project package's ``uri`` to this value
+--published-date PUBLISHED_DATE       if ``--package`` is set, set the project package's ``publishedDate`` to this value
+--version VERSION                     if ``--package`` is set, set the project package's ``version`` to this value
+--publisher-name PUBLISHER_NAME       if ``--package`` is set, set the project package's ``publisher``'s ``name`` to this value
+--publisher-uri PUBLISHER_URI         if ``--package`` is set, set the project package's ``publisher``'s ``uri`` to this value
+--publisher-scheme PUBLISHER_SCHEME   if ``--package`` is set, set the project package's ``publisher``'s ``scheme`` to this value
+--publisher-uid PUBLISHER_UID         if ``--package`` is set, set the project package's ``publisher``'s ``uid`` to this value
+--fake                                if ``--package`` is set, set the project package's required metadata to dummy values
 
 .. code-block:: bash
 
