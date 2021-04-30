@@ -64,7 +64,7 @@ class Command(BaseCommand):
                 schema=schema, extension_field=self.args.extension_field, language=self.args.language
             )
 
-        base_uri = pathlib.Path(os.path.realpath(self.args.file)).as_uri()
+        base_uri = pathlib.Path(self.args.file).resolve().as_uri()
         if not self.args.no_replace_refs:
             schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
 
