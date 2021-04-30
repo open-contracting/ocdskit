@@ -1,5 +1,4 @@
 import csv
-import os.path
 import pathlib
 import sys
 from collections import defaultdict

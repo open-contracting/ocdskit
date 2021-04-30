@@ -1,5 +1,4 @@
 import json
-import os.path
 import pathlib
 import sys
 from argparse import RawDescriptionHelpFormatter
