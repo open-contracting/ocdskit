@@ -77,12 +77,17 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
 
         # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
-            _add_row(rows, rows_by_path, field, prop['items'], extension_field, row={
+            row = {
                 'path': field.path,
                 'title': prop['items']['title'],
                 'description': prop['items'].get('description', ''),
                 'type': prop['items']['type'],
-            }, include_deprecated=include_deprecated)
+                'deprecated': field.deprecated.get('deprecatedVersion'),  # deprecation from parent
+            }
+            _add_deprecated(row, prop['items'])
+
+            _add_row(rows, rows_by_path, field, prop['items'], extension_field, row=row,
+                     include_deprecated=include_deprecated)
 
     if order_by:
         try:
@@ -98,6 +103,12 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     writer = csv.DictWriter(io, fieldnames)
     writer.writeheader()
     writer.writerows(rows)
+
+
+def _add_deprecated(row, schema):
+    if 'deprecated' in schema:
+        row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
+        row['deprecationNotes'] = schema['deprecated'].get('description', '')
 
 
 def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, include_deprecated=True,
@@ -174,8 +185,6 @@ def _make_row(field, schema, infer_required):
     else:
         row['values'] = ''
 
-    if 'deprecated' in schema:
-        row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
-        row['deprecationNotes'] = schema['deprecated'].get('description', '')
+    _add_deprecated(row, schema)
 
     return row

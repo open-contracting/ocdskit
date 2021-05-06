@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.23 (2021-05-06)
+-------------------
+
+Fixed
+~~~~~
+
+-  :ref:`mapping-sheet`: Set ``deprecated`` on the extra rows for arrays.
+
 0.2.22 (2021-04-23)
 -------------------
 
