@@ -26,10 +26,10 @@ interactions:
         github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com
         github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com
         cdn.optimizely.com logx.optimizely.com/v1/events wss://alive.github.com *.actions.githubusercontent.com
-        wss://*.actions.githubusercontent.com online.visualstudio.com/api/v1/locations;
-        font-src github.githubassets.com; form-action ''self'' github.com gist.github.com;
-        frame-ancestors ''none''; frame-src render.githubusercontent.com; img-src
-        ''self'' data: github.githubassets.com identicons.github.com collector.githubapp.com
+        wss://*.actions.githubusercontent.com online.visualstudio.com/api/v1/locations
+        insights.github.com; font-src github.githubassets.com; form-action ''self''
+        github.com gist.github.com; frame-ancestors ''none''; frame-src render.githubusercontent.com;
+        img-src ''self'' data: github.githubassets.com identicons.github.com collector.githubapp.com
         github-cloud.s3.amazonaws.com secured-user-images.githubusercontent.com/ *.githubusercontent.com;
         manifest-src ''self''; media-src github.com user-images.githubusercontent.com/;
         script-src github.githubassets.com; style-src ''unsafe-inline'' github.githubassets.com;
@@ -37,7 +37,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Sat, 10 Apr 2021 00:09:33 GMT
+      - Thu, 06 May 2021 17:54:30 GMT
       Expect-CT:
       - max-age=2592000, report-uri="https://api.github.com/_private/browser/errors"
       Location:
@@ -55,9 +55,11 @@ interactions:
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - E0FB:4077:DE950C:15886A1:6070ECBC
+      - DE7C:3BA5:3E3D7B:6906D3:60942D57
       X-XSS-Protection:
       - '0'
+      permissions-policy:
+      - interest-cohort=()
     status:
       code: 302
       message: Found
@@ -240,7 +242,7 @@ interactions:
       Content-Type:
       - application/zip
       Date:
-      - Sat, 10 Apr 2021 00:09:33 GMT
+      - Thu, 06 May 2021 17:54:31 GMT
       ETag:
       - W/"1a2544fe01440dd2e8c9603af78e79ddcf4e76eea62c89280b223b2ad4992d75"
       Strict-Transport-Security:
@@ -254,7 +256,7 @@ interactions:
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - E0FC:4024:1A4B9E:3533ED:6070ECBD
+      - DE7D:19F0:104AC2:2033F2:60942D57
       X-XSS-Protection:
       - 1; mode=block
       content-disposition:

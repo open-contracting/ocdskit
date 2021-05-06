@@ -10,6 +10,12 @@ def test_command(monkeypatch):
                    'mapping-sheet.csv')
 
 
+def test_command_no_deprecated(monkeypatch):
+    assert_command(monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--no-deprecated', path('release-schema.json')],
+                   'mapping-sheet_no-deprecated.csv')
+
+
 def test_command_order_by(monkeypatch):
     assert_command(monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--order-by', 'path', path('release-schema.json')],

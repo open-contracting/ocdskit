@@ -16,46 +16,50 @@ interactions:
     body:
       string: <html><body>You are being <a href="https://codeload.github.com/open-contracting-extensions/ocds_lots_extension/zip/v1.1.4">redirected</a>.</body></html>
     headers:
+      Cache-Control:
+      - max-age=0, private
       Content-Length:
       - '152'
-      X-GitHub-Request-Id:
-      - C1E6:3190:6531A4:980D7E:5F32DF87
-      cache-control:
-      - max-age=0, private
-      content-security-policy:
+      Content-Security-Policy:
       - 'default-src ''none''; base-uri ''self''; block-all-mixed-content; connect-src
         ''self'' uploads.github.com www.githubstatus.com collector.githubapp.com api.github.com
-        www.google-analytics.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com
+        github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com
         github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com
-        cdn.optimizely.com logx.optimizely.com/v1/events wss://alive.github.com; font-src
-        github.githubassets.com; form-action ''self'' github.com gist.github.com;
-        frame-ancestors ''none''; frame-src render.githubusercontent.com; img-src
-        ''self'' data: github.githubassets.com identicons.github.com collector.githubapp.com
-        github-cloud.s3.amazonaws.com *.githubusercontent.com; manifest-src ''self'';
-        media-src ''none''; script-src github.githubassets.com; style-src ''unsafe-inline''
-        github.githubassets.com; worker-src github.com/socket-worker.js gist.github.com/socket-worker.js'
-      content-type:
+        cdn.optimizely.com logx.optimizely.com/v1/events wss://alive.github.com *.actions.githubusercontent.com
+        wss://*.actions.githubusercontent.com online.visualstudio.com/api/v1/locations
+        insights.github.com; font-src github.githubassets.com; form-action ''self''
+        github.com gist.github.com; frame-ancestors ''none''; frame-src render.githubusercontent.com;
+        img-src ''self'' data: github.githubassets.com identicons.github.com collector.githubapp.com
+        github-cloud.s3.amazonaws.com secured-user-images.githubusercontent.com/ *.githubusercontent.com;
+        manifest-src ''self''; media-src github.com user-images.githubusercontent.com/;
+        script-src github.githubassets.com; style-src ''unsafe-inline'' github.githubassets.com;
+        worker-src github.com/socket-worker-3f088aa2.js gist.github.com/socket-worker-3f088aa2.js'
+      Content-Type:
       - text/html; charset=utf-8
-      date:
-      - Tue, 11 Aug 2020 18:12:23 GMT
-      expect-ct:
+      Date:
+      - Thu, 06 May 2021 17:54:30 GMT
+      Expect-CT:
       - max-age=2592000, report-uri="https://api.github.com/_private/browser/errors"
-      location:
+      Location:
       - https://codeload.github.com/open-contracting-extensions/ocds_lots_extension/zip/v1.1.4
-      server:
+      Referrer-Policy:
+      - no-referrer-when-downgrade
+      Server:
       - GitHub.com
-      status:
-      - 302 Found
-      strict-transport-security:
+      Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
-      vary:
+      Vary:
       - X-PJAX, Accept-Encoding, Accept, X-Requested-With
-      x-content-type-options:
+      X-Content-Type-Options:
       - nosniff
-      x-frame-options:
+      X-Frame-Options:
       - deny
-      x-xss-protection:
-      - 1; mode=block
+      X-GitHub-Request-Id:
+      - DE7A:24DD:252AEB:47C35A:60942D56
+      X-XSS-Protection:
+      - '0'
+      permissions-policy:
+      - interest-cohort=()
     status:
       code: 302
       message: Found
@@ -231,20 +235,14 @@ interactions:
         Lmpzb25VVAUAAWDGklxQSwUGAAAAAAYABgAiAgAA/R8AACgAM2RmNTYwMDU1OWEwM2M5ZWM0MTkx
         OTk1MTc0M2U4ZWY0NTRkZWYwMQ==
     headers:
-      Accept-Ranges:
-      - bytes
       Access-Control-Allow-Origin:
       - https://render.githubusercontent.com
-      Age:
-      - '0'
-      Content-Disposition:
-      - attachment; filename=ocds_lots_extension-1.1.4.zip
       Content-Security-Policy:
       - default-src 'none'; style-src 'unsafe-inline'; sandbox
       Content-Type:
       - application/zip
       Date:
-      - Tue, 11 Aug 2020 18:12:24 GMT
+      - Thu, 06 May 2021 17:54:30 GMT
       ETag:
       - W/"1a2544fe01440dd2e8c9603af78e79ddcf4e76eea62c89280b223b2ad4992d75"
       Strict-Transport-Security:
@@ -253,22 +251,16 @@ interactions:
       - chunked
       Vary:
       - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish (Varnish/6.0)
-      X-Cache:
-      - HFM
-      X-Cache-Hits:
-      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - C1E7:3907:43499:75448:5F32DF88
-      X-Varnish:
-      - '826776693'
+      - DE7B:6D8B:6BFE8:138A98:60942D56
       X-XSS-Protection:
       - 1; mode=block
+      content-disposition:
+      - attachment; filename=ocds_lots_extension-1.1.4.zip
     status:
       code: 200
       message: OK
