@@ -31,7 +31,6 @@ The streaming behavior of each command is:
 -  ``combine-release-packages``:  buffers all inputs into memory (`see issue <https://github.com/open-contracting/ocdskit/issues/119>`__)
 -  ``split-record-packages``: reads each input into memory, and processes one at a time
 -  ``split-release-packages``: reads each input into memory, and processes one at a time
--  ``tabulate``: not yet reviewed
 -  ``echo``: streams, by using an iterator to postpone the evaluation of inputs
 
 You can append these lines to the end of a ``handle()`` method to see if memory usage increases with input size:

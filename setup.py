@@ -20,7 +20,6 @@ setup(
         'jsonref',
         'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.1.2',
-        'sqlalchemy',
     ],
     extras_require={
         'perf': [

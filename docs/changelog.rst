@@ -7,7 +7,13 @@ Changelog
 Changed
 ~~~~~~~
 
--  ``validate``: Remove command. Use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__ instead.
+-  ``validate``: Remove command. Instead, use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__.
+-  ``tabulate``: Remove command. Instead, convert the JSON data to CSV format using `Spoonbill <https://github.com/open-contracting/spoonbill>`__ or `Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/usage-ocds/>`__, and then load the CSV files into your preferred database. See:
+
+   -  SQLite's `.import <https://sqlite.org/cli.html#importing_csv_files>`__ command (see also `sqlite-utils <https://sqlite-utils.datasette.io/en/stable/>`__)
+   -  PostgreSQL's `COPY <https://www.postgresql.org/docs/current/sql-copy.html>`__ command
+   -  MySQL's `LOAD DATA <https://dev.mysql.com/doc/refman/8.0/en/load-data.html>`__ command
+   -  csvkit's `csvsql <https://csvkit.readthedocs.io/en/latest/scripts/csvsql.html>`__ command
 
 0.2.23 (2021-05-06)
 -------------------
@@ -68,7 +74,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  :ref:`tabulate`: Supports linked releases and compiled releases.
+-  ``tabulate``: Supports linked releases and compiled releases.
 
 0.2.16 (2020-10-06)
 -------------------
@@ -150,7 +156,7 @@ Changed
 ~~~~~~~
 
 -  :ref:`indent` respects ``--ascii``.
--  :ref:`tabulate` supports any OCDS data.
+-  ``tabulate`` supports any OCDS data.
 
 Fixed
 ~~~~~
@@ -585,5 +591,5 @@ New CLI commands:
 -  :ref:`compile`
 -  :ref:`mapping-sheet`
 -  ``measure``
--  :ref:`tabulate`
+-  ``tabulate``
 -  ``validate``
