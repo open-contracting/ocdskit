@@ -9,7 +9,6 @@ A suite of command-line tools for working with OCDS data to:
 * combine small packages into large packages
 * split large packages into small packages
 * load packages into a database
-* validate JSON data against a JSON schema
 * generate a spreadsheet version of a JSON schema
 
 If you are viewing this on GitHub or PyPI, open the `full documentation <https://ocdskit.readthedocs.io/>`__ for additional details.

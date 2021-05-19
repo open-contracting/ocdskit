@@ -31,7 +31,6 @@ The streaming behavior of each command is:
 -  ``combine-release-packages``:  buffers all inputs into memory (`see issue <https://github.com/open-contracting/ocdskit/issues/119>`__)
 -  ``split-record-packages``: reads each input into memory, and processes one at a time
 -  ``split-release-packages``: reads each input into memory, and processes one at a time
--  ``validate``: reads each input into memory, and processes one at a time
 -  ``tabulate``: not yet reviewed
 -  ``echo``: streams, by using an iterator to postpone the evaluation of inputs
 
@@ -64,6 +63,5 @@ To test whether commands stream input, you can run, for example:
 
     echo 'cat tests/fixtures/realdata/release-package-1-2.json tests/fixtures/realdata/release-package-1-2.json; sleep 7; cat tests/fixtures/release-package_minimal.json' > input.sh
     sh input.sh | ocdskit split-release-packages 1
-    sh input.sh | ocdskit validate
 
 You can run ``sh input.sh | tee`` to compare the timing of ``tee`` to the timings above.

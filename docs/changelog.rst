@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0.0 (Unreleased)
+------------------
+
+Changed
+~~~~~~~
+
+-  ``validate``: Remove command. Use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__ instead.
+
 0.2.23 (2021-05-06)
 -------------------
 
@@ -555,7 +563,7 @@ Added
 
 New CLI options:
 
--  :ref:`validate`: ``--check-urls`` and ``--timeout``
+-  ``validate``: ``--check-urls`` and ``--timeout``
 
 New CLI commands:
 
@@ -578,4 +586,4 @@ New CLI commands:
 -  :ref:`mapping-sheet`
 -  ``measure``
 -  :ref:`tabulate`
--  :ref:`validate`
+-  ``validate``

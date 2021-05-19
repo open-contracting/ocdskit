@@ -29,7 +29,6 @@ COMMAND_MODULES = (
     'ocdskit.cli.commands.split_release_packages',
     'ocdskit.cli.commands.tabulate',
     'ocdskit.cli.commands.upgrade',
-    'ocdskit.cli.commands.validate',
 )
 
 

@@ -10,18 +10,6 @@ Download a list of release packages:
 
     curl http://www.contratosabiertos.cdmx.gob.mx/api/contratos/array > release_packages.json
 
-Validate each with a remote schema file:
-
-.. code-block:: bash
-
-    cat release_packages.json | ocdskit --encoding iso-8859-1 validate --schema https://standard.open-contracting.org/schema/1__0__3/release-package-schema.json
-
-Or, validate each with a local schema file:
-
-.. code-block:: bash
-
-    cat release_packages.json | ocdskit --encoding iso-8859-1 validate --schema file:///path/to/release-package-schema.json
-
 Transform it to a stream of compiled releases:
 
 .. code-block:: bash

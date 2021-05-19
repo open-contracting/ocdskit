@@ -391,40 +391,6 @@ Alternative approaches
 
 `Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/>`__ flattens JSON data into CSV and Excel files and supports additional fields, additional arrays and many other ways to customize the output.
 
-.. _validate:
-
-validate
---------
-
-Reads JSON data from standard input, validates it against the schema, and prints errors.
-
-Optional arguments:
-
---schema SCHEMA         the URL or path of the schema to validate against
---check-urls            check the HTTP status code if "format": "uri"
---timeout TIMEOUT       timeout (seconds) to GET a URL
---verbose               print items without validation errors
-
-.. code-block:: bash
-
-    cat tests/fixtures/* | ocdskit validate
-
-Using a remote schema file:
-
-.. code-block:: bash
-
-    cat tests/fixtures/* | ocdskit validate https://standard.open-contracting.org/latest/en/release-package-schema.json
-
-Using a local schema file:
-
-.. code-block:: bash
-
-    cat tests/fixtures/* | ocdskit validate file://path/to/schema.json
-
-.. note::
-
-   This tool performs JSON Schema validation only. Use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__ to perform additional checks.
-
 .. _echo:
 
 echo
