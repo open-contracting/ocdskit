@@ -16,7 +16,6 @@ setup(
     long_description_content_type='text/x-rst',
     install_requires=[
         'ijson>=2.5',
-        'jsonpointer',
         'jsonref',
         'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.1.2',
@@ -27,6 +26,7 @@ setup(
         ],
         'test': [
             'coveralls',
+            'jsonpointer',
             'pytest',
             'pytest-cov',
             'pytest-vcr',

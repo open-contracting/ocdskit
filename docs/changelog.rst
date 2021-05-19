@@ -15,6 +15,9 @@ Changed
    -  MySQL's `LOAD DATA <https://dev.mysql.com/doc/refman/8.0/en/load-data.html>`__ command
    -  csvkit's `csvsql <https://csvkit.readthedocs.io/en/latest/scripts/csvsql.html>`__ command
 
+-  ``convert-to-oc4ids``: Remove command. Instead, use oc4idskit's `convert-from-ocds <https://oc4idskit.readthedocs.io/en/latest/cli.html>`__.
+-  ``ocdskit.oc4ids``: Remove module. Instead, use oc4idskit's `transforms <https://oc4idskit.readthedocs.io/en/latest/library.html>`__.
+
 0.2.23 (2021-05-06)
 -------------------
 
@@ -89,7 +92,7 @@ Added
 
 New CLI commands:
 
--  :ref:`split-project-packages`
+-  ``split-project-packages``
 
 0.2.15 (2020-09-30)
 -------------------
@@ -126,7 +129,7 @@ New library method:
 Fixed
 ~~~~~
 
--  :ref:`convert-to-oc4ids` no longer errors if a party's ``id`` field isn't set.
+-  ``convert-to-oc4ids`` no longer errors if a party's ``id`` field isn't set.
 
 0.2.12 (2020-08-19)
 -------------------
@@ -170,7 +173,7 @@ Fixed
 ~~~~~
 
 -  :ref:`detect-format` respects ``--root-path``.
--  :ref:`convert-to-oc4ids` omits ``sector`` and ``documents`` if empty.
+-  ``convert-to-oc4ids`` omits ``sector`` and ``documents`` if empty.
 
 0.2.8 (2020-04-29)
 ------------------
@@ -192,7 +195,7 @@ New CLI options:
 -  :ref:`combine-record-packages`: ``--version``
 -  :ref:`combine-release-packages`: ``--version``
 -  :ref:`compile`: ``--version``
--  :ref:`convert-to-oc4ids`: ``--version``
+-  ``convert-to-oc4ids``: ``--version``
 -  :ref:`package-records`: ``--version``
 -  :ref:`package-releases`: ``--version``
 
@@ -209,7 +212,7 @@ Changed
 Fixed
 ~~~~~
 
--  :ref:`convert-to-oc4ids` sets the ``publishedDate`` field, not the ``published_date`` field.
+-  ``convert-to-oc4ids`` sets the ``publishedDate`` field, not the ``published_date`` field.
 
 0.2.6 (2020-04-15)
 ------------------
@@ -240,7 +243,7 @@ Fixed
 Fixed
 ~~~~~
 
--  :ref:`convert-to-oc4ids` no longer errors.
+-  ``convert-to-oc4ids`` no longer errors.
 
 0.2.3 (2020-03-19)
 ------------------
@@ -250,11 +253,11 @@ Added
 
 New CLI commands:
 
--  :ref:`convert-to-oc4ids`
+-  ``convert-to-oc4ids``
 
 New library module:
 
--  :mod:`ocdskit.oc4ids`
+-  ``ocdskit.oc4ids``
 
 Changed
 ~~~~~~~

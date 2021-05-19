@@ -6,7 +6,6 @@ API Reference
 
    api/combine
    api/upgrade
-   api/oc4ids
    api/mapping_sheet
    api/packager
    api/schema
