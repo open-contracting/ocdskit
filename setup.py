@@ -18,13 +18,9 @@ setup(
         'ijson>=2.5',
         'jsonpointer',
         'jsonref',
-        'jsonschema',
         'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.1.2',
-        'requests',
-        'rfc3987',
         'sqlalchemy',
-        'strict-rfc3339',
     ],
     extras_require={
         'perf': [
