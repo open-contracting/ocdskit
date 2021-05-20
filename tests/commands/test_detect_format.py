@@ -16,36 +16,36 @@ from tests import assert_command, assert_command_error, path, run_command
     ('detect-format_mixed.json', 'concatenated JSON, starting with release'),
     ('detect-format_whitespace.json', 'release'),
 ])
-def test_command(filename, result, monkeypatch):
+def test_command(filename, result, capsys, monkeypatch):
     expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
-    assert_command(monkeypatch, main, ['detect-format', path(filename)], expected)
+    assert_command(capsys, monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
 @pytest.mark.parametrize('filename,root_path,result', [
     ('record-package_minimal.json', 'records', 'a JSON array of records'),
     ('record-package_minimal.json', 'records.item', 'record'),
 ])
-def test_command_root_path(filename, root_path, result, monkeypatch):
+def test_command_root_path(filename, root_path, result, capsys, monkeypatch):
     expected = 'tests/fixtures/{}: {}\n'.format(filename, result)
-    assert_command(monkeypatch, main, ['detect-format', '--root-path', root_path, path(filename)], expected)
+    assert_command(capsys, monkeypatch, main, ['detect-format', '--root-path', root_path, path(filename)], expected)
 
 
-def test_command_root_path_nonexistent(monkeypatch, caplog):
-    assert_command_error(monkeypatch, main, ['detect-format', '--root-path', 'nonexistent',
-                                             path('record_minimal.json')], error=StopIteration)
+def test_command_root_path_nonexistent(capsys, monkeypatch, caplog):
+    assert_command_error(capsys, monkeypatch, main, ['detect-format', '--root-path', 'nonexistent',
+                                                     path('record_minimal.json')], error=StopIteration)
 
     assert len(caplog.records) == 0
 
 
-def test_command_recursive(monkeypatch, caplog, tmpdir):
+def test_command_recursive(capsys, monkeypatch, caplog, tmpdir):
     content = b'{"records":[]}'
     tmpdir.join('test.json').write(content)
     tmpdir.join('.test.json').write(content)
 
-    actual = run_command(monkeypatch, main, ['detect-format', '--recursive', str(tmpdir)])
+    actual = run_command(capsys, monkeypatch, main, ['detect-format', '--recursive', str(tmpdir)])
 
-    assert '/test.json: record package' in actual
-    assert '.test.json' not in actual
+    assert '/test.json: record package' in actual.out
+    assert '.test.json' not in actual.out
     assert len(caplog.records) == 0
 
 
@@ -58,10 +58,10 @@ def test_command_recursive(monkeypatch, caplog, tmpdir):
     ('array', 'non-OCDS array'),
     ('object', 'non-OCDS object'),
 ])
-def test_command_unknown_format(basename, result, monkeypatch, caplog):
+def test_command_unknown_format(basename, result, capsys, monkeypatch, caplog):
     filename = 'detect-format_{}.json'.format(basename)
 
-    assert_command(monkeypatch, main, ['detect-format', path(filename)], '')
+    assert_command(capsys, monkeypatch, main, ['detect-format', path(filename)], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
@@ -69,16 +69,16 @@ def test_command_unknown_format(basename, result, monkeypatch, caplog):
         filename, result)
 
 
-def test_command_directory(monkeypatch, caplog, tmpdir):
-    assert_command(monkeypatch, main, ['detect-format', str(tmpdir)], '')
+def test_command_directory(capsys, monkeypatch, caplog, tmpdir):
+    assert_command(capsys, monkeypatch, main, ['detect-format', str(tmpdir)], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
     assert caplog.records[0].message.endswith(' is a directory. Set --recursive to recurse into directories.')
 
 
-def test_command_nonexistent(monkeypatch, caplog):
-    assert_command(monkeypatch, main, ['detect-format', 'nonexistent'], '')
+def test_command_nonexistent(capsys, monkeypatch, caplog):
+    assert_command(capsys, monkeypatch, main, ['detect-format', 'nonexistent'], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'ERROR'

@@ -7,40 +7,40 @@ from ocdskit.cli.__main__ import main
 from tests import assert_streaming, assert_streaming_error, read, run_streaming
 
 
-def test_command_record_package(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_record_package(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/record-package_1.0.json'],
                      ['realdata/record-package_1.1.json'], ordered=False)
 
     assert len(caplog.records) == 0
 
 
-def test_command_record(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1', '--root-path', 'records.item'],
+def test_command_record(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1', '--root-path', 'records.item'],
                      ['realdata/record-package_package.json'],
                      ['realdata/record-package_package_1.1.json'], ordered=False)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_package_buyer_procuring_entity_suppliers(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_release_package_buyer_procuring_entity_suppliers(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/release-package_1.0-1.json'],
                      ['realdata/release-package_1.1-1.json'], ordered=False)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_package_transactions(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_release_package_transactions(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/release-package_1.0-2.json'],
                      ['realdata/release-package_1.1-2.json'], ordered=False)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_tenderers_amendment(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_release_tenderers_amendment(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['release_1.0.json'],
                      ['release_1.1.json'], ordered=False)
 
@@ -56,7 +56,7 @@ def test_command_release_tenderers_amendment(monkeypatch, caplog):
 @pytest.mark.parametrize('pointer', ('parties', 'buyer', 'tender', 'tender/procuringEntity', 'tender/tenderers',
                                      'awards', 'awards/0/suppliers', 'contracts', 'contracts/0/implementation',
                                      'contracts/0/implementation/transactions'))
-def test_command_release_field_is_null(pointer, monkeypatch, caplog):
+def test_command_release_field_is_null(pointer, capsys, monkeypatch, caplog):
     data = json.loads(read('release_minimal.json'))
 
     parts = pointer.split('/')
@@ -73,12 +73,12 @@ def test_command_release_field_is_null(pointer, monkeypatch, caplog):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
+    run_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_party_id_missing(monkeypatch, caplog):
+def test_command_release_party_id_missing(capsys, monkeypatch, caplog):
     data = json.loads(read('release-package_minimal.json'))
 
     data['releases'][0]['parties'] = [{'name': 'Acme Inc.'}]
@@ -87,12 +87,12 @@ def test_command_release_party_id_missing(monkeypatch, caplog):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
+    run_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_party_roles_missing(monkeypatch, caplog):
+def test_command_release_party_roles_missing(capsys, monkeypatch, caplog):
     data = json.loads(read('release-package_minimal.json'))
 
     data['releases'][0]['parties'] = [{'id': '1', 'name': 'Acme Inc.'}]
@@ -102,12 +102,12 @@ def test_command_release_party_roles_missing(monkeypatch, caplog):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
+    run_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
 
     assert len(caplog.records) == 0
 
 
-def test_command_release_party_roles_str(monkeypatch, caplog):
+def test_command_release_party_roles_str(capsys, monkeypatch, caplog):
     data = json.loads(read('release-package_minimal.json'))
 
     data['releases'][0]['parties'] = [{'id': '1', 'roles': 'buyer'}]
@@ -117,21 +117,21 @@ def test_command_release_party_roles_str(monkeypatch, caplog):
     stdin = json.dumps(data).encode('utf-8')
 
     # Should not raise an error.
-    run_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
+    run_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'], stdin)
 
     assert len(caplog.records) == 0
 
 
-def test_command_passthrough_package(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_passthrough_package(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['realdata/record-package_1.1.json'],
                      ['realdata/record-package_1.1.json'])
 
     assert len(caplog.records) == 0
 
 
-def test_command_passthrough_release(monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', '1.0:1.1'],
+def test_command_passthrough_release(capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', '1.0:1.1'],
                      ['release_1.1.json'],
                      ['release_1.1.json'])
 
@@ -139,16 +139,16 @@ def test_command_passthrough_release(monkeypatch, caplog):
 
 
 @pytest.mark.parametrize('versions', ['1.0:1.0', '1.1:1.1'])
-def test_command_identity(versions, monkeypatch, caplog):
-    assert_streaming(monkeypatch, main, ['upgrade', versions], b'{}', '{}\n')
+def test_command_identity(versions, capsys, monkeypatch, caplog):
+    assert_streaming(capsys, monkeypatch, main, ['upgrade', versions], b'{}', '{}\n')
 
     assert len(caplog.records) == 0
 
 
-def test_command_downgrade(monkeypatch, caplog):
+def test_command_downgrade(capsys, monkeypatch, caplog):
     stdin = b'{}'
 
-    assert_streaming_error(monkeypatch, main, ['upgrade', '1.1:1.0'], stdin)
+    assert_streaming_error(capsys, monkeypatch, main, ['upgrade', '1.1:1.0'], stdin)
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'

@@ -87,38 +87,37 @@ expected = '''{
 '''
 
 
-def test_command(monkeypatch, tmpdir):
+def test_command(capsys, monkeypatch, tmpdir):
     with open(path('schema-strict.json'), 'rb') as f:
         schema = f.read()
 
     p = tmpdir.join('schema.json')
     p.write(schema)
 
-    run_command(monkeypatch, main, ['schema-strict', str(p)])
+    run_command(capsys, monkeypatch, main, ['schema-strict', str(p)])
 
     assert p.read() == expected
 
 
-def test_command_no_unique_items(monkeypatch, tmpdir):
+def test_command_no_unique_items(capsys, monkeypatch, tmpdir):
     with open(path('schema-strict.json'), 'rb') as f:
         schema = f.read()
 
     p = tmpdir.join('schema.json')
     p.write(schema)
 
-    run_command(monkeypatch, main, ['schema-strict', '--no-unique-items', str(p)])
+    run_command(capsys, monkeypatch, main, ['schema-strict', '--no-unique-items', str(p)])
 
     assert 'uniqueItems' not in json.loads(p.read())['properties']['array']
 
 
-@patch('sys.stderr', new_callable=StringIO)
-def test_command_check(stderr, monkeypatch):
+def test_command_check(capsys, monkeypatch):
     with open(path('schema-strict.json'), 'rb') as f:
         expected = f.read()
 
-    run_command(monkeypatch, main, ['schema-strict', '--check', path('schema-strict.json')])
+    captured = run_command(capsys, monkeypatch, main, ['schema-strict', '--check', path('schema-strict.json')])
 
     with open(path('schema-strict.json'), 'rb') as f:
         assert f.read() == expected
 
-    assert stderr.getvalue() == 'ERROR: tests/fixtures/schema-strict.json is missing validation properties\n'
+    assert captured.err == 'ERROR: tests/fixtures/schema-strict.json is missing validation properties\n'

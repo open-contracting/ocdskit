@@ -145,25 +145,25 @@ schema_with_modification = '''{
 codelist = 'Code\nfoo\nbar\n'
 
 
-def test_command(monkeypatch, tmpdir):
+def test_command(capsys, monkeypatch, tmpdir):
     tmpdir.join('release-schema.json').write(schema)
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd'):
         tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
 
-    assert_command(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
+    assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
     assert tmpdir.join('release-schema.json').read() == schema_with_enum
 
 
-def test_unused_codelists(monkeypatch, caplog, tmpdir):
+def test_unused_codelists(capsys, monkeypatch, caplog, tmpdir):
     tmpdir.join('release-schema.json').write(schema)
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd', 'e'):
         tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
 
-    assert_command(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
+    assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
     assert tmpdir.join('release-schema.json').read() == schema_with_enum
 
     assert len(caplog.records) == 1
@@ -171,12 +171,13 @@ def test_unused_codelists(monkeypatch, caplog, tmpdir):
     assert caplog.records[0].message == 'unused codelists: e.csv'
 
 
-def test_missing_codelists(monkeypatch, caplog, tmpdir):
+def test_missing_codelists(capsys, monkeypatch, caplog, tmpdir):
     tmpdir.join('release-schema.json').write(schema)
 
     tmpdir.mkdir('codelists')
 
-    excinfo = assert_command_error(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], error=KeyError)
+    excinfo = assert_command_error(capsys, monkeypatch, main,
+                                   ['set-closed-codelist-enums', str(tmpdir)], error=KeyError)
 
     assert tmpdir.join('release-schema.json').read() == schema
 
@@ -184,14 +185,15 @@ def test_missing_codelists(monkeypatch, caplog, tmpdir):
     assert excinfo.value.args == ('a.csv',)
 
 
-def test_missing_targets(monkeypatch, caplog, tmpdir):
+def test_missing_targets(capsys, monkeypatch, caplog, tmpdir):
     tmpdir.join('release-schema.json').write(schema)
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd', '+e'):
         tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
 
-    excinfo = assert_command_error(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], error=KeyError)
+    excinfo = assert_command_error(capsys, monkeypatch, main,
+                                   ['set-closed-codelist-enums', str(tmpdir)], error=KeyError)
 
     assert tmpdir.join('release-schema.json').read() == schema
 
@@ -199,7 +201,7 @@ def test_missing_targets(monkeypatch, caplog, tmpdir):
     assert excinfo.value.args == ('e.csv',)
 
 
-def test_conflicting_codelists(monkeypatch, caplog, tmpdir):
+def test_conflicting_codelists(capsys, monkeypatch, caplog, tmpdir):
     with TemporaryDirectory() as d:
         for directory in (tmpdir, d):
             os.mkdir(os.path.join(directory, 'codelists'))
@@ -213,7 +215,7 @@ def test_conflicting_codelists(monkeypatch, caplog, tmpdir):
         with open(os.path.join(d, 'codelists', 'a.csv'), 'w') as f:
             f.write('Code\nbaz\n')
 
-        assert_command(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir), d], '')
+        assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir), d], '')
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema_with_enum
 
@@ -222,7 +224,7 @@ def test_conflicting_codelists(monkeypatch, caplog, tmpdir):
         assert caplog.records[0].message == 'conflicting codelists: a.csv'
 
 
-def test_modified_codelists(monkeypatch, tmpdir):
+def test_modified_codelists(capsys, monkeypatch, tmpdir):
     with TemporaryDirectory() as d:
         for directory in (tmpdir, d):
             os.mkdir(os.path.join(directory, 'codelists'))
@@ -239,6 +241,6 @@ def test_modified_codelists(monkeypatch, tmpdir):
         with open(os.path.join(d, 'codelists', '-b.csv'), 'w') as f:
             f.write('Code,Description\nbar,bzz\n')
 
-        assert_command(monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir), d], '')
+        assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir), d], '')
         with open(os.path.join(d, 'release-schema.json')) as f:
             assert f.read() == schema_with_modification

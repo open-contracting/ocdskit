@@ -28,41 +28,38 @@ def assert_equal(actual, expected, ordered=True):
                 assert ocdskit.util.jsonlib.loads(a) == ocdskit.util.jsonlib.loads(b), '\n{}\n{}'.format(a, b)
 
 
-@patch('sys.stdout', new_callable=StringIO)
-def run_command(monkeypatch, main, args, stdout):
+def run_command(capsys, monkeypatch, main, args):
     monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
     main()
 
-    return stdout.getvalue()
+    return capsys.readouterr()
 
 
 # Similar to `run_command`, but with `pytest.raises` block.
-@patch('sys.stdout', new_callable=StringIO)
-def assert_command_error(monkeypatch, main, args, stdout, expected='', error=SystemExit):
+def assert_command_error(capsys, monkeypatch, main, args, expected='', error=SystemExit):
     with pytest.raises(error) as excinfo:
         monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
         main()
 
-    actual = stdout.getvalue()
+    actual = capsys.readouterr()
 
-    assert actual == expected, '\n{}\n{}'.format(actual, expected)
+    assert actual.out == expected, '\n{}\n{}'.format(actual.out, expected)
     if error is SystemExit:
         assert excinfo.value.code == 1
 
     return excinfo
 
 
-def assert_command(monkeypatch, main, args, expected, ordered=True):
-    actual = run_command(monkeypatch, main, args)
+def assert_command(capsys, monkeypatch, main, args, expected, ordered=True):
+    actual = run_command(capsys, monkeypatch, main, args)
 
     if os.path.isfile(path(expected)):
         expected = read(expected, newline='')
 
-    assert_equal(actual, expected, ordered=ordered)
+    assert_equal(actual.out, expected, ordered=ordered)
 
 
-@patch('sys.stdout', new_callable=StringIO)
-def run_streaming(monkeypatch, main, args, stdin, stdout):
+def run_streaming(capsys, monkeypatch, main, args, stdin):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
@@ -70,12 +67,11 @@ def run_streaming(monkeypatch, main, args, stdin, stdout):
         monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
         main()
 
-    return stdout.getvalue()
+    return capsys.readouterr()
 
 
 # Similar to `run_streaming`, but with `pytest.raises` block.
-@patch('sys.stdout', new_callable=StringIO)
-def assert_streaming_error(monkeypatch, main, args, stdin, stdout, expected='', error=SystemExit):
+def assert_streaming_error(capsys, monkeypatch, main, args, stdin, expected='', error=SystemExit):
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
@@ -84,19 +80,19 @@ def assert_streaming_error(monkeypatch, main, args, stdin, stdout, expected='', 
             monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
             main()
 
-    actual = stdout.getvalue()
+    actual = capsys.readouterr()
 
-    assert actual == expected, '\n{}\n{}'.format(actual, expected)
+    assert actual.out == expected, '\n{}\n{}'.format(actual.out, expected)
     if error is SystemExit:
         assert excinfo.value.code == 1
 
     return excinfo
 
 
-def assert_streaming(monkeypatch, main, args, stdin, expected, ordered=True):
-    actual = run_streaming(monkeypatch, main, args, stdin)
+def assert_streaming(capsys, monkeypatch, main, args, stdin, expected, ordered=True):
+    actual = run_streaming(capsys, monkeypatch, main, args, stdin)
 
     if not isinstance(expected, str):
         expected = ''.join(read(filename) for filename in expected)
 
-    assert_equal(actual, expected, ordered=ordered)
+    assert_equal(actual.out, expected, ordered=ordered)
