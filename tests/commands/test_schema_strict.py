@@ -1,6 +1,4 @@
 import json
-from io import StringIO
-from unittest.mock import patch
 
 from ocdskit.cli.__main__ import main
 from tests import path, run_command

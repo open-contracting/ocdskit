@@ -4,7 +4,7 @@ from tests import assert_streaming
 
 def test_command(capsys, monkeypatch):
     assert_streaming(capsys, monkeypatch, main, ['package-records', '--uri', 'http://example.com', '--published-date',
-                                         '9999-01-01T00:00:00Z', '--version', '1.2', '--publisher-name', ''],
+                                                 '9999-01-01T00:00:00Z', '--version', '1.2', '--publisher-name', ''],
                      ['record_minimal-1.json', 'record_minimal-2.json'],
                      ['record-package_minimal-1-2.json'])
 
@@ -17,8 +17,9 @@ def test_command_size(capsys, monkeypatch):
 
 def test_command_extensions(capsys, monkeypatch):
     assert_streaming(capsys, monkeypatch, main, ['package-records', '--uri', 'http://example.com', '--published-date',
-                                         '9999-01-01T00:00:00Z', '--version', '1.2', '--publisher-name', '',
-                                         'http://example.com/a/extension.json', 'http://example.com/b/extension.json'],
+                                                 '9999-01-01T00:00:00Z', '--version', '1.2', '--publisher-name', '',
+                                                 'http://example.com/a/extension.json',
+                                                 'http://example.com/b/extension.json'],
                      ['record_minimal-1.json', 'record_minimal-2.json'],
                      ['record-package_minimal-1-2-extensions.json'])
 

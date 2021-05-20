@@ -116,7 +116,8 @@ def test_command_package_linked_releases_with_packages(capsys, monkeypatch):
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_linked_releases_with_releases(capsys, monkeypatch):
-    assert_streaming(capsys, monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path', 'releases.item'],
+    assert_streaming(capsys, monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path',
+                                                 'releases.item'],
                      ['realdata/release-package-1.json', 'realdata/release-package-2.json'],
                      _remove_package_metadata(['realdata/record-package_package.json']))
 

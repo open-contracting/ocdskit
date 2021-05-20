@@ -1,6 +1,6 @@
 import json
 import sys
-from io import BytesIO, StringIO, TextIOWrapper
+from io import BytesIO, TextIOWrapper
 from unittest.mock import patch
 
 from ocdskit.cli.__main__ import main

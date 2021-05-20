@@ -1,7 +1,7 @@
 import os.path
 import sys
 from difflib import ndiff
-from io import BytesIO, StringIO, TextIOWrapper
+from io import BytesIO, TextIOWrapper
 from itertools import zip_longest
 from unittest.mock import patch
 
