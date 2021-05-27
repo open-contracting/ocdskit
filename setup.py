@@ -34,7 +34,7 @@ setup(
         'docs': [
             'Sphinx',
             'sphinx-autobuild',
-            'sphinx_rtd_theme',
+            'sphinx-rtd-theme',
         ],
     },
     classifiers=[
