@@ -1,11 +1,11 @@
 Changelog
 =========
 
-1.0.1 (Unreleased)
+1.0.1 (2021-06-16)
 ------------------
 
-Added
-~~~~~
+Changed
+~~~~~~~
 
 -  :meth:`ocdskit.util.detect_format` accepts a ``reader`` keyword argument: for example, ``gzip.open`` instead of ``open``.
 
