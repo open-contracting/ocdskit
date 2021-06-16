@@ -3,10 +3,8 @@ import json
 
 import pytest
 
-from ocdskit.util import (detect_format, get_ocds_minor_version,
-                          is_compiled_release, is_linked_release, is_package,
-                          is_record, is_record_package, is_release,
-                          is_release_package, json_dump)
+from ocdskit.util import (detect_format, get_ocds_minor_version, is_compiled_release, is_linked_release, is_package,
+                          is_record, is_record_package, is_release, is_release_package, json_dump)
 from tests import path, read
 
 

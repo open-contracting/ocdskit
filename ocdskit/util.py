@@ -1,6 +1,7 @@
 import itertools
 import json
 from decimal import Decimal
+
 import ijson
 
 from ocdskit.exceptions import UnknownFormatError
