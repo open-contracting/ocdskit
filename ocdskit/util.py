@@ -1,7 +1,6 @@
 import itertools
 import json
 from decimal import Decimal
-
 import ijson
 
 from ocdskit.exceptions import UnknownFormatError
@@ -188,7 +187,7 @@ def _empty_package(uri, publisher, published_date, version):
     }
 
 
-def detect_format(path, root_path=''):
+def detect_format(path, root_path='', reader=open):
     """
     Returns the format of OCDS data, and whether the OCDS data is concatenated or in an array.
 
@@ -200,7 +199,7 @@ def detect_format(path, root_path=''):
     :rtype: tuple
     :raises UnknownFormatError: if the format cannot be detected
     """
-    with open(path, 'rb') as f:
+    with reader(path, 'rb') as f:
         events = iter(ijson.parse(f, multiple_values=True))
 
         while True:

@@ -1,9 +1,12 @@
+import gzip
 import json
 
 import pytest
 
-from ocdskit.util import (detect_format, get_ocds_minor_version, is_compiled_release, is_linked_release, is_package,
-                          is_record, is_record_package, is_release, is_release_package, json_dump)
+from ocdskit.util import (detect_format, get_ocds_minor_version,
+                          is_compiled_release, is_linked_release, is_package,
+                          is_record, is_record_package, is_release,
+                          is_release_package, json_dump)
 from tests import path, read
 
 
@@ -141,4 +144,12 @@ def test_json_dump(data, expected, tmpdir):
 def test_detect_format(filename, expected):
     result = detect_format(path(filename))
 
+    assert result == expected
+
+
+@pytest.mark.parametrize('filename,expected', [
+    ('ocds-sample-data.json.gz', ('release package', False, False))
+])
+def test_detect_format_gz(filename, expected):
+    result = detect_format(path(filename), reader=gzip.open)
     assert result == expected
