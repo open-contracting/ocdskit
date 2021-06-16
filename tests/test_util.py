@@ -150,4 +150,5 @@ def test_detect_format(filename, expected):
 ])
 def test_detect_format_gz(filename, expected):
     result = detect_format(path(filename), reader=gzip.open)
+
     assert result == expected
