@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0.1 (Unreleased)
+------------------
+
+Added
+~~~~~
+
+-  :meth:`ocdskit.util.detect_format` accepts a ``reader`` keyword argument: for example, ``gzip.open`` instead of ``open``.
+
 1.0.0 (2021-05-19)
 ------------------
 
@@ -32,7 +40,7 @@ Fixed
 Fixed
 ~~~~~
 
--   :ref:`schema-strict`: Don't add ``"uniqueItems": true`` to coordinates fields.
+-  :ref:`schema-strict`: Don't add ``"uniqueItems": true`` to coordinates fields.
 
 0.2.21 (2021-04-10)
 -------------------
