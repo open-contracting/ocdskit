@@ -365,6 +365,12 @@ You can use this command to reformat data:
 
       cat pretty.json | ocdskit echo > compact.json
 
+-  Extract compiled releases from a record package:
+
+   .. code-block:: bash
+
+      cat record-package.json | ocdskit echo --root-path records.item.compiledRelease
+
 You can also use this command to extract releases from release packages, and records from record packages. This is especially useful if a single package is too large to hold in memory.
 
 -  Split a large record package into smaller packages of 100 records each:
