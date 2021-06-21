@@ -93,7 +93,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
         try:
             rows.sort(key=lambda row: row[order_by])
         except KeyError as e:
-            raise MissingColumnError("the column '{}' doesn't exist – did you make a typo?".format(order_by)) from e
+            raise MissingColumnError("the column '{}' doesn't exist – did you make a typo?".format(order_by)) from e
 
     fieldnames = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
                   'deprecationNotes']
