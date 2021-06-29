@@ -59,20 +59,21 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
 
         prop = field.schema
         field.sep = '/'
+        extension_name = prop.get(extension_field)
 
-        # If the field uses `$ref`, add an extra row for it. This makes it easier to use as a header for the object.
-        # It also preserves the different titles and descriptions of the referrer and referee.
+        # If the schema sets a `$ref` property, add an extra row for it. This preserves any differences in the titles
+        # and descriptions of the referrer and referee. The new row can be formatted as a heading for the object.
         if hasattr(prop, '__reference__'):
             reference = dict(prop.__reference__)
             prop = dict(prop)
             if extension_field in reference:
-                prop[extension_field] = reference[extension_field]
+                extension_name = reference[extension_field]
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
-            _add_row(rows, rows_by_path, field, reference, extension_field, infer_required=infer_required,
+            _add_row(rows, rows_by_path, field, reference, extension_name, infer_required=infer_required,
                      include_deprecated=include_deprecated)
 
-        _add_row(rows, rows_by_path, field, prop, extension_field, infer_required=infer_required,
+        _add_row(rows, rows_by_path, field, prop, extension_name, infer_required=infer_required,
                  include_deprecated=include_deprecated)
 
         # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
@@ -86,7 +87,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
             }
             _add_deprecated(row, prop['items'])
 
-            _add_row(rows, rows_by_path, field, prop['items'], extension_field, row=row,
+            _add_row(rows, rows_by_path, field, prop['items'], extension_name, row=row,
                      include_deprecated=include_deprecated)
 
     if order_by:
@@ -111,14 +112,14 @@ def _add_deprecated(row, schema):
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
 
 
-def _add_row(rows, rows_by_path, field, schema, extension_field, *, infer_required=None, include_deprecated=True,
+def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_required=None, include_deprecated=True,
              row=None):
     parent = rows_by_path.get(field.path_components[:-1], {})
     if not row:
         row = _make_row(field, schema, infer_required)
 
-    if extension_field in schema:
-        row['extension'] = schema[extension_field]
+    if extension_name:
+        row['extension'] = extension_name
     elif 'extension' in parent:
         row['extension'] = parent['extension']
 

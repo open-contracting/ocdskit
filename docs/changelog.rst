@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0.2 (2021-06-29)
+------------------
+
+Fixed
+~~~~~
+
+-  :ref:`mapping-sheet` correctly populates the ``extension`` column for extension fields on OCDS objects with ``items`` properties that ``$ref``'erence OCDS definitions.
+
 1.0.1 (2021-06-16)
 ------------------
 

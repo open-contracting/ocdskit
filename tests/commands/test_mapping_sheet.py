@@ -68,6 +68,16 @@ def test_command_extension_and_extension_field_location(capsys, monkeypatch):
                    'mapping-sheet_extension_extension-field_location.csv')
 
 
+@pytest.mark.vcr()
+def test_command_extension_and_extension_field_array(capsys, monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_additionalContactPoints_extension/archive/master.zip'
+
+    assert_command(capsys, monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
+                    path('release-schema.json'), '--extension', url],
+                   'mapping-sheet_extension_extension-field_array.csv')
+
+
 def test_command_oc4ids(capsys, monkeypatch):
     assert_command(capsys, monkeypatch, main,
                    ['mapping-sheet', path('project-schema.json')],
