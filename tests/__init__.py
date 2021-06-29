@@ -21,7 +21,7 @@ def read(filename, mode='rt', encoding=None, **kwargs):
 
 def assert_equal(actual, expected, ordered=True):
     if ordered:
-        assert actual == expected, ''.join(ndiff(actual.splitlines(1), expected.splitlines(1)))
+        assert actual == expected, ''.join(ndiff(expected.splitlines(1), actual.splitlines(1)))
     else:
         for a, b in zip_longest(actual.split('\n'), expected.split('\n'), fillvalue='{}'):
             if a != b != '':
