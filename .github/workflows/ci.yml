@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-pip-
       - name: Install YAJL (Linux)
         if: matrix.packages && matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install libyajl-dev
+        run: sudo apt install libyajl-dev
       - name: Install YAJL (macOS)
         if: matrix.packages && matrix.os == 'macos-latest'
         run: brew install yajl
