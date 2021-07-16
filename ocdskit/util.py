@@ -25,12 +25,11 @@ def grouper(iterable, n, fillvalue=None):
 # https://stackoverflow.com/questions/21663800/python-make-a-list-generator-json-serializable/46841935#46841935
 class SerializableGenerator(list):
     def __init__(self, iterable):
-        iterator = iter(iterable)
         try:
             # If `iter()` is omitted, then `__iter__` won't exhaust `head`.
-            self.head = iter([next(iterator)])
+            self.head = iter([next(iterable)])
             # Adding an item to the list ensures `__bool__` and `__len__` work.
-            self.append(iterator)
+            self.append(iterable)
         except StopIteration:
             # `__iter__` requires `head` to be set.
             self.head = []
@@ -46,11 +45,11 @@ class JSONEncoder(json.JSONEncoder):
             return float(obj)
         # https://docs.python.org/3/library/json.html#json.JSONEncoder.default
         try:
-            iter(obj)
+            iterable = iter(obj)
         except TypeError:
             pass
         else:
-            return SerializableGenerator(obj)
+            return SerializableGenerator(iterable)
         return json.JSONEncoder.default(self, obj)
 
 
