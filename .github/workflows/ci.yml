@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-pip-
       - run: pip install .[test]
       - run: python -c "import ijson; print(ijson.backend)"
-      - if: matrix.python-version != "pypy-3.7"
+      - if: matrix.python-version != 'pypy-3.7'
         name: Test
         run: |
           coverage run --append --source=ocdskit -m pytest --vcr-record=none
@@ -32,7 +32,7 @@ jobs:
           coverage run --append --source=ocdskit -m pytest --vcr-record=none
           pip uninstall -y orjson
       # "orjson does not support PyPy" https://pypi.org/project/orjson/
-      - if: matrix.python-version == "pypy-3.7"
+      - if: matrix.python-version == 'pypy-3.7'
         run: coverage run --append --source=ocdskit -m pytest --vcr-record=none
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
