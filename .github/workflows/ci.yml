@@ -37,7 +37,8 @@ jobs:
           pip uninstall -y orjson
       # "orjson does not support PyPy" https://pypi.org/project/orjson/
       - if: matrix.python-version == 'pypy-3.7'
-        run: coverage run --append --source=ocdskit -m pytest --vcr-record=none
-      - env:
+        run: pytest
+      - if: matrix.python-version != 'pypy-3.7'
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
