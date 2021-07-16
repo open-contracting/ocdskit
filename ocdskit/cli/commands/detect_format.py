@@ -41,9 +41,9 @@ def _print(path, detected_format, is_concatenated, is_array):
     string = detected_format
 
     if is_array:
-        string = 'a JSON array of {}s'.format(string)
+        string = f'a JSON array of {string}s'
 
     if is_concatenated:
-        string = 'concatenated JSON, starting with {}'.format(string)
+        string = f'concatenated JSON, starting with {string}'
 
-    print('{}: {}'.format(path, string))
+    print(f'{path}: {string}')

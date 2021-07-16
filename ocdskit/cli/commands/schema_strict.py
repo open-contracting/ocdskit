@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         if self.args.check:
             if schema != original:
-                print('ERROR: {} is missing validation properties'.format(self.args.file), file=sys.stderr)
+                print(f'ERROR: {self.args.file} is missing validation properties', file=sys.stderr)
         else:
             with open(self.args.file, 'w') as f:
                 json_dump(schema, f, indent=2)

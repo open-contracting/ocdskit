@@ -25,7 +25,7 @@ def assert_equal(actual, expected, ordered=True):
     else:
         for a, b in zip_longest(actual.split('\n'), expected.split('\n'), fillvalue='{}'):
             if a != b != '':
-                assert ocdskit.util.jsonlib.loads(a) == ocdskit.util.jsonlib.loads(b), '\n{}\n{}'.format(a, b)
+                assert ocdskit.util.jsonlib.loads(a) == ocdskit.util.jsonlib.loads(b), f'\n{a}\n{b}'
 
 
 def run_command(capsys, monkeypatch, main, args):
@@ -43,7 +43,7 @@ def assert_command_error(capsys, monkeypatch, main, args, expected='', error=Sys
 
     actual = capsys.readouterr()
 
-    assert actual.out == expected, '\n{}\n{}'.format(actual.out, expected)
+    assert actual.out == expected, f'\n{actual.out}\n{expected}'
     if error is SystemExit:
         assert excinfo.value.code == 1
 
@@ -82,7 +82,7 @@ def assert_streaming_error(capsys, monkeypatch, main, args, stdin, expected='', 
 
     actual = capsys.readouterr()
 
-    assert actual.out == expected, '\n{}\n{}'.format(actual.out, expected)
+    assert actual.out == expected, f'\n{actual.out}\n{expected}'
     if error is SystemExit:
         assert excinfo.value.code == 1
 

@@ -94,7 +94,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
         try:
             rows.sort(key=lambda row: row[order_by])
         except KeyError as e:
-            raise MissingColumnError("the column '{}' doesn't exist – did you make a typo?".format(order_by)) from e
+            raise MissingColumnError(f"the column '{order_by}' doesn't exist – did you make a typo?") from e
 
     fieldnames = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
                   'deprecationNotes']
@@ -167,7 +167,7 @@ def _make_row(field, schema, infer_required):
 
     min_range = '1' if required else '0'
     max_range = 'n' if row['type'] == 'array' else '1'
-    row['range'] = '{}..{}'.format(min_range, max_range)
+    row['range'] = f'{min_range}..{max_range}'
 
     if 'format' in schema:
         row['values'] = schema['format']

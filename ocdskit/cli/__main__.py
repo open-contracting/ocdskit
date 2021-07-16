@@ -63,7 +63,7 @@ def main(description='Open Contracting Data Standard CLI', modules=COMMAND_MODUL
                     if isinstance(e.args[0], bytes):  # YAJL backends
                         message = e.args[0].decode(errors='backslashreplace')
                     _raise_encoding_error(message, args.encoding)
-                raise CommandError('JSON error: {}'.format(e)) from e
+                raise CommandError(f'JSON error: {e}') from e
             except UnicodeDecodeError as e:
                 _raise_encoding_error(e, args.encoding)
         except CommandError as e:
@@ -84,7 +84,7 @@ def _raise_encoding_error(e, encoding):
         suggestion = 'utf-8'
     else:
         suggestion = 'iso-8859-1'
-    raise CommandError('encoding error: {}\nTry `--encoding {}`?'.format(e, suggestion))
+    raise CommandError(f'encoding error: {e}\nTry `--encoding {suggestion}`?')
 
 
 if __name__ == '__main__':

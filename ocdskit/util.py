@@ -214,12 +214,12 @@ def detect_format(path, root_path='', reader=open):
         if event == 'start_array':
             prefix += 'item.'
         elif event != 'start_map':
-            raise UnknownFormatError('top-level JSON value is a {}'.format(event))
+            raise UnknownFormatError(f'top-level JSON value is a {event}')
 
-        records_prefix = '{}records'.format(prefix)
-        releases_prefix = '{}releases'.format(prefix)
-        ocid_prefix = '{}ocid'.format(prefix)
-        tag_item_prefix = '{}tag.item'.format(prefix)
+        records_prefix = f'{prefix}records'
+        releases_prefix = f'{prefix}releases'
+        ocid_prefix = f'{prefix}ocid'
+        tag_item_prefix = f'{prefix}tag.item'
 
         has_records = False
         has_releases = False
@@ -263,7 +263,7 @@ def _detect_format_result(is_concatenated, is_array, has_records, has_releases, 
             infix = 'array'
         else:
             infix = 'object'
-        raise UnknownFormatError('top-level JSON value is a non-OCDS {}'.format(infix))
+        raise UnknownFormatError(f'top-level JSON value is a non-OCDS {infix}')
 
     return (detected_format, is_concatenated, is_array)
 

@@ -150,7 +150,7 @@ def test_command(capsys, monkeypatch, tmpdir):
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd'):
-        tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
+        tmpdir.join('codelists', f'{basename}.csv').write(codelist)
 
     assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
     assert tmpdir.join('release-schema.json').read() == schema_with_enum
@@ -161,7 +161,7 @@ def test_unused_codelists(capsys, monkeypatch, caplog, tmpdir):
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd', 'e'):
-        tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
+        tmpdir.join('codelists', f'{basename}.csv').write(codelist)
 
     assert_command(capsys, monkeypatch, main, ['set-closed-codelist-enums', str(tmpdir)], '')
     assert tmpdir.join('release-schema.json').read() == schema_with_enum
@@ -190,7 +190,7 @@ def test_missing_targets(capsys, monkeypatch, caplog, tmpdir):
 
     tmpdir.mkdir('codelists')
     for basename in ('a', 'b', 'c', 'd', '+e'):
-        tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
+        tmpdir.join('codelists', f'{basename}.csv').write(codelist)
 
     excinfo = assert_command_error(capsys, monkeypatch, main,
                                    ['set-closed-codelist-enums', str(tmpdir)], error=KeyError)
@@ -210,7 +210,7 @@ def test_conflicting_codelists(capsys, monkeypatch, caplog, tmpdir):
                 f.write(schema)
 
         for basename in ('a', 'b', 'c', 'd'):
-            tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
+            tmpdir.join('codelists', f'{basename}.csv').write(codelist)
 
         with open(os.path.join(d, 'codelists', 'a.csv'), 'w') as f:
             f.write('Code\nbaz\n')
@@ -233,7 +233,7 @@ def test_modified_codelists(capsys, monkeypatch, tmpdir):
                 f.write(schema)
 
         for basename in ('a', 'b', 'c', 'd'):
-            tmpdir.join('codelists', '{}.csv'.format(basename)).write(codelist)
+            tmpdir.join('codelists', f'{basename}.csv').write(codelist)
 
         with open(os.path.join(d, 'codelists', '+a.csv'), 'w') as f:
             f.write('Code\nbaz\n')

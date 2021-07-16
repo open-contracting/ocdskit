@@ -82,4 +82,4 @@ class Command(BaseCommand):
             for definition, count in sorted(definitions.items(), key=itemgetter(1), reverse=True):
                 if count < self.args.min_occurrences:
                     break
-                print('{:2d}: {}'.format(count, definition))
+                print(f'{count:2d}: {definition}')

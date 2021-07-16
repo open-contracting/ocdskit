@@ -106,7 +106,7 @@ class Field:
                 data[key] = getattr(self, key)
         for key in ('path', 'definition_path'):
             if key not in exclude:
-                data[key] = sep.join(getattr(self, '{}_components'.format(key)))
+                data[key] = sep.join(getattr(self, f'{key}_components'))
 
         return data
 
@@ -168,7 +168,7 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
     for key, value in schema.get('patternProperties', {}).items():
         if key not in hidden:
             new_pointer = pointer + ('patternProperties', key)
-            new_path = path + ('({})'.format(key),)
+            new_path = path + (f'({key})',)
             yield Field(schema=value, pointer=new_pointer, path=new_path, definition_pointer=definition_pointer,
                         definition_path=definition_path, required=False, deprecated=deprecated or _deprecated(value),
                         multilingual=False)

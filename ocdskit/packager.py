@@ -60,9 +60,8 @@ class Packager:
                     # OCDS 1.1 and OCDS 1.0 have different merge rules for `awards.suppliers`. Also, mixing new and
                     # deprecated fields can lead to inconsistencies (e.g. transaction `amount` and `value`).
                     # https://standard.open-contracting.org/latest/en/schema/changelog/#advisories
-                    raise InconsistentVersionError('item {}: version error: this item uses version {}, but earlier '
-                                                   'items used version {}'.format(i, version, self.version),
-                                                   self.version, version)
+                    raise InconsistentVersionError(f'item {i}: version error: this item uses version {version}, but '
+                                                   f'earlier items used version {self.version}', self.version, version)
             else:
                 self.version = version
 

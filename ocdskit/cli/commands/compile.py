@@ -46,6 +46,7 @@ class Command(OCDSCommand):
             if versions[1] < versions[0]:
                 versions.reverse()
 
-            message = '{}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit upgrade ' \
-                      '{}:{} | ocdskit compile {}'.format(str(e), *versions, ' '.join(sys.argv[2:]))
-            raise CommandError(message) from e
+            raise CommandError(
+                f"{e}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit upgrade "
+                f"{versions[0]}:{versions[1]} | ocdskit compile {' '.join(sys.argv[2:])}"
+            ) from e

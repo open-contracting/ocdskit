@@ -22,9 +22,9 @@ class Command(OCDSCommand):
             direction = 'down'
 
         try:
-            upgrade_method = getattr(upgrade, 'upgrade_{}'.format(versions.replace('.', '').replace(':', '_')))
+            upgrade_method = getattr(upgrade, f"upgrade_{versions.replace('.', '').replace(':', '_')}")
         except AttributeError as e:
-            message = '{}grade from {} is not supported'.format(direction, versions.replace(':', ' to '))
+            message = f"{direction}grade from {versions.replace(':', ' to ')} is not supported"
             raise CommandError(message) from e
 
         for data in self.items(map_type=OrderedDict):

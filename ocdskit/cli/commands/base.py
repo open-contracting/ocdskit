@@ -116,12 +116,7 @@ class OCDSCommand(BaseCommand, ABC):
         """
         Adds arguments for setting package metadata to the subparser.
         """
-        kwargs = {
-            'infix': infix,
-            'prefix': prefix,
-        }
-
-        template = "{prefix}set the {infix} package's {{}} to this value".format(**kwargs)
+        template = f"{prefix}set the {infix} package's {{}} to this value"
 
         self.add_argument('--uri', type=str, default='', help=template.format('uri'))
         self.add_argument('--published-date', type=str, default='', help=template.format('publishedDate'))
@@ -131,7 +126,7 @@ class OCDSCommand(BaseCommand, ABC):
         self.add_argument('--publisher-scheme', type=str, default='', help=template.format("publisher's scheme"))
         self.add_argument('--publisher-uid', type=str, default='', help=template.format("publisher's uid"))
         self.add_argument('--fake', action='store_true',
-                          help="{prefix}set the {infix} package's required metadata to dummy values".format(**kwargs))
+                          help=f"{prefix}set the {infix} package's required metadata to dummy values")
 
     def parse_package_arguments(self):
         """
