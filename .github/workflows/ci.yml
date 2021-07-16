@@ -8,9 +8,6 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
         python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.7]
-        packages:
-          - ""
-          - libyajl-dev
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -25,20 +22,8 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: Install YAJL (Linux)
-        if: matrix.packages && matrix.os == 'ubuntu-latest'
-        run: sudo apt install libyajl-dev
-      - name: Install YAJL (macOS)
-        if: matrix.packages && matrix.os == 'macos-latest'
-        run: brew install yajl
-      - name: Install YAJL (Windows)
-        if: matrix.packages && matrix.os == 'windows-latest'
-        # https://github.com/ICRAR/ijson/blob/master/.appveyor.yml
-        run: |
-          git clone https://github.com/lloyd/yajl
-          mkdir yajl\yajl
-          xcopy yajl\src\api\*.* yajl\yajl
       - run: pip install .[test]
+      - run: python -c "import ijson; print(ijson.backend)"
       - name: Test
         run: |
           coverage run --append --source=ocdskit -m pytest --vcr-record=none
