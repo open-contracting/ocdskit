@@ -7,11 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9, pypy-3.7]
-        exclude:
-          # "Abort trap: 6"
-          - os: macos-latest
-            python-version: pypy-3.7
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -28,17 +24,12 @@ jobs:
             ${{ runner.os }}-pip-
       - run: pip install .[test]
       - run: python -c "import ijson; print(ijson.backend)"
-      - if: matrix.python-version != 'pypy-3.7'
-        name: Test
+      - name: Test
         run: |
           coverage run --append --source=ocdskit -m pytest --vcr-record=none
           pip install orjson
           coverage run --append --source=ocdskit -m pytest --vcr-record=none
           pip uninstall -y orjson
-      # "orjson does not support PyPy" https://pypi.org/project/orjson/
-      - if: matrix.python-version == 'pypy-3.7'
-        run: pytest
-      - if: matrix.python-version != 'pypy-3.7'
-        env:
+      - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
