@@ -2,9 +2,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 
-import ijson
-
-from ocdskit.util import iterencode, json_dumps
+from ocdskit.util import ijson, iterencode, json_dumps
 
 
 class StandardInputReader:

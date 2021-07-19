@@ -4,9 +4,8 @@ import logging
 import sys
 import warnings
 
-import ijson
-
 from ocdskit.exceptions import CommandError
+from ocdskit.util import ijson
 
 logger = logging.getLogger('ocdskit')
 
