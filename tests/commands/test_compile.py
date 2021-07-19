@@ -16,7 +16,7 @@ def _remove_package_metadata(filenames):
         data['publisher'] = {}
         data['packages'] = []
         outputs.append(data)
-    return ''.join(json_dumps(data) + '\n')
+    return json_dumps(data) + '\n'
 
 
 # Test with packages and with releases.
