@@ -1,19 +1,32 @@
 import itertools
 import json
+import platform
 from decimal import Decimal
 
-import ijson
-
 from ocdskit.exceptions import UnknownFormatError
+
+if platform.python_implementation() == 'PyPy':
+    import importlib
+
+    # yajl_c causes C errors. https://github.com/open-contracting/ocdskit/issues/178
+    # See ijson/__init__.py::_default_backend
+    for backend in ('yajl2_cffi', 'yajl2', 'yajl', 'python'):
+        try:
+            ijson = importlib.import_module(f'ijson.backends.{backend}')
+            break
+        except ImportError:
+            pass
+    else:
+        raise ImportError('no ijson backends available')
+else:
+    import ijson
 
 try:
     import orjson
 
     jsonlib = orjson
-    USING_ORJSON = True
 except ImportError:
     jsonlib = json
-    USING_ORJSON = False
 
 
 # See `grouper` recipe: https://docs.python.org/3.8/library/itertools.html#recipes
@@ -76,7 +89,7 @@ def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs)
     Dumps JSON to a string, and returns it.
     """
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
-    if not USING_ORJSON or ensure_ascii or indent and indent != 2 or kwargs:
+    if jsonlib == json or ensure_ascii or indent and indent != 2 or kwargs:
         if not indent:
             kwargs['separators'] = (',', ':')
         return json.dumps(data, cls=JSONEncoder, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
