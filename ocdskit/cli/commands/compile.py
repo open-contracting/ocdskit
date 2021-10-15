@@ -4,7 +4,7 @@ import sys
 import ocdskit.packager
 from ocdskit.cli.commands.base import OCDSCommand
 from ocdskit.combine import merge
-from ocdskit.exceptions import CommandError, InconsistentVersionError, MissingOcidKeyError
+from ocdskit.exceptions import CommandError, InconsistentVersionError, MissingOcidKeyError, UnknownVersionError
 
 logger = logging.getLogger('ocdskit')
 
@@ -41,6 +41,8 @@ class Command(OCDSCommand):
                 self.print(output, streaming=self.args.package)
         except MissingOcidKeyError as e:
             raise CommandError('The `ocid` field of at least one release is missing.') from e
+        except UnknownVersionError as e:
+            raise CommandError(f'The `version` value ("{e}") of a release package is not recognized.') from e
         except InconsistentVersionError as e:
             versions = [e.earlier_version, e.current_version]
             if versions[1] < versions[0]:

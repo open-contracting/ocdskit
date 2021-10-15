@@ -68,15 +68,15 @@ def test_command_package(capsys, monkeypatch):
 
 @pytest.mark.vcr()
 @pytest.mark.usefixtures('sqlite')
-def test_command_package_uri_published_date(capsys, monkeypatch):
+def test_command_package_uri_published_date_version(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package', '--uri', 'http://example.com/x.json',
-                                                       '--published-date', '2010-01-01T00:00:00Z', '--version', '1.2'],
+                                                       '--published-date', '2010-01-01T00:00:00Z', '--version', 'X'],
                            ['release-package_minimal.json'])
 
     package = json.loads(actual.out)
     assert package['uri'] == 'http://example.com/x.json'
     assert package['publishedDate'] == '2010-01-01T00:00:00Z'
-    assert package['version'] == '1.2'
+    assert package['version'] == 'X'
 
 
 @pytest.mark.vcr()
@@ -103,6 +103,16 @@ def test_command_package_fake(capsys, monkeypatch):
     package = json.loads(actual.out)
     assert package['uri'] == 'placeholder:'
     assert package['publishedDate'] == '9999-01-01T00:00:00Z'
+
+
+@pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_package_packages(capsys, monkeypatch):
+    actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package'],
+                           ['release_minimal.json'])
+
+    package = json.loads(actual.out)
+    assert 'packages' not in package
 
 
 @pytest.mark.vcr()
@@ -155,6 +165,17 @@ def test_command_missing_ocid(capsys, monkeypatch, caplog):
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
         assert caplog.records[0].message == 'The `ocid` field of at least one release is missing.'
+
+
+@pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_unknown_version(capsys, monkeypatch, caplog):
+    with caplog.at_level(logging.ERROR):
+        assert_streaming_error(capsys, monkeypatch, main, ['compile'], ['release-package_unknown-version.json'])
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == 'CRITICAL'
+        assert caplog.records[0].message == 'The `version` value ("X") of a release package is not recognized.'
 
 
 @pytest.mark.vcr()

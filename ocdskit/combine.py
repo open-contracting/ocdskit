@@ -4,7 +4,7 @@ from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge import Merger
 from ocdsmerge.util import get_release_schema_url, get_tags
 
-from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning
+from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning, UnknownVersionError
 from ocdskit.packager import Packager
 from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
                           _resolve_metadata, _update_package_metadata)
@@ -153,13 +153,17 @@ def merge(data, uri='', publisher=None, published_date='', version=DEFAULT_VERSI
         if the calling code exhausts the generator before ``merge`` returns)
     :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
     :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
+    :raises UnknownVersionError: if the OCDS version is not recognized
     """
     with Packager() as packager:
         packager.add(data)
 
         if not schema and packager.version:
             prefix = packager.version.replace('.', '__') + '__'
-            tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+            try:
+                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+            except StopIteration:
+                raise UnknownVersionError(packager.version)
             schema = get_release_schema_url(tag)
 
             if packager.package['extensions']:

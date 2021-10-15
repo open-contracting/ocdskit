@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Basic bWFuYWdlOnhkeTAmd0JkTUJAZw==
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+    method: GET
+    uri: https://standard.open-contracting.org/schema/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA9WXXW/aMBiF7/sr3uVi2i4Sx/lAKw2ZGGEaGgUEVNM0TcjEhlgLceS41dpfP0Mg
+        ZRNQdlORK5xw4pzHhyPxBm+iYWf6fdSFL9PbPozuPvV7HTBMhL65HYSiaVR+4VoOfOYZSRHqDozw
+        KkjUKg2vIEgYofoTAsVVysJeRtlvEAtARZywFQlQeV8r0VYazAV9XO+AD6j1zc1mZL55aL2UYaAS
+        eCApX2YtQ4ncCAO+WkIh45aBeCyyAs1Tkv2ylnxhAElVy/jR6wx/ah1SyfrpMCCQSLZoGR87rcHN
+        sBUZ4YCsWIDIYc2t1rSNsE8KBStB+YIzelQ8KcUT/nR8w6jURKyIJc8VF9mzFGnEfdRYpEVONKuv
+        CRK5ryol9KXTIPFfhzFqj7uDadQbl0dC11s8u0NGOCKSZQoiLlmshHzceiuFb7N5kd/sLmH7ZsmX
+        iTJCABMOKv/D7kKklMl9w8es2rOZO5s52vFute/0H2uOja9Nu2HaPmC/iT2AC2JwKwa3hgx4NtPm
+        bc2wW9WVAVcMuLYMTsVQxz6Uzt2Kob59GHcqCL2sJQWuWo1r22pctRrXttW4ajWubatx1Wp8Sa2O
+        xSqXrCgY3efQf79OcHjWE893KJuLM2icBmC7iZ2jNNh1vr52Il6ViHdWIo11Ivb1xSXi7yfiv5iI
+        Y5v2B9OxwXGb/vHfF3bdV0/ErxLxTydyJsPpRM4cM9B2AAsIpetownZO9ISGHMuzfAzv7ub3mbp/
+        DxMmH5gEoqBQJKNEUkvkLDP1SShJYsWzpSXkEkZCKvA8VwNuN9Tv2MyBeuTbTJJ/AMKuVYmJDgAA
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - Upgrade, Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '627'
+      Content-Type:
+      - text/html;charset=UTF-8
+      Date:
+      - Fri, 15 Oct 2021 20:29:20 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      Server:
+      - Apache/2.4.51 (Ubuntu)
+      Strict-Transport-Security:
+      - max-age=15768000
+      Upgrade:
+      - h2
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -7,7 +7,8 @@ Changelog
 Fixed
 ~~~~~
 
--  ``compile`` omits ``packages`` from record package if empty.
+-  ``compile`` omits ``packages`` from a record package if empty.
+-  ``compile`` raises an error if the OCDS version is not recognized, instead of failing silently.
 
 1.0.2 (2021-06-29)
 ------------------
