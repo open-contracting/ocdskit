@@ -100,6 +100,7 @@ class Packager:
 
         self.package['records'] = records
 
+        _resolve_metadata(self.package, 'packages')
         _resolve_metadata(self.package, 'extensions')
         _remove_empty_optional_metadata(self.package)
 

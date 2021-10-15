@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0.3 (Unreleased)
+------------------
+
+Fixed
+~~~~~
+
+-  ``compile`` omits ``packages`` from record package if empty.
+
 1.0.2 (2021-06-29)
 ------------------
 
