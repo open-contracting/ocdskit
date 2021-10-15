@@ -50,5 +50,5 @@ class Command(OCDSCommand):
 
             raise CommandError(
                 f"{e}\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit upgrade "
-                f"{versions[0]}:{versions[1]} | ocdskit compile {' '.join(sys.argv[2:])}"
+                f"{versions[0]}:{versions[1]} | ocdskit {' '.join(sys.argv[1:])}"
             ) from e
