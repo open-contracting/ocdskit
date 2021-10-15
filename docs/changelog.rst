@@ -4,6 +4,11 @@ Changelog
 1.0.3 (Unreleased)
 ------------------
 
+Changed
+~~~~~~~
+
+-  ``compile`` omits ``packages`` from a record package for OCDS 1.2+.
+
 Fixed
 ~~~~~
 

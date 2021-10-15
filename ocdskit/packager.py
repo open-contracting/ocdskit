@@ -73,7 +73,7 @@ class Packager:
                 _update_package_metadata(self.package, item)
 
                 # Note: If there are millions of packages to merge, we should use SQLite to store the packages instead.
-                if uri:
+                if uri and version < '1.2':
                     self.package['packages'].append(uri)
 
                 for release in item['releases']:
