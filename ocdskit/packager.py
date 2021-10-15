@@ -86,7 +86,7 @@ class Packager:
         Yields a record package.
 
         :param ocdsmerge.merge.Merger merger: a merger
-        :param bool return_versioned_release: whether to include versioned releases in the record package
+        :param bool return_versioned_release: whether to include a versioned release in each record
         :param bool use_linked_releases: whether to use linked releases instead of full releases, if possible
         :param bool streaming: whether to set the package's records to a generator instead of a list
         """
@@ -110,7 +110,7 @@ class Packager:
         Yields records, ordered by OCID.
 
         :param ocdsmerge.merge.Merger merger: a merger
-        :param bool return_versioned_release: whether to include versioned releases in the record package
+        :param bool return_versioned_release: whether to include a versioned release in the record
         :param bool use_linked_releases: whether to use linked releases instead of full releases, if possible
         """
         for ocid, rows in self.backend.get_releases_by_ocid():
