@@ -14,7 +14,7 @@ def _remove_package_metadata(filenames):
     for filename in filenames:
         data = json.loads(read(filename))
         data['publisher'] = {}
-        data['packages'] = []
+        del data['packages']
         outputs.append(data)
     return json_dumps(data) + '\n'
 
