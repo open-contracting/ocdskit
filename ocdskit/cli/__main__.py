@@ -66,7 +66,7 @@ def main(description='Open Contracting Data Standard CLI', modules=COMMAND_MODUL
             except UnicodeDecodeError as e:
                 _raise_encoding_error(e, args.encoding)
         except CommandError as e:
-            logger.critical(e)
+            logger.exception('')
             sys.exit(1)
     else:
         parser.print_help()
