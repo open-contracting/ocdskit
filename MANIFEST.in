@@ -1,6 +1,7 @@
 include LICENSE
 recursive-include docs *.py
 recursive-include docs *.rst
+recursive-include docs *.txt
 recursive-include docs Makefile
 recursive-include tests *.csv
 recursive-include tests *.json
@@ -8,3 +9,4 @@ recursive-include tests *.jsonl
 recursive-include tests *.py
 recursive-include tests *.yaml
 recursive-include tests *.gz
+exclude .readthedocs.yaml
