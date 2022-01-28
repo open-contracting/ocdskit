@@ -135,7 +135,7 @@ def get_ocds_patch_tag(version):
     try:
         return next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
     except StopIteration:
-        raise UnknownVersionError(packager.version)
+        raise UnknownVersionError(version)
 
 
 def is_package(data):
