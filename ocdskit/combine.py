@@ -159,16 +159,13 @@ def merge(data, uri='', publisher=None, published_date='', version=DEFAULT_VERSI
         packager.add(data)
 
         if not schema and packager.version:
-            prefix = packager.version.replace('.', '__') + '__'
-            try:
-                tag = next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
-            except StopIteration:
-                raise UnknownVersionError(packager.version)
-            schema = get_release_schema_url(tag)
-
+            tag = get_ocds_patch_tag(packager.version)
             if packager.package['extensions']:
+                # `extensions` is an insertion-ordered dict at this point.
                 builder = ProfileBuilder(tag, list(packager.package['extensions']))
                 schema = builder.patched_release_schema()
+            else:
+                schema = get_release_schema_url(tag)
 
         merger = Merger(schema)
 

@@ -4,6 +4,11 @@ Changelog
 1.0.3 (Unreleased)
 ------------------
 
+Added
+~~~~~
+
+-   :meth:`ocdskit.util.get_ocds_patch_tag`
+
 Changed
 ~~~~~~~
 

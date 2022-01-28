@@ -3,7 +3,9 @@ import json
 import platform
 from decimal import Decimal
 
-from ocdskit.exceptions import UnknownFormatError
+from ocdsmerge.util import get_tags
+
+from ocdskit.exceptions import UnknownFormatError, UnknownVersionError
 
 if platform.python_implementation() == 'PyPy':
     import importlib
@@ -123,6 +125,19 @@ def get_ocds_minor_version(data):
     return '1.0'
 
 
+def get_ocds_patch_tag(version):
+    """
+    Returns the OCDS patch version as a git tag (like ``1__1__4``) for a given minor version (like ``1.1``).
+
+    :raises UnknownVersionError: if the OCDS version is not recognized
+    """
+    prefix = version.replace('.', '__') + '__'
+    try:
+        return next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
+    except StopIteration:
+        raise UnknownVersionError(packager.version)
+
+
 def is_package(data):
     """
     Returns whether the data is a record package or release package.
@@ -183,21 +198,6 @@ def is_linked_release(data):
     and test whether the number of fields is fewer than three.
     """
     return 'url' in data and len(data) <= 3
-
-
-def _empty_package(uri, publisher, published_date, version):
-    if publisher is None:
-        publisher = {}
-
-    return {
-        'uri': uri,
-        'publisher': publisher,
-        'publishedDate': published_date,
-        'license': None,
-        'publicationPolicy': None,
-        'version': version,
-        'extensions': {},
-    }
 
 
 def detect_format(path, root_path='', reader=open):
@@ -291,6 +291,21 @@ def _empty_release_package(uri='', publisher=None, published_date='', version=No
     package = _empty_package(uri, publisher, published_date, version)
     package['releases'] = []
     return package
+
+
+def _empty_package(uri, publisher, published_date, version):
+    if publisher is None:
+        publisher = {}
+
+    return {
+        'uri': uri,
+        'publisher': publisher,
+        'publishedDate': published_date,
+        'license': None,
+        'publicationPolicy': None,
+        'version': version,
+        'extensions': {},
+    }
 
 
 def _update_package_metadata(output, package):
