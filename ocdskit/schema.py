@@ -219,9 +219,10 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
                 'string' in schema['type']
                 # "enum" is more strict than "minLength".
                 and 'enum' not in schema
-                # The "date-time", "email" and "uri" formats do not match zero-length strings.
+                # The defined formats do not match zero-length strings.
+                # https://datatracker.ietf.org/doc/html/draft-fge-json-schema-validation-00#section-7.3
                 and 'format' not in schema
-                # "minLength" is redundant if the "pattern" matches only non-zero lengths.
+                # The pattern is assumed to not match zero-length strings.
                 and 'pattern' not in schema
             ):
                 schema.setdefault('minLength', 1)
