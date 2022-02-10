@@ -1,24 +1,34 @@
 Changelog
 =========
 
+1.0.4 (2022-02-10)
+------------------
+
+Added
+~~~~~
+
+New CLI options:
+
+-  :ref:`mapping-sheet`: ``--codelist``
+
 1.0.3 (2021-12-18)
 ------------------
 
 Added
 ~~~~~
 
--   :meth:`ocdskit.util.get_ocds_patch_tag`
+-  :meth:`ocdskit.util.get_ocds_patch_tag`
 
 Changed
 ~~~~~~~
 
--  ``compile`` omits ``packages`` from a record package for OCDS 1.2+.
+-  :ref:`compile` omits ``packages`` from a record package for OCDS 1.2+.
 
 Fixed
 ~~~~~
 
--  ``compile`` omits ``packages`` from a record package if empty.
--  ``compile`` raises an error if the OCDS version is not recognized, instead of failing silently.
+-  :ref:`compile` omits ``packages`` from a record package if empty.
+-  :ref:`compile` raises an error if the OCDS version is not recognized, instead of failing silently.
 
 1.0.2 (2021-06-29)
 ------------------

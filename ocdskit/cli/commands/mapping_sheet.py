@@ -49,6 +49,7 @@ class Command(BaseCommand):
         self.add_argument('--extension-field', help='add an "extension" column for the name of the extension in which '
                           'each field was defined')
         self.add_argument('--language', default='en', help='the language to use for the name of the extension')
+        self.add_argument('--codelist', action='store_true', help='add a "codelist" column')
         self.add_argument('--no-deprecated', action='store_true', help="don't include deprecated fields")
         self.add_argument('--no-replace-refs', action='store_true', help="don't replace schema with $ref properties "
                           'with the referenced schema')

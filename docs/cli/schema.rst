@@ -32,6 +32,7 @@ Optional arguments:
 --extension             patch the release schema with this extension
 --extension-field       add an "extension" column for the name of the extension in which each field was defined
 --language              the language to use for the name of the extension
+--codelist              add a "codelist" column
 --no-deprecated         don't include deprecated fields
 --no-replace-refs       don't replace schema with $ref properties with the referenced schema
 

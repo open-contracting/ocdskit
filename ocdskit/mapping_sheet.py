@@ -9,8 +9,8 @@ from ocdskit.util import _cast_as_list
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None, include_deprecated=True,
-                  include_definitions=False):
+def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None, include_codelist=False,
+                  include_deprecated=True, include_definitions=False):
     """
     Writes information about all field paths in a JSON Schema to a CSV file.
 
@@ -20,6 +20,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
                                 field was defined
+    :param bool include_codelist: whether to include a "codelist" column
     :param bool include_deprecated: whether to include any deprecated fields
     :param bool include_definitions: whether to traverse the "definitions" property
 
@@ -44,6 +45,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
       * ``pattern``: the ``pattern``
       * ``enum``: "Enum: " followed by the ``enum`` as a comma-separated list, excluding ``null``
       * ``items/enum``: "Enum: " followed by the ``items/enum`` as a comma-separated list, excluding ``null``
+    :``codelist``: The field's ``codelist`` in the JSON schema
     :``links``: The URLs extracted from the field's ``description``
     :``deprecated``: The OCDS minor version in which the field (or its parent) was deprecated
     :``deprecationNotes``: The explanation for the deprecation of the field
@@ -51,6 +53,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
 
     :raises MissingColumnError: if the column by which to order is missing
     """
+    kwargs = {'include_codelist': include_codelist, 'include_deprecated': include_deprecated}
+
     rows = []
     rows_by_path = {}
     for field in get_schema_fields(schema):
@@ -71,10 +75,10 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
             if 'type' not in reference and 'type' in prop:
                 reference['type'] = prop['type']
             _add_row(rows, rows_by_path, field, reference, extension_name, infer_required=infer_required,
-                     include_deprecated=include_deprecated)
+                     **kwargs)
 
         _add_row(rows, rows_by_path, field, prop, extension_name, infer_required=infer_required,
-                 include_deprecated=include_deprecated)
+                 **kwargs)
 
         # If the field is an array, add an extra row for it. This makes it easier to use as a header for the object.
         if 'items' in prop and 'properties' in prop['items'] and 'title' in prop['items']:
@@ -87,8 +91,7 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
             }
             _add_deprecated(row, prop['items'])
 
-            _add_row(rows, rows_by_path, field, prop['items'], extension_name, row=row,
-                     include_deprecated=include_deprecated)
+            _add_row(rows, rows_by_path, field, prop['items'], extension_name, row=row, **kwargs)
 
     if order_by:
         try:
@@ -100,6 +103,8 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
                   'deprecationNotes']
     if extension_field:
         fieldnames.append(extension_field)
+    if include_codelist:
+        fieldnames.append('codelist')
 
     writer = csv.DictWriter(io, fieldnames)
     writer.writeheader()
@@ -112,11 +117,11 @@ def _add_deprecated(row, schema):
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
 
 
-def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_required=None, include_deprecated=True,
-             row=None):
+def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_required=None, include_codelist=False,
+             include_deprecated=True, row=None):
     parent = rows_by_path.get(field.path_components[:-1], {})
     if not row:
-        row = _make_row(field, schema, infer_required)
+        row = _make_row(field, schema, infer_required, include_codelist)
 
     if extension_name:
         row['extension'] = extension_name
@@ -129,7 +134,7 @@ def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_require
     rows_by_path[field.path_components] = row
 
 
-def _make_row(field, schema, infer_required):
+def _make_row(field, schema, infer_required, include_codelist):
     row = {
         'path': field.path,
         'title': schema.get('title', field.path_components[-1] + '*'),
@@ -185,6 +190,9 @@ def _make_row(field, schema, infer_required):
         row['values'] = 'Enum: ' + ', '.join(values)
     else:
         row['values'] = ''
+
+    if include_codelist:
+        row['codelist'] = schema.get('codelist')
 
     _add_deprecated(row, schema)
 

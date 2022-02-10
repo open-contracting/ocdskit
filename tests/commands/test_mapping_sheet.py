@@ -10,6 +10,12 @@ def test_command(capsys, monkeypatch):
                    'mapping-sheet.csv')
 
 
+def test_command_codelist(capsys, monkeypatch):
+    assert_command(capsys, monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--codelist', path('release-schema.json')],
+                   'mapping-sheet_codelist.csv')
+
+
 def test_command_no_deprecated(capsys, monkeypatch):
     assert_command(capsys, monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--no-deprecated', path('release-schema.json')],
