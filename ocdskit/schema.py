@@ -203,8 +203,13 @@ def _deprecated(value):
 
 def add_validation_properties(schema, unique_items=True, coordinates=False):
     """
-    Adds "minItems" and "uniqueItems" if an array, adds "minProperties" if an object, and adds "minLength" if a string
-    and if "enum", "format" and "pattern" aren't set.
+    Adds:
+    * "minItems" and "uniqueItems" if an array, adds "minProperties" if an object
+    * "minLength" if a string and if "enum", "format" and "pattern" aren't set
+    * "format": "email" if the key is "email"
+    * "minimum": 0 if the key is "quantity", "durationInDays", "numberOfTenderers"
+    * "required": ["id", "name"] if the key is "Organization" or "OrganizationReference"
+    * "required": ["id"] if the key is "Amendment" or "RelatedProcess"
 
     :param dict schema: a JSON schema
     :param bool unique_items: whether to add "uniqueItems" properties to array fields
@@ -234,5 +239,14 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
             if 'object' in schema['type']:
                 schema.setdefault('minProperties', 1)
 
-        for value in schema.values():
+        for key, value in schema.items():
+            if key == 'email':
+                value['format'] = 'email'
+            elif key in ['quantity', 'durationInDays', 'numberOfTenderers']:
+                value['minimum'] = 0
+            elif key in ['Organization', 'OrganizationReference']:
+                value['required'] = ['id', 'name']
+            elif key in ['Amendment', 'RelatedProcess']:
+                value['required'] = ['id']
+                
             add_validation_properties(value, unique_items=unique_items, coordinates=coordinates)
