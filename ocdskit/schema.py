@@ -248,5 +248,5 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
                 value['required'] = ['id', 'name']
             elif key in ['Amendment', 'RelatedProcess']:
                 value['required'] = ['id']
-                
+
             add_validation_properties(value, unique_items=unique_items, coordinates=coordinates)
