@@ -246,7 +246,10 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
                 value['minimum'] = 0
             elif key in ['Organization', 'OrganizationReference']:
                 value['required'] = ['id', 'name']
+                value['properties']['name']['type'] = "string"
+                value['properties']['id']['type'] = "string"
             elif key in ['Amendment', 'RelatedProcess']:
                 value['required'] = ['id']
+                value['properties']['id']['type'] = "string"            
 
             add_validation_properties(value, unique_items=unique_items, coordinates=coordinates)
