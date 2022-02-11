@@ -211,6 +211,8 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
     * "required": ["id", "name"] if the key is "Organization" or "OrganizationReference"
     * "required": ["id"] if the key is "Amendment" or "RelatedProcess"
 
+    Removes "integer" from "type" if the key is "id"
+
     :param dict schema: a JSON schema
     :param bool unique_items: whether to add "uniqueItems" properties to array fields
     :param bool coordinates: whether the parent is a geospatial coordinates field
