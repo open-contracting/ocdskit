@@ -1,6 +1,19 @@
 Changelog
 =========
 
+1.0.5 (YYYY-MM-DD)
+------------------
+
+Changed
+~~~~~~~
+
+-  :ref:`schema-strict`: Remove "integer" type from ID fields. Add validation rules:
+
+  - "format": "email" if the key is "email"
+  - "minimum": 0 to "quantity", "durationInDays" and "numberOfTenderers fields
+  - "required": ["id", "name"] to "Organization" and "OrganizationReference"
+  - "required": ["id"] to "Amendment" and "RelatedProcess"
+
 1.0.4 (2022-02-10)
 ------------------
 
