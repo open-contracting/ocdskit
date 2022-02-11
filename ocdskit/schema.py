@@ -207,11 +207,11 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
     * "minItems" and "uniqueItems" if an array, adds "minProperties" if an object
     * "minLength" if a string and if "enum", "format" and "pattern" aren't set
     * "format": "email" if the key is "email"
-    * "minimum": 0 if the key is "quantity", "durationInDays", "numberOfTenderers"
-    * "required": ["id", "name"] if the key is "Organization" or "OrganizationReference"
-    * "required": ["id"] if the key is "Amendment" or "RelatedProcess"
+    * "minimum": 0 to "quantity", "durationInDays" and "numberOfTenderers fields
+    * "required": ["id", "name"] to "Organization" and "OrganizationReference"
+    * "required": ["id"] to "Amendment" and "RelatedProcess"
 
-    Removes "integer" from "type" if the key is "id"
+    Removes "integer" from "type" for ID fields.
 
     :param dict schema: a JSON schema
     :param bool unique_items: whether to add "uniqueItems" properties to array fields

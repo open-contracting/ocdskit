@@ -89,7 +89,15 @@ Optional arguments:
 schema-strict
 -------------
 
-Adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and "minLength" if a string and "enum", "format" and "pattern" are not set.
+Adds:
+* "minItems" and "uniqueItems" if an array, adds "minProperties" if an object
+* "minLength" if a string and if "enum", "format" and "pattern" aren't set
+* "format": "email" if the key is "email"
+* "minimum": 0 to "quantity", "durationInDays" and "numberOfTenderers fields
+* "required": ["id", "name"] to "Organization" and "OrganizationReference"
+* "required": ["id"] to "Amendment" and "RelatedProcess"
+
+Removes "integer" from "type" for ID fields.
 
 Optional arguments:
 
