@@ -32,13 +32,17 @@ jobs:
       - if: matrix.python-version != 'pypy-3.7'
         name: Test
         run: |
-          coverage run --append --source=ocdskit -m pytest --vcr-record=none
+          coverage run --append --source=ocdskit -m pytest --vcr-record=none \
+            -W error -W default::ocdskit.exceptions.MissingRecordsWarning -W default::ocdskit.exceptions.MissingReleasesWarning
           pip install orjson
-          coverage run --append --source=ocdskit -m pytest --vcr-record=none
+          coverage run --append --source=ocdskit -m pytest --vcr-record=none \
+            -W error -W default::ocdskit.exceptions.MissingRecordsWarning -W default::ocdskit.exceptions.MissingReleasesWarning
           pip uninstall -y orjson
       - if: matrix.python-version == 'pypy-3.7'
         name: Test
-        run: pytest --cov ocdskit --vcr-record=none
+        run: |
+          pytest --cov ocdskit --vcr-record=none \
+            -W error -W default::ocdskit.exceptions.MissingRecordsWarning -W default::ocdskit.exceptions.MissingReleasesWarning
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
