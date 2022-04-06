@@ -3,6 +3,8 @@ import sys
 from io import BytesIO, TextIOWrapper
 from unittest.mock import patch
 
+import pytest
+
 from ocdskit.cli.__main__ import main
 from tests import assert_streaming, read, run_streaming
 
@@ -38,6 +40,7 @@ def test_command_publisher(capsys, monkeypatch):
     assert package['publisher']['name'] == 'Acme Inc.'
 
 
+@pytest.mark.filterwarnings("default::ocdskit.exceptions.MissingRecordsWarning")
 def test_command_missing_field(capsys, monkeypatch):
     stdin = read('release-package_minimal.json', 'rb')
 
