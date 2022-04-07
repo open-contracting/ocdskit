@@ -33,7 +33,7 @@ jobs:
       - if: matrix.python-version == 'pypy-3.7'
         name: Test
         run: |
-          pytest --cov ocdskit -W error --vcr-record=none
+          pytest -W error --cov ocdskit --vcr-record=none
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
