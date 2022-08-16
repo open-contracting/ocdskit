@@ -1,3 +1,4 @@
+import csv
 import json
 import pathlib
 import sys
@@ -78,7 +79,6 @@ class Command(BaseCommand):
                 include_codelist=self.args.codelist,
                 include_definitions=self.args.no_replace_refs,
             )
-
 
             writer = csv.DictWriter(sys.stdout, fieldnames)
             writer.writeheader()

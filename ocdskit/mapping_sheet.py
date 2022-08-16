@@ -1,4 +1,3 @@
-import csv
 import re
 
 from ocdskit.exceptions import MissingColumnError
