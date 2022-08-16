@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.0 (2022-08-16)
+------------------
+
+Changed
+~~~~~~~
+
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet` returns columns and rows instead of writing to a file-like object.
+
 1.0.4 (2022-02-10)
 ------------------
 

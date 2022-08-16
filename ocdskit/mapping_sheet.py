@@ -9,13 +9,12 @@ from ocdskit.util import _cast_as_list
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_field=None, include_codelist=False,
+def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=None, include_codelist=False,
                   include_deprecated=True, include_definitions=False):
     """
-    Writes information about all field paths in a JSON Schema to a CSV file.
+    Returns information about all field paths in a JSON Schema, as columns and rows.
 
     :param dict schema: a JSON schema
-    :param io: a file-like object to which to write the rows
     :param str order_by: the column by which to sort the rows
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
@@ -23,8 +22,10 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
     :param bool include_codelist: whether to include a "codelist" column
     :param bool include_deprecated: whether to include any deprecated fields
     :param bool include_definitions: whether to traverse the "definitions" property
+    :returns: information about all field paths in a JSON Schema, as columns and rows
+    :rtype: tuple
 
-    The CSV's columns are:
+    The columns are:
 
     :``section``: The first part of the JSON path to the field in the data, e.g. ``tender``
     :``path``: The JSON path to the field in the data, e.g. ``tender/id``
@@ -99,16 +100,14 @@ def mapping_sheet(schema, io, order_by=None, infer_required=False, extension_fie
         except KeyError as e:
             raise MissingColumnError(f"the column '{order_by}' doesn't exist – did you make a typo?") from e
 
-    fieldnames = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
-                  'deprecationNotes']
+    columns = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
+               'deprecationNotes']
     if extension_field:
-        fieldnames.append(extension_field)
+        columns.append(extension_field)
     if include_codelist:
-        fieldnames.append('codelist')
+        columns.append('codelist')
 
-    writer = csv.DictWriter(io, fieldnames)
-    writer.writeheader()
-    writer.writerows(rows)
+    return columns, rows
 
 
 def _add_deprecated(row, schema):

@@ -69,8 +69,19 @@ class Command(BaseCommand):
             schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
 
         try:
-            mapping_sheet(schema, sys.stdout, order_by=self.args.order_by, infer_required=self.args.infer_required,
-                          extension_field=self.args.extension_field, include_deprecated=not self.args.no_deprecated,
-                          include_codelist=self.args.codelist, include_definitions=self.args.no_replace_refs)
+            fieldnames, rows = mapping_sheet(
+                schema,
+                order_by=self.args.order_by,
+                infer_required=self.args.infer_required,
+                extension_field=self.args.extension_field,
+                include_deprecated=not self.args.no_deprecated,
+                include_codelist=self.args.codelist,
+                include_definitions=self.args.no_replace_refs,
+            )
+
+
+            writer = csv.DictWriter(sys.stdout, fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
         except MissingColumnError as e:
             raise CommandError(str(e)) from e
