@@ -13,7 +13,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     """
     Returns information about all field paths in a JSON Schema, as columns and rows.
 
-    :param dict schema: a JSON schema
+    :param dict schema: a dereferenced JSON schema
     :param str order_by: the column by which to sort the rows
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
