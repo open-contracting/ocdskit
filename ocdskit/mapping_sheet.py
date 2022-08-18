@@ -1,5 +1,7 @@
 import re
 
+import jsonref
+
 from ocdskit.exceptions import MissingColumnError
 from ocdskit.schema import get_schema_fields
 from ocdskit.util import _cast_as_list

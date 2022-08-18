@@ -5,7 +5,6 @@ import sys
 from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 
-import jsonref
 from ocdsextensionregistry import ProfileBuilder
 
 from ocdskit.cli.commands.base import BaseCommand
