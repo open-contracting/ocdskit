@@ -5,7 +5,6 @@ import sys
 from argparse import RawDescriptionHelpFormatter
 from textwrap import dedent
 
-import jsonref
 from ocdsextensionregistry import ProfileBuilder
 
 from ocdskit.cli.commands.base import BaseCommand
@@ -65,19 +64,16 @@ class Command(BaseCommand):
                 schema=schema, extension_field=self.args.extension_field, language=self.args.language
             )
 
-        base_uri = pathlib.Path(self.args.file).resolve().as_uri()
-        if not self.args.no_replace_refs:
-            schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
-
         try:
             fieldnames, rows = mapping_sheet(
                 schema,
                 order_by=self.args.order_by,
                 infer_required=self.args.infer_required,
                 extension_field=self.args.extension_field,
-                include_deprecated=not self.args.no_deprecated,
                 include_codelist=self.args.codelist,
+                include_deprecated=not self.args.no_deprecated,
                 include_definitions=self.args.no_replace_refs,
+                base_uri=pathlib.Path(self.args.file).resolve().as_uri(),
             )
 
             writer = csv.DictWriter(sys.stdout, fieldnames)

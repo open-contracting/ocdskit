@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.1 (2022-08-17)
+------------------
+
+Changed
+~~~~~~~
+
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet` resolves ``$ref`` properties if ``include_definitions=False``.
+
 1.1.0 (2022-08-16)
 ------------------
 
