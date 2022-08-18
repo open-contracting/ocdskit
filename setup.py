@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name='ocdskit',
-    version='1.1.0',
+    version='1.1.1',
     author='Open Contracting Partnership',
     author_email='data@open-contracting.org',
     url='https://github.com/open-contracting/ocdskit',
@@ -19,6 +19,8 @@ setup(
         'jsonref',
         'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.1.2',
+        # https://github.com/python-attrs/cattrs/issues/253
+        'cattrs!=22.1.0; platform_python_implementation == PyPy',
     ],
     extras_require={
         'perf': [

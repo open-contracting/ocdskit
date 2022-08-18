@@ -9,11 +9,13 @@ INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
 def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=None, include_codelist=False,
-                  include_deprecated=True, include_definitions=False):
+                  include_deprecated=True, include_definitions=False, base_uri=None):
     """
     Returns information about all field paths in a JSON Schema, as columns and rows.
 
-    :param dict schema: a dereferenced JSON schema
+    If ``include_definitions=False``, this function resolves ``$ref`` properties.
+
+    :param dict schema: a JSON schema
     :param str order_by: the column by which to sort the rows
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
@@ -21,6 +23,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     :param bool include_codelist: whether to include a "codelist" column
     :param bool include_deprecated: whether to include any deprecated fields
     :param bool include_definitions: whether to traverse the "definitions" property
+    :param str base_uri: the URL to resolve relative references against
     :returns: information about all field paths in a JSON Schema, as columns and rows
     :rtype: tuple
 
@@ -54,6 +57,9 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     :raises MissingColumnError: if the column by which to order is missing
     """
     kwargs = {'include_codelist': include_codelist, 'include_deprecated': include_deprecated}
+
+    if not include_definitions:
+        schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
 
     rows = []
     rows_by_path = {}
