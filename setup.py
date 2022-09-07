@@ -19,8 +19,6 @@ setup(
         'jsonref',
         'ocdsmerge>=0.6',
         'ocdsextensionregistry>=0.1.2',
-        # https://github.com/python-attrs/cattrs/issues/253
-        'cattrs!=22.1.0;platform_python_implementation=="PyPy"',
     ],
     extras_require={
         'perf': [
