@@ -1,6 +1,6 @@
 import pytest
 
-from ocdskit.cli.__main__ import main
+from ocdskit.__main__ import main
 from tests import assert_command, assert_command_error, path, run_command
 
 

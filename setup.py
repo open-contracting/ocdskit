@@ -50,7 +50,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'ocdskit = ocdskit.cli.__main__:main',
+            'ocdskit = ocdskit.__main__:main',
         ],
     },
 )

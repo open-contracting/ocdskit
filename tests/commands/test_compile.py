@@ -4,7 +4,7 @@ import logging
 import pytest
 
 import ocdskit.combine
-from ocdskit.cli.__main__ import main
+from ocdskit.__main__ import main
 from ocdskit.util import json_dumps
 from tests import assert_streaming, assert_streaming_error, read, run_streaming
 

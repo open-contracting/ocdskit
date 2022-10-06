@@ -1,4 +1,4 @@
-from ocdskit.cli.__main__ import main
+from ocdskit.__main__ import main
 from tests import assert_streaming
 
 
