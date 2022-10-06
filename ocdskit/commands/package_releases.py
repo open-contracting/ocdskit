@@ -1,5 +1,5 @@
-from ocdskit.commands.base import OCDSCommand
 from ocdskit.combine import package_releases
+from ocdskit.commands.base import OCDSCommand
 from ocdskit.util import grouper
 
 
