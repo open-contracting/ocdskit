@@ -2,7 +2,7 @@ import logging
 import sys
 
 import ocdskit.packager
-from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.commands.base import OCDSCommand
 from ocdskit.combine import merge
 from ocdskit.exceptions import CommandError, InconsistentVersionError, MissingOcidKeyError, UnknownVersionError
 

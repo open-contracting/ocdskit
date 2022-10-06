@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from ocdskit import upgrade
-from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.commands.base import OCDSCommand
 from ocdskit.exceptions import CommandError
 
 

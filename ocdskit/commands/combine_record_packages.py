@@ -1,4 +1,4 @@
-from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.commands.base import OCDSCommand
 from ocdskit.combine import combine_record_packages
 
 

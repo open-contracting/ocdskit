@@ -6,7 +6,7 @@ from operator import itemgetter
 
 import jsonref
 
-from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.commands.base import BaseCommand
 
 
 class Command(BaseCommand):

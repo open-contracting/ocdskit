@@ -5,7 +5,7 @@ import logging
 import os.path
 from copy import deepcopy
 
-from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.commands.base import BaseCommand
 from ocdskit.util import _cast_as_list, json_dump
 
 logger = logging.getLogger('ocdskit')

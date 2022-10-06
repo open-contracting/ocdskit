@@ -10,21 +10,21 @@ from ocdskit.util import ijson
 logger = logging.getLogger('ocdskit')
 
 COMMAND_MODULES = (
-    'ocdskit.cli.commands.combine_record_packages',
-    'ocdskit.cli.commands.combine_release_packages',
-    'ocdskit.cli.commands.compile',
-    'ocdskit.cli.commands.detect_format',
-    'ocdskit.cli.commands.echo',
-    'ocdskit.cli.commands.indent',
-    'ocdskit.cli.commands.mapping_sheet',
-    'ocdskit.cli.commands.package_records',
-    'ocdskit.cli.commands.package_releases',
-    'ocdskit.cli.commands.schema_report',
-    'ocdskit.cli.commands.schema_strict',
-    'ocdskit.cli.commands.set_closed_codelist_enums',
-    'ocdskit.cli.commands.split_record_packages',
-    'ocdskit.cli.commands.split_release_packages',
-    'ocdskit.cli.commands.upgrade',
+    'ocdskit.commands.combine_record_packages',
+    'ocdskit.commands.combine_release_packages',
+    'ocdskit.commands.compile',
+    'ocdskit.commands.detect_format',
+    'ocdskit.commands.echo',
+    'ocdskit.commands.indent',
+    'ocdskit.commands.mapping_sheet',
+    'ocdskit.commands.package_records',
+    'ocdskit.commands.package_releases',
+    'ocdskit.commands.schema_report',
+    'ocdskit.commands.schema_strict',
+    'ocdskit.commands.set_closed_codelist_enums',
+    'ocdskit.commands.split_record_packages',
+    'ocdskit.commands.split_release_packages',
+    'ocdskit.commands.upgrade',
 )
 
 

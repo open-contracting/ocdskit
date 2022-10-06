@@ -2,7 +2,7 @@ import json
 import logging
 import os.path
 
-from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.commands.base import BaseCommand
 from ocdskit.util import json_dump
 
 logger = logging.getLogger('ocdskit')

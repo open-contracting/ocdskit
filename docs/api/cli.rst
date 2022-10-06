@@ -1,6 +1,6 @@
 Command-line utilities
 ======================
 
-.. automodule:: ocdskit.cli.commands.base
+.. automodule:: ocdskit.commands.base
    :members:
    :undoc-members:

@@ -7,7 +7,7 @@ from textwrap import dedent
 
 from ocdsextensionregistry import ProfileBuilder
 
-from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.commands.base import BaseCommand
 from ocdskit.exceptions import CommandError, MissingColumnError
 from ocdskit.mapping_sheet import mapping_sheet
 

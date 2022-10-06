@@ -2,7 +2,7 @@ import json
 import sys
 from copy import deepcopy
 
-from ocdskit.cli.commands.base import BaseCommand
+from ocdskit.commands.base import BaseCommand
 from ocdskit.schema import add_validation_properties
 from ocdskit.util import json_dump
 

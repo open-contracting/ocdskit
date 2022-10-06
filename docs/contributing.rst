@@ -4,9 +4,9 @@ Contributing
 Adding a command
 ----------------
 
-#. Create a file matching the command's name in ``ocdskit/cli/commands``, replacing hyphens with underscores.
+#. Create a file matching the command's name in ``ocdskit/commands``, replacing hyphens with underscores.
 #. Add the command's module to ``COMMAND_MODULES`` in ``ocdskit/__main__.py``, in alphabetical order.
-#. Fill in the command's file (see ``ocdskit/cli/commands/package_records.py`` for a brief file).
+#. Fill in the command's file (see ``ocdskit/commands/package_records.py`` for a brief file).
 #. Add documentation for the command and any new library methods.
 #. Add tests for the command.
 #. Update the changelog.

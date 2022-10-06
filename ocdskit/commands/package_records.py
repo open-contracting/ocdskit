@@ -1,4 +1,4 @@
-from ocdskit.cli.commands.base import OCDSCommand
+from ocdskit.commands.base import OCDSCommand
 from ocdskit.combine import package_records
 from ocdskit.util import grouper
 
