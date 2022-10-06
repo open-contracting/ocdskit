@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.1.2 (2022-10-06)
+------------------
+
+Changed
+~~~~~~~
+
+-  Move ``ocdskit/cli/__main__.py`` to ``ocdskit/__main__.py``, to support the ``python -m ocdskit`` interface.
+-  Move ``ocdskit.cli.commands`` to :mod:`ocdskit.commands`.
+
 1.1.1 (2022-08-17)
 ------------------
 
