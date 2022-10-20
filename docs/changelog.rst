@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.3 (2022-10-20)
+------------------
+
+Fixed
+~~~~~
+
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if ``include_definitions=False`` but ``base_uri`` is not provided.
+
 1.1.2 (2022-10-06)
 ------------------
 

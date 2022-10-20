@@ -61,7 +61,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     kwargs = {'include_codelist': include_codelist, 'include_deprecated': include_deprecated}
 
     if not include_definitions:
-        schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri)
+        schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri, jsonschema=True)
 
     rows = []
     rows_by_path = {}
