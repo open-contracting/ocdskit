@@ -61,6 +61,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     kwargs = {'include_codelist': include_codelist, 'include_deprecated': include_deprecated}
 
     if not include_definitions:
+        # jsonref.JsonRef is deprecated, but used for backwards-compatibility with jsonref 0.x.
         schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri, jsonschema=True)
 
     rows = []
