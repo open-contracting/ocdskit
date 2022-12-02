@@ -12,10 +12,10 @@ jobs:
         with:
           python-version: 3.8
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: setup.cfg
       - run: curl -s -S --retry 3 $BASEDIR/tests/install.sh | bash -
       - run: curl -s -S --retry 3 $BASEDIR/tests/script.sh | bash -
       - run: pip install .[test]
       - run: pytest /tmp/test_requirements.py
-      - run: pip install --upgrade check-manifest setuptools
+      - run: pip install --upgrade check-manifest
       - run: check-manifest
