@@ -29,6 +29,12 @@ Pretty print a JSON file:
 
     python -m json.tool filename.json
 
+Pretty print a JSON Lines file:
+
+.. code-block:: bash
+
+    python -m json.tool --json-lines filename.json
+
 Read the first 1000 bytes of a file:
 
 .. code-block:: bash
