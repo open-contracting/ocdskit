@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+
 LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))'  # noqa: E501
 LANGUAGE_CODE_SUFFIX_LEN = len(LANGUAGE_CODE_SUFFIX)
 
@@ -6,36 +8,30 @@ def _join_sep(sep, words):
     return sep + sep.join(words)
 
 
+@dataclass
 class Field:
-    def __init__(self, schema=None, pointer=None, path=None, definition_pointer=None, definition_path=None,
-                 required=None, deprecated=None, multilingual=None, sep='.'):
-        """
-        Initializes a schema field object.
+    """
+    Initializes a schema field object.
+    """
 
-        :param dict schema: the field's schema
-        :param tuple pointer: the JSON pointer to the field in the schema, e.g.
-                              ``('properties', 'tender', 'properties', 'id')``
-        :param tuple path: the path to the field in data, e.g.
-                           ``('tender', 'id')``
-        :param tuple definition_pointer: the JSON pointer to the definition in which the field is defined, e.g.
-                                         ``('definitions', 'Item')``
-        :param tuple definition_path: the path to the definition in which the field is defined, e.g.
-                                      ``('Item')``
-        :param bool required: whether the field is listed in the schema's ``required``
-        :param dict deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated``
-                                object
-        :param bool multilingual: whether the field has a corresponding field in the schema's ``patternProperties``
-        :param str sep: the separator to use in string representations of paths
-        """
-        self.schema = schema
-        self.pointer_components = pointer
-        self.path_components = path
-        self.definition_pointer_components = definition_pointer
-        self.definition_path_components = definition_path
-        self.required = required
-        self.deprecated = deprecated
-        self.multilingual = multilingual
-        self._sep = sep
+    #: the field's schema
+    schema: dict = None
+    #: the JSON pointer to the field in the schema, e.g. ``('properties', 'tender', 'properties', 'id')``
+    pointer_components: tuple = None
+    #: the path to the field in data, e.g. ``('tender', 'id')``
+    path_components: tuple = None
+    #: the JSON pointer to the definition in which the field is defined, e.g. ``('definitions', 'Item')``
+    definition_pointer_components: tuple = None
+    #: the path to the definition in which the field is defined, e.g. ``('Item')``
+    definition_path_components: tuple = None
+    #: whether the field is listed in the schema's ``required``
+    required: bool = None
+    #: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated`` object
+    deprecated: dict = field(default_factory=dict)
+    #: whether the field has a corresponding field in the schema's ``patternProperties``
+    multilingual: bool = None
+    #: the separator to use in string representations of paths
+    sep = '.'
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
@@ -59,28 +55,14 @@ class Field:
         """
         Returns the path to the field in data with ``self.sep`` as separator, e.g. ``tender.id``.
         """
-        return self._sep.join(self.path_components)
+        return self.sep.join(self.path_components)
 
     @property
     def definition_path(self):
         """
         Returns the path to the definition in which the field is defined with ``self.sep`` as separator, e.g. ``Item``.
         """
-        return self._sep.join(self.definition_path_components)
-
-    @property
-    def sep(self):
-        """
-        Returns the separator to use in string representations of paths.
-        """
-        return self._sep
-
-    @sep.setter
-    def sep(self, sep):
-        """
-        Sets the separator to use in string representations of paths.
-        """
-        self._sep = sep
+        return self.sep.join(self.definition_path_components)
 
     def __repr__(self):
         return repr(self.asdict())
@@ -169,16 +151,16 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
         if key not in hidden:
             new_pointer = pointer + ('patternProperties', key)
             new_path = path + (f'({key})',)
-            yield Field(schema=value, pointer=new_pointer, path=new_path, definition_pointer=definition_pointer,
-                        definition_path=definition_path, required=False, deprecated=deprecated or _deprecated(value),
-                        multilingual=False)
+            yield Field(schema=value, pointer_components=new_pointer, path_components=new_path,
+                        definition_pointer_components=definition_pointer, definition_path_components=definition_path,
+                        required=False, deprecated=deprecated or _deprecated(value), multilingual=False)
 
 
 def _get_schema_field(name, schema, pointer, path, definition_pointer, definition_path, required, deprecated,
                       multilingual):
-    yield Field(schema=schema, pointer=pointer, path=path, definition_pointer=definition_pointer,
-                definition_path=definition_path, required=name in required, deprecated=deprecated,
-                multilingual=name in multilingual)
+    yield Field(schema=schema, pointer_components=pointer, path_components=path,
+                definition_pointer_components=definition_pointer, definition_path_components=definition_path,
+                required=name in required, deprecated=deprecated, multilingual=name in multilingual)
 
     if schema is None:
         return
