@@ -13,6 +13,7 @@ Fixed
 ~~~~~
 
 -  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if a schema contains ``"deprecated": null``.
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if ``--extension-field`` is set to a value other than "extension".
 
 1.1.3 (2022-10-20)
 ------------------

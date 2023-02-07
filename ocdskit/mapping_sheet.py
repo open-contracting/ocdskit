@@ -111,7 +111,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     columns = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
                'deprecationNotes']
     if extension_field:
-        columns.append(extension_field)
+        columns.append('extension')
     if include_codelist:
         columns.append('codelist')
 
