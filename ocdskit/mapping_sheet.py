@@ -119,7 +119,8 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
 
 
 def _add_deprecated(row, schema):
-    if 'deprecated' in schema:
+    # OCDS for PPPs sets `"deprecated": null`.
+    if schema.get('deprecated'):
         row['deprecated'] = schema['deprecated'].get('deprecatedVersion', '')
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
 

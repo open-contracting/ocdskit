@@ -9,6 +9,11 @@ Changed
 
 -  Drop support for Python 3.6 (end-of-life 2021-12-23).
 
+Fixed
+~~~~~
+
+-  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if a schema contains ``"deprecated": null``.
+
 1.1.3 (2022-10-20)
 ------------------
 
