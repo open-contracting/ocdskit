@@ -10,8 +10,8 @@ from ocdskit.util import _cast_as_list
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=None, include_codelist=False,
-                  include_deprecated=True, include_definitions=False, base_uri=None):
+def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=None, inherit_extension=True,
+                  include_codelist=False, include_deprecated=True, include_definitions=False, base_uri=None):
     """
     Returns information about all field paths in a JSON Schema, as columns and rows.
 
@@ -22,6 +22,8 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
     :param bool infer_required: whether to infer that a field is required if "null" is not in its ``type``
     :param str extension_field: the property in the JSON schema containing the name of the extension in which each
                                 field was defined
+    :param bool inherit_extension: whether fields defined via $ref properties inherit the "extension" value of their
+                                parent field
     :param bool include_codelist: whether to include a "codelist" column
     :param bool include_deprecated: whether to include any deprecated fields
     :param bool include_definitions: whether to traverse the "definitions" property
@@ -58,7 +60,11 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
 
     :raises MissingColumnError: if the column by which to order is missing
     """
-    kwargs = {'include_codelist': include_codelist, 'include_deprecated': include_deprecated}
+    kwargs = {
+        'inherit_extension': inherit_extension,
+        'include_codelist': include_codelist,
+        'include_deprecated': include_deprecated,
+    }
 
     if not include_definitions:
         # jsonref.JsonRef is deprecated, but used for backwards-compatibility with jsonref 0.x.
@@ -125,15 +131,15 @@ def _add_deprecated(row, schema):
         row['deprecationNotes'] = schema['deprecated'].get('description', '')
 
 
-def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_required=None, include_codelist=False,
-             include_deprecated=True, row=None):
+def _add_row(rows, rows_by_path, field, schema, extension_name, *, infer_required=None, inherit_extension=True,
+             include_codelist=False, include_deprecated=True, row=None):
     parent = rows_by_path.get(field.path_components[:-1], {})
     if not row:
         row = _make_row(field, schema, infer_required, include_codelist)
 
     if extension_name:
         row['extension'] = extension_name
-    elif 'extension' in parent:
+    elif 'extension' in parent and inherit_extension:
         row['extension'] = parent['extension']
 
     if include_deprecated or not row['deprecated']:

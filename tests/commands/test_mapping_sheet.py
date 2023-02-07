@@ -65,6 +65,16 @@ def test_command_extension_and_extension_field_alternative(capsys, monkeypatch):
 
 
 @pytest.mark.vcr()
+def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, monkeypatch):
+    url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
+
+    assert_command(capsys, monkeypatch, main,
+                   ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
+                    path('release-schema.json'), '--extension', url, '--no-inherit-extension'],
+                   'mapping-sheet_extension_extension-field_no-inherit-extension.csv')
+
+
+@pytest.mark.vcr()
 def test_command_extension_and_extension_field_and_language(capsys, monkeypatch):
     url = 'https://extensions.open-contracting.org/es/extensions/lots/master/'
 

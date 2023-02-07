@@ -48,6 +48,8 @@ class Command(BaseCommand):
         self.add_argument('--extension', nargs='*', help='patch the release schema with this extension')
         self.add_argument('--extension-field', help='add an "extension" column for the name of the extension in which '
                           'each field was defined')
+        self.add_argument('--no-inherit-extension', action='store_true', help='fields defined via $ref properties do '
+                          'not inherit the "extension" value of their parent field')
         self.add_argument('--language', default='en', help='the language to use for the name of the extension')
         self.add_argument('--codelist', action='store_true', help='add a "codelist" column')
         self.add_argument('--no-deprecated', action='store_true', help="don't include deprecated fields")
@@ -70,6 +72,7 @@ class Command(BaseCommand):
                 order_by=self.args.order_by,
                 infer_required=self.args.infer_required,
                 extension_field=self.args.extension_field,
+                inherit_extension=not self.args.no_inherit_extension,
                 include_codelist=self.args.codelist,
                 include_deprecated=not self.args.no_deprecated,
                 include_definitions=self.args.no_replace_refs,

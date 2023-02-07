@@ -4,6 +4,13 @@ Changelog
 Unreleased
 ----------
 
+Added
+~~~~~
+
+New CLI options:
+
+-  :ref:`mapping-sheet`: ``--no-inherit-extension``
+
 Changed
 ~~~~~~~
 
