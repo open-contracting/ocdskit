@@ -10,6 +10,10 @@ A suite of command-line tools for working with OCDS data to:
 * split large packages into small packages
 * generate a spreadsheet version of a JSON schema
 
+.. tip::
+
+   Want to `download OCDS data <https://data.open-contracting.org/>`__? Use the `OCP Data Registry <https://data.open-contracting.org/>`__.
+
 If you are viewing this on GitHub or PyPI, open the `full documentation <https://ocdskit.readthedocs.io/>`__ for additional details.
 
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/ocdskit.svg
