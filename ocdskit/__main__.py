@@ -28,6 +28,7 @@ COMMAND_MODULES = (
 )
 
 
+# The arguments are for use in oc4idskit.
 def main(description='Open Contracting Data Standard CLI', modules=COMMAND_MODULES, logger=logger):
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--encoding', help='the file encoding')
