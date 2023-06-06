@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from ocdskit.__main__ import main
@@ -65,7 +67,9 @@ def test_command_unknown_format(basename, result, capsys, monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == f'tests/fixtures/{filename}: unknown (top-level JSON value is a {result})'
+    assert caplog.records[0].message == (
+        f'tests{os.sep}fixtures{os.sep}{filename}: unknown (top-level JSON value is a {result})'
+    )
 
 
 def test_command_directory(capsys, monkeypatch, caplog, tmpdir):

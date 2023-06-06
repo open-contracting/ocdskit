@@ -1,4 +1,5 @@
 import json
+import os
 
 from ocdskit.__main__ import main
 from tests import path, run_command
@@ -118,4 +119,4 @@ def test_command_check(capsys, monkeypatch):
     with open(path('schema-strict.json'), 'rb') as f:
         assert f.read() == expected
 
-    assert captured.err == 'ERROR: tests/fixtures/schema-strict.json is missing validation properties\n'
+    assert captured.err == f'ERROR: tests{os.sep}fixtures{os.sep}schema-strict.json is missing validation properties\n'
