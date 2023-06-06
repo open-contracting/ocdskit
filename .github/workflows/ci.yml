@@ -7,11 +7,11 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: [3.7, 3.8, 3.9, '3.10', '3.11', pypy-3.7]
+        python-version: [3.7, 3.8, 3.9, '3.10', '3.11', pypy-3.9]
         exclude:
           # UnicodeDecodeError
           - os: windows-latest
-            python-version: pypy-3.7
+            python-version: pypy-3.9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -23,7 +23,7 @@ jobs:
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
-      - if: matrix.python-version != 'pypy-3.7'
+      - if: matrix.python-version != 'pypy-3.9'
         name: Test
         shell: bash
         run: |
@@ -31,7 +31,7 @@ jobs:
           pip install orjson
           coverage run --append --source=ocdskit -m pytest -W error --vcr-record=none
           pip uninstall -y orjson
-      - if: matrix.python-version == 'pypy-3.7'
+      - if: matrix.python-version == 'pypy-3.9'
         name: Test
         run: pytest -W error --cov ocdskit --vcr-record=none
       - env:
