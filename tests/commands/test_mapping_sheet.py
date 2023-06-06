@@ -117,7 +117,6 @@ def test_command_bods(capsys, monkeypatch):
 
 
 def test_command_sedl(capsys, monkeypatch):
-    monkeypatch.setenv('PYTHONIOENCODING', 'utf-8')
     assert_command(capsys, monkeypatch, main,
                    ['mapping-sheet', path('sedl-schema.json')],
                    'mapping-sheet_sedl.csv')

@@ -25,6 +25,8 @@ jobs:
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
       - if: matrix.python-version != 'pypy-3.9'
         name: Test
+        env:
+          PYTHONIOENCODING: utf-8
         shell: bash
         run: |
           coverage run --append --source=ocdskit -m pytest -W error --vcr-record=none

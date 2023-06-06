@@ -19,7 +19,7 @@ from tests import assert_command, assert_command_error, path, run_command
     ('detect-format_whitespace.json', 'release'),
 ])
 def test_command(filename, result, capsys, monkeypatch):
-    expected = f'tests/fixtures/{filename}: {result}\n'
+    expected = f'tests{os.sep}fixtures{os.sep}{filename}: {result}\n'
     assert_command(capsys, monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
@@ -28,7 +28,7 @@ def test_command(filename, result, capsys, monkeypatch):
     ('record-package_minimal.json', 'records.item', 'record'),
 ])
 def test_command_root_path(filename, root_path, result, capsys, monkeypatch):
-    expected = f'tests/fixtures/{filename}: {result}\n'
+    expected = f'tests{os.sep}fixtures{os.sep}{filename}: {result}\n'
     assert_command(capsys, monkeypatch, main, ['detect-format', '--root-path', root_path, path(filename)], expected)
 
 
@@ -63,13 +63,12 @@ def test_command_recursive(capsys, monkeypatch, caplog, tmpdir):
 def test_command_unknown_format(basename, result, capsys, monkeypatch, caplog):
     filename = f'detect-format_{basename}.json'
 
+    expected = f'tests{os.sep}fixtures{os.sep}{filename}: unknown (top-level JSON value is a {result})'
     assert_command(capsys, monkeypatch, main, ['detect-format', path(filename)], '')
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == (
-        f'tests{os.sep}fixtures{os.sep}{filename}: unknown (top-level JSON value is a {result})'
-    )
+    assert caplog.records[0].message == expected
 
 
 def test_command_directory(capsys, monkeypatch, caplog, tmpdir):
