@@ -46,7 +46,7 @@ def test_command_recursive(capsys, monkeypatch, caplog, tmpdir):
 
     actual = run_command(capsys, monkeypatch, main, ['detect-format', '--recursive', str(tmpdir)])
 
-    assert '/test.json: record package' in actual.out
+    assert f'{os.sep}test.json: record package' in actual.out
     assert '.test.json' not in actual.out
     assert len(caplog.records) == 0
 

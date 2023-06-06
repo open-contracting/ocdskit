@@ -27,6 +27,7 @@ jobs:
         name: Test
         env:
           PYTHONIOENCODING: utf-8
+          PYTHONUTF8: 1
         shell: bash
         run: |
           coverage run --append --source=ocdskit -m pytest -W error --vcr-record=none
