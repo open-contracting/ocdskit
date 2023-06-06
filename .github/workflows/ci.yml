@@ -26,7 +26,6 @@ jobs:
       - if: matrix.python-version != 'pypy-3.9'
         name: Test
         env:
-          PYTHONIOENCODING: utf-8
           PYTHONUTF8: 1
         shell: bash
         run: |
