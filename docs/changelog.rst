@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.6 (2023-06-08)
+------------------
+
+Changed
+~~~~~~~
+
+-  :ref:`compile`: Skip ``null`` entries in the ``releases`` array of a release package.
+
 1.1.5 (2023-04-20)
 ------------------
 

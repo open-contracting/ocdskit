@@ -77,7 +77,8 @@ class Packager:
                     self.package['packages'].append(uri)
 
                 for release in item['releases']:
-                    self.backend.add_release(release, uri)
+                    if release is not None:  # observed in some release packages
+                        self.backend.add_release(release, uri)
 
             self.backend.flush()
 
