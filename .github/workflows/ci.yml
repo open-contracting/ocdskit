@@ -35,7 +35,7 @@ jobs:
           pip uninstall -y orjson
       - if: matrix.python-version == 'pypy-3.9'
         name: Test
-        run: pytest -W error --cov ocdskit --vcr-record=none
+        run: pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning --cov ocdskit --vcr-record=none
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
