@@ -2,7 +2,6 @@ import json
 import logging
 
 import pytest
-from ocdsmerge.exceptions import DuplicateIdValueWarning
 
 import ocdskit.combine
 from ocdskit.__main__ import main
