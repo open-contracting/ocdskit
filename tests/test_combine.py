@@ -52,10 +52,9 @@ def test_merge_warning():
 
     assert compiled_release == json.loads(read('compile_warning.json'))
 
-    assert [str(record.message) for record in records] == [
+    assert [record.message for record in records] == [
         ("ocds-213czf-1: Multiple objects have the `id` value '1' in the `parties` array"),
     ]
-    assert len(records) == 1
 
 
 @pytest.mark.vcr()
