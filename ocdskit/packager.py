@@ -1,5 +1,6 @@
 import itertools
 import os
+import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
@@ -23,6 +24,14 @@ try:
     sqlite3.register_converter('json', convert_json)
 except ImportError:
     USING_SQLITE = False
+
+
+# The `warnings.catch_warnings()` context manager resets the `showwarning` method to the module's definition.
+# Accept a `showwarning` method as an argument, to preserve any earlier override (e.g. by `__main__.py`).
+def _showwarning(showwarning, ocid):
+    def function(message, category, filename, lineno, file=None, line=None):
+        showwarning(f"{ocid}: {message}", category, filename, lineno, file=file, line=line)
+    return function
 
 
 class Packager:
@@ -135,9 +144,13 @@ class Packager:
                     package_release = release
                 record['releases'].append(package_release)
 
-            record['compiledRelease'] = merger.create_compiled_release(releases)
-            if return_versioned_release:
-                record['versionedRelease'] = merger.create_versioned_release(releases)
+            showwarning = warnings.showwarning
+            with warnings.catch_warnings():
+                warnings.showwarning = _showwarning(showwarning, ocid)
+
+                record['compiledRelease'] = merger.create_compiled_release(releases)
+                if return_versioned_release:
+                    record['versionedRelease'] = merger.create_versioned_release(releases)
 
             yield record
 
@@ -148,13 +161,17 @@ class Packager:
         :param ocdsmerge.merge.Merger merger: a merger
         :param bool return_versioned_release: whether to yield versioned releases instead of compiled releases
         """
-        for _, rows in self.backend.get_releases_by_ocid():
+        for ocid, rows in self.backend.get_releases_by_ocid():
             releases = (row[-1] for row in rows)
 
-            if return_versioned_release:
-                yield merger.create_versioned_release(releases)
-            else:
-                yield merger.create_compiled_release(releases)
+            showwarning = warnings.showwarning
+            with warnings.catch_warnings():
+                warnings.showwarning = _showwarning(showwarning, ocid)
+
+                if return_versioned_release:
+                    yield merger.create_versioned_release(releases)
+                else:
+                    yield merger.create_compiled_release(releases)
 
 
 # The backend's responsibilities (for now) are exclusively to:

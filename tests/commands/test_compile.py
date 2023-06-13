@@ -2,6 +2,7 @@ import json
 import logging
 
 import pytest
+from ocdsmerge.exceptions import DuplicateIdValueWarning
 
 import ocdskit.combine
 from ocdskit.__main__ import main
@@ -113,6 +114,16 @@ def test_command_package_packages(capsys, monkeypatch):
 
     package = json.loads(actual.out)
     assert 'packages' not in package
+
+
+@pytest.mark.vcr()
+@pytest.mark.usefixtures('sqlite')
+def test_command_warning(capsys, monkeypatch, caplog):
+    actual = run_streaming(capsys, monkeypatch, main, ['compile'],
+                           ['release-package_warning.json'])
+
+    assert actual.out == read('compile_warning.json')
+    assert actual.err == "ocds-213czf-1: Multiple objects have the `id` value '1' in the `parties` array\n"
 
 
 @pytest.mark.vcr()
