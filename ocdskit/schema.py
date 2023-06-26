@@ -210,12 +210,12 @@ def add_validation_properties(schema, unique_items=True, coordinates=False):
                 schema.setdefault('minLength', 1)
 
             if 'array' in schema['type']:
-                schema.setdefault('minItems', 1)
                 # Allow non-unique items for coordinates fields (e.g. closed polygons).
                 if sorted(schema.get('items', {}).get('type', [])) == ['array', 'number']:
                     coordinates = True
                 if unique_items and not coordinates:
                     schema.setdefault('uniqueItems', True)
+                schema.setdefault('minItems', 1)
 
             if 'object' in schema['type']:
                 schema.setdefault('minProperties', 1)

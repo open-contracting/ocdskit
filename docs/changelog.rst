@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.8 (2023-06-26)
+------------------
+
+Changed
+~~~~~~~
+
+-  :ref:`schema-strict`: Add ``minItems`` last, to match existing schema.
+
 1.1.7 (2023-06-13)
 ------------------
 

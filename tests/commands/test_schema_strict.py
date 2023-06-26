@@ -19,13 +19,13 @@ expected = '''{
   "properties": {
     "optionalArray": {
       "type": "array",
-      "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": true,
+      "minItems": 1
     },
     "array": {
       "type": "array",
-      "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": true,
+      "minItems": 1
     },
     "minItemsArray": {
       "type": "array",
