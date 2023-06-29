@@ -1,6 +1,6 @@
 import json
 import logging
-from collections import OrderedDict
+from collections import OrderedDict  # for move_to_end()
 from copy import deepcopy
 from hashlib import md5
 

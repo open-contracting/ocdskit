@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from collections import OrderedDict  # for move_to_end()
 
 from ocdskit import upgrade
 from ocdskit.commands.base import OCDSCommand
