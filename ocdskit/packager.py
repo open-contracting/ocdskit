@@ -40,6 +40,7 @@ class Packager:
     releases. Release packages and/or individual releases can be added to the packager. All releases should use the
     same version of OCDS.
     """
+
     def __init__(self):
         self.package = _empty_record_package()
         self.version = None

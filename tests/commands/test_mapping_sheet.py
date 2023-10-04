@@ -28,7 +28,6 @@ def test_command_order_by(capsys, monkeypatch):
                    'mapping-sheet_order-by.csv')
 
 
-
 def test_command_extension(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -44,7 +43,6 @@ def test_command_extension_field(capsys, monkeypatch):
                    'mapping-sheet_extension-field.csv')
 
 
-
 def test_command_extension_and_extension_field(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -52,7 +50,6 @@ def test_command_extension_and_extension_field(capsys, monkeypatch):
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
                     path('release-schema.json'), '--extension', url],
                    'mapping-sheet_extension_extension-field.csv')
-
 
 
 def test_command_extension_and_extension_field_alternative(capsys, monkeypatch):
@@ -64,7 +61,6 @@ def test_command_extension_and_extension_field_alternative(capsys, monkeypatch):
                    'mapping-sheet_extension_extension-field.csv')
 
 
-
 def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -74,15 +70,13 @@ def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, 
                    'mapping-sheet_extension_extension-field_no-inherit-extension.csv')
 
 
-
 def test_command_extension_and_extension_field_and_language(capsys, monkeypatch):
-    url = 'https://extensions.open-contracting.org/es/extensions/lots/master/'
+    url = 'https://extensions.open-contracting.org/es/extensions/lots/v1.1.5/'
 
     assert_command(capsys, monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
                     path('release-schema.json'), '--extension', url, '--language', 'es'],
                    'mapping-sheet_extension_extension-field_language.csv')
-
 
 
 def test_command_extension_and_extension_field_location(capsys, monkeypatch):
@@ -92,7 +86,6 @@ def test_command_extension_and_extension_field_location(capsys, monkeypatch):
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
                     path('release-schema.json'), '--extension', url],
                    'mapping-sheet_extension_extension-field_location.csv')
-
 
 
 def test_command_extension_and_extension_field_array(capsys, monkeypatch):
