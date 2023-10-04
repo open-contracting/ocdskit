@@ -1,6 +1,3 @@
-import logging
-import os.path
-
 import pytest
 
 import ocdskit.packager

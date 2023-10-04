@@ -1,6 +1,5 @@
 import json
 
-import pytest
 from ocdsmerge import Merger
 from ocdsmerge.util import get_release_schema_url, get_tags
 
