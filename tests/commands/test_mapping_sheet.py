@@ -28,7 +28,7 @@ def test_command_order_by(capsys, monkeypatch):
                    'mapping-sheet_order-by.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -44,7 +44,7 @@ def test_command_extension_field(capsys, monkeypatch):
                    'mapping-sheet_extension-field.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -54,7 +54,7 @@ def test_command_extension_and_extension_field(capsys, monkeypatch):
                    'mapping-sheet_extension_extension-field.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field_alternative(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -64,7 +64,7 @@ def test_command_extension_and_extension_field_alternative(capsys, monkeypatch):
                    'mapping-sheet_extension_extension-field.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_lots_extension/archive/v1.1.4.zip'
 
@@ -74,7 +74,7 @@ def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, 
                    'mapping-sheet_extension_extension-field_no-inherit-extension.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field_and_language(capsys, monkeypatch):
     url = 'https://extensions.open-contracting.org/es/extensions/lots/master/'
 
@@ -84,7 +84,7 @@ def test_command_extension_and_extension_field_and_language(capsys, monkeypatch)
                    'mapping-sheet_extension_extension-field_language.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field_location(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_location_extension/archive/v1.1.4.zip'
 
@@ -94,7 +94,7 @@ def test_command_extension_and_extension_field_location(capsys, monkeypatch):
                    'mapping-sheet_extension_extension-field_location.csv')
 
 
-@pytest.mark.vcr()
+
 def test_command_extension_and_extension_field_array(capsys, monkeypatch):
     url = 'https://github.com/open-contracting-extensions/ocds_additionalContactPoints_extension/archive/master.zip'
 

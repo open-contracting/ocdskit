@@ -8,7 +8,7 @@ from ocdskit.packager import Packager
 from tests import read
 
 
-@pytest.mark.vcr()
+
 def test_output_package_no_streaming():
     data = [json.loads(read(filename)) for filename in
             ('realdata/release-package-1.json', 'realdata/release-package-2.json')]

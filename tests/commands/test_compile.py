@@ -29,7 +29,7 @@ def assert_compile_command(capsys, monkeypatch, main, args, stdin, expected, rem
     assert_streaming(capsys, monkeypatch, main, args, stdin, expected)
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command(capsys, monkeypatch):
     assert_compile_command(capsys, monkeypatch, main, ['--ascii', 'compile'],
@@ -43,14 +43,14 @@ def test_command_extensions_with_packages(capsys, monkeypatch):
                      ['release-package_additional-contact-points.json'], ['compile_extensions.json'])
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_extensions_with_releases(capsys, monkeypatch):
     assert_streaming(capsys, monkeypatch, main, ['compile', '--root-path', 'releases.item'],
                      ['release-package_additional-contact-points.json'], ['compile_no-extensions.json'])
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_versioned(capsys, monkeypatch):
     assert_compile_command(capsys, monkeypatch, main, ['--ascii', 'compile', '--versioned'],
@@ -58,7 +58,7 @@ def test_command_versioned(capsys, monkeypatch):
                            ['realdata/versioned-release-1.json', 'realdata/versioned-release-2.json'])
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package(capsys, monkeypatch):
     assert_compile_command(capsys, monkeypatch, main, ['compile', '--package'],
@@ -66,7 +66,7 @@ def test_command_package(capsys, monkeypatch):
                            ['realdata/record-package_package.json'], remove_package_metadata=True)
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_uri_published_date_version(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package', '--uri', 'http://example.com/x.json',
@@ -79,7 +79,7 @@ def test_command_package_uri_published_date_version(capsys, monkeypatch):
     assert package['version'] == 'X'
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_publisher(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package', '--publisher-name', 'Acme Inc.',
@@ -94,7 +94,7 @@ def test_command_package_publisher(capsys, monkeypatch):
     assert package['publisher']['uid'] == '12345'
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_fake(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package', '--fake'],
@@ -105,7 +105,7 @@ def test_command_package_fake(capsys, monkeypatch):
     assert package['publishedDate'] == '9999-01-01T00:00:00Z'
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_packages(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['compile', '--package'],
@@ -115,7 +115,7 @@ def test_command_package_packages(capsys, monkeypatch):
     assert 'packages' not in package
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_warning(capsys, monkeypatch, caplog):
     actual = run_streaming(capsys, monkeypatch, main, ['compile'],
@@ -125,7 +125,7 @@ def test_command_warning(capsys, monkeypatch, caplog):
     assert actual.err == "ocds-213czf-1: Multiple objects have the `id` value '1' in the `parties` array\n"
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_linked_releases_with_packages(capsys, monkeypatch):
     assert_streaming(capsys, monkeypatch, main, ['compile', '--package', '--linked-releases'],
@@ -133,7 +133,7 @@ def test_command_package_linked_releases_with_packages(capsys, monkeypatch):
                      ['realdata/record-package_linked-releases.json'])
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_linked_releases_with_releases(capsys, monkeypatch):
     assert_streaming(capsys, monkeypatch, main, ['compile', '--package', '--linked-releases', '--root-path',
@@ -142,7 +142,7 @@ def test_command_package_linked_releases_with_releases(capsys, monkeypatch):
                      _remove_package_metadata(['realdata/record-package_package.json']))
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_package_versioned(capsys, monkeypatch):
     assert_compile_command(capsys, monkeypatch, main, ['compile', '--package', '--versioned'],
@@ -150,7 +150,7 @@ def test_command_package_versioned(capsys, monkeypatch):
                            ['realdata/record-package_versioned.json'], remove_package_metadata=True)
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_version_mismatch(capsys, monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
@@ -164,7 +164,7 @@ def test_command_version_mismatch(capsys, monkeypatch, caplog):
             "upgrade 1.0:1.1 | ocdskit compile --package --versioned"
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_missing_ocid(capsys, monkeypatch, caplog):
     stdin = b'{"id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}'
@@ -177,7 +177,7 @@ def test_command_missing_ocid(capsys, monkeypatch, caplog):
         assert caplog.records[0].message == 'The `ocid` field of at least one release is missing.'
 
 
-@pytest.mark.vcr()
+
 @pytest.mark.usefixtures('sqlite')
 def test_command_unknown_version(capsys, monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
@@ -188,7 +188,7 @@ def test_command_unknown_version(capsys, monkeypatch, caplog):
         assert caplog.records[0].message == 'The `version` value ("X") of a release package is not recognized.'
 
 
-@pytest.mark.vcr()
+
 def test_command_without_sqlite(capsys, monkeypatch, caplog):
     ocdskit.combine.sqlite = False
 
