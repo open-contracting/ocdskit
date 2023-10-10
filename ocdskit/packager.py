@@ -257,8 +257,7 @@ class SQLiteBackend(AbstractBackend):
         self.connection.execute("CREATE INDEX IF NOT EXISTS ocid_idx ON releases(ocid)")
 
         results = self.connection.execute("SELECT * FROM releases ORDER BY ocid")
-        for ocid, rows in itertools.groupby(results, lambda row: row[0]):
-            yield ocid, rows
+        yield from itertools.groupby(results, lambda row: row[0])
 
     def close(self):
         self.file.close()

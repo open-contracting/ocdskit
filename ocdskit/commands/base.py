@@ -105,8 +105,7 @@ class OCDSCommand(BaseCommand, ABC):
         """
         for item in super().items(**kwargs):
             if isinstance(item, list):
-                for i in item:
-                    yield i
+                yield from item
             else:
                 yield item
 
