@@ -1,3 +1,7 @@
+import platform
+
+import pytest
+
 from ocdskit.__main__ import main
 from tests import assert_command, assert_command_error, path
 
@@ -68,6 +72,10 @@ def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, 
                    'mapping-sheet_extension_extension-field_no-inherit-extension.csv')
 
 
+@pytest.mark.skipif(
+    platform.system() == 'Linux' and platform.python_implementation() == 'PyPy',
+    reason='CI outputs /opt/hostedtoolcache/PyPy/3.9.18/x64/lib/pypy3.9/site-packages/certifi/cacert.pem None'
+)
 def test_command_extension_and_extension_field_and_language(capsys, monkeypatch):
     url = 'https://extensions.open-contracting.org/es/extensions/lots/v1.1.5/'
 
