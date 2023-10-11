@@ -29,12 +29,13 @@ jobs:
           PYTHONUTF8: 1
         shell: bash
         run: |
-          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning
+          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip install orjson
-          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning
+          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip uninstall -y orjson
       - if: matrix.python-version == 'pypy-3.9'
         name: Test
+        # https://github.com/requests-cache/requests-cache/issues/845
         run: pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response --cov ocdskit
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
