@@ -6,8 +6,14 @@ from ocdsmerge.util import get_release_schema_url
 
 from ocdskit.exceptions import MissingRecordsWarning, MissingReleasesWarning
 from ocdskit.packager import Packager
-from ocdskit.util import (_empty_record_package, _empty_release_package, _remove_empty_optional_metadata,
-                          _resolve_metadata, _update_package_metadata, get_ocds_patch_tag)
+from ocdskit.util import (
+    _empty_record_package,
+    _empty_release_package,
+    _remove_empty_optional_metadata,
+    _resolve_metadata,
+    _update_package_metadata,
+    get_ocds_patch_tag,
+)
 
 DEFAULT_VERSION = '1.1'  # fields might be deprecated
 

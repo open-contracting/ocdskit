@@ -4,8 +4,14 @@ from collections import OrderedDict  # for move_to_end()
 from copy import deepcopy
 from hashlib import md5
 
-from ocdskit.util import (_cast_as_list, get_ocds_minor_version, is_package, is_record, is_record_package,
-                          is_release_package)
+from ocdskit.util import (
+    _cast_as_list,
+    get_ocds_minor_version,
+    is_package,
+    is_record,
+    is_record_package,
+    is_release_package,
+)
 
 logger = logging.getLogger('ocdskit')
 

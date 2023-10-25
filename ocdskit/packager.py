@@ -6,8 +6,16 @@ from collections import defaultdict
 from tempfile import NamedTemporaryFile
 
 from ocdskit.exceptions import InconsistentVersionError, MissingOcidKeyError
-from ocdskit.util import (_empty_record_package, _remove_empty_optional_metadata, _resolve_metadata,
-                          _update_package_metadata, get_ocds_minor_version, is_release, json_dumps, jsonlib)
+from ocdskit.util import (
+    _empty_record_package,
+    _remove_empty_optional_metadata,
+    _resolve_metadata,
+    _update_package_metadata,
+    get_ocds_minor_version,
+    is_release,
+    json_dumps,
+    jsonlib,
+)
 
 try:
     import sqlite3
