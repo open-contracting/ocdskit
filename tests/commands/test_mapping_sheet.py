@@ -73,7 +73,7 @@ def test_command_extension_and_extension_field_and_no_inherit_extension(capsys, 
 
 
 @pytest.mark.skipif(
-    platform.system() == 'Linux' and platform.python_implementation() == 'PyPy',
+    platform.system() in ('Darwin', 'Linux') and platform.python_implementation() == 'PyPy',
     reason='CI outputs /opt/hostedtoolcache/PyPy/3.9.18/x64/lib/pypy3.9/site-packages/certifi/cacert.pem None'
 )
 def test_command_extension_and_extension_field_and_language(capsys, monkeypatch):
