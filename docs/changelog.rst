@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.9 (2024-01-05)
+------------------
+
+Added
+~~~~~
+
+-  :meth:`ocdskit.util.is_linked_release` accepts a ``maximum_properties`` argument (default 3).
+
 1.1.8 (2023-06-26)
 ------------------
 

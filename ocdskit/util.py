@@ -187,7 +187,7 @@ def is_compiled_release(data):
     return 'tag' in data and isinstance(data['tag'], list) and 'compiled' in data['tag']
 
 
-def is_linked_release(data):
+def is_linked_release(data, maximum_properties=3):
     """
     Returns whether the data is a linked release.
 
@@ -197,7 +197,7 @@ def is_linked_release(data):
     To distinguish a linked release from an embedded release, we test for the presence of the required ``url`` field
     and test whether the number of fields is fewer than three.
     """
-    return 'url' in data and len(data) <= 3
+    return 'url' in data and len(data) <= maximum_properties
 
 
 def detect_format(path, root_path='', reader=open):
