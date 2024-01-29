@@ -91,7 +91,7 @@ def test_command_extension_and_extension_field_location(capsys, monkeypatch):
 
 
 def test_command_extension_and_extension_field_array(capsys, monkeypatch):
-    url = 'https://github.com/open-contracting-extensions/ocds_additionalContactPoints_extension/archive/master.zip'
+    url = 'https://github.com/open-contracting-extensions/ocds_additionalContactPoints_extension/archive/40d6858.zip'
 
     assert_command(capsys, monkeypatch, main,
                    ['mapping-sheet', '--infer-required', '--extension-field', 'extension',
