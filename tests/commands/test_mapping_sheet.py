@@ -1,5 +1,3 @@
-import platform
-
 import pytest
 
 from ocdskit.__main__ import main
