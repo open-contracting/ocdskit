@@ -1,7 +1,3 @@
-import platform
-
-import pytest
-
 from ocdskit.__main__ import main
 from tests import assert_command, assert_command_error, path
 
