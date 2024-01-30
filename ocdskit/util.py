@@ -3,25 +3,10 @@ import json
 import platform
 from decimal import Decimal
 
+import ijson
 from ocdsmerge.util import get_tags
 
 from ocdskit.exceptions import UnknownFormatError, UnknownVersionError
-
-if platform.python_implementation() == 'PyPy':
-    import importlib
-
-    # yajl_c causes C errors. https://github.com/open-contracting/ocdskit/issues/178
-    # See ijson/__init__.py::_default_backend
-    for backend in ('yajl2_cffi', 'yajl2', 'yajl', 'python'):
-        try:
-            ijson = importlib.import_module(f'ijson.backends.{backend}')
-            break
-        except ImportError:
-            pass
-    else:
-        raise ImportError('no ijson backends available')
-else:
-    import ijson
 
 try:
     import orjson
