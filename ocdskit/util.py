@@ -1,6 +1,5 @@
 import itertools
 import json
-import platform
 from decimal import Decimal
 
 import ijson
