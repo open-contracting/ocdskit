@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', pypy-3.9]
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', pypy-3.9-v7.3.15]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,7 +19,7 @@ jobs:
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
-      - if: matrix.python-version != 'pypy-3.9'
+      - if: matrix.python-version != 'pypy-3.9-v7.3.15'
         name: Test
         env:
           PYTHONUTF8: 1
@@ -29,7 +29,7 @@ jobs:
           pip install orjson
           coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip uninstall -y orjson
-      - if: matrix.python-version == 'pypy-3.9'
+      - if: matrix.python-version == 'pypy-3.9-v7.3.15'
         name: Test
         # https://github.com/requests-cache/requests-cache/issues/845
         run: pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response --cov ocdskit
