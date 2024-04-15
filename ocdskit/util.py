@@ -14,6 +14,15 @@ try:
 except ImportError:
     jsonlib = json
 
+# https://tomwojcik.com/posts/2023-01-02/python-311-str-enum-breaking-change
+try:
+    from enum import StrEnum
+except ImportError:
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        pass
+
 
 # See `grouper` recipe: https://docs.python.org/3/library/itertools.html#recipes
 def grouper(iterable, n, fillvalue=None):
@@ -249,9 +258,7 @@ def detect_format(path, root_path='', reader=open):
         )
 
 
-from enum import Enum
-
-class Format(str, Enum):
+class Format(StrEnum):
     compiled_release = 'compiled release'
     empty_package = 'empty package'
     record = 'record'
