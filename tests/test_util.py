@@ -148,6 +148,7 @@ def test_json_dump(data, expected, tmpdir):
     ('release-packages.jsonl', ('release package', True, True)),
     ('detect-format_mixed.json', ('release', True, False)),
     ('detect-format_whitespace.json', ('release', False, False)),
+    ('detect-format_empty.json', ('empty package', False, False)),
 ])
 def test_detect_format(filename, expected):
     result = detect_format(path(filename))

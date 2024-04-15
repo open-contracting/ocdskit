@@ -17,6 +17,7 @@ from tests import assert_command, assert_command_error, path, run_command
     ('release-packages.jsonl', 'concatenated JSON, starting with a JSON array of release packages'),
     ('detect-format_mixed.json', 'concatenated JSON, starting with release'),
     ('detect-format_whitespace.json', 'release'),
+    ('detect-format_empty.json', ('empty package')),
 ])
 def test_command(filename, result, capsys, monkeypatch):
     expected = f'tests{os.sep}fixtures{os.sep}{filename}: {result}\n'

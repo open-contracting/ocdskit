@@ -1,6 +1,19 @@
 Changelog
 =========
 
+1.1.10 (2024-04-15)
+-------------------
+
+Added
+~~~~~
+
+-  :class:`ocdskit.util.Format` enumeration
+
+Changed
+~~~~~~~
+
+-  :meth:`ocdskit.util.detect_format`: Detect empty packages that set metadata fields but not a ``releases`` or ``records`` field.
+
 1.1.9 (2024-01-05)
 ------------------
 

@@ -216,12 +216,14 @@ def detect_format(path, root_path='', reader=open):
         releases_prefix = f'{prefix}releases'
         ocid_prefix = f'{prefix}ocid'
         tag_item_prefix = f'{prefix}tag.item'
+        metadata_prefixes = {f'{prefix}{field}' for field in ('publishedDate', 'publisher.name', 'uri', 'version')}
 
         has_records = False
         has_releases = False
         has_ocid = False
         has_tag = False
         is_compiled = False
+        metadata_count = 0
         is_array = event == 'start_array'
 
         for prefix, event, value in events:
@@ -235,25 +237,47 @@ def detect_format(path, root_path='', reader=open):
                 has_tag = True
                 if value == 'compiled':
                     is_compiled = True
+            elif prefix in metadata_prefixes:
+                metadata_count += 1
             if not prefix and event not in ('end_array', 'end_map', 'map_key'):
-                return _detect_format_result(True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
+                return _detect_format_result(
+                    True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count
+                )
 
-        return _detect_format_result(False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled)
+        return _detect_format_result(
+            False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count
+        )
 
 
-def _detect_format_result(is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled):
+from enum import Enum
+
+class Format(str, Enum):
+    compiled_release = 'compiled release'
+    empty_package = 'empty package'
+    record = 'record'
+    record_package = 'record package'
+    release = 'release'
+    release_package = 'release package'
+    versioned_release = 'versioned release'
+
+
+def _detect_format_result(
+    is_concatenated, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count
+):
     if has_records:
-        detected_format = 'record package'
+        detected_format = Format.record_package
     elif has_releases and has_ocid:
-        detected_format = 'record'
+        detected_format = Format.record
     elif has_releases:
-        detected_format = 'release package'
+        detected_format = Format.release_package
     elif is_compiled:
-        detected_format = 'compiled release'
+        detected_format = Format.compiled_release
     elif has_tag:
-        detected_format = 'release'
+        detected_format = Format.release
     elif has_ocid:
-        detected_format = 'versioned release'
+        detected_format = Format.versioned_release
+    elif metadata_count == 4:
+        detected_format = Format.empty_package
     else:
         if is_array:
             infix = 'array'
