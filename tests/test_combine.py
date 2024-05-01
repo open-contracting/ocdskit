@@ -5,6 +5,7 @@ from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge.exceptions import DuplicateIdValueWarning
 
 from ocdskit.combine import compile_release_packages, merge, package_records
+from ocdskit.exceptions import InconsistentVersionError
 from tests import read
 
 
@@ -51,6 +52,23 @@ def test_merge_warning():
     assert [record.message for record in records] == [
         ("ocds-213czf-1: Multiple objects have the `id` value '1' in the `parties` array"),
     ]
+
+
+def test_merge_version_mismatch():
+    def data():
+        yield json.loads(read('realdata/release-package_1.1-1.json'))
+        yield json.loads(read('realdata/release-package_1.0-1.json'))
+
+    with pytest.raises(InconsistentVersionError):
+        list(merge(data()))
+
+
+def test_merge_version_mismatch_ignore_version():
+    def data():
+        yield json.loads(read('realdata/release-package_1.1-1.json'))
+        yield json.loads(read('realdata/release-package_1.0-1.json'))
+
+    list(merge(data(), ignore_version=True))  # no error
 
 
 def test_compile_release_packages():

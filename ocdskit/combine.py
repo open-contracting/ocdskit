@@ -132,8 +132,19 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
     return output
 
 
-def merge(data, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, schema=None,
-          return_versioned_release=False, return_package=False, use_linked_releases=False, streaming=False):
+def merge(
+    data,
+    uri: str = '',
+    publisher: dict = None,
+    published_date: str = '',
+    version: str = DEFAULT_VERSION,
+    schema: dict = None,
+    return_versioned_release: bool = False,
+    return_package: bool = False,
+    use_linked_releases: bool = False,
+    streaming: bool = False,
+    ignore_version: bool = False,
+):
     """
     Merges release packages and individual releases.
 
@@ -145,23 +156,24 @@ def merge(data, uri='', publisher=None, published_date='', version=DEFAULT_VERSI
     the last input release package.
 
     :param data: an iterable of release packages and individual releases
-    :param str uri: if ``return_package`` is ``True``, the record package's ``uri``
-    :param dict publisher: if ``return_package`` is ``True``, the record package's ``publisher``
-    :param str published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
-    :param str version: if ``return_package`` is ``True``, the record package's ``version``
-    :param dict schema: the URL, path or dict of the patched release schema to use
-    :param bool return_package: wrap the compiled releases in a record package
-    :param bool use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases,
+    :param uri: if ``return_package`` is ``True``, the record package's ``uri``
+    :param publisher: if ``return_package`` is ``True``, the record package's ``publisher``
+    :param published_date: if ``return_package`` is ``True``, the record package's ``publishedDate``
+    :param version: if ``return_package`` is ``True``, the record package's ``version``
+    :param schema: the URL, path or dict of the patched release schema to use
+    :param return_package: wrap the compiled releases in a record package
+    :param use_linked_releases: if ``return_package`` is ``True``, use linked releases instead of full releases,
         if the input is a release package
-    :param bool return_versioned_release: if ``return_package`` is ``True``, include versioned releases in the record
+    :param return_versioned_release: if ``return_package`` is ``True``, include versioned releases in the record
         package; otherwise, yield versioned releases instead of compiled releases
-    :param bool streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
+    :param streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
         if the calling code exhausts the generator before ``merge`` returns)
+    :param ignore_version: do not raise an error if the versions are inconsistent across packages to merge
     :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
     :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
     :raises UnknownVersionError: if the OCDS version is not recognized
     """
-    with Packager() as packager:
+    with Packager(ignore_version=ignore_version) as packager:
         packager.add(data)
 
         if not schema and packager.version:

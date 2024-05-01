@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.11 (2024-05-01)
+-------------------
+
+Added
+~~~~~
+
+-  :meth:`~ocdskit.combine.merge` accepts a ``ignore_version`` argument.
+
 1.1.10 (2024-04-15)
 -------------------
 

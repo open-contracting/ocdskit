@@ -49,9 +49,10 @@ class Packager:
     same version of OCDS.
     """
 
-    def __init__(self):
+    def __init__(self, ignore_version=False):
         self.package = _empty_record_package()
         self.version = None
+        self.ignore_version = ignore_version
 
         if USING_SQLITE:
             self.backend = SQLiteBackend()
@@ -74,7 +75,7 @@ class Packager:
         for i, item in enumerate(data):
             version = get_ocds_minor_version(item)
             if self.version:
-                if version != self.version:
+                if not self.ignore_version and version != self.version:
                     # OCDS 1.1 and OCDS 1.0 have different merge rules for `awards.suppliers`. Also, mixing new and
                     # deprecated fields can lead to inconsistencies (e.g. transaction `amount` and `value`).
                     # https://standard.open-contracting.org/latest/en/schema/changelog/#advisories
