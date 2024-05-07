@@ -7,7 +7,7 @@ Changelog
 Added
 ~~~~~
 
--  :meth:`~ocdskit.combine.merge` accepts a ``ignore_version`` argument.
+-  :meth:`ocdskit.combine.merge` accepts a ``ignore_version`` argument.
 
 1.1.10 (2024-04-15)
 -------------------
@@ -366,8 +366,8 @@ New library method:
 Changed
 ~~~~~~~
 
--  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`~ocdskit.combine.merge`).
--  :ref:`package-records` and :ref:`package-releases` omit the ``extensions`` field if empty (see :meth:`~ocdskit.combine.package_records`, :meth:`~ocdskit.combine.package_releases`).
+-  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`ocdskit.combine.merge`).
+-  :ref:`package-records` and :ref:`package-releases` omit the ``extensions`` field if empty (see :meth:`ocdskit.combine.package_records`, :meth:`ocdskit.combine.package_releases`).
 
 Fixed
 ~~~~~
@@ -387,7 +387,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  :ref:`combine-record-packages` and :ref:`combine-release-packages` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-record-packages` and :ref:`combine-release-packages` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`ocdskit.combine.combine_record_packages`, :meth:`ocdskit.combine.combine_release_packages`).
 
 0.2.5 (2020-04-14)
 ------------------
@@ -395,7 +395,7 @@ Changed
 Fixed
 ~~~~~
 
--  :ref:`combine-record-packages` and :ref:`combine-release-packages` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`~ocdskit.combine.combine_record_packages`, :meth:`~ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-record-packages` and :ref:`combine-release-packages` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`ocdskit.combine.combine_record_packages`, :meth:`ocdskit.combine.combine_release_packages`).
 
 0.2.4 (2020-03-19)
 ------------------
@@ -422,8 +422,8 @@ New library module:
 Changed
 ~~~~~~~
 
--  :ref:`compile` errors if an ``ocid`` field is missing from a release (see :meth:`~ocdskit.packager.AbstractBackend.add_release`).
--  :ref:`upgrade` upgrades records (see :meth:`~ocdskit.upgrade.upgrade_10_11`).
+-  :ref:`compile` errors if an ``ocid`` field is missing from a release (see :meth:`ocdskit.packager.AbstractBackend.add_release`).
+-  :ref:`upgrade` upgrades records (see :meth:`ocdskit.upgrade.upgrade_10_11`).
 
 0.2.2 (2020-01-07)
 ------------------
@@ -476,8 +476,8 @@ Changed
 
 CLI:
 
--  :ref:`compile` accepts either release packages or individual releases (see :meth:`~ocdskit.combine.merge`).
--  :ref:`compile` is memory efficient if given a long list of inputs (see :meth:`~ocdskit.combine.merge`).
+-  :ref:`compile` accepts either release packages or individual releases (see :meth:`ocdskit.combine.merge`).
+-  :ref:`compile` is memory efficient if given a long list of inputs (see :meth:`ocdskit.combine.merge`).
 
 Library:
 
@@ -486,7 +486,7 @@ Library:
 Fixed
 ~~~~~
 
--  ``--linked-releases`` no longer uses the same linked releases for all records (see :meth:`~ocdskit.packager.Packager.output_records`).
+-  ``--linked-releases`` no longer uses the same linked releases for all records (see :meth:`ocdskit.packager.Packager.output_records`).
 
 0.1.5 (2019-12-18)
 ------------------
@@ -623,7 +623,7 @@ New library methods:
 Changed
 ~~~~~~~
 
--  **Backwards-incompatible**: :meth:`~ocdskit.upgrade.upgrade_10_10`, :meth:`~ocdskit.upgrade.upgrade_11_11` and :meth:`~ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
+-  **Backwards-incompatible**: :meth:`ocdskit.upgrade.upgrade_10_10`, :meth:`ocdskit.upgrade.upgrade_11_11` and :meth:`ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: :ref:`mapping-sheet` and :ref:`schema-report` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
 -  :ref:`mapping-sheet` and :ref:`schema-report` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
 -  :ref:`mapping-sheet` outputs:
