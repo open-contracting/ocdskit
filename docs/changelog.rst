@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.12 (2024-05-07)
+-------------------
+
+Added
+~~~~~
+
+-  :meth:`ocdskit.combine.merge` accepts a ``force_version`` argument.
+
 1.1.11 (2024-05-01)
 -------------------
 

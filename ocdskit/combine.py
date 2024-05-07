@@ -1,4 +1,5 @@
 import warnings
+from typing import Union
 
 from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge import Merger
@@ -135,14 +136,15 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 def merge(
     data,
     uri: str = '',
-    publisher: dict = None,
+    publisher: Union[dict, None] = None,
     published_date: str = '',
     version: str = DEFAULT_VERSION,
-    schema: dict = None,
+    schema: Union[dict, None] = None,
     return_versioned_release: bool = False,
     return_package: bool = False,
     use_linked_releases: bool = False,
     streaming: bool = False,
+    force_version: bool = False,
     ignore_version: bool = False,
 ):
     """
@@ -168,12 +170,13 @@ def merge(
         package; otherwise, yield versioned releases instead of compiled releases
     :param streaming: if ``return_package`` is ``True``, set the package's records to a generator (this only works
         if the calling code exhausts the generator before ``merge`` returns)
-    :param ignore_version: do not raise an error if the versions are inconsistent across packages to merge
-    :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
+    :param force_version: version to use instead of the version of the first release package or individual release
+    :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
+    :raises InconsistentVersionError: if the versions are inconsistent across items to merge
     :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
     :raises UnknownVersionError: if the OCDS version is not recognized
     """
-    with Packager(ignore_version=ignore_version) as packager:
+    with Packager(force_version=force_version, ignore_version=ignore_version) as packager:
         packager.add(data)
 
         if not schema and packager.version:

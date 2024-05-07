@@ -4,6 +4,7 @@ import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
+from typing import Union
 
 from ocdskit.exceptions import InconsistentVersionError, MissingOcidKeyError
 from ocdskit.util import (
@@ -49,9 +50,13 @@ class Packager:
     same version of OCDS.
     """
 
-    def __init__(self, ignore_version=False):
+    def __init__(self, force_version: Union[str, None] = None, ignore_version: bool = False):
+        """
+        :param force_version: version to use instead of the version of the first release package or individual release
+        :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
+        """
         self.package = _empty_record_package()
-        self.version = None
+        self.version = force_version
         self.ignore_version = ignore_version
 
         if USING_SQLITE:
@@ -70,7 +75,7 @@ class Packager:
         Adds release packages and/or individual releases to be merged.
 
         :param data: an iterable of release packages and individual releases
-        :raises InconsistentVersionError: if the versions are inconsistent across packages to merge
+        :raises InconsistentVersionError: if the versions are inconsistent across items to merge
         """
         for i, item in enumerate(data):
             version = get_ocds_minor_version(item)
