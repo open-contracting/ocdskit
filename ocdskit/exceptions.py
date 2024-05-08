@@ -47,3 +47,10 @@ class MissingReleasesWarning(OCDSKitWarning):
 
     def __str__(self):
         return 'item {0} has no "releases" field (check that it is a release package)'.format(*self.args)
+
+
+class MergeErrorWarning(OCDSKitWarning):
+    """Used when downgrading an OCDS Merge exception to a warning"""
+
+    def __str__(self):
+        return '{0}'.format(*self.args)

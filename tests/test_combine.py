@@ -2,11 +2,23 @@ import json
 
 import pytest
 from ocdsextensionregistry import ProfileBuilder
-from ocdsmerge.exceptions import DuplicateIdValueWarning
+from ocdsmerge.exceptions import DuplicateIdValueWarning, InconsistentTypeError
 
 from ocdskit.combine import compile_release_packages, merge, package_records
-from ocdskit.exceptions import InconsistentVersionError, UnknownVersionError
+from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, UnknownVersionError
 from tests import read
+
+inconsistent = [{
+    "ocid": "ocds-213czf-1",
+    "date": "2000-01-01T00:00:00Z",
+    "integer": 1
+}, {
+    "ocid": "ocds-213czf-1",
+    "date": "2000-01-02T00:00:00Z",
+    "integer": {
+        "object": 1
+    }
+}]
 
 
 def test_package_default_arguments():
@@ -84,6 +96,47 @@ def test_merge_version_mismatch_ignore_version():
         yield json.loads(read('realdata/release-package_1.0-1.json'))
 
     list(merge(data(), ignore_version=True))  # no error
+
+
+@pytest.mark.parametrize('return_package', [True, False])
+def test_merge_inconsistent_type(return_package):
+    def data():
+        for release in inconsistent:
+            yield {'releases': [release]}
+
+    with pytest.raises(InconsistentTypeError):
+        list(merge(data(), return_package=return_package))
+
+
+@pytest.mark.parametrize('return_package,expected', [
+    (
+        True,
+        [
+            {
+                'uri': '',
+                'publisher': {},
+                'publishedDate': '',
+                'version': '1.1',
+                'records': [{'ocid': 'ocds-213czf-1', 'releases': inconsistent}],
+            },
+        ],
+    ),
+    (
+        False,
+        [],
+    ),
+])
+def test_merge_inconsistent_type_convert_exceptions_to_warnings(return_package, expected):
+    def data():
+        for release in inconsistent:
+            yield {'releases': [release]}
+
+    with pytest.warns(MergeErrorWarning) as records:
+        output = list(merge(data(), return_package=return_package, convert_exceptions_to_warnings=True))
+
+    assert output == expected
+    assert len(records) == 1
+    assert str(records[0].message) == "ocds-213czf-1: An earlier release had the literal 1 for /integer, but the current release has an object with a 'object' key"  # noqa: E501
 
 
 def test_compile_release_packages():

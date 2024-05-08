@@ -146,6 +146,7 @@ def merge(
     streaming: bool = False,
     force_version: bool = False,
     ignore_version: bool = False,
+    convert_exceptions_to_warnings: bool = False,
 ):
     """
     Merges release packages and individual releases.
@@ -172,12 +173,13 @@ def merge(
         if the calling code exhausts the generator before ``merge`` returns)
     :param force_version: version to use instead of the version of the first release package or individual release
     :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
+    :param convert_exceptions_to_warnings: whether to convert inconsistent type errors from OCDS Merge to warnings
     :raises InconsistentVersionError: if the versions are inconsistent across items to merge
     :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
     :raises UnknownVersionError: if the OCDS version is not recognized
     """
-    with Packager(force_version=force_version, ignore_version=ignore_version) as packager:
-        packager.add(data)
+    with Packager(force_version=force_version) as packager:
+        packager.add(data, ignore_version=ignore_version)
 
         if not schema and packager.version:
             tag = get_ocds_patch_tag(packager.version)
@@ -197,10 +199,19 @@ def merge(
             if publisher:
                 packager.package['publisher'] = publisher
 
-            yield from packager.output_package(merger, return_versioned_release=return_versioned_release,
-                                               use_linked_releases=use_linked_releases, streaming=streaming)
+            yield from packager.output_package(
+                merger,
+                return_versioned_release=return_versioned_release,
+                use_linked_releases=use_linked_releases,
+                streaming=streaming,
+                convert_exceptions_to_warnings=convert_exceptions_to_warnings,
+            )
         else:
-            yield from packager.output_releases(merger, return_versioned_release=return_versioned_release)
+            yield from packager.output_releases(
+                merger,
+                return_versioned_release=return_versioned_release,
+                convert_exceptions_to_warnings=convert_exceptions_to_warnings,
+            )
 
 
 def compile_release_packages(*args, **kwargs):

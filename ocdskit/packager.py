@@ -6,7 +6,10 @@ from collections import defaultdict
 from tempfile import NamedTemporaryFile
 from typing import Union
 
-from ocdskit.exceptions import InconsistentVersionError, MissingOcidKeyError
+import ocdsmerge
+from ocdsmerge.exceptions import InconsistentTypeError
+
+from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, MissingOcidKeyError
 from ocdskit.util import (
     _empty_record_package,
     _remove_empty_optional_metadata,
@@ -40,6 +43,7 @@ except ImportError:
 def _showwarning(showwarning, ocid):
     def function(message, category, filename, lineno, file=None, line=None):
         showwarning(f"{ocid}: {message}", category, filename, lineno, file=file, line=line)
+
     return function
 
 
@@ -50,14 +54,12 @@ class Packager:
     same version of OCDS.
     """
 
-    def __init__(self, force_version: Union[str, None] = None, ignore_version: bool = False):
+    def __init__(self, force_version: Union[str, None] = None):
         """
         :param force_version: version to use instead of the version of the first release package or individual release
-        :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
         """
         self.package = _empty_record_package()
         self.version = force_version
-        self.ignore_version = ignore_version
 
         if USING_SQLITE:
             self.backend = SQLiteBackend()
@@ -70,22 +72,27 @@ class Packager:
     def __exit__(self, type_, value, traceback):
         self.backend.close()
 
-    def add(self, data):
+    def add(self, data, ignore_version: bool = False):
         """
         Adds release packages and/or individual releases to be merged.
 
         :param data: an iterable of release packages and individual releases
+        :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
         :raises InconsistentVersionError: if the versions are inconsistent across items to merge
         """
         for i, item in enumerate(data):
             version = get_ocds_minor_version(item)
             if self.version:
-                if not self.ignore_version and version != self.version:
+                if not ignore_version and version != self.version:
                     # OCDS 1.1 and OCDS 1.0 have different merge rules for `awards.suppliers`. Also, mixing new and
                     # deprecated fields can lead to inconsistencies (e.g. transaction `amount` and `value`).
                     # https://standard.open-contracting.org/latest/en/schema/changelog/#advisories
-                    raise InconsistentVersionError(f'item {i}: version error: this item uses version {version}, but '
-                                                   f'earlier items used version {self.version}', self.version, version)
+                    raise InconsistentVersionError(
+                        f'item {i}: version error: this item uses version {version}, '
+                        f'but earlier items used version {self.version}',
+                        self.version,
+                        version,
+                    )
             else:
                 self.version = version
 
@@ -106,17 +113,29 @@ class Packager:
 
             self.backend.flush()
 
-    def output_package(self, merger, return_versioned_release=False, use_linked_releases=False, streaming=False):
+    def output_package(
+        self,
+        merger: ocdsmerge.merge.Merger,
+        return_versioned_release: bool = False,
+        use_linked_releases: bool = False,
+        streaming: bool = False,
+        convert_exceptions_to_warnings: bool = False,
+    ):
         """
         Yields a record package.
 
-        :param ocdsmerge.merge.Merger merger: a merger
-        :param bool return_versioned_release: whether to include a versioned release in each record
-        :param bool use_linked_releases: whether to use linked releases instead of full releases, if possible
-        :param bool streaming: whether to set the package's records to a generator instead of a list
+        :param merger: a merger
+        :param return_versioned_release: whether to include a versioned release in each record
+        :param use_linked_releases: whether to use linked releases instead of full releases, if possible
+        :param streaming: whether to set the package's records to a generator instead of a list
+        :param convert_exceptions_to_warnings: whether to convert inconsistent type errors from OCDS Merge to warnings
         """
-        records = self.output_records(merger, return_versioned_release=return_versioned_release,
-                                      use_linked_releases=use_linked_releases)
+        records = self.output_records(
+            merger,
+            return_versioned_release=return_versioned_release,
+            use_linked_releases=use_linked_releases,
+            convert_exceptions_to_warnings=convert_exceptions_to_warnings,
+        )
 
         # If a user wants to stream data but can’t exhaust records right away, we can add an `autoclose=True` argument.
         # If set to `False`, `__exit__` will do nothing, and the user will need to call `packager.backend.close()`.
@@ -131,13 +150,20 @@ class Packager:
 
         yield self.package
 
-    def output_records(self, merger, return_versioned_release=False, use_linked_releases=False):
+    def output_records(
+        self,
+        merger: ocdsmerge.merge.Merger,
+        return_versioned_release: bool = False,
+        use_linked_releases: bool = False,
+        convert_exceptions_to_warnings: bool = False,
+    ):
         """
         Yields records, ordered by OCID.
 
-        :param ocdsmerge.merge.Merger merger: a merger
-        :param bool return_versioned_release: whether to include a versioned release in the record
-        :param bool use_linked_releases: whether to use linked releases instead of full releases, if possible
+        :param merger: a merger
+        :param return_versioned_release: whether to include a versioned release in the record
+        :param use_linked_releases: whether to use linked releases instead of full releases, if possible
+        :param convert_exceptions_to_warnings: whether to convert inconsistent type errors from OCDS Merge to warnings
         """
         for ocid, rows in self.backend.get_releases_by_ocid():
             record = {
@@ -163,18 +189,30 @@ class Packager:
             with warnings.catch_warnings():
                 warnings.showwarning = _showwarning(showwarning, ocid)
 
-                record['compiledRelease'] = merger.create_compiled_release(releases)
-                if return_versioned_release:
-                    record['versionedRelease'] = merger.create_versioned_release(releases)
+                try:
+                    record['compiledRelease'] = merger.create_compiled_release(releases)
+                    if return_versioned_release:
+                        record['versionedRelease'] = merger.create_versioned_release(releases)
+                except InconsistentTypeError as e:
+                    if convert_exceptions_to_warnings:
+                        warnings.warn(MergeErrorWarning(e))
+                    else:
+                        raise
 
             yield record
 
-    def output_releases(self, merger, return_versioned_release=False):
+    def output_releases(
+        self,
+        merger: ocdsmerge.merge.Merger,
+        return_versioned_release: bool = False,
+        convert_exceptions_to_warnings: bool = False,
+    ):
         """
         Yields compiled releases or versioned releases, ordered by OCID.
 
-        :param ocdsmerge.merge.Merger merger: a merger
-        :param bool return_versioned_release: whether to yield versioned releases instead of compiled releases
+        :param merger: a merger
+        :param return_versioned_release: whether to yield versioned releases instead of compiled releases
+        :param convert_exceptions_to_warnings: whether to convert inconsistent type errors from OCDS Merge to warnings
         """
         for ocid, rows in self.backend.get_releases_by_ocid():
             releases = (row[-1] for row in rows)
@@ -183,10 +221,16 @@ class Packager:
             with warnings.catch_warnings():
                 warnings.showwarning = _showwarning(showwarning, ocid)
 
-                if return_versioned_release:
-                    yield merger.create_versioned_release(releases)
-                else:
-                    yield merger.create_compiled_release(releases)
+                try:
+                    if return_versioned_release:
+                        yield merger.create_versioned_release(releases)
+                    else:
+                        yield merger.create_compiled_release(releases)
+                except InconsistentTypeError as e:
+                    if convert_exceptions_to_warnings:
+                        warnings.warn(MergeErrorWarning(e))
+                    else:
+                        raise
 
 
 # The backend's responsibilities (for now) are exclusively to:

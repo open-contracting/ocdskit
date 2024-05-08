@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.13 (2024-05-08)
+-------------------
+
+Added
+~~~~~
+
+-  :meth:`ocdskit.combine.merge` accepts a ``convert_exceptions_to_warnings`` argument.
+
 1.1.12 (2024-05-07)
 -------------------
 
