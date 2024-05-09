@@ -195,7 +195,7 @@ class Packager:
                         record['versionedRelease'] = merger.create_versioned_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
-                        warnings.warn(MergeErrorWarning(e))
+                        warnings.warn(MergeErrorWarning(str(e)))
                     else:
                         raise
 
@@ -228,7 +228,7 @@ class Packager:
                         yield merger.create_compiled_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
-                        warnings.warn(MergeErrorWarning(e))
+                        warnings.warn(MergeErrorWarning(str(e)))
                     else:
                         raise
 

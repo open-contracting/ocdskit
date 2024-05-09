@@ -38,19 +38,10 @@ class OCDSKitWarning(UserWarning):
 class MissingRecordsWarning(OCDSKitWarning):
     """Used when the "records" field is missing from a record package when combining packages"""
 
-    def __str__(self):
-        return 'item {0} has no "records" field (check that it is a record package)'.format(*self.args)
-
 
 class MissingReleasesWarning(OCDSKitWarning):
     """Used when the "releases" field is missing from a release package when combining packages"""
 
-    def __str__(self):
-        return 'item {0} has no "releases" field (check that it is a release package)'.format(*self.args)
-
 
 class MergeErrorWarning(OCDSKitWarning):
     """Used when downgrading an OCDS Merge exception to a warning"""
-
-    def __str__(self):
-        return '{0}'.format(*self.args)

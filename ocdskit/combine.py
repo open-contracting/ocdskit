@@ -88,7 +88,7 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='',
         if 'records' in package:
             output['records'].extend(package['records'])
         else:
-            warnings.warn(MissingRecordsWarning(i))
+            warnings.warn(f'item {i} has no "records" field (check that it is a record package)')
         if 'packages' in package:
             output['packages'].update(dict.fromkeys(package['packages']))
 
@@ -122,7 +122,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
         if 'releases' in package:
             output['releases'].extend(package['releases'])
         else:
-            warnings.warn(MissingReleasesWarning(i))
+            warnings.warn(f'item {i} has no "releases" field (check that it is a release package)')
 
     if publisher:
         output['publisher'] = publisher
