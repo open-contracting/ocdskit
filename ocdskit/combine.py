@@ -150,7 +150,7 @@ def merge(
     return_package: bool = False,
     use_linked_releases: bool = False,
     streaming: bool = False,
-    force_version: bool = False,
+    force_version: Union[str, None] = None,
     ignore_version: bool = False,
     convert_exceptions_to_warnings: bool = False,
 ):
