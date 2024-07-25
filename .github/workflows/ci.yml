@@ -19,6 +19,7 @@ jobs:
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
+      # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
       - if: matrix.python-version != 'pypy-3.9-v7.3.15'
         name: Test
         env:
@@ -31,7 +32,7 @@ jobs:
           pip uninstall -y orjson
       - if: matrix.python-version == 'pypy-3.9-v7.3.15'
         name: Test
-        # https://github.com/requests-cache/requests-cache/issues/845
+        # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
         run: pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response --cov ocdskit
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
