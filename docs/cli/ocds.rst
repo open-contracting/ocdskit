@@ -180,13 +180,7 @@ Optional arguments:
 
 .. code-block:: bash
 
-    cat tests/fixtures/record_*.json | ocdskit package-records > out.json
-
-To convert record packages to a record package, you can use the ``--root-path`` option:
-
-.. code-block:: bash
-
-    cat tests/fixtures/realdata/record-package* | ocdskit package-records --root-path records.item
+   cat tests/fixtures/record_*.json | ocdskit package-records > out.json
 
 If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
