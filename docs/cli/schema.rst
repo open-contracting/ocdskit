@@ -31,6 +31,7 @@ Optional arguments:
 --infer-required        infer whether fields are required (use with OCDS schema)
 --extension             patch the release schema with this extension
 --extension-field       add an "extension" column for the name of the extension in which each field was defined
+--no-inherit-extension  fields defined via $ref properties do not inherit the "extension" value of their parent field
 --language              the language to use for the name of the extension
 --codelist              add a "codelist" column
 --no-deprecated         don't include deprecated fields

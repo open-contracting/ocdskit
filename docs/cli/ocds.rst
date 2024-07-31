@@ -1,6 +1,8 @@
 OCDS Commands
 =============
 
+The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
+
 Optional arguments for all commands are:
 
 --encoding ENCODING     the file encoding
@@ -8,11 +10,7 @@ Optional arguments for all commands are:
 --pretty                pretty print output
 --root-path ROOT_PATH   the path to the items to process within each input
 
-The inputs can be `concatenated JSON <https://en.wikipedia.org/wiki/JSON_streaming#Concatenated_JSON>`__ or JSON arrays.
-
-.. note::
-
-   An error is raised if the JSON is malformed or if the ``--encoding`` is incorrect.
+.. error:: An error is raised if the JSON is malformed or if the ``--encoding`` is incorrect.
 
 .. _handling-edge-cases:
 
@@ -31,7 +29,9 @@ If you are working with individual packages that are too large to hold in memory
 Embedded data
 ~~~~~~~~~~~~~
 
-If you are working with files that embed OCDS data, use the ``--root-path ROOT_PATH`` option to indicate the "root" path to the items to process within each input. For example, if release packages are in an array under a ``results`` key, like so:
+If you are working with files that embed OCDS data, use the ``--root-path ROOT_PATH`` option to indicate the "root" path to the items to process within each input.
+
+For example, if release packages are in an array under a ``results`` key, like so:
 
 .. code-block:: json
 
@@ -47,11 +47,11 @@ If you are working with files that embed OCDS data, use the ``--root-path ROOT_P
      ]
    }
 
-You can run ``ocdskit <command> --root-path results`` to process the release packages. The root path, in this case, is simply the ``results`` key. OCDS Kit will read the entire ``results`` array into memory, and process each array entry.
+Then you can run ``ocdskit <command> --root-path results`` to process the release packages. The root path, in this case, is simply the ``results`` key. OCDS Kit will read all array entries at once into memory.
 
-If the ``results`` array is very large, you should run ``ocdskit <command> --root-path results.item`` instead. The root path, in this case, is the ``results`` key joined to the ``item`` literal by a period (the ``item`` literal indicates that the items to process are in an array). OCDS Kit will read each array entry into memory, instead of the entire ``results`` array.
+If the ``results`` array is very large, instead run ``ocdskit <command> --root-path results.item``. The root path, in this case, is the ``results`` key joined to the ``item`` literal by a period. The ``item`` literal indicates that the items to process are in an array. OCDS Kit will read one array entry at a time into memory.
 
-For this next example, you can run ``ocdskit <command> --root-path results.item.ocdsReleasePackage``:
+For the next example, you can run ``ocdskit <command> --root-path results.item.ocdsReleasePackage``:
 
 .. code-block:: json
 
@@ -76,12 +76,14 @@ The root path, in this case, is the ``results`` key joined to the ``item`` liter
 detect-format
 -------------
 
+.. seealso:: For the Python API, see :meth:`ocdskit.util.detect_format`
+
 Reads OCDS files, and reports whether each is:
 
-* a release package
 * a record package
-* a release
+* a release package
 * a record
+* a release
 * a compiled release
 * a versioned release
 * a JSON array of one of the above
@@ -92,13 +94,16 @@ Mandatory positional arguments:
 * ``file`` OCDS files
 
 .. code-block:: bash
+   :caption: Example command
 
-    ocdskit detect-format tests/fixtures/realdata/release-package-1.json tests/fixtures/realdata/record-package-1.json
+   ocdskit detect-format tests/fixtures/realdata/release-package-1.json tests/fixtures/realdata/record-package-1.json
 
 .. _compile:
 
 compile
 -------
+
+.. seealso:: For the Python API, see :meth:`ocdskit.combine.merge`
 
 Reads release packages and individual releases from standard input, merges the releases by OCID, and prints the compiled releases.
 
@@ -117,22 +122,21 @@ Optional arguments:
 --publisher-uid PUBLISHER_UID         if ``--package`` is set, set the record package's ``publisher``'s ``uid`` to this value
 --fake                                if ``--package`` is set, set the record package's required metadata to dummy values
 
+.. code-block:: bash
+   :caption: Example command
+
+   cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
+
 If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
-.. code-block:: bash
-
-    cat tests/fixtures/realdata/release-package-1.json | ocdskit compile > out.json
-
-For the Python API, see :meth:`ocdskit.combine.merge`.
-
-.. note::
-
-   An error is raised if a release is missing an ``ocid`` field, or if the values of the release packages' ``version`` fields are inconsistent.
+.. error:: An error is raised if a release is missing an ``ocid`` field, or if the values of the release packages' ``version`` fields are inconsistent.
 
 .. _upgrade:
 
 upgrade
 -------
+
+.. seealso:: For the Python API, see :doc:`../api/upgrade`
 
 Upgrades packages, records and releases from an old version of OCDS to a new version. Any data not in the old version is passed through. **Note:** Versioned releases within a record package are not upgraded.
 
@@ -145,21 +149,20 @@ Mandatory positional arguments:
 * ``versions`` the colon-separated old and new versions
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
-
-For the Python API, see :doc:`../api/upgrade`.
+   cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
 
 If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
 
-.. note::
-
-   An error is raised if upgrading between the specified ``versions`` is not implemented.
+.. error:: An error is raised if upgrading between the specified ``versions`` is not implemented.
 
 .. _package-records:
 
 package-records
 ---------------
+
+.. seealso:: For the Python API, see :meth:`ocdskit.combine.package_records`
 
 Reads records from standard input, and prints one record package.
 
@@ -169,6 +172,7 @@ Optional positional arguments:
 
 Optional arguments:
 
+--size SIZE                           the maximum number of records per package
 --uri URL                             set the record package's ``uri`` to this value
 --published-date PUBLISHED_DATE       set the record package's ``publishedDate`` to this value
 --version VERSION                     set the record package's ``version`` to this value
@@ -179,17 +183,18 @@ Optional arguments:
 --fake                                set the record package's required metadata to dummy values
 
 .. code-block:: bash
+   :caption: Example command
 
    cat tests/fixtures/record_*.json | ocdskit package-records > out.json
 
 If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
-For the Python API, see :meth:`ocdskit.combine.package_records`.
-
 .. _package-releases:
 
 package-releases
 ----------------
+
+.. seealso:: For the Python API, see :meth:`ocdskit.combine.package_releases`
 
 Reads releases from standard input, and prints one release package.
 
@@ -199,6 +204,7 @@ Optional positional arguments:
 
 Optional arguments:
 
+--size SIZE                           the maximum number of releases per package
 --uri URL                             set the release package's ``uri`` to this value
 --published-date PUBLISHED_DATE       set the release package's ``publishedDate`` to this value
 --version VERSION                     set the release package's ``version`` to this value
@@ -209,27 +215,27 @@ Optional arguments:
 --fake                                set the release package's required metadata to dummy values
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
-
-To convert record packages to a release package, you can use the ``--root-path`` option:
-
-.. code-block:: bash
-
-    cat tests/fixtures/realdata/record-package* | ocdskit package-releases --root-path records.item.releases.item
+   cat tests/fixtures/release_*.json | ocdskit package-releases > out.json
 
 If ``--uri`` and ``--published-date`` are not set, the output package will be invalid. Use ``--fake`` to set placeholder values.
 
-For the Python API, see :meth:`ocdskit.combine.package_releases`.
+To convert **record** packages to a **release** package, you can use the ``--root-path`` option:
+
+.. code-block:: bash
+
+   cat tests/fixtures/realdata/record-package* |
+       ocdskit package-releases --root-path records.item.releases.item
 
 .. _combine-record-packages:
 
 combine-record-packages
 -----------------------
 
-Reads record packages from standard input, collects packages and records, and prints one record package.
+.. seealso:: For the Python API, see :meth:`ocdskit.combine.combine_record_packages`
 
-If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+Reads record packages from standard input, collects packages and records, and prints one record package.
 
 Optional arguments:
 
@@ -243,25 +249,26 @@ Optional arguments:
 --fake                                set the record package's required metadata to dummy values
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
+   cat tests/fixtures/record-package_*.json | ocdskit combine-record-packages > out.json
 
-If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
+If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
-For the Python API, see :meth:`ocdskit.combine.combine_record_packages`.
+.. warning:: A warning is issued if a package's ``"records"`` field isn't set.
 
-.. note::
+.. admonition:: Open issue
 
-   A warning is issued if a package's ``"records"`` field isn't set.
+   If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
 
 .. _combine-release-packages:
 
 combine-release-packages
 ------------------------
 
-Reads release packages from standard input, collects releases, and prints one release package.
+.. seealso:: For the Python API, see :meth:`ocdskit.combine.combine_release_packages`
 
-If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
+Reads release packages from standard input, collects releases, and prints one release package.
 
 Optional arguments:
 
@@ -275,50 +282,55 @@ Optional arguments:
 --fake                                set the release package's required metadata to dummy values
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
+   cat tests/fixtures/release-package_*.json | ocdskit combine-release-packages > out.json
 
-If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
+If the ``--publisher-*`` options aren't used, the output package will have the same publisher as the last input package.
 
-For the Python API, see :meth:`ocdskit.combine.combine_release_packages`.
+.. warning:: A warning is issued if a package's ``"releases"`` field isn't set.
 
-.. note::
+.. admonition:: Open issue
 
-   A warning is issued if a package's ``"releases"`` field isn't set.
+   If you need to create a single package that is too large to hold in your system's memory, please `comment on this issue <https://github.com/open-contracting/ocdskit/issues/119>`__.
 
 .. _split-record-packages:
 
 split-record-packages
 ---------------------
 
-Reads record packages from standard input, and prints smaller record packages for each.
+Reads record packages from standard input, and prints many record packages for each.
 
 Mandatory positional arguments:
 
 * ``size`` the number of records per package
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/realdata/record-package-1-2.json | ocdskit split-record-packages 2 | split -l 1 -a 4
+   cat tests/fixtures/realdata/record-package-1-2.json | ocdskit split-record-packages 2 |
+       split -l 1 -a 4
 
-The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc., with one file per line of output. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
 .. _split-release-packages:
 
 split-release-packages
 ----------------------
 
-Reads release packages from standard input, and prints smaller release packages for each.
+Reads release packages from standard input, and prints many release packages for each.
 
 Mandatory positional arguments:
 
 * ``size`` the number of releases per package
 
 .. code-block:: bash
+   :caption: Example command
 
-    cat tests/fixtures/realdata/release-package-1-2.json | ocdskit split-release-packages 2 | split -l 1 -a 4
+   cat tests/fixtures/realdata/release-package-1-2.json | ocdskit split-release-packages 2 |
+       split -l 1 -a 4
 
-The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
+The ``split`` command will write files named ``xaaaa``, ``xaaab``, ``xaaac``, etc., with one file per line of output. Don't combine the OCDS Kit ``--pretty`` option with the ``split`` command.
 
 .. _echo:
 
@@ -341,7 +353,7 @@ You can use this command to reformat data:
 
       cat unicode.json | ocdskit --ascii echo > ascii.json
 
--  Use UTF-8 characters where possible:
+-  Use UTF-8 characters, where possible:
 
    .. code-block:: bash
 
@@ -365,20 +377,32 @@ You can use this command to reformat data:
 
       cat record-package.json | ocdskit echo --root-path records.item.compiledRelease
 
-You can also use this command to extract releases from release packages, and records from record packages. This is especially useful if a single package is too large to hold in memory.
+-  Extract records from record packages:
+
+   .. code-block:: bash
+
+      cat record-package.json | ocdskit echo --root-path records.item
+
+-  Extract releases from release packages:
+
+   .. code-block:: bash
+
+      cat release-package.json | ocdskit echo --root-path releases.item
+
+For the last two examples, if you intend to re-package the records or releases, and if the initial package is small enough to hold in memory, use the :ref:`split-record-packages` or :ref:`split-release-packages` command. If the initial package is too large to hold in memory, use the ``echo`` command in combination with the :ref:`package-records` or :ref:`package-releases` command. For example:
 
 -  Split a large record package into smaller packages of 100 records each:
 
    .. code-block:: bash
 
-      cat large-record-package.json | ocdskit echo --root-path records.item | ocdskit package-records --size 100
+      cat large-record-package.json | ocdskit echo --root-path records.item |
+          ocdskit package-records --size 100
 
 -  Split a large release package into smaller packages of 1,000 releases each:
 
    .. code-block:: bash
 
-      cat large-release-package.json | ocdskit echo --root-path releases.item | ocdskit package-releases --size 1000
+      cat large-release-package.json | ocdskit echo --root-path releases.item |
+          ocdskit package-releases --size 1000
 
-Note that the package metadata from the large package won't be retained in the smaller packages; you can use the optional arguments of the :ref:`package-records` and :ref:`package-releases` commands to set the package metadata.
-
-If the single package is small enough to hold in memory, you can use the :ref:`split-record-packages` and :ref:`split-release-packages` commands instead, which retain the package metadata.
+The package metadata from the large package won't be retained in the smaller packages. You can set this metadata using optional arguments of the :ref:`package-records` or :ref:`package-releases` command.
