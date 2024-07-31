@@ -136,13 +136,21 @@ If ``--package`` is set, and if the ``--publisher-*`` options aren't used, the o
 upgrade
 -------
 
-.. seealso:: For the Python API, see :doc:`../api/upgrade`
+.. seealso:: For the Python API, see :mod:`ocdskit.upgrade`
 
-Upgrades packages, records and releases from an old version of OCDS to a new version. Any data not in the old version is passed through. **Note:** Versioned releases within a record package are not upgraded.
+Upgrades packages, records and releases from an old version of OCDS to a new version.
 
-OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/reference/#identifier>`__ an organization's ``name``, ``identifier``, ``address`` and ``contactPoint`` as relevant to identifying it. OCDS 1.1 `moves <https://standard.open-contracting.org/1.1/en/schema/reference/#parties>`__ organization data into a ``parties`` array. To upgrade from OCDS 1.0 to 1.1, we create an ``id`` for each organization, based on those identifying fields. This can result in duplicates in the ``parties`` array, if the same organization has different or missing values for identifying fields in different contexts. This can also lead to data loss if the same organization has different values for non-identifying fields in different contexts; the command prints warnings in such cases.
+Any package, record or release that isn't in the old version is passed through. See the source of :meth:`ocdskit.util.get_ocds_minor_version` for determining the version.
 
-**Note:** OCDS 1.0 uses the `whole-list merge <https://standard.open-contracting.org/1.0/en/schema/merging/#merging-rules>`__ strategy on the ``suppliers`` array to prepare the compiled release and versioned release, whereas OCDS 1.1 uses the `identifier merge <https://standard.open-contracting.org/1.1/en/schema/merging/#identifier-merge>`__ strategy. This means that you should merge first and then upgrade.
+.. attention::
+
+   OCDS 1.0 `describes <https://standard.open-contracting.org/1.0/en/schema/reference/#identifier>`__ an organization's ``name``, ``identifier``, ``address`` and ``contactPoint`` as relevant to identifying it. OCDS 1.1 `moves <https://standard.open-contracting.org/1.1/en/schema/reference/#parties>`__ organization data into a ``parties`` array.
+
+   Upgrading from OCDS 1.0 to 1.1 creates an ``id`` for each organization, based on those identifying fields. This can result in duplicates in the ``parties`` array, if the same organization has different or missing values for identifying fields in different contexts. This can also lead to data loss if the same organization has different values for non-identifying fields in different contexts. The command prints warnings about data loss, but not about potential duplicates.
+
+.. attention:: OCDS 1.0 uses the `whole-list merge <https://standard.open-contracting.org/1.0/en/schema/merging/#merging-rules>`__ strategy on the ``suppliers`` array to prepare the compiled release and versioned release, whereas OCDS 1.1 uses the `identifier merge <https://standard.open-contracting.org/1.1/en/schema/merging/#identifier-merge>`__ strategy. This means that you should merge first, using the old version, and then upgrade to the new version.
+
+.. attention:: Versioned releases within a record package are not upgraded.
 
 Mandatory positional arguments:
 
@@ -153,7 +161,7 @@ Mandatory positional arguments:
 
    cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
 
-If a *release* package is too large, you can upgrade its individual releases using ``--root-path releases.item``.
+If a record package or release package is too large, you can upgrade its individual records or releases using ``--root-path records.item`` or ``--root-path releases.item``, respectively.
 
 .. error:: An error is raised if upgrading between the specified ``versions`` is not implemented.
 
