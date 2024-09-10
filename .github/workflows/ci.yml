@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', pypy-3.9-v7.3.15]
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12', pypy-3.10]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,21 +19,19 @@ jobs:
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
-      # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
-      - if: matrix.python-version != 'pypy-3.9-v7.3.15'
+      - if: matrix.python-version == 'pypy-3.10'
+        name: Test
+        # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
+        run: coverage run --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
+      - if: matrix.python-version != 'pypy-3.10'
         name: Test
         env:
           PYTHONUTF8: 1
         shell: bash
-        run: |
-          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
-          pip install orjson
-          coverage run --append --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
-          pip uninstall -y orjson
-      - if: matrix.python-version == 'pypy-3.9-v7.3.15'
-        name: Test
         # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
-        run: pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response --cov ocdskit
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
+        run: |
+          coverage run --source=ocdskit --append -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
+          pip install orjson
+          coverage run --source=ocdskit --append -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
+          pip uninstall -y orjson
+      - uses: coverallsapp/github-action@v2

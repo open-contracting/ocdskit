@@ -2,16 +2,45 @@
 requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
 
-[tool.pylint.BASIC]
-good-names = 'e,f,i,n,io'  # exception, file, enumerate, number
+[project]
+name = "ocdskit"
+version = "1.1.13"
+authors = [{name = "Open Contracting Partnership", email = "data@open-contracting.org"}]
+description = "A suite of command-line tools for working with OCDS data"
+readme = "README.rst"
+license = {text = "BSD"}
+urls = {Homepage = "https://github.com/open-contracting/ocdskit"}
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "ijson>=2.5",
+    "jsonref",
+    "ocdsmerge>=0.6",
+    "ocdsextensionregistry>=0.1.2",
+]
 
-[tool.pylint.'MESSAGES CONTROL']
-disable = [
-  'too-many-arguments',
-  # Defer to flake8
-  'line-too-long',
-  # Defer to pydocstyle
-  'missing-module-docstring',
-  'missing-class-docstring',
-  'missing-function-docstring',
+[project.optional-dependencies]
+perf = ["orjson>=3"]
+test = [
+    "coverage",
+    "jsonpointer",
+    "pytest",
+]
+
+[project.scripts]
+ocdskit = "ocdskit.__main__:main"
+
+[tool.setuptools.packages.find]
+exclude = [
+    "tests",
+    "tests.*",
 ]
