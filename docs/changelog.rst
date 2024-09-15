@@ -1,13 +1,13 @@
 Changelog
 =========
 
-1.1.14 (Unreleased)
--------------------
+1.2.0 (2024-09-15)
+------------------
 
 Changed
 ~~~~~~~
 
--  Some arguments must be keyword arguments:
+-  Some arguments must be keyword arguments in:
 
    -  :meth:`ocdskit.mapping_sheet.mapping_sheet`
    -  :meth:`ocdskit.schema.add_validation_properties`
