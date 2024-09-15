@@ -52,5 +52,5 @@ def test_command_missing_field(capsys, monkeypatch):
 
     captured = capsys.readouterr()
 
-    assert captured.out == '{"uri":"","publisher":{"name":"Acme"},"publishedDate":"","version":"1.1","releases":[]}\n'  # noqa: E501
+    assert captured.out == '{"uri":"","publisher":{"name":"Acme"},"publishedDate":"","version":"1.1","releases":[]}\n'
     assert captured.err == 'item 0 has no "releases" field (check that it is a release package)\n'

@@ -17,7 +17,7 @@ class StandardInputReader:
 
 
 class BaseCommand(ABC):
-    kwargs = {}
+    kwargs = {}  # noqa: RUF012
 
     def __init__(self, subparsers):
         """
@@ -28,12 +28,12 @@ class BaseCommand(ABC):
         self.add_arguments()
         self.args = None
 
-    def add_base_arguments(self):
+    def add_base_arguments(self):  # noqa: B027 # noop
         """
         Adds default arguments to all commands.
         """
 
-    def add_arguments(self):
+    def add_arguments(self):  # noqa: B027 # noop
         """
         Adds arguments specific to this command.
         """
@@ -63,7 +63,7 @@ class BaseCommand(ABC):
         file = StandardInputReader(self.args.encoding)
         yield from ijson.items(file, self.prefix(), multiple_values=True, **kwargs)
 
-    def print(self, data, streaming=False):
+    def print(self, data, *, streaming=False):
         """
         Prints JSON data.
 

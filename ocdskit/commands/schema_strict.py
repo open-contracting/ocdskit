@@ -9,8 +9,10 @@ from ocdskit.util import json_dump
 
 class Command(BaseCommand):
     name = 'schema-strict'
-    help = 'adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and "minLength" if a ' \
-           'string and "enum", "format" and "pattern" are not set'
+    help = (
+        'adds "minItems" and "uniqueItems" if an array, "minProperties" if an object and '
+        '"minLength" if a string and "enum", "format" and "pattern" are not set'
+    )
 
     def add_arguments(self):
         self.add_argument('file', help='the schema file')

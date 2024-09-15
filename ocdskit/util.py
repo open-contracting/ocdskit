@@ -61,7 +61,7 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def iterencode(data, ensure_ascii=False, **kwargs):
+def iterencode(data, *, ensure_ascii=False, **kwargs):
     """
     Returns a generator that yields each string representation as available.
     """
@@ -70,7 +70,7 @@ def iterencode(data, ensure_ascii=False, **kwargs):
     return JSONEncoder(ensure_ascii=ensure_ascii, **kwargs).iterencode(data)
 
 
-def json_dump(data, io, ensure_ascii=False, **kwargs):
+def json_dump(data, io, *, ensure_ascii=False, **kwargs):
     """
     Dumps JSON to a file-like object.
     """
@@ -79,7 +79,7 @@ def json_dump(data, io, ensure_ascii=False, **kwargs):
     json.dump(data, io, ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs)
 
 
-def json_dumps(data, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
+def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
     """
     Dumps JSON to a string, and returns it.
     """
@@ -127,8 +127,8 @@ def get_ocds_patch_tag(version):
     prefix = version.replace('.', '__') + '__'
     try:
         return next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
-    except StopIteration:
-        raise UnknownVersionError(version)
+    except StopIteration as e:
+        raise UnknownVersionError(version) from e
 
 
 def is_package(data):
@@ -250,11 +250,11 @@ def detect_format(path, root_path='', reader=open):
                 metadata_count += 1
             if not prefix and event not in ('end_array', 'end_map', 'map_key'):
                 return _detect_format_result(
-                    True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count
+                    True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count  # noqa: FBT003
                 )
 
         return _detect_format_result(
-            False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count
+            False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count  # noqa: FBT003
         )
 
 
@@ -286,10 +286,7 @@ def _detect_format_result(
     elif metadata_count == 4:
         detected_format = Format.empty_package
     else:
-        if is_array:
-            infix = 'array'
-        else:
-            infix = 'object'
+        infix = 'array' if is_array else 'object'
         raise UnknownFormatError(f'top-level JSON value is a non-OCDS {infix}')
 
     return (detected_format, is_concatenated, is_array)

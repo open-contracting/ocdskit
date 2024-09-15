@@ -10,7 +10,7 @@ from ocdskit.util import _cast_as_list
 INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 
 
-def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=None, inherit_extension=True,
+def mapping_sheet(schema, *, order_by=None, infer_required=False, extension_field=None, inherit_extension=True,
                   include_codelist=False, include_deprecated=True, include_definitions=False, base_uri=None):
     """
     Returns information about all field paths in a JSON Schema, as columns and rows.
@@ -112,7 +112,7 @@ def mapping_sheet(schema, order_by=None, infer_required=False, extension_field=N
         try:
             rows.sort(key=lambda row: row[order_by])
         except KeyError as e:
-            raise MissingColumnError(f"the column '{order_by}' doesn't exist – did you make a typo?") from e
+            raise MissingColumnError(f"the column '{order_by}' doesn't exist - did you make a typo?") from e
 
     columns = ['section', 'path', 'title', 'description', 'type', 'range', 'values', 'links', 'deprecated',
                'deprecationNotes']

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import warnings
-from typing import Union
 
 from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge import Merger
@@ -142,15 +143,16 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 def merge(
     data,
     uri: str = '',
-    publisher: Union[dict, None] = None,
+    publisher: dict | None = None,
     published_date: str = '',
     version: str = DEFAULT_VERSION,
-    schema: Union[dict, None] = None,
+    schema: dict | None = None,
+    *,
     return_versioned_release: bool = False,
     return_package: bool = False,
     use_linked_releases: bool = False,
     streaming: bool = False,
-    force_version: Union[str, None] = None,
+    force_version: str | None = None,
     ignore_version: bool = False,
     convert_exceptions_to_warnings: bool = False,
 ):

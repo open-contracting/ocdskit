@@ -53,21 +53,15 @@ def test_command_release_tenderers_amendment(capsys, monkeypatch, caplog):
     )
 
 
-@pytest.mark.parametrize('pointer', ('parties', 'buyer', 'tender', 'tender/procuringEntity', 'tender/tenderers',
+@pytest.mark.parametrize('pointer', ['parties', 'buyer', 'tender', 'tender/procuringEntity', 'tender/tenderers',
                                      'awards', 'awards/0/suppliers', 'contracts', 'contracts/0/implementation',
-                                     'contracts/0/implementation/transactions'))
+                                     'contracts/0/implementation/transactions'])
 def test_command_release_field_is_null(pointer, capsys, monkeypatch, caplog):
     data = json.loads(read('release_minimal.json'))
 
     parts = pointer.split('/')
-    for i, part in enumerate(parts, 1):
-        if i < len(parts):
-            if parts[i] == '0':
-                value = [{}]
-            else:
-                value = {}
-        else:
-            value = None
+    for i, _ in enumerate(parts, 1):
+        value = ([{}] if parts[i] == '0' else {}) if i < len(parts) else None
         set_pointer(data, '/' + '/'.join(parts[:i]), value)
 
     stdin = json.dumps(data).encode('utf-8')

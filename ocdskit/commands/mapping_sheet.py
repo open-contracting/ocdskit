@@ -15,7 +15,7 @@ from ocdskit.mapping_sheet import mapping_sheet
 class Command(BaseCommand):
     name = 'mapping-sheet'
     help = 'generates a spreadsheet with all field paths in a JSON Schema'
-    kwargs = {
+    kwargs = {  # noqa: RUF012
         'epilog': dedent(
             """
             The --extension option must be declared after the file argument. It accepts multiple values, which can be

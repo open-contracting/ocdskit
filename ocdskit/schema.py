@@ -67,7 +67,7 @@ class Field:
     def __repr__(self):
         return repr(self.asdict())
 
-    def asdict(self, sep=None, exclude=None):
+    def asdict(self, sep=None, exclude=()):
         """
         Returns the field as a dict, with keys for: ``schema``, ``pointer``, ``path``,
         ``definition_pointer``, ``definition_path``, ``required``, ``deprecated``, ``multilingual``.
@@ -75,22 +75,17 @@ class Field:
         :param list sep: the separator to use in string representations of paths, overriding ``self.sep``
         :param list exclude: a list of keys to exclude from the dict
         """
-        data = {}
-
-        exclude = exclude or ()
         sep = sep or self.sep
 
-        for key, value in self.__dict__.items():
-            if key not in exclude and not key.startswith('_') and not key.endswith('_components'):
-                data[key] = value
-        for key in ('pointer', 'definition_pointer'):
-            if key not in exclude:
-                data[key] = getattr(self, key)
-        for key in ('path', 'definition_path'):
-            if key not in exclude:
-                data[key] = sep.join(getattr(self, f'{key}_components'))
-
-        return data
+        return (
+            {
+                k: v
+                for k, v in self.__dict__.items()
+                if k not in exclude and not k.startswith("_") and not k.endswith("_components")
+            }
+            | {k: getattr(self, k) for k in ("pointer", "definition_pointer") if k not in exclude}
+            | {k: sep.join(getattr(self, f"{k}_components")) for k in ("path", "definition_path") if k not in exclude}
+        )
 
 
 # This code is similar to `add_versioned` in `make_versioned_release_schema.py` in the `standard` repository.
@@ -121,7 +116,7 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
 
     multilingual = set()
     hidden = set()
-    for key, value in schema.get('patternProperties', {}).items():
+    for key in schema.get('patternProperties', {}):
         # The pattern might have an extra set of parentheses.
         for offset in (2, 1):
             end = -LANGUAGE_CODE_SUFFIX_LEN - offset
@@ -136,21 +131,21 @@ def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, 
                 break
 
     for key, value in schema.get('properties', {}).items():
-        new_pointer = pointer + ('properties', key)
-        new_path = path + (key,)
+        new_pointer = (*pointer, 'properties', key)
+        new_path = (*path, key)
         required = schema.get('required', [])
         yield from _get_schema_field(key, value, new_pointer, new_path, definition_pointer, definition_path,
                                      required, deprecated or _deprecated(value), multilingual)
 
     for key, value in schema.get('definitions', {}).items():
-        new_pointer = pointer + ('definitions', key)
+        new_pointer = (*pointer, 'definitions', key)
         yield from get_schema_fields(value, pointer=new_pointer, path=(), definition_pointer=new_pointer,
                                      definition_path=(key,), deprecated=deprecated)
 
     for key, value in schema.get('patternProperties', {}).items():
         if key not in hidden:
-            new_pointer = pointer + ('patternProperties', key)
-            new_path = path + (f'({key})',)
+            new_pointer = (*pointer, 'patternProperties', key)
+            new_path = (*path, f'({key})')
             yield Field(schema=value, pointer_components=new_pointer, path_components=new_path,
                         definition_pointer_components=definition_pointer, definition_path_components=definition_path,
                         required=False, deprecated=deprecated or _deprecated(value), multilingual=False)
@@ -170,8 +165,8 @@ def _get_schema_field(name, schema, pointer, path, definition_pointer, definitio
                                      definition_path=definition_path, deprecated=deprecated)
 
     for key, value in schema.get('items', {}).get('properties', {}).items():
-        new_pointer = pointer + ('items', 'properties', key)
-        new_path = path + (key,)
+        new_pointer = (*pointer, 'items', 'properties', key)
+        new_path = (*path, key)
         required = schema['items'].get('required', [])
         yield from _get_schema_field(key, value, new_pointer, new_path, definition_pointer, definition_path,
                                      required, deprecated or _deprecated(value), multilingual)
@@ -183,7 +178,7 @@ def _deprecated(value):
     return value.get('deprecated') or hasattr(value, '__reference__') and value.__reference__.get('deprecated') or {}
 
 
-def add_validation_properties(schema, unique_items=True, coordinates=False):
+def add_validation_properties(schema, *, unique_items=True, coordinates=False):
     """
     Adds "minItems" and "uniqueItems" if an array, adds "minProperties" if an object, and adds "minLength" if a string
     and if "enum", "format" and "pattern" aren't set.

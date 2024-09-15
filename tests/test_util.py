@@ -19,7 +19,7 @@ from tests import path, read
 
 
 # Same fixture files as in test_detect_format.py, except for concatenated JSON files.
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', True),
     ('release-package_minimal.json', True),
     ('record_minimal.json', False),
@@ -33,7 +33,7 @@ def test_is_package(filename, expected):
     assert is_package(json.loads(read(filename))) == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', True),
     ('release-package_minimal.json', False),
     ('record_minimal.json', False),
@@ -47,7 +47,7 @@ def test_is_record_package(filename, expected):
     assert is_record_package(json.loads(read(filename))) == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', False),
     ('release-package_minimal.json', False),
     ('record_minimal.json', True),
@@ -61,7 +61,7 @@ def test_is_record(filename, expected):
     assert is_record(json.loads(read(filename))) == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', False),
     ('release-package_minimal.json', True),
     ('record_minimal.json', False),
@@ -75,7 +75,7 @@ def test_is_release_package(filename, expected):
     assert is_release_package(json.loads(read(filename))) == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', False),
     ('release-package_minimal.json', False),
     ('record_minimal.json', False),
@@ -89,7 +89,7 @@ def test_is_release(filename, expected):
     assert is_release(json.loads(read(filename))) == expected
 
 
-@pytest.mark.parametrize('data,expected', [
+@pytest.mark.parametrize(('data', 'expected'), [
     ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': ['compiled']}, True),
     ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': ['tender']}, False),
     ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': None}, False),
@@ -99,7 +99,7 @@ def test_is_compiled_release(data, expected):
     assert is_compiled_release(data) == expected
 
 
-@pytest.mark.parametrize('data,expected', [
+@pytest.mark.parametrize(('data', 'expected'), [
     ({'url': 'http://example.com'}, True),
     ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z'}, True),
     ({'url': 'http://example.com', 'date': '2001-02-03T04:05:06Z', 'tag': ['tender']}, True),
@@ -109,7 +109,7 @@ def test_is_linked_release(data, expected):
     assert is_linked_release(data) == expected
 
 
-@pytest.mark.parametrize('data,expected', [
+@pytest.mark.parametrize(('data', 'expected'), [
     ({'records': [], 'version': '99.99'}, '99.99'),
     ({'records': []}, '1.0'),
     ({'releases': [], 'version': '99.99'}, '99.99'),
@@ -124,7 +124,7 @@ def test_get_ocds_minor_version(data, expected):
     assert get_ocds_minor_version(data) == expected
 
 
-@pytest.mark.parametrize('data,expected', [
+@pytest.mark.parametrize(('data', 'expected'), [
     (iter([]), '[]'),
     ({'a': 1, 'b': 2}, '{"a":1,"b":2}'),
 ])
@@ -137,7 +137,7 @@ def test_json_dump(data, expected, tmpdir):
     assert p.read() == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('record-package_minimal.json', ('record package', False, False)),
     ('release-package_minimal.json', ('release package', False, False)),
     ('record_minimal.json', ('record', False, False)),
@@ -156,7 +156,7 @@ def test_detect_format(filename, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize('filename,expected', [
+@pytest.mark.parametrize(('filename', 'expected'), [
     ('ocds-sample-data.json.gz', ('release package', False, False))
 ])
 def test_detect_format_gz(filename, expected):

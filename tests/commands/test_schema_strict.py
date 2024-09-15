@@ -4,7 +4,7 @@ import os
 from ocdskit.__main__ import main
 from tests import path, run_command
 
-expected = '''{
+expected = """{
   "required": [
     "array",
     "minItemsArray",
@@ -83,7 +83,7 @@ expected = '''{
     }
   }
 }
-'''
+"""
 
 
 def test_command(capsys, monkeypatch, tmpdir):

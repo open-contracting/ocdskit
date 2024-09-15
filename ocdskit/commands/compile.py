@@ -11,8 +11,10 @@ logger = logging.getLogger('ocdskit')
 
 class Command(OCDSCommand):
     name = 'compile'
-    help = 'reads release packages and individual releases from standard input, merges the releases by OCID, and ' \
-           'prints the compiled releases'
+    help = (
+        'reads release packages and individual releases from standard input, merges the releases by OCID, '
+        'and prints the compiled releases'
+    )
 
     def add_arguments(self):
         self.add_argument('--schema', help='the URL or path of the patched release schema to use')

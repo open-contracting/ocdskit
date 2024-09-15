@@ -13,10 +13,9 @@ from tests import assert_streaming, assert_streaming_error, read, run_streaming
 def test_help(capsys, monkeypatch, caplog):
     stdin = read('release-package_minimal.json', 'rb')
 
-    with pytest.raises(SystemExit) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
-            monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
-            main()
+    monkeypatch.setattr(sys, 'argv', ['ocdskit', '--help'])
+    with pytest.raises(SystemExit) as excinfo, patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
+        main()
 
     assert capsys.readouterr().out.startswith('usage: ocdskit [-h] ')
 
@@ -75,8 +74,8 @@ def test_command_array_input(capsys, monkeypatch):
     actual = run_streaming(capsys, monkeypatch, main, ['echo'], ['release-packages.json'])
 
     assert actual.out == (
-        '{"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"}\n'  # noqa: E501
-        '{"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"}\n'  # noqa: E501
+        '{"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"}\n'
+        '{"uri":"http://example.com/id/1","publisher":{"name":"Acme"},"publishedDate":"2001-02-03T04:05:07Z","releases":[{"ocid":"ocds-213czf-1","id":"1","date":"2001-02-03T04:05:06Z","tag":["planning"],"initiationType":"tender"}],"version":"1.1"}\n'
     )
 
 

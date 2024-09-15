@@ -40,4 +40,4 @@ class Command(BaseCommand):
                 json_dump(data, f, indent=self.args.indent, ensure_ascii=self.args.ascii)
                 f.write('\n')
         except json.decoder.JSONDecodeError as e:
-            logger.error('%s is not valid JSON. (json.decoder.JSONDecodeError: %s)', path, e)
+            logger.error('%s is not valid JSON. (json.decoder.JSONDecodeError: %s)', path, e)  # noqa: TRY400 # UX

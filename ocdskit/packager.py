@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 import itertools
 import os
 import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from tempfile import NamedTemporaryFile
-from typing import Union
+from typing import TYPE_CHECKING
 
-import ocdsmerge
 from ocdsmerge.exceptions import InconsistentTypeError
 
 from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, MissingOcidKeyError
@@ -20,6 +21,9 @@ from ocdskit.util import (
     json_dumps,
     jsonlib,
 )
+
+if TYPE_CHECKING:
+    import ocdsmerge
 
 try:
     import sqlite3
@@ -54,7 +58,7 @@ class Packager:
     same version of OCDS.
     """
 
-    def __init__(self, force_version: Union[str, None] = None):
+    def __init__(self, force_version: str | None = None):
         """
         :param force_version: version to use instead of the version of the first release package or individual release
         """
@@ -72,7 +76,7 @@ class Packager:
     def __exit__(self, type_, value, traceback):
         self.backend.close()
 
-    def add(self, data, ignore_version: bool = False):
+    def add(self, data, *, ignore_version: bool = False):
         """
         Adds release packages and/or individual releases to be merged.
 
@@ -116,6 +120,7 @@ class Packager:
     def output_package(
         self,
         merger: ocdsmerge.merge.Merger,
+        *,
         return_versioned_release: bool = False,
         use_linked_releases: bool = False,
         streaming: bool = False,
@@ -137,7 +142,7 @@ class Packager:
             convert_exceptions_to_warnings=convert_exceptions_to_warnings,
         )
 
-        # If a user wants to stream data but can’t exhaust records right away, we can add an `autoclose=True` argument.
+        # If a user wants to stream data but can't exhaust records right away, we can add an `autoclose=True` argument.
         # If set to `False`, `__exit__` will do nothing, and the user will need to call `packager.backend.close()`.
         if not streaming:
             records = list(records)
@@ -153,6 +158,7 @@ class Packager:
     def output_records(
         self,
         merger: ocdsmerge.merge.Merger,
+        *,
         return_versioned_release: bool = False,
         use_linked_releases: bool = False,
         convert_exceptions_to_warnings: bool = False,
@@ -204,6 +210,7 @@ class Packager:
     def output_releases(
         self,
         merger: ocdsmerge.merge.Merger,
+        *,
         return_versioned_release: bool = False,
         convert_exceptions_to_warnings: bool = False,
     ):
@@ -263,12 +270,12 @@ class AbstractBackend(ABC):
         OCIDs are yielded in alphabetical order. The iterable is in any order.
         """
 
-    def flush(self):
+    def flush(self):  # noqa: B027 # noop
         """
         Flushes the internal buffer of releases. This may be a no-op on some backends.
         """
 
-    def close(self):
+    def close(self):  # noqa: B027 # noop
         """
         Tidies up any resources used by the backend. This may be a no-op on some backends.
         """

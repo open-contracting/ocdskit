@@ -16,10 +16,7 @@ class Command(OCDSCommand):
         versions = self.args.versions
 
         version_from, version_to = versions.split(':')
-        if version_from < version_to:
-            direction = 'up'
-        else:
-            direction = 'down'
+        direction = 'up' if version_from < version_to else 'down'
 
         try:
             upgrade_method = getattr(upgrade, f"upgrade_{versions.replace('.', '').replace(':', '_')}")

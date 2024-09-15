@@ -6,7 +6,7 @@ from tests import assert_command, assert_command_error, read
 
 schema = read('test-schema.json')
 
-schema_with_enum = '''{
+schema_with_enum = """{
   "properties": {
     "closedStringNull": {
       "type": [
@@ -72,9 +72,9 @@ schema_with_enum = '''{
     }
   }
 }
-'''
+"""
 
-schema_with_modification = '''{
+schema_with_modification = """{
   "properties": {
     "closedStringNull": {
       "type": [
@@ -140,7 +140,7 @@ schema_with_modification = '''{
     }
   }
 }
-'''
+"""
 
 codelist = 'Code\nfoo\nbar\n'
 

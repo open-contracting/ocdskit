@@ -119,4 +119,4 @@ def test_command_order_by_nonexistent(capsys, monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'CRITICAL'
-    assert caplog.records[0].message == "the column 'nonexistent' doesn't exist – did you make a typo?"
+    assert caplog.records[0].message == "the column 'nonexistent' doesn't exist - did you make a typo?"

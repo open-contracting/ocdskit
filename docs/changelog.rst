@@ -1,6 +1,22 @@
 Changelog
 =========
 
+1.1.14 (Unreleased)
+-------------------
+
+Changed
+~~~~~~~
+
+-  Some arguments must be keyword arguments:
+
+   -  :meth:`ocdskit.mapping_sheet.mapping_sheet`
+   -  :meth:`ocdskit.schema.add_validation_properties`
+   -  :meth:`ocdskit.util.iterencode`
+   -  :meth:`ocdskit.util.json_dump`
+   -  :meth:`ocdskit.util.json_dumps`
+
+-  Drop support for Python 3.8.
+
 1.1.13 (2024-05-08)
 -------------------
 
@@ -45,6 +61,7 @@ Added
 ~~~~~
 
 -  :meth:`ocdskit.util.is_linked_release` accepts a ``maximum_properties`` argument (default 3).
+-  Drop support for Python 3.7.
 
 1.1.8 (2023-06-26)
 ------------------
@@ -91,7 +108,7 @@ New CLI options:
 Changed
 ~~~~~~~
 
--  Drop support for Python 3.6 (end-of-life 2021-12-23).
+-  Drop support for Python 3.6.
 
 Fixed
 ~~~~~

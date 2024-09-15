@@ -139,10 +139,7 @@ def _get_parties(release):
 
     if 'parties' in release:
         for party in release['parties']:
-            if 'id' in party:
-                _id = party['id']
-            else:
-                _id = _create_party_id(party)
+            _id = party['id'] if 'id' in party else _create_party_id(party)
             parties[_id] = party
 
     return parties
@@ -195,13 +192,11 @@ def _create_party_id(party):
     parts = []
     for parent, fields in organization_identification_1_0:
         if not parent:
-            for field in fields:
-                parts.append(_get_bytes(party, field))
+            parts.extend(_get_bytes(party, field) for field in fields)
         elif parent in party:
-            for field in fields:
-                parts.append(_get_bytes(party[parent], field))
+            parts.extend(_get_bytes(party[parent], field) for field in fields)
 
-    return md5(b'-'.join(parts)).hexdigest()
+    return md5(b'-'.join(parts)).hexdigest()  # noqa: S324 # non-cryptographic
 
 
 def _get_bytes(obj, field):

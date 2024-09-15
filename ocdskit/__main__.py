@@ -43,7 +43,7 @@ def main(description='Open Contracting Data Standard CLI', modules=COMMAND_MODUL
         try:
             command = importlib.import_module(module).Command(subparsers)
         except ImportError as e:
-            logger.error('exception "%s" prevented loading of %s module', e, module)
+            logger.error('exception "%s" prevented loading of %s module', e, module)  # noqa: TRY400 # UX
         else:
             subcommands[command.name] = command
 
@@ -73,17 +73,14 @@ def main(description='Open Contracting Data Standard CLI', modules=COMMAND_MODUL
         parser.print_help()
 
 
-def _showwarning(message, category, filename, lineno, file=None, line=None):
+def _showwarning(message, category, filename, lineno, file=None, line=None):  # noqa: ARG001
     if file is None:
         file = sys.stderr
     print(message, file=file)
 
 
 def _raise_encoding_error(e, encoding):
-    if encoding and encoding.lower() == 'iso-8859-1':
-        suggestion = 'utf-8'
-    else:
-        suggestion = 'iso-8859-1'
+    suggestion = 'utf-8' if encoding and encoding.lower() == 'iso-8859-1' else 'iso-8859-1'
     raise CommandError(f'encoding error: {e}\nTry `--encoding {suggestion}`?')
 
 

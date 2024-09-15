@@ -5,7 +5,11 @@ from ocdsextensionregistry import ProfileBuilder
 from ocdsmerge.exceptions import DuplicateIdValueWarning, InconsistentTypeError
 
 from ocdskit.combine import compile_release_packages, merge, package_records
-from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, UnknownVersionError
+from ocdskit.exceptions import (
+    InconsistentVersionError,
+    MergeErrorWarning,
+    UnknownVersionError,
+)
 from tests import read
 
 inconsistent = [{
@@ -41,14 +45,14 @@ def test_merge_with_schema():
     schema = builder.patched_release_schema()
 
     data = json.loads(read('release-package_additional-contact-points.json'))['releases']
-    compiled_release = list(merge(data, schema=schema))[0]
+    compiled_release = next(iter(merge(data, schema=schema)))
 
     assert compiled_release == json.loads(read('compile_extensions.json'))
 
 
 def test_merge_without_schema():
     data = json.loads(read('release-package_additional-contact-points.json'))['releases']
-    compiled_release = list(merge(data))[0]
+    compiled_release = next(iter(merge(data)))
 
     assert compiled_release == json.loads(read('compile_no-extensions.json'))
 
@@ -57,7 +61,7 @@ def test_merge_warning():
     data = json.loads(read('release-package_warning.json'))['releases']
 
     with pytest.warns(DuplicateIdValueWarning) as records:
-        compiled_release = list(merge(data))[0]
+        compiled_release = next(iter(merge(data)))
 
     assert compiled_release == json.loads(read('compile_warning.json'))
 
@@ -108,7 +112,7 @@ def test_merge_inconsistent_type(return_package):
         list(merge(data(), return_package=return_package))
 
 
-@pytest.mark.parametrize('return_package,expected', [
+@pytest.mark.parametrize(("return_package", "expected"), [
     (
         True,
         [

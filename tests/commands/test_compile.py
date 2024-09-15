@@ -20,7 +20,7 @@ def _remove_package_metadata(filenames):
 
 
 # Test with packages and with releases.
-def assert_compile_command(capsys, monkeypatch, main, args, stdin, expected, remove_package_metadata=False):
+def assert_compile_command(capsys, monkeypatch, main, args, stdin, expected, *, remove_package_metadata=False):
     assert_streaming(capsys, monkeypatch, main, args, stdin, expected)
 
     args[args.index('compile') + 1:0] = ['--root-path', 'releases.item']
@@ -146,9 +146,11 @@ def test_command_version_mismatch(capsys, monkeypatch, caplog):
 
         assert len(caplog.records) == 1
         assert caplog.records[0].levelname == 'CRITICAL'
-        assert caplog.records[0].message == "item 1: version error: this item uses version 1.0, but earlier items " \
-            "used version 1.1\nTry first upgrading items to the same version:\n  cat file [file ...] | ocdskit " \
-            "upgrade 1.0:1.1 | ocdskit compile --package --versioned"
+        assert caplog.records[0].message == (
+            "item 1: version error: this item uses version 1.0, but earlier items used version 1.1\n"
+            "Try first upgrading items to the same version:\n"
+            "  cat file [file ...] | ocdskit upgrade 1.0:1.1 | ocdskit compile --package --versioned"
+        )
 
 
 @pytest.mark.usefixtures('sqlite')
@@ -181,5 +183,7 @@ def test_command_without_sqlite(capsys, monkeypatch, caplog):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'WARNING'
-    assert caplog.records[0].message == 'sqlite3 is unavailable, so the command will run in memory. If input files ' \
-                                        'are too large, the command might exceed available memory.'
+    assert caplog.records[0].message == (
+        'sqlite3 is unavailable, so the command will run in memory. '
+        'If input files are too large, the command might exceed available memory.'
+    )

@@ -47,10 +47,7 @@ class Command(BaseCommand):
                     recurse(item)
             elif isinstance(data, dict):
                 if 'codelist' in data:
-                    if 'openCodelist' in data:
-                        open_codelist = data['openCodelist']
-                    else:
-                        open_codelist = 'enum' not in data
+                    open_codelist = data.get('openCodelist', 'enum' not in data)
                     codelists[data['codelist']].add(open_codelist)
 
                 for key, value in data.items():

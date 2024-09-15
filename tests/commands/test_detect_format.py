@@ -6,7 +6,7 @@ from ocdskit.__main__ import main
 from tests import assert_command, assert_command_error, path, run_command
 
 
-@pytest.mark.parametrize('filename,result', [
+@pytest.mark.parametrize(('filename', 'result'), [
     ('record-package_minimal.json', 'record package'),
     ('release-package_minimal.json', 'release package'),
     ('record_minimal.json', 'record'),
@@ -24,7 +24,7 @@ def test_command(filename, result, capsys, monkeypatch):
     assert_command(capsys, monkeypatch, main, ['detect-format', path(filename)], expected)
 
 
-@pytest.mark.parametrize('filename,root_path,result', [
+@pytest.mark.parametrize(('filename', 'root_path', 'result'), [
     ('record-package_minimal.json', 'records', 'a JSON array of records'),
     ('record-package_minimal.json', 'records.item', 'record'),
 ])
@@ -52,7 +52,7 @@ def test_command_recursive(capsys, monkeypatch, caplog, tmpdir):
     assert len(caplog.records) == 0
 
 
-@pytest.mark.parametrize('basename,result', [
+@pytest.mark.parametrize(('basename', 'result'), [
     ('false', 'boolean'),
     ('null', 'null'),
     ('number', 'number'),

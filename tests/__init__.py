@@ -21,7 +21,7 @@ def read(filename, mode='rt', **kwargs):
         return f.read()
 
 
-def assert_equal(actual, expected, ordered=True):
+def assert_equal(actual, expected, *, ordered=True):
     if ordered:
         assert actual == expected, ''.join(ndiff(expected.splitlines(1), actual.splitlines(1)))
     else:
@@ -31,7 +31,7 @@ def assert_equal(actual, expected, ordered=True):
 
 
 def run_command(capsys, monkeypatch, main, args):
-    monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+    monkeypatch.setattr(sys, 'argv', ['ocdskit', *args])
     main()
 
     return capsys.readouterr()
@@ -39,8 +39,8 @@ def run_command(capsys, monkeypatch, main, args):
 
 # Similar to `run_command`, but with `pytest.raises` block.
 def assert_command_error(capsys, monkeypatch, main, args, expected='', error=SystemExit):
+    monkeypatch.setattr(sys, 'argv', ['ocdskit', *args])
     with pytest.raises(error) as excinfo:
-        monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
         main()
 
     actual = capsys.readouterr()
@@ -52,7 +52,7 @@ def assert_command_error(capsys, monkeypatch, main, args, expected='', error=Sys
     return excinfo
 
 
-def assert_command(capsys, monkeypatch, main, args, expected, ordered=True):
+def assert_command(capsys, monkeypatch, main, args, expected, *, ordered=True):
     actual = run_command(capsys, monkeypatch, main, args)
 
     if os.path.isfile(path(expected)):
@@ -66,7 +66,7 @@ def run_streaming(capsys, monkeypatch, main, args, stdin):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
     with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
-        monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
+        monkeypatch.setattr(sys, 'argv', ['ocdskit', *args])
         main()
 
     return capsys.readouterr()
@@ -77,10 +77,9 @@ def assert_streaming_error(capsys, monkeypatch, main, args, stdin, expected='', 
     if not isinstance(stdin, bytes):
         stdin = b''.join(read(filename, 'rb') for filename in stdin)
 
-    with pytest.raises(error) as excinfo:
-        with patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
-            monkeypatch.setattr(sys, 'argv', ['ocdskit'] + args)
-            main()
+    monkeypatch.setattr(sys, 'argv', ['ocdskit', *args])
+    with pytest.raises(error) as excinfo, patch('sys.stdin', TextIOWrapper(BytesIO(stdin))):
+        main()
 
     actual = capsys.readouterr()
 
@@ -91,7 +90,7 @@ def assert_streaming_error(capsys, monkeypatch, main, args, stdin, expected='', 
     return excinfo
 
 
-def assert_streaming(capsys, monkeypatch, main, args, stdin, expected, ordered=True):
+def assert_streaming(capsys, monkeypatch, main, args, stdin, expected, *, ordered=True):
     actual = run_streaming(capsys, monkeypatch, main, args, stdin)
 
     if not isinstance(expected, str):

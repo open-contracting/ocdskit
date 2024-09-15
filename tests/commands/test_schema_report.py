@@ -6,13 +6,15 @@ def test_command(capsys, monkeypatch):
     actual = run_command(capsys, monkeypatch, main, ['schema-report', '--min-occurrences', '2',
                                                      path('test-schema.json')])
 
-    assert actual.out == 'codelist,openCodelist\n' \
-                         'a.csv,False/True\n' \
-                         'b.csv,False\n' \
-                         'c.csv,False\n' \
-                         'd.csv,False\n' \
-                         '\n' \
-                         " 2: {'codelist': 'a.csv', 'openCodelist': True, 'type': ['string', 'null']}\n"
+    assert actual.out == (
+        'codelist,openCodelist\n'
+        'a.csv,False/True\n'
+        'b.csv,False\n'
+        'c.csv,False\n'
+        'd.csv,False\n'
+        '\n'
+        " 2: {'codelist': 'a.csv', 'openCodelist': True, 'type': ['string', 'null']}\n"
+    )
 
 
 def test_command_no_codelists(capsys, monkeypatch):

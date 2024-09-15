@@ -42,10 +42,7 @@ class Command(BaseCommand):
             self.collect_codelists(directory)
             self.update_json_schema(directory)
 
-        codelists_not_seen = []
-        for codelist in self.codelists:
-            if codelist not in self.codelists_seen:
-                codelists_not_seen.append(codelist)
+        codelists_not_seen = [codelist for codelist in self.codelists if codelist not in self.codelists_seen]
 
         if codelists_not_seen:
             logger.error('unused codelists: %s', ' '.join(codelists_not_seen))
@@ -57,10 +54,7 @@ class Command(BaseCommand):
                     with open(os.path.join(root, name)) as f:
                         reader = csv.DictReader(f)
                         row = next(reader)
-                        if 'Code' in row:
-                            codes = [row['Code'] for row in itertools.chain([row], reader)]
-                        else:
-                            codes = []
+                        codes = [row['Code'] for row in itertools.chain([row], reader)] if 'Code' in row else []
 
                     if codes:
                         if name.startswith('+'):
