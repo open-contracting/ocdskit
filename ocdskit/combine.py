@@ -42,7 +42,7 @@ def _package(key, items, uri, publisher, published_date, version, extensions=Non
 
 def package_records(records, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
     """
-    Wraps records in a record package.
+    Wrap records in a record package.
 
     :param list records: a list of records
     :param str uri: the record package's ``uri``
@@ -56,7 +56,7 @@ def package_records(records, uri='', publisher=None, published_date='', version=
 
 def package_releases(releases, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
     """
-    Wraps releases in a release package.
+    Wrap releases in a release package.
 
     :param list releases: a list of releases
     :param str uri: the release package's ``uri``
@@ -70,9 +70,9 @@ def package_releases(releases, uri='', publisher=None, published_date='', versio
 
 def combine_record_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
     """
-    Collects the packages and records from the record packages into one record package.
+    Collect the packages and records from the record packages into one record package.
 
-    Warns ``~ocdskit.exceptions.MissingRecordsWarning`` if the "records" field is missing from a record package.
+    Warn ``~ocdskit.exceptions.MissingRecordsWarning`` if the "records" field is missing from a record package.
 
     :param packages: an iterable of record packages
     :param str uri: the record package's ``uri``
@@ -92,6 +92,7 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='',
             warnings.warn(
                 f'item {i} has no "records" field (check that it is a record package)',
                 category=MissingRecordsWarning,
+                stacklevel=2,
             )
         if 'packages' in package:
             output['packages'].update(dict.fromkeys(package['packages']))
@@ -108,9 +109,9 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='',
 
 def combine_release_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
     """
-    Collects the releases from the release packages into one release package.
+    Collect the releases from the release packages into one release package.
 
-    Warns ``~ocdskit.exceptions.MissingReleasesWarning`` if the "releases" field is missing from a release package.
+    Warn ``~ocdskit.exceptions.MissingReleasesWarning`` if the "releases" field is missing from a release package.
 
     :param packages: an iterable of release packages
     :param str uri: the release package's ``uri``
@@ -129,6 +130,7 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
             warnings.warn(
                 f'item {i} has no "releases" field (check that it is a release package)',
                 category=MissingReleasesWarning,
+                stacklevel=2,
             )
 
     if publisher:
@@ -157,7 +159,7 @@ def merge(
     convert_exceptions_to_warnings: bool = False,
 ):
     """
-    Merges release packages and individual releases.
+    Merge release packages and individual releases.
 
     By default, yields compiled releases. If ``return_versioned_release`` is ``True``, yields versioned releases. If
     ``return_package`` is ``True``, wraps the compiled releases (and versioned releases if ``return_versioned_release``

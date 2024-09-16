@@ -9,4 +9,5 @@ recursive-include tests *.jsonl
 recursive-include tests *.py
 recursive-include tests *.yaml
 recursive-include tests *.gz
+exclude .pre-commit-config.yaml
 exclude .readthedocs.yaml

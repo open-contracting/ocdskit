@@ -78,7 +78,7 @@ class Packager:
 
     def add(self, data, *, ignore_version: bool = False):
         """
-        Adds release packages and/or individual releases to be merged.
+        Add release packages and/or individual releases to be merged.
 
         :param data: an iterable of release packages and individual releases
         :param ignore_version: do not raise an error if the versions are inconsistent across items to merge
@@ -127,7 +127,7 @@ class Packager:
         convert_exceptions_to_warnings: bool = False,
     ):
         """
-        Yields a record package.
+        Yield a record package.
 
         :param merger: a merger
         :param return_versioned_release: whether to include a versioned release in each record
@@ -164,7 +164,7 @@ class Packager:
         convert_exceptions_to_warnings: bool = False,
     ):
         """
-        Yields records, ordered by OCID.
+        Yield records, ordered by OCID.
 
         :param merger: a merger
         :param return_versioned_release: whether to include a versioned release in the record
@@ -201,7 +201,7 @@ class Packager:
                         record['versionedRelease'] = merger.create_versioned_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
-                        warnings.warn(str(e), category=MergeErrorWarning)
+                        warnings.warn(str(e), category=MergeErrorWarning, stacklevel=2)
                     else:
                         raise
 
@@ -215,7 +215,7 @@ class Packager:
         convert_exceptions_to_warnings: bool = False,
     ):
         """
-        Yields compiled releases or versioned releases, ordered by OCID.
+        Yield compiled releases or versioned releases, ordered by OCID.
 
         :param merger: a merger
         :param return_versioned_release: whether to yield versioned releases instead of compiled releases
@@ -235,7 +235,7 @@ class Packager:
                         yield merger.create_compiled_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
-                        warnings.warn(MergeErrorWarning(str(e)))
+                        warnings.warn(MergeErrorWarning(str(e)), stacklevel=2)
                     else:
                         raise
 
@@ -249,7 +249,9 @@ class Packager:
 class AbstractBackend(ABC):
     def add_release(self, release, package_uri):
         """
-        Adds a release to the backend. (The release might be added to an internal buffer.)
+        Add a release to the backend.
+
+        (The release might be added to an internal buffer.)
 
         :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
         """
@@ -265,20 +267,16 @@ class AbstractBackend(ABC):
     @abstractmethod
     def get_releases_by_ocid(self):
         """
-        Yields an OCIDs and an iterable of tuples of ``(ocid, package_uri, release)``.
+        Yield an OCIDs and an iterable of tuples of ``(ocid, package_uri, release)``.
 
         OCIDs are yielded in alphabetical order. The iterable is in any order.
         """
 
     def flush(self):  # noqa: B027 # noop
-        """
-        Flushes the internal buffer of releases. This may be a no-op on some backends.
-        """
+        """Flushes the internal buffer of releases. This may be a no-op on some backends."""
 
     def close(self):  # noqa: B027 # noop
-        """
-        Tidies up any resources used by the backend. This may be a no-op on some backends.
-        """
+        """Tidies up any resources used by the backend. This may be a no-op on some backends."""
 
 
 class PythonBackend(AbstractBackend):

@@ -25,5 +25,4 @@ class Command(OCDSCommand):
             raise CommandError(message) from e
 
         for data in self.items(map_type=OrderedDict):
-            data = upgrade_method(data)
-            self.print(data)
+            self.print(upgrade_method(data))

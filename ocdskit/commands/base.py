@@ -20,52 +20,38 @@ class BaseCommand(ABC):
     kwargs = {}  # noqa: RUF012
 
     def __init__(self, subparsers):
-        """
-        Initializes the subparser and adds arguments.
-        """
+        """Initialize the subparser and add arguments."""
         self.subparser = subparsers.add_parser(self.name, description=self.help, **self.kwargs)
         self.add_base_arguments()
         self.add_arguments()
         self.args = None
 
     def add_base_arguments(self):  # noqa: B027 # noop
-        """
-        Adds default arguments to all commands.
-        """
+        """Add default arguments to all commands."""
 
     def add_arguments(self):  # noqa: B027 # noop
-        """
-        Adds arguments specific to this command.
-        """
+        """Add arguments specific to this command."""
 
     def add_argument(self, *args, **kwargs):
-        """
-        Adds an argument to the subparser.
-        """
+        """Add an argument to the subparser."""
         self.subparser.add_argument(*args, **kwargs)
 
     @abstractmethod
     def handle(self):
-        """
-        Runs the command.
-        """
+        """Run the command."""
 
     def prefix(self):
-        """
-        Returns the path to the items to process within each input.
-        """
+        """Return the path to the items to process within each input."""
         return ''
 
     def items(self, **kwargs):
-        """
-        Yields the items in the input.
-        """
+        """Yield the items in the input."""
         file = StandardInputReader(self.args.encoding)
         yield from ijson.items(file, self.prefix(), multiple_values=True, **kwargs)
 
     def print(self, data, *, streaming=False):
         """
-        Prints JSON data.
+        Print JSON data.
 
         :param bool streaming: whether to stream output using ``json.JSONEncoder().iterencode()`` (it is only more
             memory efficient if ``data`` contains iterators)
@@ -100,9 +86,7 @@ class OCDSCommand(BaseCommand, ABC):
         return self.args.root_path
 
     def items(self, **kwargs):
-        """
-        Yields the items in the input. If an item is an array, yields each entry of the array.
-        """
+        """Yield the items in the input. If an item is an array, yield each entry of the array."""
         for item in super().items(**kwargs):
             if isinstance(item, list):
                 yield from item
@@ -110,9 +94,7 @@ class OCDSCommand(BaseCommand, ABC):
                 yield item
 
     def add_package_arguments(self, infix, prefix='', version='1.1'):
-        """
-        Adds arguments for setting package metadata to the subparser.
-        """
+        """Add arguments for setting package metadata to the subparser."""
         template = f"{prefix}set the {infix} package's {{}} to this value"
 
         self.add_argument('--uri', type=str, default='', help=template.format('uri'))
@@ -126,9 +108,7 @@ class OCDSCommand(BaseCommand, ABC):
                           help=f"{prefix}set the {infix} package's required metadata to dummy values")
 
     def parse_package_arguments(self):
-        """
-        Returns package metadata as a dictionary to be used as keyword arguments.
-        """
+        """Return package metadata as a dictionary to be used as keyword arguments."""
         kwargs = {
             'uri': self.args.uri,
             'publisher': {},

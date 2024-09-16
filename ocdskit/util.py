@@ -62,27 +62,21 @@ class JSONEncoder(json.JSONEncoder):
 
 
 def iterencode(data, *, ensure_ascii=False, **kwargs):
-    """
-    Returns a generator that yields each string representation as available.
-    """
+    """Return a generator that yields each string representation as available."""
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
     return JSONEncoder(ensure_ascii=ensure_ascii, **kwargs).iterencode(data)
 
 
 def json_dump(data, io, *, ensure_ascii=False, **kwargs):
-    """
-    Dumps JSON to a file-like object.
-    """
+    """Dump JSON to a file-like object."""
     if 'indent' not in kwargs:
         kwargs['separators'] = (',', ':')
     json.dump(data, io, ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs)
 
 
 def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
-    """
-    Dumps JSON to a string, and returns it.
-    """
+    """Dump JSON to a string, and return it."""
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
     if jsonlib == json or ensure_ascii or indent and indent != 2 or kwargs:
         if not indent:
@@ -101,9 +95,7 @@ def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwar
 
 
 def get_ocds_minor_version(data):
-    """
-    Returns the OCDS minor version of the record package, release package, record or release.
-    """
+    """Return the OCDS minor version of the record package, release package, record or release."""
     if is_package(data):
         if 'version' in data:
             return data['version']
@@ -120,7 +112,7 @@ def get_ocds_minor_version(data):
 
 def get_ocds_patch_tag(version):
     """
-    Returns the OCDS patch version as a git tag (like ``1__1__4``) for a given minor version (like ``1.1``).
+    Return the OCDS patch version as a git tag (like ``1__1__4``) for a given minor version (like ``1.1``).
 
     :raises UnknownVersionError: if the OCDS version is not recognized
     """
@@ -132,15 +124,13 @@ def get_ocds_patch_tag(version):
 
 
 def is_package(data):
-    """
-    Returns whether the data is a record package or release package.
-    """
+    """Return whether the data is a record package or release package."""
     return is_record_package(data) or is_release_package(data)
 
 
 def is_record_package(data):
     """
-    Returns whether the data is a record package.
+    Return whether the data is a record package.
 
     A record package has a required ``records`` field. Its other required fields are shared with release packages.
     """
@@ -149,7 +139,7 @@ def is_record_package(data):
 
 def is_record(data):
     """
-    Returns whether the data is a record.
+    Return whether the data is a record.
 
     A record has required ``releases`` and ``ocid`` fields.
     """
@@ -158,7 +148,7 @@ def is_record(data):
 
 def is_release_package(data):
     """
-    Returns whether the data is a release package.
+    Return whether the data is a release package.
 
     A release package has a required ``releases`` field. Its other required fields are shared with record packages.
     To distinguish a release package from a record, we test for the absence of the ``ocid`` field.
@@ -167,22 +157,18 @@ def is_release_package(data):
 
 
 def is_release(data):
-    """
-    Returns whether the data is a release (embedded or linked, individual or compiled).
-    """
+    """Return whether the data is a release (embedded or linked, individual or compiled)."""
     return 'date' in data
 
 
 def is_compiled_release(data):
-    """
-    Returns whether the data is a compiled release (embedded or linked).
-    """
+    """Return whether the data is a compiled release (embedded or linked)."""
     return 'tag' in data and isinstance(data['tag'], list) and 'compiled' in data['tag']
 
 
 def is_linked_release(data, maximum_properties=3):
     """
-    Returns whether the data is a linked release.
+    Return whether the data is a linked release.
 
     A linked release has required ``url`` and ``date`` fields and an optional ``tag`` field. An embedded release has
     required ``date`` and ``tag`` fields (among others), and it can have a ``url`` field as an additional field.
@@ -195,9 +181,9 @@ def is_linked_release(data, maximum_properties=3):
 
 def detect_format(path, root_path='', reader=open):
     """
-    Returns the format of OCDS data, and whether the OCDS data is concatenated or in an array.
+    Return the format of OCDS data, and whether the OCDS data is concatenated or in an array.
 
-    If the OCDS data is concatenated or in an array, assumes that all items have the same format as the first item.
+    If the OCDS data is concatenated or in an array, we assume that all items have the same format as the first item.
 
     :param str path: the path to a file
     :param str root_path: the path to the OCDS data within the file

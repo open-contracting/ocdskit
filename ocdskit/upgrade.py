@@ -35,24 +35,20 @@ def _in(obj, field):
 
 
 def upgrade_10_10(data):
-    """
-    Upgrades a record package, release package, record or release from 1.0 to 1.0 (no-op).
-    """
+    """Upgrade a record package, release package, record or release from 1.0 to 1.0 (no-op)."""
     return data
 
 
 def upgrade_11_11(data):
-    """
-    Upgrades a record package, release package, record or release from 1.1 to 1.1 (no-op).
-    """
+    """Upgrade a record package, release package, record or release from 1.1 to 1.1 (no-op)."""
     return data
 
 
 def upgrade_10_11(data):
     """
-    Upgrades a record package, release package, record or release from 1.0 to 1.1.
+    Upgrade a record package, release package, record or release from 1.0 to 1.1.
 
-    Retains the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
+    Retain the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
 
     ``data`` must be an ``OrderedDict``. If you have only the parsed JSON, re-parse it with:
 
@@ -81,9 +77,7 @@ def upgrade_10_11(data):
 
 
 def upgrade_record_10_11(record):
-    """
-    Upgrades a record from 1.0 to 1.1.
-    """
+    """Upgrade a record from 1.0 to 1.1."""
     if 'releases' in record:
         for release in record['releases']:
             upgrade_release_10_11(release)
@@ -92,18 +86,14 @@ def upgrade_record_10_11(record):
 
 
 def upgrade_release_10_11(release):
-    """
-    Applies upgrades for organization handling, amendment handling and transactions terminology.
-    """
+    """Apply upgrades for organization handling, amendment handling and transactions terminology."""
     upgrade_parties_10_to_11(release)
     upgrade_amendments_10_11(release)
     upgrade_transactions_10_11(release)
 
 
 def upgrade_parties_10_to_11(release):
-    """
-    Converts organizations to organization references and fills in the ``parties`` array.
-    """
+    """Convert organizations to organization references and fill in the ``parties`` array."""
     parties = _get_parties(release)
 
     if _in(release, 'buyer'):
@@ -147,8 +137,8 @@ def _get_parties(release):
 
 def _add_party(parties, party, role):
     """
-    Adds an ``id`` to the party, adds the party to the ``parties`` array, sets the party's role, and returns an
-    OrganizationReference. Warns if there is any data loss from differences in non-identifying fields.
+    Add an ``id`` to the party, add the party to the ``parties`` array, set the party's role, and return an
+    OrganizationReference. Warn if there is any data loss from differences in non-identifying fields.
     """
     party = deepcopy(party)
 
@@ -206,8 +196,8 @@ def _get_bytes(obj, field):
 
 def upgrade_amendments_10_11(release):
     """
-    Renames ``amendment`` to ``amendments`` under ``tender``, ``awards`` and ``contracts``. If ``amendments`` already
-    exists, it appends the ``amendment`` value to the ``amendments`` array, unless it already contains it.
+    Rename ``amendment`` to ``amendments`` under ``tender``, ``awards`` and ``contracts``. If ``amendments`` already
+    exists, append the ``amendment`` value to the ``amendments`` array, unless it already contains it.
     """
     if _in(release, 'tender'):
         _upgrade_amendment_10_11(release['tender'])
@@ -227,11 +217,11 @@ def _upgrade_amendment_10_11(block):
 
 def upgrade_transactions_10_11(release):
     """
-    Renames ``providerOrganization`` to ``payer``, ``receiverOrganization`` to ``payee``, and ``amount`` to ``value``
+    Rename ``providerOrganization`` to ``payer``, ``receiverOrganization`` to ``payee``, and ``amount`` to ``value``
     under ``contracts.implementation.transactions``, unless they already exist.
 
-    Converts ``providerOrganization`` and ``receiverOrganization`` from an Identifier to an OrganizationReference and
-    fills in the ``parties`` array.
+    Convert ``providerOrganization`` and ``receiverOrganization`` from an Identifier to an OrganizationReference and
+    fill in the ``parties`` array.
     """
     parties = _get_parties(release)
 

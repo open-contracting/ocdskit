@@ -10,9 +10,7 @@ def _join_sep(sep, words):
 
 @dataclass
 class Field:
-    """
-    Initializes a schema field object.
-    """
+    """Initialize a schema field object."""
 
     #: the field's schema
     schema: dict = None
@@ -38,29 +36,23 @@ class Field:
 
     @property
     def pointer(self):
-        """
-        Returns the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``.
-        """
+        """Return the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``."""
         return _join_sep('/', self.pointer_components)
 
     @property
     def definition_pointer(self):
-        """
-        Returns the JSON pointer to the definition in which the field is defined, e.g. ``/definitions/Item``.
-        """
+        """Return the JSON pointer to the definition in which the field is defined, e.g. ``/definitions/Item``."""
         return _join_sep('/', self.definition_pointer_components)
 
     @property
     def path(self):
-        """
-        Returns the path to the field in data with ``self.sep`` as separator, e.g. ``tender.id``.
-        """
+        """Return the path to the field in data with ``self.sep`` as separator, e.g. ``tender.id``."""
         return self.sep.join(self.path_components)
 
     @property
     def definition_path(self):
         """
-        Returns the path to the definition in which the field is defined with ``self.sep`` as separator, e.g. ``Item``.
+        Return the path to the definition in which the field is defined with ``self.sep`` as separator, e.g. ``Item``.
         """
         return self.sep.join(self.definition_path_components)
 
@@ -69,7 +61,7 @@ class Field:
 
     def asdict(self, sep=None, exclude=()):
         """
-        Returns the field as a dict, with keys for: ``schema``, ``pointer``, ``path``,
+        Return the field as a dict, with keys for: ``schema``, ``pointer``, ``path``,
         ``definition_pointer``, ``definition_path``, ``required``, ``deprecated``, ``multilingual``.
 
         :param list sep: the separator to use in string representations of paths, overriding ``self.sep``
@@ -91,7 +83,7 @@ class Field:
 # This code is similar to `add_versioned` in `make_versioned_release_schema.py` in the `standard` repository.
 def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, definition_path=None, deprecated=None):
     """
-    Yields a ``Field`` object for each field (whether under ``properties`` or ``patternProperties``) in a JSON schema.
+    Yield a ``Field`` object for each field (whether under ``properties`` or ``patternProperties``) in a JSON schema.
 
     :param dict schema: a JSON schema
     :param tuple pointer: the JSON pointer to the field in the schema, e.g.
@@ -180,7 +172,7 @@ def _deprecated(value):
 
 def add_validation_properties(schema, *, unique_items=True, coordinates=False):
     """
-    Adds "minItems" and "uniqueItems" if an array, adds "minProperties" if an object, and adds "minLength" if a string
+    Add "minItems" and "uniqueItems" if an array, add "minProperties" if an object, and add "minLength" if a string
     and if "enum", "format" and "pattern" aren't set.
 
     :param dict schema: a JSON schema

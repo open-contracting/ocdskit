@@ -13,7 +13,7 @@ INLINE_LINK_RE = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
 def mapping_sheet(schema, *, order_by=None, infer_required=False, extension_field=None, inherit_extension=True,
                   include_codelist=False, include_deprecated=True, include_definitions=False, base_uri=None):
     """
-    Returns information about all field paths in a JSON Schema, as columns and rows.
+    Return information about all field paths in a JSON Schema, as columns and rows.
 
     If ``include_definitions=False``, this function resolves ``$ref`` properties.
 
