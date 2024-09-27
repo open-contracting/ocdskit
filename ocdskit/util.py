@@ -234,7 +234,7 @@ def detect_format(path, root_path='', reader=open):
                     is_compiled = True
             elif prefix in metadata_prefixes:
                 metadata_count += 1
-            if not prefix and event not in ('end_array', 'end_map', 'map_key'):
+            if not prefix and event not in {'end_array', 'end_map', 'map_key'}:
                 return _detect_format_result(
                     True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count  # noqa: FBT003
                 )

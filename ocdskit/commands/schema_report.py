@@ -54,7 +54,7 @@ class Command(BaseCommand):
                     # Find definitions that can use a common $ref in the versioned release schema. Unversioned fields,
                     # like the `id`'s of objects in arrays that are not `wholeListMerge`, should be excluded, but it's
                     # too much work with too little advantage to do so.
-                    if key in ('definitions', 'properties'):
+                    if key in {'definitions', 'properties'}:
                         for definition in value.values():
                             add_definition(definition)
                     recurse(value)
