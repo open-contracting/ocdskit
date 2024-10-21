@@ -195,6 +195,7 @@ def merge(
             tag = get_ocds_patch_tag(packager.version)
             if packager.package['extensions']:
                 # `extensions` is an insertion-ordered dict at this point.
+                # Security: Potential SSRF via extension URLs.
                 builder = ProfileBuilder(tag, list(packager.package['extensions']))
                 schema = builder.patched_release_schema()
             else:
