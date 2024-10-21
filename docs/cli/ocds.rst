@@ -138,9 +138,9 @@ upgrade
 
 .. seealso:: For the Python API, see :mod:`ocdskit.upgrade`
 
-Upgrades packages, records and releases from an old version of OCDS to a new version.
+Upgrades packages, releases and records from an old version of OCDS to a new version.
 
-Any package, record or release that isn't in the old version is passed through. See the source of :meth:`ocdskit.util.get_ocds_minor_version` for determining the version.
+Any package, release or record that isn't in the old version is passed through. See the source of :meth:`ocdskit.util.get_ocds_minor_version` for determining the version.
 
 .. attention::
 
@@ -161,7 +161,7 @@ Mandatory positional arguments:
 
    cat tests/fixtures/realdata/release-package-1.json | ocdskit upgrade 1.0:1.1 > out.json
 
-If a record package or release package is too large, you can upgrade its individual records or releases using ``--root-path records.item`` or ``--root-path releases.item``, respectively.
+If a release package or record package is too large, you can upgrade its individual releases or records using ``--root-path releases.item`` or ``--root-path records.item``, respectively.
 
 .. error:: An error is raised if upgrading between the specified ``versions`` is not implemented.
 
@@ -397,7 +397,7 @@ You can use this command to reformat data:
 
       cat release-package.json | ocdskit echo --root-path releases.item
 
-For the last two examples, if you intend to re-package the records or releases, and if the initial package is small enough to hold in memory, use the :ref:`split-record-packages` or :ref:`split-release-packages` command. If the initial package is too large to hold in memory, use the ``echo`` command in combination with the :ref:`package-records` or :ref:`package-releases` command. For example:
+For the last two examples, if you intend to re-package the releases or records, and if the initial package is small enough to hold in memory, use the :ref:`split-release-packages` or :ref:`split-record-packages` command. If the initial package is too large to hold in memory, use the ``echo`` command in combination with the :ref:`package-releases` or :ref:`package-records` command. For example:
 
 -  Split a large record package into smaller packages of 100 records each:
 
@@ -413,4 +413,4 @@ For the last two examples, if you intend to re-package the records or releases, 
       cat large-release-package.json | ocdskit echo --root-path releases.item |
           ocdskit package-releases --size 1000
 
-The package metadata from the large package won't be retained in the smaller packages. You can set this metadata using optional arguments of the :ref:`package-records` or :ref:`package-releases` command.
+The package metadata from the large package won't be retained in the smaller packages. You can set this metadata using optional arguments of the :ref:`package-releases` or :ref:`package-records` command.

@@ -35,18 +35,18 @@ def _in(obj, field):
 
 
 def upgrade_10_10(data):
-    """Upgrade a record package, release package, record or release from 1.0 to 1.0 (no-op)."""
+    """Upgrade a release package, record package, release or record from 1.0 to 1.0 (no-op)."""
     return data
 
 
 def upgrade_11_11(data):
-    """Upgrade a record package, release package, record or release from 1.1 to 1.1 (no-op)."""
+    """Upgrade a release package, record package, release or record from 1.1 to 1.1 (no-op)."""
     return data
 
 
 def upgrade_10_11(data):
     """
-    Upgrade a record package, release package, record or release from 1.0 to 1.1.
+    Upgrade a release package, record package, release or record from 1.0 to 1.1.
 
     Retain the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
 

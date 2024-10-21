@@ -95,7 +95,7 @@ def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwar
 
 
 def get_ocds_minor_version(data):
-    """Return the OCDS minor version of the record package, release package, record or release."""
+    """Return the OCDS minor version of the release package, record package, release or record."""
     if is_package(data):
         if 'version' in data:
             return data['version']
@@ -124,8 +124,8 @@ def get_ocds_patch_tag(version):
 
 
 def is_package(data):
-    """Return whether the data is a record package or release package."""
-    return is_record_package(data) or is_release_package(data)
+    """Return whether the data is a release package or record package."""
+    return is_release_package(data) or is_record_package(data)
 
 
 def is_record_package(data):

@@ -400,7 +400,7 @@ Changed
 ~~~~~~~
 
 -  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`ocdskit.combine.merge`).
--  :ref:`package-records` and :ref:`package-releases` omit the ``extensions`` field if empty (see :meth:`ocdskit.combine.package_records`, :meth:`ocdskit.combine.package_releases`).
+-  :ref:`package-releases` and :ref:`package-records` omit the ``extensions`` field if empty (see :meth:`ocdskit.combine.package_releases` and :meth:`ocdskit.combine.package_records`).
 
 Fixed
 ~~~~~
@@ -420,7 +420,7 @@ New library method:
 Changed
 ~~~~~~~
 
--  :ref:`combine-record-packages` and :ref:`combine-release-packages` warn if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`ocdskit.combine.combine_record_packages`, :meth:`ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-release-packages` and :ref:`combine-record-packages` warn if the ``"releases"`` and ``"records"`` fields aren't set (see :meth:`ocdskit.combine.combine_release_packages` and :meth:`ocdskit.combine.combine_record_packages`).
 
 0.2.5 (2020-04-14)
 ------------------
@@ -428,7 +428,7 @@ Changed
 Fixed
 ~~~~~
 
--  :ref:`combine-record-packages` and :ref:`combine-release-packages` no longer error if the ``"records"`` and ``"releases"`` fields aren't set (see :meth:`ocdskit.combine.combine_record_packages`, :meth:`ocdskit.combine.combine_release_packages`).
+-  :ref:`combine-release-packages` and :ref:`combine-record-packages` no longer error if the ``"releases"`` and ``"records"`` fields aren't set (see :meth:`ocdskit.combine.combine_release_packages` and :meth:`ocdskit.combine.combine_record_packages`).
 
 0.2.4 (2020-03-19)
 ------------------
@@ -465,7 +465,7 @@ Changed
 ~~~~~~~
 
 -  Avoid exception when piping output to tools like ``head``.
--  :ref:`package-records`, :ref:`package-releases`: Use fast writer if ``--size`` is set.
+-  :ref:`package-releases`, :ref:`package-records`: Use fast writer if ``--size`` is set.
 -  :ref:`echo`: Use fast writer (assuming ``--root-path`` is set anytime input is too large).
 
 0.2.1 (2020-01-06)
@@ -704,14 +704,14 @@ Changed
 
 -  :ref:`compile` raises an error if the release packages use different versions.
 -  :ref:`compile` determines the version of the release schema to use if ``--schema`` isn’t set.
--  :ref:`compile`, :ref:`combine-record-packages` and :ref:`combine-release-packages` have a predictable field order.
+-  :ref:`compile`, :ref:`combine-release-packages` and :ref:`combine-record-packages` have a predictable field order.
 -  ``measure`` is removed.
 
 Fixed
 ~~~~~
 
 -  :ref:`indent` prints an error if a path doesn’t exist.
--  :ref:`compile`, :ref:`combine-record-packages` and :ref:`combine-release-packages` succeed if the required ``publisher`` field is missing.
+-  :ref:`compile`, :ref:`combine-release-packages` and :ref:`combine-record-packages` succeed if the required ``publisher`` field is missing.
 
 0.0.4 (2018-11-23)
 ------------------
