@@ -297,7 +297,7 @@ class SQLiteBackend(AbstractBackend):
     # Note: We never commit changes. SQLite manages the memory usage of uncommitted changes.
     # https://sqlite.org/atomiccommit.html#_cache_spill_prior_to_commit
     def __init__(self):
-        self.file = NamedTemporaryFile(delete=False)
+        self.file = NamedTemporaryFile(delete=False)  # noqa: SIM115
 
         # https://docs.python.org/3/library/sqlite3.html#sqlite3.PARSE_DECLTYPES
         self.connection = sqlite3.connect(self.file.name, detect_types=sqlite3.PARSE_DECLTYPES)
