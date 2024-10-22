@@ -168,6 +168,11 @@ def merge(
     If ``return_package`` is set and ``publisher`` isn't set, the output record package will have the same publisher as
     the last input release package.
 
+        .. attention::
+
+           This function is vulnerable to server-side request forgery (SSRF). A user can create a release package or
+           record package whose extension URLs point to internal resources, which would receive a GET request.
+
     :param data: an iterable of release packages and individual releases
     :param uri: if ``return_package`` is ``True``, the record package's ``uri``
     :param publisher: if ``return_package`` is ``True``, the record package's ``publisher``
@@ -195,7 +200,6 @@ def merge(
             tag = get_ocds_patch_tag(packager.version)
             if packager.package['extensions']:
                 # `extensions` is an insertion-ordered dict at this point.
-                # Security: Potential SSRF via extension URLs.
                 builder = ProfileBuilder(tag, list(packager.package['extensions']))
                 schema = builder.patched_release_schema()
             else:
