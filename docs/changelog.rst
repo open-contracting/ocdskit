@@ -662,8 +662,8 @@ Changed
 -  :ref:`mapping-sheet` outputs:
 
    -  ``enum`` values of ``items``
-   -  ``enum`` as “Enum:” instead of “Codelist:”
-   -  ``pattern`` as “Pattern:”
+   -  ``enum`` as "Enum:" instead of "Codelist:"
+   -  ``pattern`` as "Pattern:"
 
 -  :ref:`schema-strict` adds ``"uniqueItems": true`` to all arrays, unless ``--no-unique-items`` is set.
 -  Use ``https://`` instead of ``http://`` for ``standard.open-contracting.org``.
@@ -703,14 +703,14 @@ Changed
 ~~~~~~~
 
 -  :ref:`compile` raises an error if the release packages use different versions.
--  :ref:`compile` determines the version of the release schema to use if ``--schema`` isn’t set.
+-  :ref:`compile` determines the version of the release schema to use if ``--schema`` isn't set.
 -  :ref:`compile`, :ref:`combine-release-packages` and :ref:`combine-record-packages` have a predictable field order.
 -  ``measure`` is removed.
 
 Fixed
 ~~~~~
 
--  :ref:`indent` prints an error if a path doesn’t exist.
+-  :ref:`indent` prints an error if a path doesn't exist.
 -  :ref:`compile`, :ref:`combine-release-packages` and :ref:`combine-record-packages` succeed if the required ``publisher`` field is missing.
 
 0.0.4 (2018-11-23)
