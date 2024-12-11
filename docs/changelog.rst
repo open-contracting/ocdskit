@@ -9,11 +9,11 @@ Changed
 
 -  Some arguments must be keyword arguments in:
 
-   -  :meth:`ocdskit.mapping_sheet.mapping_sheet`
-   -  :meth:`ocdskit.schema.add_validation_properties`
-   -  :meth:`ocdskit.util.iterencode`
-   -  :meth:`ocdskit.util.json_dump`
-   -  :meth:`ocdskit.util.json_dumps`
+   -  :func:`ocdskit.mapping_sheet.mapping_sheet`
+   -  :func:`ocdskit.schema.add_validation_properties`
+   -  :func:`ocdskit.util.iterencode`
+   -  :func:`ocdskit.util.json_dump`
+   -  :func:`ocdskit.util.json_dumps`
 
 -  Drop support for Python 3.8.
 
@@ -23,7 +23,7 @@ Changed
 Added
 ~~~~~
 
--  :meth:`ocdskit.combine.merge` accepts a ``convert_exceptions_to_warnings`` argument.
+-  :func:`ocdskit.combine.merge` accepts a ``convert_exceptions_to_warnings`` argument.
 
 1.1.12 (2024-05-07)
 -------------------
@@ -31,7 +31,7 @@ Added
 Added
 ~~~~~
 
--  :meth:`ocdskit.combine.merge` accepts a ``force_version`` argument.
+-  :func:`ocdskit.combine.merge` accepts a ``force_version`` argument.
 
 1.1.11 (2024-05-01)
 -------------------
@@ -39,7 +39,7 @@ Added
 Added
 ~~~~~
 
--  :meth:`ocdskit.combine.merge` accepts a ``ignore_version`` argument.
+-  :func:`ocdskit.combine.merge` accepts a ``ignore_version`` argument.
 
 1.1.10 (2024-04-15)
 -------------------
@@ -52,7 +52,7 @@ Added
 Changed
 ~~~~~~~
 
--  :meth:`ocdskit.util.detect_format`: Detect empty packages that set metadata fields but not a ``releases`` or ``records`` field.
+-  :func:`ocdskit.util.detect_format`: Detect empty packages that set metadata fields but not a ``releases`` or ``records`` field.
 
 1.1.9 (2024-01-05)
 ------------------
@@ -60,7 +60,7 @@ Changed
 Added
 ~~~~~
 
--  :meth:`ocdskit.util.is_linked_release` accepts a ``maximum_properties`` argument (default 3).
+-  :func:`ocdskit.util.is_linked_release` accepts a ``maximum_properties`` argument (default 3).
 -  Drop support for Python 3.7.
 
 1.1.8 (2023-06-26)
@@ -113,8 +113,8 @@ Changed
 Fixed
 ~~~~~
 
--  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if a schema contains ``"deprecated": null``.
--  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if ``--extension-field`` is set to a value other than "extension".
+-  :func:`ocdskit.mapping_sheet.mapping_sheet` works if a schema contains ``"deprecated": null``.
+-  :func:`ocdskit.mapping_sheet.mapping_sheet` works if ``--extension-field`` is set to a value other than "extension".
 
 1.1.3 (2022-10-20)
 ------------------
@@ -122,7 +122,7 @@ Fixed
 Fixed
 ~~~~~
 
--  :meth:`ocdskit.mapping_sheet.mapping_sheet` works if ``include_definitions=False`` but ``base_uri`` is not provided.
+-  :func:`ocdskit.mapping_sheet.mapping_sheet` works if ``include_definitions=False`` but ``base_uri`` is not provided.
 
 1.1.2 (2022-10-06)
 ------------------
@@ -139,7 +139,7 @@ Changed
 Changed
 ~~~~~~~
 
--  :meth:`ocdskit.mapping_sheet.mapping_sheet` resolves ``$ref`` properties if ``include_definitions=False``.
+-  :func:`ocdskit.mapping_sheet.mapping_sheet` resolves ``$ref`` properties if ``include_definitions=False``.
 
 1.1.0 (2022-08-16)
 ------------------
@@ -147,7 +147,7 @@ Changed
 Changed
 ~~~~~~~
 
--  :meth:`ocdskit.mapping_sheet.mapping_sheet` returns columns and rows instead of writing to a file-like object.
+-  :func:`ocdskit.mapping_sheet.mapping_sheet` returns columns and rows instead of writing to a file-like object.
 
 1.0.4 (2022-02-10)
 ------------------
@@ -165,7 +165,7 @@ New CLI options:
 Added
 ~~~~~
 
--  :meth:`ocdskit.util.get_ocds_patch_tag`
+-  :func:`ocdskit.util.get_ocds_patch_tag`
 
 Changed
 ~~~~~~~
@@ -192,7 +192,7 @@ Fixed
 Changed
 ~~~~~~~
 
--  :meth:`ocdskit.util.detect_format` accepts a ``reader`` keyword argument: for example, ``gzip.open`` instead of ``open``.
+-  :func:`ocdskit.util.detect_format` accepts a ``reader`` keyword argument: for example, ``gzip.open`` instead of ``open``.
 
 1.0.0 (2021-05-19)
 ------------------
@@ -262,7 +262,7 @@ Added
 
 New library method:
 
--  :meth:`ocdskit.util.detect_format`
+-  :func:`ocdskit.util.detect_format`
 
 0.2.17 (2020-12-11)
 -------------------
@@ -314,7 +314,7 @@ New CLI option:
 
 New library method:
 
--  :meth:`ocdskit.schema.add_validation_properties`
+-  :func:`ocdskit.schema.add_validation_properties`
 
 0.2.13 (2020-09-16)
 -------------------
@@ -330,7 +330,7 @@ Fixed
 Changed
 ~~~~~~~
 
--  :meth:`ocdskit.util.get_ocds_minor_version` now supports records.
+-  :func:`ocdskit.util.get_ocds_minor_version` now supports records.
 
 Fixed
 ~~~~~
@@ -394,13 +394,13 @@ New CLI options:
 
 New library method:
 
--  :meth:`ocdskit.util.is_compiled_release`
+-  :func:`ocdskit.util.is_compiled_release`
 
 Changed
 ~~~~~~~
 
--  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :meth:`ocdskit.combine.merge`).
--  :ref:`package-releases` and :ref:`package-records` omit the ``extensions`` field if empty (see :meth:`ocdskit.combine.package_releases` and :meth:`ocdskit.combine.package_records`).
+-  :ref:`compile` sets ``"version": "1.1"`` even on OCDS 1.0 data (see :func:`ocdskit.combine.merge`).
+-  :ref:`package-releases` and :ref:`package-records` omit the ``extensions`` field if empty (see :func:`ocdskit.combine.package_releases` and :func:`ocdskit.combine.package_records`).
 
 Fixed
 ~~~~~
@@ -415,12 +415,12 @@ Added
 
 New library method:
 
--  :meth:`ocdskit.util.is_linked_release`
+-  :func:`ocdskit.util.is_linked_release`
 
 Changed
 ~~~~~~~
 
--  :ref:`combine-release-packages` and :ref:`combine-record-packages` warn if the ``"releases"`` and ``"records"`` fields aren't set (see :meth:`ocdskit.combine.combine_release_packages` and :meth:`ocdskit.combine.combine_record_packages`).
+-  :ref:`combine-release-packages` and :ref:`combine-record-packages` warn if the ``"releases"`` and ``"records"`` fields aren't set (see :func:`ocdskit.combine.combine_release_packages` and :func:`ocdskit.combine.combine_record_packages`).
 
 0.2.5 (2020-04-14)
 ------------------
@@ -428,7 +428,7 @@ Changed
 Fixed
 ~~~~~
 
--  :ref:`combine-release-packages` and :ref:`combine-record-packages` no longer error if the ``"releases"`` and ``"records"`` fields aren't set (see :meth:`ocdskit.combine.combine_release_packages` and :meth:`ocdskit.combine.combine_record_packages`).
+-  :ref:`combine-release-packages` and :ref:`combine-record-packages` no longer error if the ``"releases"`` and ``"records"`` fields aren't set (see :func:`ocdskit.combine.combine_release_packages` and :func:`ocdskit.combine.combine_record_packages`).
 
 0.2.4 (2020-03-19)
 ------------------
@@ -456,7 +456,7 @@ Changed
 ~~~~~~~
 
 -  :ref:`compile` errors if an ``ocid`` field is missing from a release (see :meth:`ocdskit.packager.AbstractBackend.add_release`).
--  :ref:`upgrade` upgrades records (see :meth:`ocdskit.upgrade.upgrade_10_11`).
+-  :ref:`upgrade` upgrades records (see :func:`ocdskit.upgrade.upgrade_10_11`).
 
 0.2.2 (2020-01-07)
 ------------------
@@ -492,7 +492,7 @@ Changed
 Fixed
 ~~~~~
 
--  :ref:`combine-record-packages` no longer duplicates release package URLs in ``packages`` field (see :meth:`ocdskit.combine.combine_record_packages`).
+-  :ref:`combine-record-packages` no longer duplicates release package URLs in ``packages`` field (see :func:`ocdskit.combine.combine_record_packages`).
 
 0.2.0 (2019-12-31)
 ------------------
@@ -509,12 +509,12 @@ Changed
 
 CLI:
 
--  :ref:`compile` accepts either release packages or individual releases (see :meth:`ocdskit.combine.merge`).
--  :ref:`compile` is memory efficient if given a long list of inputs (see :meth:`ocdskit.combine.merge`).
+-  :ref:`compile` accepts either release packages or individual releases (see :func:`ocdskit.combine.merge`).
+-  :ref:`compile` is memory efficient if given a long list of inputs (see :func:`ocdskit.combine.merge`).
 
 Library:
 
--  Deprecate ``ocdskit.combine.compile_release_packages`` in favor of :meth:`ocdskit.combine.merge`.
+-  Deprecate ``ocdskit.combine.compile_release_packages`` in favor of :func:`ocdskit.combine.merge`.
 
 Fixed
 ~~~~~
@@ -529,8 +529,8 @@ Added
 
 New library methods:
 
--  :meth:`ocdskit.util.is_record`
--  :meth:`ocdskit.util.is_release`
+-  :func:`ocdskit.util.is_record`
+-  :func:`ocdskit.util.is_release`
 
 The internal methods ``ocdskit.util.json_load`` and ``ocdskit.util.json_loads`` are removed.
 
@@ -554,7 +554,7 @@ New CLI commands:
 
 New library methods:
 
--  :meth:`ocdskit.combine.package_records`
+-  :func:`ocdskit.combine.package_records`
 
 Changed
 ~~~~~~~
@@ -580,7 +580,7 @@ Changed
 Changed
 ~~~~~~~
 
--  Align the library methods :meth:`ocdskit.util.json_dump` and :meth:`ocdskit.util.json_dumps`.
+-  Align the library methods :func:`ocdskit.util.json_dump` and :func:`ocdskit.util.json_dumps`.
 
 0.1.1 (2019-09-19)
 ------------------
@@ -646,17 +646,17 @@ The ``--root-path`` option is added to all OCDS commands.
 
 New library methods:
 
--  :meth:`ocdskit.combine.package_releases`
--  :meth:`ocdskit.combine.combine_record_packages`
--  :meth:`ocdskit.combine.combine_release_packages`
--  :meth:`ocdskit.combine.compile_release_packages`
--  :meth:`ocdskit.mapping_sheet.mapping_sheet`
--  :meth:`ocdskit.schema.get_schema_fields`
+-  :func:`ocdskit.combine.package_releases`
+-  :func:`ocdskit.combine.combine_record_packages`
+-  :func:`ocdskit.combine.combine_release_packages`
+-  :func:`ocdskit.combine.compile_release_packages`
+-  :func:`ocdskit.mapping_sheet.mapping_sheet`
+-  :func:`ocdskit.schema.get_schema_fields`
 
 Changed
 ~~~~~~~
 
--  **Backwards-incompatible**: :meth:`ocdskit.upgrade.upgrade_10_10`, :meth:`ocdskit.upgrade.upgrade_11_11` and :meth:`ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
+-  **Backwards-incompatible**: :func:`ocdskit.upgrade.upgrade_10_10`, :func:`ocdskit.upgrade.upgrade_11_11` and :func:`ocdskit.upgrade.upgrade_10_11` now return data, instead of only editing in-place.
 -  **Backwards-incompatible**: :ref:`mapping-sheet` and :ref:`schema-report` now read a file argument instead of standard input, to support schema that ``$ref`` other schema.
 -  :ref:`mapping-sheet` and :ref:`schema-report` support schema from: Open Contracting for Infrastructure Data Standard (OC4IDS), Beneficial Ownership Data Standard (BODS), and Social Investment Data Lab Specification (SEDL).
 -  :ref:`mapping-sheet` outputs:
