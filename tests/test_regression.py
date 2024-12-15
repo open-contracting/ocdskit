@@ -16,7 +16,7 @@ from tests import load
 REMOVE = {"compiledRelease", "records", "releases", "value", "versionedRelease"}
 
 EXCEPTIONS = {
-    # guatecompras/ocds_partyDetails_publicEntitiesLevelDetails_extension sets ``type`` to "object" but sets ``items``.
+    # guatecompras/ocds_partyDetails_publicEntitiesLevelDetails_extension sets `type` to "object" but sets `items`.
     ("complaints", "intervenients", "details", "entityType", "id"),
     ("complaints", "intervenients", "details", "legalEntityTypeDetail", "id"),
     ("complaints", "intervenients", "details", "level", "id"),
@@ -85,7 +85,7 @@ def test_schema_dict_fields_generator(scenario, package_type):
     actual = {
         f"/{'/'.join(field.path_components)}"
         for field in get_schema_fields(schema)
-        # libcove doesn't support ``patternProperties``.
+        # libcove doesn't support `patternProperties`.
         if not field.pattern
     }
 
@@ -106,9 +106,9 @@ def test_get_schema_non_required_ids(scenario, package_type):
         for field in get_schema_fields(schema)
         if field.merge_by_id
         and not field.required
-        # libcove doesn't support ``oneOf``.
+        # libcove doesn't support `oneOf`.
         and field.path_components[:2] != ("records", "releases")
-        # libcove trusts ``type``, instead of using ``properties`` and ``items``.
+        # libcove trusts `type`, instead of using `properties` and `items`.
         and tuple(c for c in field.path_components if c not in REMOVE) not in EXCEPTIONS
     }
 
@@ -128,7 +128,7 @@ def test_get_schema_deprecated_paths(scenario, package_type):
         field.path_components: [field.deprecated_self["deprecatedVersion"], field.deprecated_self["description"]]
         for field in get_schema_fields(schema)
         if field.deprecated
-        # libcove doesn't support ``oneOf``.
+        # libcove doesn't support `oneOf`.
         and field.path_components[:2] != ("records", "releases")
         # libcove doesn't inherit deprecation.
         and field.deprecated_self

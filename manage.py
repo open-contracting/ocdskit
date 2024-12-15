@@ -227,7 +227,7 @@ def main(file, tag, clobber, keep, verbose):
                     if not verbose:
                         warnings.filterwarnings("ignore", category=VersionedReleaseTypeWarning)
 
-                    # Replace package-level ``$ref``s, like in ``records``.
+                    # Replace package-level `$ref`s, like in `records`.
                     package_schema = replace_refs(
                         getattr(builder, f"{package_type}_package_schema")(embed=True, patched=patched)
                     )

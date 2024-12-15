@@ -84,7 +84,7 @@ def get_schema_fields(
     nonmultilingual_pattern_properties = {}
 
     required = schema.get('required', [])
-    # ``deprecated`` and ``whole_list_merge`` are inherited.
+    # `deprecated` and `whole_list_merge` are inherited.
     deprecated = deprecated or _deprecated(schema)
     whole_list_merge = whole_list_merge or schema.get('wholeListMerge', False)
 
@@ -101,12 +101,12 @@ def get_schema_fields(
                 ):
                     multilingual.add(pattern[offset:end])
                     break
-            # Set ``multilingual`` on corresponding ``properties``. Yield remaining ``patternProperties``.
+            # Set `multilingual` on corresponding `properties`. Yield remaining `patternProperties`.
             else:
                 nonmultilingual_pattern_properties[pattern] = subschema
 
     if items := schema.get('items'):
-        # ``items`` advances the pointer and sets array context (for the next level only).
+        # `items` advances the pointer and sets array context (for the next level only).
         yield from get_schema_fields(
             items,
             f'{pointer}/items',
@@ -161,7 +161,7 @@ def get_schema_fields(
                 merge_by_id=name == 'id' and array and not whole_list_merge,
             )
 
-            # ``properties`` advances the pointer and path.
+            # `properties` advances the pointer and path.
             yield from get_schema_fields(
                 subschema,
                 prop_pointer,
@@ -171,7 +171,7 @@ def get_schema_fields(
                 whole_list_merge=whole_list_merge,
             )
 
-    # Yield ``patternProperties`` last, to be interpreted in the context of ``properties``.
+    # Yield `patternProperties` last, to be interpreted in the context of `properties`.
     for name, subschema in nonmultilingual_pattern_properties.items():
         prop_pointer = f'{pointer}/patternProperties/{name}'
         prop_path_components = (*path_components, name)
@@ -186,10 +186,10 @@ def get_schema_fields(
             deprecated_self=prop_deprecated,
             deprecated=deprecated or prop_deprecated,
             pattern=True,
-            # ``patternProperties`` can't be multilingual, required, or "id".
+            # `patternProperties` can't be multilingual, required, or "id".
         )
 
-        # ``patternProperties`` advances the ppinter and path.
+        # `patternProperties` advances the ppinter and path.
         yield from get_schema_fields(
             subschema,
             prop_pointer,
@@ -199,7 +199,7 @@ def get_schema_fields(
             whole_list_merge=whole_list_merge,
         )
 
-    # ``definitions`` is canonically only at the top level.
+    # `definitions` is canonically only at the top level.
     if not pointer:
         # Yield definitions last, to be interpreted in the context of other top-level properties.
         for keyword in ('definitions', '$defs'):
