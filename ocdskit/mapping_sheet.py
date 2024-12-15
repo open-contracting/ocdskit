@@ -68,12 +68,13 @@ def mapping_sheet(schema, *, order_by=None, infer_required=False, extension_fiel
 
     if not include_definitions:
         # jsonref.JsonRef is deprecated, but used for backwards-compatibility with jsonref 0.x.
+        # The defaults proxies=True and merge_props=False are needed to have two rows for each `$ref`.
         schema = jsonref.JsonRef.replace_refs(schema, base_uri=base_uri, jsonschema=True)
 
     rows = []
     rows_by_path = {}
     for field in get_schema_fields(schema):
-        if not include_definitions and field.definition_pointer_components:
+        if not include_definitions and field.definition:
             continue
 
         prop = field.schema
@@ -158,7 +159,7 @@ def _make_row(field, schema, infer_required, include_codelist):
     if len(field.path_components) > 1:
         row['section'] = field.path_components[0]
     else:
-        row['section'] = field.definition_path
+        row['section'] = field.definition
 
     if 'description' in schema:
         links = dict(INLINE_LINK_RE.findall(schema['description']))

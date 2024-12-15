@@ -34,4 +34,11 @@ jobs:
           pip install orjson
           coverage run --source=ocdskit --append -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip uninstall -y orjson
+      - if: matrix.python-version != 'pypy-3.10'
+        name: Save libcove performance
+        env:
+          BENCHMARK_SAVE: 1
+        run: pytest --benchmark-save=libcove --benchmark-only
+      - if: matrix.python-version != 'pypy-3.10'
+        run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:1%
       - uses: coverallsapp/github-action@v2

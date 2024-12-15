@@ -12,6 +12,8 @@ annotations,annotations/createdBy/name,Name,"The name of the person, organisatio
 annotations,annotations/createdBy/uri,URI,"An optional URI to identify person, organisation or agent that created this annotation.",string,0..1,uri,,,
 annotations,annotations/creationDate,Creation Date,The date this annotation was created.,string,0..1,date,,,
 annotations,annotations/description,Description,A free-text description to annotate this statment or field.,string,0..1,,,,
+annotations,annotations/motivation,motivation*,,unknown,1..1,Enum: linking,,,
+annotations,annotations/motivation,motivation*,,unknown,1..1,"Enum: linking, identifying, commenting, correcting, transformation",,,
 annotations,annotations/motivation,Motivation,"The motivation for this annotation, chosen from a codelist. See the annotationMotivation codelist.",string,0..1,"Enum: commenting, correcting, identifying, linking, transformation",#annotationmotivation,,
 annotations,annotations/statementPointerTarget,Statement Fragment Pointer,"An RFC6901 JSON Pointer describing the target fragment of the statement that this annotation applies to, starting from the root of the statement. A value of '/' indicates that the annotation applies to the whole statement.",string,0..1,,https://tools.ietf.org/html/rfc6901,,
 annotations,annotations/transformedContent,Transformed content,A representation of the annotation target after the transformation in the description field has been applied. This field SHOULD only be used when the motivation is transformation.,string,0..1,,,,

@@ -1,3 +1,4 @@
+import json
 import os.path
 import sys
 from difflib import ndiff
@@ -19,6 +20,11 @@ def read(filename, mode='rt', **kwargs):
         kwargs['encoding'] = 'utf-8'
     with open(path(filename), mode, **kwargs) as f:
         return f.read()
+
+
+def load(*parts):
+    with open(path(os.path.join(*parts))) as f:
+        return json.load(f)
 
 
 def assert_equal(actual, expected, *, ordered=True):

@@ -1,6 +1,34 @@
 Changelog
 =========
 
+1.2.1
+-----
+
+Added
+~~~~~
+
+-  :class:`ocdskit.schema.Field`: Add ``name``, ``deprecated_self``, ``pattern``, ``merge_by_id``.
+-  :func:`ocdskit.schema.get_schema_fields`:
+
+   -  Add support for ``allOf``, ``anyOf``, ``oneOf``, ``then``, ``else``, ``$defs``.
+   -  Add support for ``items`` within ``definitions``.
+   -  Add support for ``patternProperties`` and ``items`` within ``items``.
+   -  Add support for ``properties``, ``patternProperties`` and ``items`` within ``patternProperties``.
+
+Changed
+~~~~~~~
+
+-  :class:`ocdskit.schema.Field`: Rename ``definition_path`` to ``definition``.
+
+Removed
+~~~~~~~
+
+-  :func:`ocdskit.schema.get_schema_fields`: Remove support for ``null`` schema, which is invalid.
+-  :class:`ocdskit.schema.Field`:
+
+   -  Remove ``definition_pointer``, ``definition_pointer_components``, ``definition_path_components``.
+   -  Remove support for adding fields to ``__dict__``.
+
 1.2.0 (2024-09-15)
 ------------------
 
