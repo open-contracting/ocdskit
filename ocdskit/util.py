@@ -78,7 +78,7 @@ def json_dump(data, io, *, ensure_ascii=False, **kwargs):
 def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwargs):
     """Dump JSON to a string, and return it."""
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
-    if jsonlib == json or ensure_ascii or indent and indent != 2 or kwargs:
+    if jsonlib == json or ensure_ascii or (indent and indent != 2) or kwargs:
         if not indent:
             kwargs['separators'] = (',', ':')
         return json.dumps(data, cls=JSONEncoder, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,

@@ -1,68 +1,52 @@
-from dataclasses import dataclass, field
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))'  # noqa: E501
 LANGUAGE_CODE_SUFFIX_LEN = len(LANGUAGE_CODE_SUFFIX)
-
-
-def _join_sep(sep, words):
-    return sep + sep.join(words)
 
 
 @dataclass
 class Field:
     """Initialize a schema field object."""
 
-    #: the field's schema
-    schema: dict = None
-    #: the JSON pointer to the field in the schema, e.g. ``('properties', 'tender', 'properties', 'id')``
-    pointer_components: tuple = None
-    #: the path to the field in data, e.g. ``('tender', 'id')``
-    path_components: tuple = None
-    #: the JSON pointer to the definition in which the field is defined, e.g. ``('definitions', 'Item')``
-    definition_pointer_components: tuple = None
-    #: the path to the definition in which the field is defined, e.g. ``('Item')``
-    definition_path_components: tuple = None
-    #: whether the field is listed in the schema's ``required``
-    required: bool = None
-    #: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated`` object
-    deprecated: dict = field(default_factory=dict)
-    #: whether the field has a corresponding field in the schema's ``patternProperties``
-    multilingual: bool = None
-    #: the separator to use in string representations of paths
+    #: The field's name.
+    name: str
+    #: The field's schema.
+    schema: dict
+    #: The ``deprecated`` property of the field.
+    deprecated_self: dict
+    #: The ``deprecated`` property of the field, or an ancestor of the field.
+    deprecated: dict
+    #: The JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``.
+    #: Used, for example, to look up a modified field's original schema in the release schema.
+    pointer: str
+    #: The path to the field in data, e.g. ``('tender', 'id')``.
+    path_components: tuple
+    #: The definition in which the field is defined, e.g. ``'Item'``.
+    definition: str
+    #: Whether the field is defined under ``patternProperties``.
+    pattern: bool = False
+    #: Whether the field has a corresponding field in the schema's ``patternProperties`` (OCDS 1.1).
+    multilingual: bool = False
+    #: Whether the field is listed under ``required``.
+    required: bool = False
+    #: Whether the field's name is ``id`` and isn't under a ``wholeListMerge`` array.
+    merge_by_id: bool = False
+    #: The separator to use in string representations of paths.
     sep = '.'
-
-    def __setitem__(self, key, item):
-        self.__dict__[key] = item
-
-    @property
-    def pointer(self):
-        """Return the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``."""
-        return _join_sep('/', self.pointer_components)
-
-    @property
-    def definition_pointer(self):
-        """Return the JSON pointer to the definition in which the field is defined, e.g. ``/definitions/Item``."""
-        return _join_sep('/', self.definition_pointer_components)
 
     @property
     def path(self):
         """Return the path to the field in data with ``self.sep`` as separator, e.g. ``tender.id``."""
         return self.sep.join(self.path_components)
 
-    @property
-    def definition_path(self):
-        """
-        Return the path to the definition in which the field is defined with ``self.sep`` as separator, e.g. ``Item``.
-        """
-        return self.sep.join(self.definition_path_components)
-
     def __repr__(self):
         return repr(self.asdict())
 
     def asdict(self, sep=None, exclude=()):
         """
-        Return the field as a dict, with keys for: ``schema``, ``pointer``, ``path``,
-        ``definition_pointer``, ``definition_path``, ``required``, ``deprecated``, ``multilingual``.
+        Return the field as a dict, with keys for all properties except ``path_components``.
 
         :param list sep: the separator to use in string representations of paths, overriding ``self.sep``
         :param list exclude: a list of keys to exclude from the dict
@@ -70,104 +54,163 @@ class Field:
         sep = sep or self.sep
 
         return (
-            {
-                k: v
-                for k, v in self.__dict__.items()
-                if k not in exclude and not k.startswith("_") and not k.endswith("_components")
-            }
-            | {k: getattr(self, k) for k in ("pointer", "definition_pointer") if k not in exclude}
-            | {k: sep.join(getattr(self, f"{k}_components")) for k in ("path", "definition_path") if k not in exclude}
+            {k: v for k, v in self.__dict__.items() if k not in exclude and k != 'path_components'}
+            | ({} if 'path' in exclude else {'path': sep.join(self.path_components)})
         )
 
 
-# This code is similar to `add_versioned` in `make_versioned_release_schema.py` in the `standard` repository.
-def get_schema_fields(schema, pointer=None, path=None, definition_pointer=None, definition_path=None, deprecated=None):
+def get_schema_fields(
+    schema: dict,
+    pointer: str = '',
+    path_components: tuple = (),
+    definition: str = '',
+    deprecated: dict | None = None,
+    *,
+    whole_list_merge: bool = False,
+    array: bool = False,
+):
     """
     Yield a ``Field`` object for each field (whether under ``properties`` or ``patternProperties``) in a JSON schema.
 
-    :param dict schema: a JSON schema
-    :param tuple pointer: the JSON pointer to the field in the schema, e.g.
-                          ``('properties', 'tender', 'properties', 'id')``
-    :param tuple path: the path to the field in data, e.g.
-                       ``('tender', 'id')``
-    :param tuple definition_pointer: the JSON pointer to the definition in which the field is defined, e.g.
-                                     ``('definitions', 'Item')``
-    :param tuple definition_path: the path to the definition in which the field is defined, e.g.
-                                  ``('Item')``
-    :param dict deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated``
-                            object
+    :param schema: a JSON schema
+    :param pointer: the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``
+    :param path_components: the path to the field in data, e.g. ``('tender', 'id')``
+    :param definition: the definition in which the field is defined, e.g. ``'Item'``
+    :param deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated`` object
+    :param whole_list_merge: whether the field, or an ancestor of the field, sets ``wholelistMerge``
+    :param array: whether the field is on an entry in an array
     """
-    if pointer is None:
-        pointer = ()
-    if path is None:
-        path = ()
-    if definition_pointer is None:
-        definition_pointer = ()
-    if definition_path is None:
-        definition_path = ()
-
     multilingual = set()
-    hidden = set()
-    for key in schema.get('patternProperties', {}):
-        # The pattern might have an extra set of parentheses.
-        for offset in (2, 1):
-            end = -LANGUAGE_CODE_SUFFIX_LEN - offset
-            # The pattern must be anchored and the suffix must occur at the end.
-            if (
-                key[end:-offset] == LANGUAGE_CODE_SUFFIX
-                and key[:offset] == '^('[:offset]
-                and key[-offset:] == ')$'[-offset:]
-            ):
-                multilingual.add(key[offset:end])
-                hidden.add(key)
-                break
+    nonmultilingual_pattern_properties = {}
 
-    for key, value in schema.get('properties', {}).items():
-        new_pointer = (*pointer, 'properties', key)
-        new_path = (*path, key)
-        required = schema.get('required', [])
-        yield from _get_schema_field(key, value, new_pointer, new_path, definition_pointer, definition_path,
-                                     required, deprecated or _deprecated(value), multilingual)
+    required = schema.get('required', [])
+    # ``deprecated`` and ``whole_list_merge`` are inherited.
+    deprecated = deprecated or _deprecated(schema)
+    whole_list_merge = whole_list_merge or schema.get('wholeListMerge', False)
 
-    for key, value in schema.get('definitions', {}).items():
-        new_pointer = (*pointer, 'definitions', key)
-        yield from get_schema_fields(value, pointer=new_pointer, path=(), definition_pointer=new_pointer,
-                                     definition_path=(key,), deprecated=deprecated)
+    if pattern_properties := schema.get('patternProperties'):
+        for pattern, subschema in pattern_properties.items():
+            # The pattern might have an extra set of parentheses (OCDS 1.1). Assumes the final character is $.
+            for offset in (2, 1):
+                end = -LANGUAGE_CODE_SUFFIX_LEN - offset
+                # The pattern must be anchored and the suffix must occur at the end.
+                if (
+                    pattern[end:-offset] == LANGUAGE_CODE_SUFFIX
+                    and pattern[:offset] == '^('[:offset]
+                    and pattern[-offset:] == ')$'[-offset:]
+                ):
+                    multilingual.add(pattern[offset:end])
+                    break
+            # Set ``multilingual`` on corresponding ``properties``. Yield remaining ``patternProperties``.
+            else:
+                nonmultilingual_pattern_properties[pattern] = subschema
 
-    for key, value in schema.get('patternProperties', {}).items():
-        if key not in hidden:
-            new_pointer = (*pointer, 'patternProperties', key)
-            new_path = (*path, f'({key})')
-            yield Field(schema=value, pointer_components=new_pointer, path_components=new_path,
-                        definition_pointer_components=definition_pointer, definition_path_components=definition_path,
-                        required=False, deprecated=deprecated or _deprecated(value), multilingual=False)
+    if items := schema.get('items'):
+        # ``items`` advances the pointer and sets array context (for the next level only).
+        yield from get_schema_fields(
+            items,
+            f'{pointer}/items',
+            path_components,
+            definition,
+            deprecated,
+            whole_list_merge=whole_list_merge,
+            array=True,
+        )
 
+    for keyword in ('anyOf', 'allOf', 'oneOf'):
+        if elements := schema.get(keyword):
+            for i, subschema in enumerate(elements):
+                # These keywords advance the pointer.
+                yield from get_schema_fields(
+                    subschema,
+                    f'{pointer}/{keyword}/{i}',
+                    path_components,
+                    definition,
+                    deprecated,
+                    whole_list_merge=whole_list_merge,
+                )
 
-def _get_schema_field(name, schema, pointer, path, definition_pointer, definition_path, required, deprecated,
-                      multilingual):
-    yield Field(schema=schema, pointer_components=pointer, path_components=path,
-                definition_pointer_components=definition_pointer, definition_path_components=definition_path,
-                required=name in required, deprecated=deprecated, multilingual=name in multilingual)
+    for keyword in ('then', 'else'):
+        if subschema := schema.get(keyword):
+            # These keywords advance the pointer.
+            yield from get_schema_fields(
+                subschema,
+                f'{pointer}/{keyword}',
+                path_components,
+                definition,
+                deprecated,
+                whole_list_merge=whole_list_merge,
+            )
 
-    if schema is None:
-        return
+    if properties := schema.get('properties'):
+        for name, subschema in properties.items():
+            prop_pointer = f'{pointer}/properties/{name}'
+            prop_path_components = (*path_components, name)
+            prop_deprecated = _deprecated(subschema)
 
-    if 'properties' in schema or 'patternProperties' in schema:
-        yield from get_schema_fields(schema, pointer=pointer, path=path, definition_pointer=definition_pointer,
-                                     definition_path=definition_path, deprecated=deprecated)
+            yield Field(
+                name=name,
+                schema=subschema,
+                pointer=prop_pointer,
+                path_components=prop_path_components,
+                definition=definition,
+                deprecated_self=prop_deprecated,
+                deprecated=deprecated or prop_deprecated,
+                multilingual=name in multilingual,
+                required=name in required,
+                merge_by_id=name == 'id' and array and not whole_list_merge,
+            )
 
-    for key, value in schema.get('items', {}).get('properties', {}).items():
-        new_pointer = (*pointer, 'items', 'properties', key)
-        new_path = (*path, key)
-        required = schema['items'].get('required', [])
-        yield from _get_schema_field(key, value, new_pointer, new_path, definition_pointer, definition_path,
-                                     required, deprecated or _deprecated(value), multilingual)
+            # ``properties`` advances the pointer and path.
+            yield from get_schema_fields(
+                subschema,
+                prop_pointer,
+                prop_path_components,
+                definition,
+                deprecated,
+                whole_list_merge=whole_list_merge,
+            )
+
+    # Yield ``patternProperties`` last, to be interpreted in the context of ``properties``.
+    for name, subschema in nonmultilingual_pattern_properties.items():
+        prop_pointer = f'{pointer}/patternProperties/{name}'
+        prop_path_components = (*path_components, name)
+        prop_deprecated = _deprecated(subschema)
+
+        yield Field(
+            name=name,
+            schema=subschema,
+            pointer=prop_pointer,
+            path_components=prop_path_components,
+            definition=definition,
+            deprecated_self=prop_deprecated,
+            deprecated=deprecated or prop_deprecated,
+            pattern=True,
+            # ``patternProperties`` can't be multilingual, required, or "id".
+        )
+
+        # ``patternProperties`` advances the ppinter and path.
+        yield from get_schema_fields(
+            subschema,
+            prop_pointer,
+            prop_path_components,
+            definition,
+            deprecated,
+            whole_list_merge=whole_list_merge,
+        )
+
+    # ``definitions`` is canonically only at the top level.
+    if not pointer:
+        # Yield definitions last, to be interpreted in the context of other top-level properties.
+        for keyword in ('definitions', '$defs'):
+            if definitions := schema.get(keyword):
+                for name, subschema in definitions.items():
+                    # These keywords advance the pointer and set the definition.
+                    yield from get_schema_fields(subschema, f'/{keyword}/{name}', definition=name)
 
 
 def _deprecated(value):
-    if value is None:
-        return {}
-    return value.get('deprecated') or hasattr(value, '__reference__') and value.__reference__.get('deprecated') or {}
+    return value.get('deprecated') or (hasattr(value, '__reference__') and value.__reference__.get('deprecated')) or {}
 
 
 def add_validation_properties(schema, *, unique_items=True, coordinates=False):
