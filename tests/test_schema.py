@@ -5,7 +5,7 @@ from tests import load
 def test_bods_0_4():
     schema = load("bods", "schema-0-4-0.json")
 
-    actual = {field.path_components for field in get_schema_fields(schema)}
+    actual = {field.path_components for field in get_schema_fields(schema) if not field.definition}
 
     # 139
     assert actual == {
