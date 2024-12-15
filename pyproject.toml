@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ocdskit"
-version = "1.2.0"
+version = "1.3.0"
 authors = [{name = "Open Contracting Partnership", email = "data@open-contracting.org"}]
 description = "A suite of command-line tools for working with OCDS data"
 readme = "README.rst"
