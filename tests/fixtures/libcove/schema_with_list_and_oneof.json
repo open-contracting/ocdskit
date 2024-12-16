@@ -1,0 +1,164 @@
+{
+  "id": "bods-package.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "items": {
+    "oneOf": [
+      {
+        "id": "entity-statement.json",
+        "properties": {
+          "entityType": {
+            "enum": [
+              "registeredEntity",
+              "legalEntity",
+              "arrangement",
+              "anonymousEntity",
+              "unknownEntity"
+            ],
+            "openCodelist": false,
+            "title": "Type",
+            "type": "string",
+            "codelist": "entityType.csv",
+            "description": "From the [entityType codelist](#entitytype). What kind of entity is this? The 'registeredEntity' code covers any legal entity created through an act of official registration, usually resulting in an identifier being assigned to the entity. The 'legalEntity' code covers other bodies with distinct legal personality (government departments, international institutions etc.).  The 'arrangement' code covers artificial entities, described in the data model for the purpose of associating one or more natural or legal persons together in an ownership or control relationship, but without implying that the parties to this arrangement have any other form of collective legal identity.",
+            "propertyOrder": 4
+          },
+          "dissolutionDate": {
+            "description": "If this entity is no longer active, provide the date on which it was disolved or ceased. Please provide as precise a date as possible in ISO 8601 format. When only the year or year and month is known, these can be given as YYYY or YYYY-MM.",
+            "title": "Dissolution date",
+            "pattern": "^([\\+-]?\\d{4}(?!\\d{2}\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$",
+            "propertyOrder": 35,
+            "type": "string"
+          },
+          "source": {
+            "description": "The source of information about this entity.",
+            "title": "Source",
+            "type": "object",
+            "propertyOrder": 89,
+            "properties": {
+              "url": {
+                "description": "If this information was fetched from an external URL, or a machine or human readable web page is available that provides addition information on how this statement was sourced, provide the URL.",
+                "title": "Source URL",
+                "type": "string"
+              },
+              "retrievedAt": {
+                "description": "If this statement was imported from some external system, include a timestamp indicating when this took place. The statement's own date should be set based on the source information. ",
+                "title": "Retrieved at",
+                "format": "datetime",
+                "type": "string"
+              },
+              "description": {
+                "description": "Where required, additional free-text information about the source of this statement can be provided here.",
+                "title": "Description",
+                "type": "string"
+              },
+              "type": {
+                "description": "What type of source is this? Multiple tags can be combined. Values should come from the [source type](#sourcetype) codelist.",
+                "title": "Source type",
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "selfDeclaration",
+                    "officialRegister",
+                    "thirdParty",
+                    "primaryResearch",
+                    "verified"
+                  ],
+                  "openCodelist": false,
+                  "type": "string",
+                  "codelist": "sourceType.csv"
+                }
+              },
+              "assertedBy": {
+                "description": "Who is making this statement? This may be the name of the person or organisation making a self-declaration (in which case, please make sure the name field matches the organisation or person name field), or the name or description of some other party. If this statment has been verified, this may also include the name of the organisation providing verification.",
+                "title": "Asserted by",
+                "type": "array",
+                "items": {
+                  "description": "An individual, organisation or other responsible agent making, or supporting, a given statement or annotation.",
+                  "title": "Agent",
+                  "type": "object",
+                  "properties": {
+                    "uri": {
+                      "description": "An optional URI to identify the agent.",
+                      "title": "URI",
+                      "format": "uri",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "The name of the agent",
+                      "title": "Name",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "description": "A statement identifying and describing the entity that is the subject of the ownership or control described in an ownership or control statement.",
+        "type": "object",
+        "title": "Entity statement"
+      },
+      {
+        "id": "person-statment.json",
+        "version": "0.1",
+        "title": "Person statement",
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "description": "A person statement describes the information known about a natural person at a particular point in time, or from a given submission of information",
+        "type": "object",
+        "properties": {
+          "names": {
+            "description": "One or more known names for this individual.",
+            "title": "Names",
+            "type": "array",
+            "propertyOrder": 10,
+            "items": {
+              "description": "An name by which this individual is known. Names should be provided in fullName, and may optionally be broken down in the familyName, givenName and patronymicName fields, based on the [EC ISA Core Person Vocabulary](https://joinup.ec.europa.eu/solution/e-government-core-vocabularies) definitions.",
+              "title": "Name",
+              "type": "object",
+              "properties": {
+                "fullName": {
+                  "description": "The full name contains the complete name of a person as one string.",
+                  "title": "Full name",
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "individual",
+                    "translation",
+                    "former",
+                    "alias",
+                    "aka",
+                    "nick",
+                    "birth"
+                  ],
+                  "openCodelist": false,
+                  "title": "Type",
+                  "type": "string",
+                  "codelist": "nameType.csv",
+                  "description": "What kind of name is this? See the [nameType](#nametype) codelist."
+                },
+                "givenName": {
+                  "description": "A given name, or multiple given names, are the denominator(s) that identify an individual within a family. These are given to a person by his or her parents at birth or may be legally recognised as 'given names' through a formal process. All given names are ordered in one field so that, for example, the given name for Johann Sebastian Bach is 'Johann Sebastian.'",
+                  "title": "Given names",
+                  "type": "string"
+                },
+                "familyName": {
+                  "description": "A family name is usually shared by members of a family. This attribute also carries prefixes or suffixes which are part of the Family Name, e.g. 'de Boer', 'van de Putte', 'von und zu Orlow'. Multiple family names, such as are commonly found in Hispanic countries, are recorded in the single Family Name field so that, for example, Miguel de Cervantes Saavedra's Family Name would be recorded as 'Cervantes Saavedra.'",
+                  "title": "Family name",
+                  "type": "string"
+                },
+                "patronymicName": {
+                  "description": "Patronymic names are important in some countries. Iceland does not have a concept of family name in the way that many other European countries do, for example. In Bulgaria and Russia, patronymic names are in every day usage, for example, the 'Sergeyevich' in 'Mikhail Sergeyevich Gorbachev'",
+                  "title": "Patronymic Name",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "type": "array",
+  "version": "0.1"
+}

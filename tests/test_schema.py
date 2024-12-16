@@ -1,5 +1,57 @@
+import pytest
+
 from ocdskit.schema import get_schema_fields
 from tests import load
+
+
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        (
+            "release_schema_deprecated_fields.json",
+            [
+                "/awards",
+                "/buyer",
+                "/contracts",
+                "/date",
+                "/id",
+                "/initiationType",
+                "/language",
+                "/ocid",
+                "/planning",
+                "/tag",
+                "/tender",
+            ],
+        ),
+        (
+            "schema_with_list_and_oneof.json",
+            [
+                "/dissolutionDate",
+                "/entityType",
+                "/names",
+                "/names/familyName",
+                "/names/fullName",
+                "/names/givenName",
+                "/names/patronymicName",
+                "/names/type",
+                "/source",
+                "/source/assertedBy",
+                "/source/assertedBy/name",
+                "/source/assertedBy/uri",
+                "/source/description",
+                "/source/retrievedAt",
+                "/source/type",
+                "/source/url",
+            ],
+        ),
+    ],
+)
+def test_libcove(path, expected):
+    schema = load("libcove", path)
+
+    assert sorted(
+        set({f"/{'/'.join(field.path_components)}" for field in get_schema_fields(schema) if not field.definition})
+    ) == expected
 
 
 def test_bods_0_4():
