@@ -7,7 +7,12 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import click
-from libcove.lib.common import _get_schema_deprecated_paths, _get_schema_non_required_ids, schema_dict_fields_generator
+from libcove.lib.common import (
+    _get_schema_deprecated_paths,
+    _get_schema_non_required_ids,
+    get_schema_codelist_paths,
+    schema_dict_fields_generator,
+)
 from ocdsextensionregistry import ExtensionRegistry, ProfileBuilder
 from ocdsextensionregistry.exceptions import VersionedReleaseTypeWarning
 from ocdsextensionregistry.util import replace_refs
@@ -218,6 +223,7 @@ def main(file, tag, clobber, keep, verbose):
         for package_type in ("release", "record"):
             package_schema_path = directory / f"{package_type}-package-schema-dereferenced.json"
             additional_path = directory / f"{package_type}-additional.json"
+            codelist_path = directory / f"{package_type}-codelist.json"
             deprecated_path = directory / f"{package_type}-deprecated.json"
             missing_ids_path = directory / f"{package_type}-missing-ids.json"
 
@@ -253,6 +259,8 @@ def main(file, tag, clobber, keep, verbose):
 
             if overwrite or not additional_path.exists():
                 write(additional_path, sorted(set(schema_dict_fields_generator(package_schema))))
+            if overwrite or not codelist_path.exists():
+                write(codelist_path, [[key, value] for key, value in get_schema_codelist_paths(mock).items()])
             if overwrite or not deprecated_path.exists():
                 write(deprecated_path, _get_schema_deprecated_paths(mock))
             if overwrite or not missing_ids_path.exists():

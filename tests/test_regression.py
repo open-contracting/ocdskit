@@ -6,6 +6,7 @@ import pytest
 from libcove.lib.common import (
     _get_schema_deprecated_paths,
     _get_schema_non_required_ids,
+    get_schema_codelist_paths,
     schema_dict_fields_generator,
 )
 
@@ -15,8 +16,23 @@ from tests import load
 # Remove parts of paths to reduce repetition in EXCEPTIONS.
 REMOVE = {"compiledRelease", "records", "releases", "value", "versionedRelease"}
 
+# Some extensions set `type` to "object" but sets `items`.
 EXCEPTIONS = {
-    # guatecompras/ocds_partyDetails_publicEntitiesLevelDetails_extension sets `type` to "object" but sets `items`.
+    # devgateway/ocds_certificate_extension
+    # devgateway/ocds_progress_extension
+    ('certificates', 'certificateAmount', 'currency'),
+    ('certificates', 'certificateAmount', 'exchangeRates', 'currency'),
+    ('certificates', 'certificateAmount', 'exchangeRates', 'source'),
+    ('certificates', 'totalAmount', 'currency'),
+    ('certificates', 'totalAmount', 'exchangeRates', 'currency'),
+    ('certificates', 'totalAmount', 'exchangeRates', 'source'),
+    ('progress', 'actualValue', 'currency'),
+    ('progress', 'actualValue', 'exchangeRates', 'currency'),
+    ('progress', 'actualValue', 'exchangeRates', 'source'),
+    ('progress', 'investmentValue', 'currency'),
+    ('progress', 'investmentValue', 'exchangeRates', 'currency'),
+    ('progress', 'investmentValue', 'exchangeRates', 'source'),
+    # guatecompras/ocds_partyDetails_publicEntitiesLevelDetails_extension
     ("complaints", "intervenients", "details", "entityType", "id"),
     ("complaints", "intervenients", "details", "legalEntityTypeDetail", "id"),
     ("complaints", "intervenients", "details", "level", "id"),
@@ -47,6 +63,7 @@ def old(schema, mock):
     set(schema_dict_fields_generator(schema))
     _get_schema_non_required_ids(mock)
     _get_schema_deprecated_paths(mock)
+    get_schema_codelist_paths(mock)
 
 
 def new(schema):
@@ -58,10 +75,17 @@ def new(schema):
     {field.path_components for field in fields if field.merge_by_id and not field.required}
     # Deprecated fields.
     {
-        field.path_components: [field.deprecated["deprecatedVersion"], field.deprecated["description"]]
+        field.path_components: (field.deprecated["deprecatedVersion"], field.deprecated["description"])
         for field in fields
         if field.deprecated
     }
+    # Codelist fields.
+    {
+        field.path_components: (field.codelist, field.open_codelist)
+        for field in fields
+        if field.codelist
+    }
+
 
 
 def test_benchmark(scenario, package_type, benchmark):
@@ -125,7 +149,7 @@ def test_get_schema_deprecated_paths(scenario, package_type):
     expected = dumpload(_get_schema_deprecated_paths(mock))
 
     actual = {
-        field.path_components: [field.deprecated_self["deprecatedVersion"], field.deprecated_self["description"]]
+        field.path_components: (field.deprecated_self["deprecatedVersion"], field.deprecated_self["description"])
         for field in get_schema_fields(schema)
         if field.deprecated
         # libcove doesn't support `oneOf`.
@@ -135,4 +159,25 @@ def test_get_schema_deprecated_paths(scenario, package_type):
     }
 
     assert expected == load(scenario, f"{package_type}-deprecated.json")
-    assert actual == {tuple(components): value for components, value in expected}
+    assert actual == {tuple(components): tuple(value) for components, value in expected}
+
+
+# libcove: get_additional_codelist_values uses get_schema_codelist_paths and calls _generate_data_path.
+def test_get_schema_codelist_paths(scenario, package_type):
+    schema = load(scenario, f"{package_type}-package-schema-dereferenced.json")
+    mock = Mock()
+    mock.get_pkg_schema_obj = Mock(return_value=schema)
+
+    expected = dumpload([[key, value] for key, value in get_schema_codelist_paths(mock).items()])
+
+    # {("tender", "status"): ("tenderStatus.csv", False), ...}
+    actual = {
+        field.path_components: (field.codelist, field.open_codelist)
+        for field in get_schema_fields(schema)
+        if field.codelist
+        # libcove trusts `type`, instead of using `properties` and `items`.
+        and tuple(c for c in field.path_components if c not in REMOVE) not in EXCEPTIONS
+    }
+
+    assert expected == load(scenario, f"{package_type}-codelist.json")
+    assert actual == {tuple(components): tuple(value) for components, value in expected}

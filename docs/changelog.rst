@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.1 (2024-12-16)
+------------------
+
+Added
+~~~~~
+
+-  :class:`ocdskit.schema.Field`: Add ``codelist``, ``open_codelist``.
+
 1.3.0 (2024-12-15)
 ------------------
 

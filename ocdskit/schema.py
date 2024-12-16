@@ -33,6 +33,10 @@ class Field:
     required: bool = False
     #: Whether the field's name is ``id`` and isn't under a ``wholeListMerge`` array.
     merge_by_id: bool = False
+    #: The field's codelist.
+    codelist: str = ''
+    #: Whether the field's codelist is open.
+    open_codelist: bool = False
     #: The separator to use in string representations of paths.
     sep = '.'
 
@@ -147,7 +151,9 @@ def get_schema_fields(
             prop_pointer = f'{pointer}/properties/{name}'
             prop_path_components = (*path_components, name)
             prop_deprecated = _deprecated(subschema)
+            prop_items = subschema.get('items', {})
 
+            # codelist and openCodelist in OCDS appear under `properties`, not `items`.
             yield Field(
                 name=name,
                 schema=subschema,
@@ -156,6 +162,8 @@ def get_schema_fields(
                 definition=definition,
                 deprecated_self=prop_deprecated,
                 deprecated=deprecated or prop_deprecated,
+                codelist=subschema.get('codelist') or prop_items.get('codelist', ''),
+                open_codelist=subschema.get('openCodelist') or prop_items.get('openCodelist', False),
                 multilingual=name in multilingual,
                 required=name in required,
                 merge_by_id=name == 'id' and array and not whole_list_merge,
@@ -173,9 +181,11 @@ def get_schema_fields(
 
     # Yield `patternProperties` last, to be interpreted in the context of `properties`.
     for name, subschema in nonmultilingual_pattern_properties.items():
+        # The duplication across `properties` and `patternProperties` can be avoided, but is >5% slower.
         prop_pointer = f'{pointer}/patternProperties/{name}'
         prop_path_components = (*path_components, name)
         prop_deprecated = _deprecated(subschema)
+        prop_items = subschema.get('items', {})
 
         yield Field(
             name=name,
@@ -185,6 +195,8 @@ def get_schema_fields(
             definition=definition,
             deprecated_self=prop_deprecated,
             deprecated=deprecated or prop_deprecated,
+            codelist=subschema.get('codelist') or prop_items.get('codelist', ''),
+            open_codelist=subschema.get('openCodelist') or prop_items.get('openCodelist', False),
             pattern=True,
             # `patternProperties` can't be multilingual, required, or "id".
         )
