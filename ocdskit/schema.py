@@ -189,7 +189,7 @@ def get_schema_fields(
             # `patternProperties` can't be multilingual, required, or "id".
         )
 
-        # `patternProperties` advances the ppinter and path.
+        # `patternProperties` advances the pointer and path.
         yield from get_schema_fields(
             subschema,
             prop_pointer,

@@ -228,9 +228,7 @@ def main(file, tag, clobber, keep, verbose):
                         warnings.filterwarnings("ignore", category=VersionedReleaseTypeWarning)
 
                     # Replace package-level `$ref`s, like in `records`.
-                    package_schema = replace_refs(
-                        getattr(builder, f"{package_type}_package_schema")(embed=True, patched=patched)
-                    )
+                    package_schema = replace_refs(getattr(builder, f"{package_type}_package_schema")(patched=patched))
 
                 messages_by_extension = defaultdict(list)
                 if wlist:

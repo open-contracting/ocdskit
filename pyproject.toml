@@ -24,7 +24,7 @@ dependencies = [
     "ijson>=2.5",
     "jsonref",
     "ocdsmerge>=0.6",
-    "ocdsextensionregistry>=0.6.5",
+    "ocdsextensionregistry>=0.6.7",
 ]
 
 [project.optional-dependencies]
