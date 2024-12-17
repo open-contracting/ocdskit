@@ -235,12 +235,13 @@ def get_schema_fields(
 
 
 def _codelist(subschema):
+    default = 'enum' not in subschema
     if codelist := subschema.get('codelist'):
-        return codelist, subschema.get('openCodelist', False)
+        return codelist, subschema.get('openCodelist', default)
     # The behavior hasn't been decided if `items` is an array (e.g. with conflicting codelist-related values).
     if (items := subschema.get('items')) and isinstance(items, dict):
-        return items.get('codelist', ''), items.get('openCodelist', False)
-    return '', False
+        return items.get('codelist', ''), items.get('openCodelist', default)
+    return '', default
 
 
 def _deprecated(value):
