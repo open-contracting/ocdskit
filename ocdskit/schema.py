@@ -112,15 +112,27 @@ def get_schema_fields(
 
     if items := schema.get('items'):
         # `items` advances the pointer and sets array context (for the next level only).
-        yield from get_schema_fields(
-            items,
-            f'{pointer}/items',
-            path_components,
-            definition,
-            deprecated,
-            whole_list_merge=whole_list_merge,
-            array=True,
-        )
+        if isinstance(items, dict):
+            yield from get_schema_fields(
+                items,
+                f'{pointer}/items',
+                path_components,
+                definition,
+                deprecated,
+                whole_list_merge=whole_list_merge,
+                array=True,
+            )
+        else:
+            for i, subschema in enumerate(items):
+                yield from get_schema_fields(
+                    subschema,
+                    f'{pointer}/items/{i}',
+                    path_components,
+                    definition,
+                    deprecated,
+                    whole_list_merge=whole_list_merge,
+                    array=True,
+                )
 
     for keyword in ('anyOf', 'allOf', 'oneOf'):
         if elements := schema.get(keyword):
@@ -152,7 +164,7 @@ def get_schema_fields(
             prop_pointer = f'{pointer}/properties/{name}'
             prop_path_components = (*path_components, name)
             prop_deprecated = _deprecated(subschema)
-            prop_items = subschema.get('items', {})
+            prop_codelist, prop_open_codelist = _codelist(subschema)
 
             # To date, codelist and openCodelist in OCDS aren't set on `items`.
             yield Field(
@@ -163,8 +175,8 @@ def get_schema_fields(
                 definition=definition,
                 deprecated_self=prop_deprecated,
                 deprecated=deprecated or prop_deprecated,
-                codelist=subschema.get('codelist') or prop_items.get('codelist', ''),
-                open_codelist=subschema.get('openCodelist') or prop_items.get('openCodelist', False),
+                codelist=prop_codelist,
+                open_codelist=prop_open_codelist,
                 multilingual=name in multilingual,
                 required=name in required,
                 merge_by_id=name == 'id' and array and not whole_list_merge,
@@ -186,7 +198,7 @@ def get_schema_fields(
         prop_pointer = f'{pointer}/patternProperties/{name}'
         prop_path_components = (*path_components, name)
         prop_deprecated = _deprecated(subschema)
-        prop_items = subschema.get('items', {})
+        prop_codelist, prop_open_codelist = _codelist(subschema)
 
         yield Field(
             name=name,
@@ -196,8 +208,8 @@ def get_schema_fields(
             definition=definition,
             deprecated_self=prop_deprecated,
             deprecated=deprecated or prop_deprecated,
-            codelist=subschema.get('codelist') or prop_items.get('codelist', ''),
-            open_codelist=subschema.get('openCodelist') or prop_items.get('openCodelist', False),
+            codelist=prop_codelist,
+            open_codelist=prop_open_codelist,
             pattern=True,
             # `patternProperties` can't be multilingual, required, or "id".
         )
@@ -220,6 +232,15 @@ def get_schema_fields(
                 for name, subschema in definitions.items():
                     # These keywords advance the pointer and set the definition.
                     yield from get_schema_fields(subschema, f'/{keyword}/{name}', definition=name)
+
+
+def _codelist(subschema):
+    if codelist := subschema.get('codelist'):
+        return codelist, subschema.get('openCodelist', False)
+    # The behavior hasn't been decided if `items` is an array (e.g. with conflicting codelist-related values).
+    if (items := subschema.get('items')) and isinstance(items, dict):
+        return items.get('codelist', ''), items.get('openCodelist', False)
+    return '', False
 
 
 def _deprecated(value):

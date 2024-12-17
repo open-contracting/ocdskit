@@ -5,6 +5,35 @@ from ocdskit.schema import get_schema_fields
 from tests import load
 
 
+def test_items_array():
+    schema = load("schema-items-array.json")
+
+    assert {field.path_components for field in get_schema_fields(schema)} == {
+        ("json_schema_example_fields", "additionalItems"),
+        ("json_schema_example_fields", "additionalProperties"),
+        ("json_schema_example_fields", "additionalProperties2"),
+        ("json_schema_example_fields", "additionalProperties2", "okay"),
+        ("json_schema_example_fields", "allOf"),
+        ("json_schema_example_fields", "anyOf"),
+        ("json_schema_example_fields", "dependencies"),
+        ("json_schema_example_fields", "format"),
+        ("json_schema_example_fields", "maximum"),
+        ("json_schema_example_fields", "maximum2"),
+        ("json_schema_example_fields", "maxItems"),
+        ("json_schema_example_fields", "maxLength"),
+        ("json_schema_example_fields", "maxProperties"),
+        ("json_schema_example_fields", "minimum"),
+        ("json_schema_example_fields", "minimum2"),
+        ("json_schema_example_fields", "minItems"),
+        ("json_schema_example_fields", "minLength"),
+        ("json_schema_example_fields", "multipleOf"),
+        ("json_schema_example_fields", "not"),
+        ("json_schema_example_fields", "oneOf"),
+        ("json_schema_example_fields", "oneOf2"),
+        ("json_schema_example_fields",),
+    }
+
+
 @pytest.mark.parametrize(
     ("path", "expected"),
     [

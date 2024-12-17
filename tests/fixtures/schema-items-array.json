@@ -1,0 +1,106 @@
+{
+  "properties": {
+    "json_schema_example_fields": {
+      "type": "object",
+      "properties": {
+        "minimum": {
+          "minimum": 2
+        },
+        "minimum2": {
+          "exclusiveMinimum": true,
+          "minimum": 2
+        },
+        "maximum": {
+          "maximum": 2
+        },
+        "maximum2": {
+          "exclusiveMaximum": true,
+          "maximum": 2
+        },
+        "minItems": {
+          "type": "array",
+          "minItems": 2
+        },
+        "maxItems": {
+          "type": "array",
+          "maxItems": 2
+        },
+        "minLength": {
+          "type": "string",
+          "minLength": 2
+        },
+        "maxLength": {
+          "type": "string",
+          "maxLength": 2
+        },
+        "maxProperties": {
+          "type": "object",
+          "maxProperties": 2
+        },
+        "multipleOf": {
+          "type": "number",
+          "multipleOf": 3
+        },
+        "not": {
+          "not": {
+            "type": "string"
+          }
+        },
+        "anyOf": {
+          "anyOf": [
+            {"type": "array"},
+            {"type": "object"}
+          ]
+        },
+        "allOf": {
+          "anyOf": [
+            {"type": "array"},
+            {"type": "object"}
+          ]
+        },
+        "oneOf": {
+          "oneOf": [
+            {"type": "array"},
+            {"type": "object"}
+          ]
+        },
+        "oneOf2": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "integer"}
+          ]
+        },
+        "additionalItems": {
+          "type": "array",
+          "items": [{
+            "type": "string"
+          }],
+          "additionalItems": false
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "additionalProperties2": {
+          "type": "object",
+          "patternProperties": {
+            "okay": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "dependencies": {
+          "type": "object",
+          "dependencies": {
+            "b": ["a"]
+          }
+        },
+        "format": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    }
+  }
+}

@@ -11,8 +11,8 @@ import pytest
 import ocdskit.util
 
 
-def path(filename):
-    return os.path.join('tests', 'fixtures', filename)
+def path(*args):
+    return os.path.join('tests', 'fixtures', *args)
 
 
 def read(filename, mode='rt', **kwargs):

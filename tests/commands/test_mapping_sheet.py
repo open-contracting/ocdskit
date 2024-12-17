@@ -103,13 +103,13 @@ def test_command_oc4ids(capsys, monkeypatch):
 
 def test_command_bods(capsys, monkeypatch):
     assert_command(capsys, monkeypatch, main,
-                   ['mapping-sheet', '--order-by', 'path', path('bods/person-statement.json')],
+                   ['mapping-sheet', '--order-by', 'path', path('bods', 'person-statement.json')],
                    'mapping-sheet_bods.csv')
 
 
 def test_command_sedl(capsys, monkeypatch):
     assert_command(capsys, monkeypatch, main,
-                   ['mapping-sheet', path('sedl-schema.json')],
+                   ['mapping-sheet', path('sedl', 'schema-alpha.json')],
                    'mapping-sheet_sedl.csv')
 
 

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.2 (2024-12-17)
+------------------
+
+Added
+~~~~~
+
+-  :func:`ocdskit.schema.get_schema_fields`: Add support for ``items`` as array.
+
 1.3.1 (2024-12-16)
 ------------------
 
