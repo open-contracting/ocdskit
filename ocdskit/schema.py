@@ -74,15 +74,16 @@ def get_schema_fields(
     array: bool = False,
 ):
     """
-    Yield a ``Field`` object for each field (whether under ``properties`` or ``patternProperties``) in a JSON schema.
+    Yield a :class:`~ocdskit.schema.Field` for each name under ``properties`` or ``patternProperties``.
 
-    :param schema: a JSON schema
-    :param pointer: the JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``
-    :param path_components: the path to the field in data, e.g. ``('tender', 'id')``
-    :param definition: the definition in which the field is defined, e.g. ``'Item'``
-    :param deprecated: if the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated`` object
-    :param whole_list_merge: whether the field, or an ancestor of the field, sets ``wholelistMerge``
-    :param array: whether the field is on an entry in an array
+    :param schema: A dereferenced JSON schema. If using ``jsonref``, and if subschemas set both ``$ref`` and other
+        properties, the schema must be dereferenced with either ``proxies=True`` or ``merge_props=True``.
+    :param pointer: The JSON pointer to the field in the schema, e.g. ``/properties/tender/properties/id``.
+    :param path_components: The path to the field in data, e.g. ``('tender', 'id')``.
+    :param definition: The definition in which the field is defined, e.g. ``'Item'``.
+    :param deprecated: If the field, or an ancestor of the field, sets ``deprecated``, the ``deprecated`` object.
+    :param whole_list_merge: Whether the field, or an ancestor of the field, sets ``wholelistMerge``.
+    :param array: Whether the field is under ``items/properties`` or  ``items/patternProperties``.
     """
     multilingual = set()
     nonmultilingual_pattern_properties = {}
@@ -153,7 +154,7 @@ def get_schema_fields(
             prop_deprecated = _deprecated(subschema)
             prop_items = subschema.get('items', {})
 
-            # codelist and openCodelist in OCDS appear under `properties`, not `items`.
+            # To date, codelist and openCodelist in OCDS aren't set on `items`.
             yield Field(
                 name=name,
                 schema=subschema,
@@ -179,7 +180,7 @@ def get_schema_fields(
                 whole_list_merge=whole_list_merge,
             )
 
-    # Yield `patternProperties` last, to be interpreted in the context of `properties`.
+    # Yield `patternProperties` after `properties`, to be interpreted in context.
     for name, subschema in nonmultilingual_pattern_properties.items():
         # The duplication across `properties` and `patternProperties` can be avoided, but is >5% slower.
         prop_pointer = f'{pointer}/patternProperties/{name}'
@@ -213,7 +214,7 @@ def get_schema_fields(
 
     # `definitions` is canonically only at the top level.
     if not pointer:
-        # Yield definitions last, to be interpreted in the context of other top-level properties.
+        # Yield definitions after `properties` and `patternProperties`, to be interpreted in context.
         for keyword in ('definitions', '$defs'):
             if definitions := schema.get(keyword):
                 for name, subschema in definitions.items():
