@@ -1,8 +1,45 @@
+import jsonref
 import pytest
 from ocdsextensionregistry.util import replace_refs
 
 from ocdskit.schema import get_schema_fields
 from tests import load
+
+
+def test_deprecated_self():
+    schema = replace_refs(
+        load("libcove", "release_package_schema_ref_release_schema_deprecated_fields.json"), loader=jsonref.jsonloader
+    )
+
+    assert {
+        (field.path_components, (field.deprecated["deprecatedVersion"], field.deprecated["description"]))
+        for field in get_schema_fields(schema)
+        if field.deprecated_self
+    } == {
+        (("releases", "initiationType"), ("1.1", "Not a useful field as always has to be tender")),
+        (("releases", "planning"), ("1.1", "Testing deprecation for objects with '$ref'")),
+        (("releases", "tender", "hasEnquiries"), ("1.1", "Deprecated just for fun")),
+        (("releases", "contracts", "items", "quantity"), ("1.1", "Nobody cares about quantities")),
+        (("releases", "tender", "items", "quantity"), ("1.1", "Nobody cares about quantities")),
+        (("releases", "awards", "items", "quantity"), ("1.1", "Nobody cares about quantities")),
+    }
+
+
+def test_merge_by_id_required():
+    schema = replace_refs(load("release-package-schema.json"))
+
+    assert {
+        field.path_components for field in get_schema_fields(schema) if field.merge_by_id and not field.required
+    } == {
+        ("releases", "awards", "amendments", "id"),
+        ("releases", "awards", "suppliers", "id"),
+        ("releases", "contracts", "amendments", "id"),
+        ("releases", "contracts", "relatedProcesses", "id"),
+        ("releases", "parties", "id"),
+        ("releases", "relatedProcesses", "id"),
+        ("releases", "tender", "amendments", "id"),
+        ("releases", "tender", "tenderers", "id"),
+    }
 
 
 def test_items_array():
