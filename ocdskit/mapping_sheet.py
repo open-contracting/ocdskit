@@ -1,4 +1,5 @@
 import re
+from operator import itemgetter
 
 import jsonref
 
@@ -111,7 +112,7 @@ def mapping_sheet(schema, *, order_by=None, infer_required=False, extension_fiel
 
     if order_by:
         try:
-            rows.sort(key=lambda row: row[order_by])
+            rows.sort(key=itemgetter(order_by))
         except KeyError as e:
             raise MissingColumnError(f"the column '{order_by}' doesn't exist - did you make a typo?") from e
 

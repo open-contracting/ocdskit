@@ -27,7 +27,7 @@ class Field:
     definition: str
     #: Whether the field is defined under ``patternProperties``.
     pattern: bool = False
-    #: Whether the field has a corresponding field in the schema's ``patternProperties`` (OCDS 1.1).
+    #: Whether the field has a corresponding field in the schema's ``patternProperties`` (like in OCDS 1.1).
     multilingual: bool = False
     #: Whether the field is listed under ``required``.
     required: bool = False
@@ -95,7 +95,7 @@ def get_schema_fields(
 
     if pattern_properties := schema.get('patternProperties'):
         for pattern, subschema in pattern_properties.items():
-            # The pattern might have an extra set of parentheses (OCDS 1.1). Assumes the final character is $.
+            # The pattern might have an extra set of parentheses (like in OCDS 1.1). Assumes the final character is $.
             for offset in (2, 1):
                 end = -LANGUAGE_CODE_SUFFIX_LEN - offset
                 # The pattern must be anchored and the suffix must occur at the end.

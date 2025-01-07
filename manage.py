@@ -227,7 +227,7 @@ def main(file, tag, clobber, keep, verbose):
             deprecated_path = directory / f"{package_type}-deprecated.json"
             missing_ids_path = directory / f"{package_type}-missing-ids.json"
 
-            # See libcoveocds.schema.SchemaOCDS.patched_package_schema().
+            # See libcoveocds.schema.get_checker().
             if overwrite or not package_schema_path.exists():
                 with warnings.catch_warnings(record=verbose) as wlist:
                     if not verbose:
