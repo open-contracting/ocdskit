@@ -66,4 +66,4 @@ def test_command_invalid_json(capsys, monkeypatch, caplog, tmpdir):
 
     assert len(caplog.records) == 1
     assert caplog.records[0].levelname == 'ERROR'
-    assert ' is not valid JSON. (json.decoder.JSONDecodeError: ' in caplog.records[0].message
+    assert ' is not valid JSON. (json.JSONDecodeError: ' in caplog.records[0].message

@@ -39,5 +39,5 @@ class Command(BaseCommand):
             with open(path, 'w') as f:
                 json_dump(data, f, indent=self.args.indent, ensure_ascii=self.args.ascii)
                 f.write('\n')
-        except json.decoder.JSONDecodeError as e:
-            logger.error('%s is not valid JSON. (json.decoder.JSONDecodeError: %s)', path, e)  # noqa: TRY400 # UX
+        except json.JSONDecodeError as e:
+            logger.error('%s is not valid JSON. (json.JSONDecodeError: %s)', path, e)  # noqa: TRY400 # UX
