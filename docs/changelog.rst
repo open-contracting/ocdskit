@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+Removed
+~~~~~~~
+
+-  Remove ``ocdskit.combine.compile_release_packages``, deprecated in 0.2.0.
+
 1.3.2 (2024-12-17)
 ------------------
 
@@ -693,7 +701,7 @@ New library methods:
 -  :func:`ocdskit.combine.package_releases`
 -  :func:`ocdskit.combine.combine_record_packages`
 -  :func:`ocdskit.combine.combine_release_packages`
--  :func:`ocdskit.combine.compile_release_packages`
+-  ``ocdskit.combine.compile_release_packages``
 -  :func:`ocdskit.mapping_sheet.mapping_sheet`
 -  :func:`ocdskit.schema.get_schema_fields`
 

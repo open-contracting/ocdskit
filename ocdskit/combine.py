@@ -227,8 +227,3 @@ def merge(
                 return_versioned_release=return_versioned_release,
                 convert_exceptions_to_warnings=convert_exceptions_to_warnings,
             )
-
-
-def compile_release_packages(*args, **kwargs):
-    warnings.warn('compile_release_packages() is deprecated. Use merge() instead.', DeprecationWarning, stacklevel=2)
-    yield from merge(*args, **kwargs)
