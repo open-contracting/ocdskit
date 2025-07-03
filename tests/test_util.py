@@ -1,8 +1,10 @@
 import gzip
 import json
 
+import ijson
 import pytest
 
+from ocdskit.exceptions import UnknownFormatError
 from ocdskit.util import (
     detect_format,
     get_ocds_minor_version,
@@ -163,3 +165,57 @@ def test_detect_format_gz(filename, expected):
     result = detect_format(path(filename), reader=gzip.open)
 
     assert result == expected
+
+
+@pytest.mark.parametrize(('text', 'is_array'), [
+    ('{"publishedDate": "","uri":"","version":"","extensions":[]}', False),
+    ('[{"publishedDate": "","uri":"","version":"","extensions":[]}]', True),
+    ('{"publishedDate": "","uri":"","version":"","publisher":{"uri":""}}', False),
+    ('[{"publishedDate": "","uri":"","version":"","publisher":{"uri":""}}]', True),
+])
+def test_detect_format_prefixes(text, is_array, tmp_path):
+    path = tmp_path / 'test.json'
+    path.write_text(text)
+
+    result = detect_format(path, additional_prefixes=('extensions', 'publisher'))
+
+    assert result == ('empty package', False, is_array)
+
+
+@pytest.mark.parametrize(('text', 'infix'), [
+    ('"0"', 'string'),
+    ('0', 'number'),
+    ('true', 'boolean'),
+    ('false', 'boolean'),
+    ('null', 'null'),
+])
+def test_detect_format_incorrect_type(text, infix, tmp_path):
+    path = tmp_path / 'test.json'
+    path.write_text(text)
+
+    with pytest.raises(UnknownFormatError) as excinfo:
+        detect_format(path)
+
+    assert str(excinfo.value) == f'top-level JSON value is a {infix}'
+
+
+@pytest.mark.parametrize(('text', 'infix'), [
+    ('{}', 'object'),
+    ('[{}]', 'array'),
+])
+def test_detect_format_incorrect_keys(text, infix, tmp_path):
+    path = tmp_path / 'test.json'
+    path.write_text(text)
+
+    with pytest.raises(UnknownFormatError) as excinfo:
+        detect_format(path)
+
+    assert str(excinfo.value) == f'top-level JSON value is a non-OCDS {infix}'
+
+
+def test_detect_format_empty(tmp_path):
+    path = tmp_path / 'test.json'
+    path.write_text('')
+
+    with pytest.raises(ijson.common.IncompleteJSONError):
+        detect_format(path)  # "parse error: premature EOF"

@@ -15,7 +15,7 @@ project = "OCDS Kit"
 copyright = "2017, Open Contracting Partnership"
 author = "Open Contracting Partnership"
 
-version = "1.3.2"
+version = "1.4.0"
 release = version
 
 # -- General configuration ---------------------------------------------------

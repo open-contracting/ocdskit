@@ -1,8 +1,13 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.4.0 (2025-07-03)
+------------------
+
+Changed
+~~~~~~~
+
+-  :func:`ocdskit.util.detect_format`: Add an ``additional_prefixes`` argument.
 
 Removed
 ~~~~~~~

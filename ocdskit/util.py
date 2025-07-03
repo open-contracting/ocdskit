@@ -179,7 +179,7 @@ def is_linked_release(data, maximum_properties=3):
     return 'url' in data and len(data) <= maximum_properties
 
 
-def detect_format(path, root_path='', reader=open):
+def detect_format(path, root_path='', reader=open, additional_prefixes=()):
     """
     Return the format of OCDS data, and whether the OCDS data is concatenated or in an array.
 
@@ -187,6 +187,7 @@ def detect_format(path, root_path='', reader=open):
 
     :param str path: the path to a file
     :param str root_path: the path to the OCDS data within the file
+    :param tuple additional_prefixes: additional prefixes to consider as part of an empty package
     :returns: the format, whether data is concatenated, and whether data is in an array
     :rtype: tuple
     :raises UnknownFormatError: if the format cannot be detected
@@ -211,7 +212,9 @@ def detect_format(path, root_path='', reader=open):
         releases_prefix = f'{prefix}releases'
         ocid_prefix = f'{prefix}ocid'
         tag_item_prefix = f'{prefix}tag.item'
-        metadata_prefixes = {f'{prefix}{field}' for field in ('publishedDate', 'publisher.name', 'uri', 'version')}
+        metadata_prefixes = {
+            f'{prefix}{field}' for field in ('publishedDate', 'publisher.name', 'uri', 'version', *additional_prefixes)
+        }
 
         has_records = False
         has_releases = False
@@ -232,7 +235,7 @@ def detect_format(path, root_path='', reader=open):
                 has_tag = True
                 if value == 'compiled':
                     is_compiled = True
-            elif prefix in metadata_prefixes:
+            elif prefix in metadata_prefixes and event not in {'end_array', 'end_map', 'map_key'}:
                 metadata_count += 1
             if not prefix and event not in {'end_array', 'end_map', 'map_key'}:
                 return _detect_format_result(
@@ -269,7 +272,7 @@ def _detect_format_result(
         detected_format = Format.release
     elif has_ocid:
         detected_format = Format.versioned_release
-    elif metadata_count == 4:
+    elif metadata_count >= 4:
         detected_format = Format.empty_package
     else:
         infix = 'array' if is_array else 'object'
