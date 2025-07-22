@@ -140,4 +140,4 @@ def test_merge_inconsistent_type_convert_exceptions_to_warnings(return_package, 
 
     assert output == expected
     assert len(records) == 1
-    assert str(records[0].message) == "ocds-213czf-1: An earlier release had the literal 1 for /integer, but the current release has an object with a 'object' key"  # noqa: E501
+    assert str(records[0].message) == "ocds-213czf-1: An earlier release had the value 1 for /integer, but the current release has an object with a 'object' key"  # noqa: E501
