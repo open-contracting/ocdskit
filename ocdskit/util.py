@@ -63,15 +63,15 @@ class JSONEncoder(json.JSONEncoder):
 
 def iterencode(data, *, ensure_ascii=False, **kwargs):
     """Return a generator that yields each string representation as available."""
-    if 'indent' not in kwargs:
-        kwargs['separators'] = (',', ':')
+    if "indent" not in kwargs:
+        kwargs["separators"] = (",", ":")
     return JSONEncoder(ensure_ascii=ensure_ascii, **kwargs).iterencode(data)
 
 
 def json_dump(data, io, *, ensure_ascii=False, **kwargs):
     """Dump JSON to a file-like object."""
-    if 'indent' not in kwargs:
-        kwargs['separators'] = (',', ':')
+    if "indent" not in kwargs:
+        kwargs["separators"] = (",", ":")
     json.dump(data, io, ensure_ascii=ensure_ascii, cls=JSONEncoder, **kwargs)
 
 
@@ -80,9 +80,10 @@ def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwar
     # orjson doesn't support `ensure_ascii` if `True`, `indent` if not `2` or other arguments except for `sort_keys`.
     if jsonlib == json or ensure_ascii or (indent and indent != 2) or kwargs:
         if not indent:
-            kwargs['separators'] = (',', ':')
-        return json.dumps(data, cls=JSONEncoder, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys,
-                          **kwargs)
+            kwargs["separators"] = (",", ":")
+        return json.dumps(
+            data, cls=JSONEncoder, ensure_ascii=ensure_ascii, indent=indent, sort_keys=sort_keys, **kwargs
+        )
 
     option = 0
     if indent:
@@ -97,17 +98,17 @@ def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwar
 def get_ocds_minor_version(data):
     """Return the OCDS minor version of the release package, record package, release or record."""
     if is_package(data):
-        if 'version' in data:
-            return data['version']
-        return '1.0'
+        if "version" in data:
+            return data["version"]
+        return "1.0"
     if is_record(data):
-        if any('parties' in release for release in data['releases']):
-            return '1.1'
-        return '1.0'
+        if any("parties" in release for release in data["releases"]):
+            return "1.1"
+        return "1.0"
     # release
-    if 'parties' in data:
-        return '1.1'
-    return '1.0'
+    if "parties" in data:
+        return "1.1"
+    return "1.0"
 
 
 def get_ocds_patch_tag(version):
@@ -116,7 +117,7 @@ def get_ocds_patch_tag(version):
 
     :raises UnknownVersionError: if the OCDS version is not recognized
     """
-    prefix = version.replace('.', '__') + '__'
+    prefix = version.replace(".", "__") + "__"
     try:
         return next(tag for tag in reversed(get_tags()) if tag.startswith(prefix))
     except StopIteration as e:
@@ -134,7 +135,7 @@ def is_record_package(data):
 
     A record package has a required ``records`` field. Its other required fields are shared with release packages.
     """
-    return 'records' in data
+    return "records" in data
 
 
 def is_record(data):
@@ -143,7 +144,7 @@ def is_record(data):
 
     A record has required ``releases`` and ``ocid`` fields.
     """
-    return 'releases' in data and 'ocid' in data
+    return "releases" in data and "ocid" in data
 
 
 def is_release_package(data):
@@ -153,17 +154,17 @@ def is_release_package(data):
     A release package has a required ``releases`` field. Its other required fields are shared with record packages.
     To distinguish a release package from a record, we test for the absence of the ``ocid`` field.
     """
-    return 'releases' in data and 'ocid' not in data
+    return "releases" in data and "ocid" not in data
 
 
 def is_release(data):
     """Return whether the data is a release (embedded or linked, individual or compiled)."""
-    return 'date' in data
+    return "date" in data
 
 
 def is_compiled_release(data):
     """Return whether the data is a compiled release (embedded or linked)."""
-    return 'tag' in data and isinstance(data['tag'], list) and 'compiled' in data['tag']
+    return "tag" in data and isinstance(data["tag"], list) and "compiled" in data["tag"]
 
 
 def is_linked_release(data, maximum_properties=3):
@@ -176,10 +177,10 @@ def is_linked_release(data, maximum_properties=3):
     To distinguish a linked release from an embedded release, we test for the presence of the required ``url`` field
     and test whether the number of fields is fewer than three.
     """
-    return 'url' in data and len(data) <= maximum_properties
+    return "url" in data and len(data) <= maximum_properties
 
 
-def detect_format(path, root_path='', reader=open, additional_prefixes=()):
+def detect_format(path, root_path="", reader=open, additional_prefixes=()):
     """
     Return the format of OCDS data, and whether the OCDS data is concatenated or in an array.
 
@@ -192,7 +193,7 @@ def detect_format(path, root_path='', reader=open, additional_prefixes=()):
     :rtype: tuple
     :raises UnknownFormatError: if the format cannot be detected
     """
-    with reader(path, 'rb') as f:
+    with reader(path, "rb") as f:
         events = iter(ijson.parse(f, multiple_values=True))
 
         while True:
@@ -201,19 +202,19 @@ def detect_format(path, root_path='', reader=open, additional_prefixes=()):
                 break
 
         if prefix:
-            prefix += '.'
+            prefix += "."
 
-        if event == 'start_array':
-            prefix += 'item.'
-        elif event != 'start_map':
-            raise UnknownFormatError(f'top-level JSON value is a {event}')
+        if event == "start_array":
+            prefix += "item."
+        elif event != "start_map":
+            raise UnknownFormatError(f"top-level JSON value is a {event}")
 
-        records_prefix = f'{prefix}records'
-        releases_prefix = f'{prefix}releases'
-        ocid_prefix = f'{prefix}ocid'
-        tag_item_prefix = f'{prefix}tag.item'
+        records_prefix = f"{prefix}records"
+        releases_prefix = f"{prefix}releases"
+        ocid_prefix = f"{prefix}ocid"
+        tag_item_prefix = f"{prefix}tag.item"
         metadata_prefixes = {
-            f'{prefix}{field}' for field in ('publishedDate', 'publisher.name', 'uri', 'version', *additional_prefixes)
+            f"{prefix}{field}" for field in ("publishedDate", "publisher.name", "uri", "version", *additional_prefixes)
         }
 
         has_records = False
@@ -222,7 +223,7 @@ def detect_format(path, root_path='', reader=open, additional_prefixes=()):
         has_tag = False
         is_compiled = False
         metadata_count = 0
-        is_array = event == 'start_array'
+        is_array = event == "start_array"
 
         for prefix, event, value in events:
             if prefix == records_prefix:
@@ -233,28 +234,42 @@ def detect_format(path, root_path='', reader=open, additional_prefixes=()):
                 has_ocid = True
             elif prefix == tag_item_prefix:
                 has_tag = True
-                if value == 'compiled':
+                if value == "compiled":
                     is_compiled = True
-            elif prefix in metadata_prefixes and event not in {'end_array', 'end_map', 'map_key'}:
+            elif prefix in metadata_prefixes and event not in {"end_array", "end_map", "map_key"}:
                 metadata_count += 1
-            if not prefix and event not in {'end_array', 'end_map', 'map_key'}:
+            if not prefix and event not in {"end_array", "end_map", "map_key"}:
                 return _detect_format_result(
-                    True, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count  # noqa: FBT003
+                    True,  # noqa: FBT003
+                    is_array,
+                    has_records,
+                    has_releases,
+                    has_ocid,
+                    has_tag,
+                    is_compiled,
+                    metadata_count,
                 )
 
         return _detect_format_result(
-            False, is_array, has_records, has_releases, has_ocid, has_tag, is_compiled, metadata_count  # noqa: FBT003
+            False,  # noqa: FBT003
+            is_array,
+            has_records,
+            has_releases,
+            has_ocid,
+            has_tag,
+            is_compiled,
+            metadata_count,
         )
 
 
 class Format(StrEnum):
-    compiled_release = 'compiled release'
-    empty_package = 'empty package'
-    record = 'record'
-    record_package = 'record package'
-    release = 'release'
-    release_package = 'release package'
-    versioned_release = 'versioned release'
+    compiled_release = "compiled release"
+    empty_package = "empty package"
+    record = "record"
+    record_package = "record package"
+    release = "release"
+    release_package = "release package"
+    versioned_release = "versioned release"
 
 
 def _detect_format_result(
@@ -275,22 +290,22 @@ def _detect_format_result(
     elif metadata_count >= 4:
         detected_format = Format.empty_package
     else:
-        infix = 'array' if is_array else 'object'
-        raise UnknownFormatError(f'top-level JSON value is a non-OCDS {infix}')
+        infix = "array" if is_array else "object"
+        raise UnknownFormatError(f"top-level JSON value is a non-OCDS {infix}")
 
     return (detected_format, is_concatenated, is_array)
 
 
-def _empty_record_package(uri='', publisher=None, published_date='', version=None):
+def _empty_record_package(uri="", publisher=None, published_date="", version=None):
     package = _empty_package(uri, publisher, published_date, version)
-    package['packages'] = []
-    package['records'] = []
+    package["packages"] = []
+    package["records"] = []
     return package
 
 
-def _empty_release_package(uri='', publisher=None, published_date='', version=None):
+def _empty_release_package(uri="", publisher=None, published_date="", version=None):
     package = _empty_package(uri, publisher, published_date, version)
-    package['releases'] = []
+    package["releases"] = []
     return package
 
 
@@ -299,24 +314,24 @@ def _empty_package(uri, publisher, published_date, version):
         publisher = {}
 
     return {
-        'uri': uri,
-        'publisher': publisher,
-        'publishedDate': published_date,
-        'license': None,
-        'publicationPolicy': None,
-        'version': version,
-        'extensions': {},
+        "uri": uri,
+        "publisher": publisher,
+        "publishedDate": published_date,
+        "license": None,
+        "publicationPolicy": None,
+        "version": version,
+        "extensions": {},
     }
 
 
 def _update_package_metadata(output, package):
-    for field in ('publisher', 'license', 'publicationPolicy'):
+    for field in ("publisher", "license", "publicationPolicy"):
         if field in package:
             output[field] = package[field]
 
     # We use an insertion-ordered dict to keep extensions in order without duplication.
-    if 'extensions' in package:
-        output['extensions'].update(dict.fromkeys(package['extensions']))
+    if "extensions" in package:
+        output["extensions"].update(dict.fromkeys(package["extensions"]))
 
 
 def _resolve_metadata(output, field):
@@ -327,7 +342,7 @@ def _resolve_metadata(output, field):
 
 
 def _remove_empty_optional_metadata(output):
-    for field in ('license', 'publicationPolicy', 'version'):
+    for field in ("license", "publicationPolicy", "version"):
         if output[field] is None:
             del output[field]
 

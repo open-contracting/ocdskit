@@ -37,7 +37,7 @@ try:
         return jsonlib.loads(string)
 
     sqlite3.register_adapter(dict, adapt_json)
-    sqlite3.register_converter('json', convert_json)
+    sqlite3.register_converter("json", convert_json)
 except ImportError:
     USING_SQLITE = False
 
@@ -92,8 +92,8 @@ class Packager:
                     # deprecated fields can lead to inconsistencies (e.g. transaction `amount` and `value`).
                     # https://standard.open-contracting.org/latest/en/schema/changelog/#advisories
                     raise InconsistentVersionError(
-                        f'item {i}: version error: this item uses version {version}, '
-                        f'but earlier items used version {self.version}',
+                        f"item {i}: version error: this item uses version {version}, "
+                        f"but earlier items used version {self.version}",
                         self.version,
                         version,
                     )
@@ -101,17 +101,17 @@ class Packager:
                 self.version = version
 
             if is_release(item):
-                self.backend.add_release(item, '')
+                self.backend.add_release(item, "")
             else:  # release package
-                uri = item.get('uri', '')
+                uri = item.get("uri", "")
 
                 _update_package_metadata(self.package, item)
 
                 # Note: If there are millions of packages to merge, we should use SQLite to store the packages instead.
-                if uri and version < '1.2':
-                    self.package['packages'].append(uri)
+                if uri and version < "1.2":
+                    self.package["packages"].append(uri)
 
-                for release in item['releases']:
+                for release in item["releases"]:
                     if release is not None:  # observed in some release packages
                         self.backend.add_release(release, uri)
 
@@ -147,10 +147,10 @@ class Packager:
         if not streaming:
             records = list(records)
 
-        self.package['records'] = records
+        self.package["records"] = records
 
-        _resolve_metadata(self.package, 'packages')
-        _resolve_metadata(self.package, 'extensions')
+        _resolve_metadata(self.package, "packages")
+        _resolve_metadata(self.package, "extensions")
         _remove_empty_optional_metadata(self.package)
 
         yield self.package
@@ -173,8 +173,8 @@ class Packager:
         """
         for ocid, rows in self.backend.get_releases_by_ocid():
             record = {
-                'ocid': ocid,
-                'releases': [],
+                "ocid": ocid,
+                "releases": [],
             }
 
             releases = []
@@ -183,22 +183,22 @@ class Packager:
 
                 if use_linked_releases and uri:
                     package_release = {
-                        'url': uri + '#' + release['id'],
-                        'date': release['date'],
-                        'tag': release['tag'],
+                        "url": uri + "#" + release["id"],
+                        "date": release["date"],
+                        "tag": release["tag"],
                     }
                 else:
                     package_release = release
-                record['releases'].append(package_release)
+                record["releases"].append(package_release)
 
             showwarning = warnings.showwarning
             with warnings.catch_warnings():
                 warnings.showwarning = _showwarning(showwarning, ocid)
 
                 try:
-                    record['compiledRelease'] = merger.create_compiled_release(releases)
+                    record["compiledRelease"] = merger.create_compiled_release(releases)
                     if return_versioned_release:
-                        record['versionedRelease'] = merger.create_versioned_release(releases)
+                        record["versionedRelease"] = merger.create_versioned_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
                         warnings.warn(str(e), category=MergeErrorWarning, stacklevel=2)
@@ -256,9 +256,9 @@ class AbstractBackend(ABC):
         :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
         """
         try:
-            self._add_release(release['ocid'], package_uri, release)
+            self._add_release(release["ocid"], package_uri, release)
         except KeyError as e:
-            raise MissingOcidKeyError('ocid') from e
+            raise MissingOcidKeyError("ocid") from e
 
     @abstractmethod
     def _add_release(self, ocid, package_uri, release):

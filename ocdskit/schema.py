@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-LANGUAGE_CODE_SUFFIX = '_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))'  # noqa: E501
+LANGUAGE_CODE_SUFFIX = "_(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+))"  # noqa: E501
 LANGUAGE_CODE_SUFFIX_LEN = len(LANGUAGE_CODE_SUFFIX)
 
 
@@ -34,11 +34,11 @@ class Field:
     #: Whether the field's name is ``id`` and isn't under a ``wholeListMerge`` array.
     merge_by_id: bool = False
     #: The field's codelist.
-    codelist: str = ''
+    codelist: str = ""
     #: Whether the field's codelist is open.
     open_codelist: bool = False
     #: The separator to use in string representations of paths.
-    sep = '.'
+    sep = "."
 
     @property
     def path(self):
@@ -57,17 +57,16 @@ class Field:
         """
         sep = sep or self.sep
 
-        return (
-            {k: v for k, v in self.__dict__.items() if k not in exclude and k != 'path_components'}
-            | ({} if 'path' in exclude else {'path': sep.join(self.path_components)})
+        return {k: v for k, v in self.__dict__.items() if k not in exclude and k != "path_components"} | (
+            {} if "path" in exclude else {"path": sep.join(self.path_components)}
         )
 
 
 def get_schema_fields(
     schema: dict,
-    pointer: str = '',
+    pointer: str = "",
     path_components: tuple = (),
-    definition: str = '',
+    definition: str = "",
     deprecated: dict | None = None,
     *,
     whole_list_merge: bool = False,
@@ -88,12 +87,12 @@ def get_schema_fields(
     multilingual = set()
     nonmultilingual_pattern_properties = {}
 
-    required = schema.get('required', [])
+    required = schema.get("required", [])
     # `deprecated` and `whole_list_merge` are inherited.
     deprecated = deprecated or _deprecated(schema)
-    whole_list_merge = whole_list_merge or schema.get('wholeListMerge', False)
+    whole_list_merge = whole_list_merge or schema.get("wholeListMerge", False)
 
-    if pattern_properties := schema.get('patternProperties'):
+    if pattern_properties := schema.get("patternProperties"):
         for pattern, subschema in pattern_properties.items():
             # The pattern might have an extra set of parentheses (like in OCDS 1.1). Assumes the final character is $.
             for offset in (2, 1):
@@ -101,8 +100,8 @@ def get_schema_fields(
                 # The pattern must be anchored and the suffix must occur at the end.
                 if (
                     pattern[end:-offset] == LANGUAGE_CODE_SUFFIX
-                    and pattern[:offset] == '^('[:offset]
-                    and pattern[-offset:] == ')$'[-offset:]
+                    and pattern[:offset] == "^("[:offset]
+                    and pattern[-offset:] == ")$"[-offset:]
                 ):
                     multilingual.add(pattern[offset:end])
                     break
@@ -110,12 +109,12 @@ def get_schema_fields(
             else:
                 nonmultilingual_pattern_properties[pattern] = subschema
 
-    if items := schema.get('items'):
+    if items := schema.get("items"):
         # `items` advances the pointer and sets array context (for the next level only).
         if isinstance(items, dict):
             yield from get_schema_fields(
                 items,
-                f'{pointer}/items',
+                f"{pointer}/items",
                 path_components,
                 definition,
                 deprecated,
@@ -126,7 +125,7 @@ def get_schema_fields(
             for i, subschema in enumerate(items):
                 yield from get_schema_fields(
                     subschema,
-                    f'{pointer}/items/{i}',
+                    f"{pointer}/items/{i}",
                     path_components,
                     definition,
                     deprecated,
@@ -134,34 +133,34 @@ def get_schema_fields(
                     array=True,
                 )
 
-    for keyword in ('anyOf', 'allOf', 'oneOf'):
+    for keyword in ("anyOf", "allOf", "oneOf"):
         if elements := schema.get(keyword):
             for i, subschema in enumerate(elements):
                 # These keywords advance the pointer.
                 yield from get_schema_fields(
                     subschema,
-                    f'{pointer}/{keyword}/{i}',
+                    f"{pointer}/{keyword}/{i}",
                     path_components,
                     definition,
                     deprecated,
                     whole_list_merge=whole_list_merge,
                 )
 
-    for keyword in ('then', 'else'):
+    for keyword in ("then", "else"):
         if subschema := schema.get(keyword):
             # These keywords advance the pointer.
             yield from get_schema_fields(
                 subschema,
-                f'{pointer}/{keyword}',
+                f"{pointer}/{keyword}",
                 path_components,
                 definition,
                 deprecated,
                 whole_list_merge=whole_list_merge,
             )
 
-    if properties := schema.get('properties'):
+    if properties := schema.get("properties"):
         for name, subschema in properties.items():
-            prop_pointer = f'{pointer}/properties/{name}'
+            prop_pointer = f"{pointer}/properties/{name}"
             prop_path_components = (*path_components, name)
             prop_deprecated = _deprecated(subschema)
             prop_codelist, prop_open_codelist = _codelist(subschema)
@@ -179,7 +178,7 @@ def get_schema_fields(
                 open_codelist=prop_open_codelist,
                 multilingual=name in multilingual,
                 required=name in required,
-                merge_by_id=name == 'id' and array and not whole_list_merge,
+                merge_by_id=name == "id" and array and not whole_list_merge,
             )
 
             # `properties` advances the pointer and path.
@@ -195,7 +194,7 @@ def get_schema_fields(
     # Yield `patternProperties` after `properties`, to be interpreted in context.
     for name, subschema in nonmultilingual_pattern_properties.items():
         # The duplication across `properties` and `patternProperties` can be avoided, but is >5% slower.
-        prop_pointer = f'{pointer}/patternProperties/{name}'
+        prop_pointer = f"{pointer}/patternProperties/{name}"
         prop_path_components = (*path_components, name)
         prop_deprecated = _deprecated(subschema)
         prop_codelist, prop_open_codelist = _codelist(subschema)
@@ -227,25 +226,25 @@ def get_schema_fields(
     # `definitions` is canonically only at the top level.
     if not pointer:
         # Yield definitions after `properties` and `patternProperties`, to be interpreted in context.
-        for keyword in ('definitions', '$defs'):
+        for keyword in ("definitions", "$defs"):
             if definitions := schema.get(keyword):
                 for name, subschema in definitions.items():
                     # These keywords advance the pointer and set the definition.
-                    yield from get_schema_fields(subschema, f'/{keyword}/{name}', definition=name)
+                    yield from get_schema_fields(subschema, f"/{keyword}/{name}", definition=name)
 
 
 def _codelist(subschema):
-    default = 'enum' not in subschema
-    if codelist := subschema.get('codelist'):
-        return codelist, subschema.get('openCodelist', default)
+    default = "enum" not in subschema
+    if codelist := subschema.get("codelist"):
+        return codelist, subschema.get("openCodelist", default)
     # The behavior hasn't been decided if `items` is an array (e.g. with conflicting codelist-related values).
-    if (items := subschema.get('items')) and isinstance(items, dict):
-        return items.get('codelist', ''), items.get('openCodelist', default)
-    return '', default
+    if (items := subschema.get("items")) and isinstance(items, dict):
+        return items.get("codelist", ""), items.get("openCodelist", default)
+    return "", default
 
 
 def _deprecated(value):
-    return value.get('deprecated') or (hasattr(value, '__reference__') and value.__reference__.get('deprecated')) or {}
+    return value.get("deprecated") or (hasattr(value, "__reference__") and value.__reference__.get("deprecated")) or {}
 
 
 def add_validation_properties(schema, *, unique_items=True, coordinates=False):
@@ -261,29 +260,29 @@ def add_validation_properties(schema, *, unique_items=True, coordinates=False):
         for item in schema:
             add_validation_properties(item, unique_items=unique_items)
     elif isinstance(schema, dict):
-        if 'type' in schema:
+        if "type" in schema:
             if (
-                'string' in schema['type']
+                "string" in schema["type"]
                 # "enum" is more strict than "minLength".
-                and 'enum' not in schema
+                and "enum" not in schema
                 # The defined formats do not match zero-length strings.
                 # https://datatracker.ietf.org/doc/html/draft-fge-json-schema-validation-00#section-7.3
-                and 'format' not in schema
+                and "format" not in schema
                 # The pattern is assumed to not match zero-length strings.
-                and 'pattern' not in schema
+                and "pattern" not in schema
             ):
-                schema.setdefault('minLength', 1)
+                schema.setdefault("minLength", 1)
 
-            if 'array' in schema['type']:
+            if "array" in schema["type"]:
                 # Allow non-unique items for coordinates fields (e.g. closed polygons).
-                if sorted(schema.get('items', {}).get('type', [])) == ['array', 'number']:
+                if sorted(schema.get("items", {}).get("type", [])) == ["array", "number"]:
                     coordinates = True
                 if unique_items and not coordinates:
-                    schema.setdefault('uniqueItems', True)
-                schema.setdefault('minItems', 1)
+                    schema.setdefault("uniqueItems", True)
+                schema.setdefault("minItems", 1)
 
-            if 'object' in schema['type']:
-                schema.setdefault('minProperties', 1)
+            if "object" in schema["type"]:
+                schema.setdefault("minProperties", 1)
 
         for value in schema.values():
             add_validation_properties(value, unique_items=unique_items, coordinates=coordinates)

@@ -20,18 +20,18 @@ REMOVE = {"compiledRelease", "records", "releases", "value", "versionedRelease"}
 EXCEPTIONS = {
     # devgateway/ocds_certificate_extension
     # devgateway/ocds_progress_extension
-    ('certificates', 'certificateAmount', 'currency'),
-    ('certificates', 'certificateAmount', 'exchangeRates', 'currency'),
-    ('certificates', 'certificateAmount', 'exchangeRates', 'source'),
-    ('certificates', 'totalAmount', 'currency'),
-    ('certificates', 'totalAmount', 'exchangeRates', 'currency'),
-    ('certificates', 'totalAmount', 'exchangeRates', 'source'),
-    ('progress', 'actualValue', 'currency'),
-    ('progress', 'actualValue', 'exchangeRates', 'currency'),
-    ('progress', 'actualValue', 'exchangeRates', 'source'),
-    ('progress', 'investmentValue', 'currency'),
-    ('progress', 'investmentValue', 'exchangeRates', 'currency'),
-    ('progress', 'investmentValue', 'exchangeRates', 'source'),
+    ("certificates", "certificateAmount", "currency"),
+    ("certificates", "certificateAmount", "exchangeRates", "currency"),
+    ("certificates", "certificateAmount", "exchangeRates", "source"),
+    ("certificates", "totalAmount", "currency"),
+    ("certificates", "totalAmount", "exchangeRates", "currency"),
+    ("certificates", "totalAmount", "exchangeRates", "source"),
+    ("progress", "actualValue", "currency"),
+    ("progress", "actualValue", "exchangeRates", "currency"),
+    ("progress", "actualValue", "exchangeRates", "source"),
+    ("progress", "investmentValue", "currency"),
+    ("progress", "investmentValue", "exchangeRates", "currency"),
+    ("progress", "investmentValue", "exchangeRates", "source"),
     # guatecompras/ocds_partyDetails_publicEntitiesLevelDetails_extension
     ("complaints", "intervenients", "details", "entityType", "id"),
     ("complaints", "intervenients", "details", "legalEntityTypeDetail", "id"),
@@ -80,12 +80,7 @@ def new(schema):
         if field.deprecated
     }
     # Codelist fields.
-    {
-        field.path_components: (field.codelist, field.open_codelist)
-        for field in fields
-        if field.codelist
-    }
-
+    {field.path_components: (field.codelist, field.open_codelist) for field in fields if field.codelist}
 
 
 def test_benchmark(scenario, package_type, benchmark):

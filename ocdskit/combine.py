@@ -17,30 +17,30 @@ from ocdskit.util import (
     get_ocds_patch_tag,
 )
 
-DEFAULT_VERSION = '1.1'  # fields might be deprecated
+DEFAULT_VERSION = "1.1"  # fields might be deprecated
 
 
 def _package(key, items, uri, publisher, published_date, version, extensions=None):
     if publisher is None:
         publisher = {}
-    publisher.setdefault('name', '')
+    publisher.setdefault("name", "")
 
     output = {
-        'uri': uri,
-        'publisher': publisher,
-        'publishedDate': published_date,
-        'version': version,
+        "uri": uri,
+        "publisher": publisher,
+        "publishedDate": published_date,
+        "version": version,
     }
 
     if extensions:
-        output['extensions'] = extensions
+        output["extensions"] = extensions
 
     output[key] = items
 
     return output
 
 
-def package_records(records, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
+def package_records(records, uri="", publisher=None, published_date="", version=DEFAULT_VERSION, extensions=None):
     """
     Wrap records in a record package.
 
@@ -51,10 +51,10 @@ def package_records(records, uri='', publisher=None, published_date='', version=
     :param str version: the record package's ``version``
     :param list extensions: the record package's ``extensions``
     """
-    return _package('records', records, uri, publisher, published_date, version, extensions)
+    return _package("records", records, uri, publisher, published_date, version, extensions)
 
 
-def package_releases(releases, uri='', publisher=None, published_date='', version=DEFAULT_VERSION, extensions=None):
+def package_releases(releases, uri="", publisher=None, published_date="", version=DEFAULT_VERSION, extensions=None):
     """
     Wrap releases in a release package.
 
@@ -65,10 +65,10 @@ def package_releases(releases, uri='', publisher=None, published_date='', versio
     :param str version: the release package's ``version``
     :param list extensions: the release package's ``extensions``
     """
-    return _package('releases', releases, uri, publisher, published_date, version, extensions)
+    return _package("releases", releases, uri, publisher, published_date, version, extensions)
 
 
-def combine_record_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
+def combine_record_packages(packages, uri="", publisher=None, published_date="", version=DEFAULT_VERSION):
     """
     Collect the packages and records from the record packages into one record package.
 
@@ -82,32 +82,32 @@ def combine_record_packages(packages, uri='', publisher=None, published_date='',
     """
     # See options for not buffering all inputs into memory: https://github.com/open-contracting/ocdskit/issues/119
     output = _empty_record_package(uri, publisher, published_date, version)
-    output['packages'] = {}
+    output["packages"] = {}
 
     for i, package in enumerate(packages):
         _update_package_metadata(output, package)
-        if 'records' in package:
-            output['records'].extend(package['records'])
+        if "records" in package:
+            output["records"].extend(package["records"])
         else:
             warnings.warn(
                 f'item {i} has no "records" field (check that it is a record package)',
                 category=MissingRecordsWarning,
                 stacklevel=2,
             )
-        if 'packages' in package:
-            output['packages'].update(dict.fromkeys(package['packages']))
+        if "packages" in package:
+            output["packages"].update(dict.fromkeys(package["packages"]))
 
     if publisher:
-        output['publisher'] = publisher
+        output["publisher"] = publisher
 
-    _resolve_metadata(output, 'packages')
-    _resolve_metadata(output, 'extensions')
+    _resolve_metadata(output, "packages")
+    _resolve_metadata(output, "extensions")
     _remove_empty_optional_metadata(output)
 
     return output
 
 
-def combine_release_packages(packages, uri='', publisher=None, published_date='', version=DEFAULT_VERSION):
+def combine_release_packages(packages, uri="", publisher=None, published_date="", version=DEFAULT_VERSION):
     """
     Collect the releases from the release packages into one release package.
 
@@ -124,8 +124,8 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 
     for i, package in enumerate(packages):
         _update_package_metadata(output, package)
-        if 'releases' in package:
-            output['releases'].extend(package['releases'])
+        if "releases" in package:
+            output["releases"].extend(package["releases"])
         else:
             warnings.warn(
                 f'item {i} has no "releases" field (check that it is a release package)',
@@ -134,9 +134,9 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
             )
 
     if publisher:
-        output['publisher'] = publisher
+        output["publisher"] = publisher
 
-    _resolve_metadata(output, 'extensions')
+    _resolve_metadata(output, "extensions")
     _remove_empty_optional_metadata(output)
 
     return output
@@ -144,9 +144,9 @@ def combine_release_packages(packages, uri='', publisher=None, published_date=''
 
 def merge(
     data,
-    uri: str = '',
+    uri: str = "",
     publisher: dict | None = None,
-    published_date: str = '',
+    published_date: str = "",
     version: str = DEFAULT_VERSION,
     schema: dict | None = None,
     *,
@@ -198,9 +198,9 @@ def merge(
 
         if not schema and packager.version:
             tag = get_ocds_patch_tag(packager.version)
-            if packager.package['extensions']:
+            if packager.package["extensions"]:
                 # `extensions` is an insertion-ordered dict at this point.
-                builder = ProfileBuilder(tag, list(packager.package['extensions']))
+                builder = ProfileBuilder(tag, list(packager.package["extensions"]))
                 schema = builder.patched_release_schema()
             else:
                 schema = get_release_schema_url(tag)
@@ -208,11 +208,11 @@ def merge(
         merger = Merger(schema)
 
         if return_package:
-            packager.package['uri'] = uri
-            packager.package['publishedDate'] = published_date
-            packager.package['version'] = version
+            packager.package["uri"] = uri
+            packager.package["publishedDate"] = published_date
+            packager.package["version"] = version
             if publisher:
-                packager.package['publisher'] = publisher
+                packager.package["publisher"] = publisher
 
             yield from packager.output_package(
                 merger,

@@ -13,10 +13,10 @@ from ocdskit.mapping_sheet import mapping_sheet
 
 
 class Command(BaseCommand):
-    name = 'mapping-sheet'
-    help = 'generates a spreadsheet with all field paths in a JSON Schema'
+    name = "mapping-sheet"
+    help = "generates a spreadsheet with all field paths in a JSON Schema"
     kwargs = {  # noqa: RUF012
-        'epilog': dedent(
+        "epilog": dedent(
             """
             The --extension option must be declared after the file argument. It accepts multiple values, which can be
             extensions' metadata URLs, base URLs and/or download URLs. For example:
@@ -38,23 +38,31 @@ class Command(BaseCommand):
               property, then the result is a mapping sheet with no values in its "extension" column.
             """  # noqa: E501
         ),
-        'formatter_class': RawDescriptionHelpFormatter,
+        "formatter_class": RawDescriptionHelpFormatter,
     }
 
     def add_arguments(self):
-        self.add_argument('file', help='the schema file')
-        self.add_argument('--order-by', help="sort the spreadsheet's rows by this column")
-        self.add_argument('--infer-required', action='store_true', help='infer whether fields are required')
-        self.add_argument('--extension', nargs='*', help='patch the release schema with this extension')
-        self.add_argument('--extension-field', help='add an "extension" column for the name of the extension in which '
-                          'each field was defined')
-        self.add_argument('--no-inherit-extension', action='store_true', help='fields defined via $ref properties do '
-                          'not inherit the "extension" value of their parent field')
-        self.add_argument('--language', default='en', help='the language to use for the name of the extension')
-        self.add_argument('--codelist', action='store_true', help='add a "codelist" column')
-        self.add_argument('--no-deprecated', action='store_true', help="don't include deprecated fields")
-        self.add_argument('--no-replace-refs', action='store_true', help="don't replace schema with $ref properties "
-                          'with the referenced schema')
+        self.add_argument("file", help="the schema file")
+        self.add_argument("--order-by", help="sort the spreadsheet's rows by this column")
+        self.add_argument("--infer-required", action="store_true", help="infer whether fields are required")
+        self.add_argument("--extension", nargs="*", help="patch the release schema with this extension")
+        self.add_argument(
+            "--extension-field",
+            help='add an "extension" column for the name of the extension in which each field was defined',
+        )
+        self.add_argument(
+            "--no-inherit-extension",
+            action="store_true",
+            help='fields defined via $ref properties do not inherit the "extension" value of their parent field',
+        )
+        self.add_argument("--language", default="en", help="the language to use for the name of the extension")
+        self.add_argument("--codelist", action="store_true", help='add a "codelist" column')
+        self.add_argument("--no-deprecated", action="store_true", help="don't include deprecated fields")
+        self.add_argument(
+            "--no-replace-refs",
+            action="store_true",
+            help="don't replace schema with $ref properties with the referenced schema",
+        )
 
     def handle(self):
         with open(self.args.file) as f:

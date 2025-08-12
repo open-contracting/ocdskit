@@ -3,11 +3,11 @@ from ocdskit.commands.base import OCDSCommand
 
 
 class Command(OCDSCommand):
-    name = 'combine-release-packages'
-    help = 'reads release packages from standard input, collects releases, and prints one release package'
+    name = "combine-release-packages"
+    help = "reads release packages from standard input, collects releases, and prints one release package"
 
     def add_arguments(self):
-        self.add_package_arguments('release')
+        self.add_package_arguments("release")
 
     def handle(self):
         kwargs = self.parse_package_arguments()
