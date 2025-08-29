@@ -41,7 +41,7 @@ jobs:
         env:
           BENCHMARK_SAVE: 1
         run: pytest --benchmark-save=libcove --benchmark-only
-      - if: matrix.python-version != 'pypy-3.10'
+      - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.10'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
       # https://github.com/coverallsapp/homebrew-coveralls/issues/65
       - if: matrix.os != 'macos-latest'
