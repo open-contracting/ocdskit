@@ -23,6 +23,10 @@ class UnknownFormatError(OCDSKitError):
     """Raised if the format of a file can't be determined."""
 
 
+class NonObjectReleaseError(OCDSKitError, TypeError):
+    """Raised when a release is not an object."""
+
+
 class UnknownVersionError(OCDSKitError):
     """Raised if the OCDS version is not recognized."""
 

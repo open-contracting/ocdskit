@@ -1,12 +1,13 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.5.0 (2025-08-28)
+------------------
 
 Changed
 ~~~~~~~
 
+-  :class:`ocdskit.packager.Packager`: :meth:`ocdskit.packager.AbstractBackend.add_release` raises :exc:`~ocdskit.exceptions.NonObjectReleaseError` if a release is not an object.
 -  Add support for Python 3.13.
 -  Drop support for Python 3.9.
 

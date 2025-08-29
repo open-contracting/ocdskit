@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from ocdsmerge.exceptions import InconsistentTypeError
 
-from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, MissingOcidKeyError
+from ocdskit.exceptions import InconsistentVersionError, MergeErrorWarning, MissingOcidKeyError, NonObjectReleaseError
 from ocdskit.util import (
     _empty_record_package,
     _remove_empty_optional_metadata,
@@ -256,9 +256,12 @@ class AbstractBackend(ABC):
         :raises MissingOcidKeyError: if the release is missing an ``ocid`` field
         """
         try:
-            self._add_release(release["ocid"], package_uri, release)
+            ocid = release["ocid"]
         except KeyError as e:
             raise MissingOcidKeyError("ocid") from e
+        except TypeError as e:
+            raise NonObjectReleaseError(type(release).__name__) from e
+        self._add_release(ocid, package_uri, release)
 
     @abstractmethod
     def _add_release(self, ocid, package_uri, release):

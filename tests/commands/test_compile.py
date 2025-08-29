@@ -240,6 +240,18 @@ def test_command_missing_ocid(capsys, monkeypatch, caplog):
 
 
 @pytest.mark.usefixtures("sqlite")
+def test_command_non_object_release(capsys, monkeypatch, caplog):
+    stdin = b'{"releases":[[]]}'
+
+    with caplog.at_level(logging.ERROR):
+        assert_streaming_error(capsys, monkeypatch, main, ["compile"], stdin)
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].levelname == "CRITICAL"
+        assert caplog.records[0].message == "At least one release is a list, not a dict."
+
+
+@pytest.mark.usefixtures("sqlite")
 def test_command_unknown_version(capsys, monkeypatch, caplog):
     with caplog.at_level(logging.ERROR):
         assert_streaming_error(capsys, monkeypatch, main, ["compile"], ["release-package_unknown-version.json"])
