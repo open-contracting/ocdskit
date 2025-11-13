@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: ['3.10', '3.11', '3.12', '3.13', pypy-3.10]
+        python-version: ['3.10', '3.11', '3.12', '3.13', pypy-3.11]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -21,11 +21,11 @@ jobs:
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
       # "orjson does not support PyPy" and fails to install. https://pypi.org/project/orjson/
-      - if: matrix.python-version == 'pypy-3.10'
+      - if: matrix.python-version == 'pypy-3.11'
         name: Test
         # DeprecationWarning https://github.com/requests-cache/requests-cache/issues/845
         run: coverage run --source=ocdskit -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
-      - if: matrix.python-version != 'pypy-3.10'
+      - if: matrix.python-version != 'pypy-3.11'
         name: Test
         env:
           PYTHONUTF8: 1
@@ -36,12 +36,12 @@ jobs:
           pip install orjson
           coverage run --source=ocdskit --append -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip uninstall -y orjson
-      - if: matrix.python-version != 'pypy-3.10'
+      - if: matrix.python-version != 'pypy-3.11'
         name: Save libcove performance
         env:
           BENCHMARK_SAVE: 1
         run: pytest --benchmark-save=libcove --benchmark-only
-      - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.10'
+      - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.11'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
       # https://github.com/coverallsapp/homebrew-coveralls/issues/65
       - if: matrix.os != 'macos-latest'
