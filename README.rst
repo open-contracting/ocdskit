@@ -20,7 +20,7 @@ If you are viewing this on GitHub or PyPI, open the `full documentation <https:/
    :target: https://pypi.org/project/ocdskit/
 .. |Build Status| image:: https://github.com/open-contracting/ocdskit/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/open-contracting/ocdskit/actions/workflows/ci.yml
-.. |Coverage Status| image:: https://coveralls.io/repos/github/open-contracting/ocdskit/badge.svg?branch=main
-   :target: https://coveralls.io/github/open-contracting/ocdskit?branch=main
+.. |Coverage Status| image:: https://codecov.io/github/open-contracting/ocdskit/graph/badge.svg
+   :target: https://codecov.io/github/open-contracting/ocdskit
 .. |Python Version| image:: https://img.shields.io/pypi/pyversions/ocdskit.svg
    :target: https://pypi.org/project/ocdskit/
