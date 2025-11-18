@@ -43,6 +43,6 @@ jobs:
         run: pytest --benchmark-save=libcove --benchmark-only
       - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.11'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
-      # https://github.com/coverallsapp/homebrew-coveralls/issues/65
-      - if: matrix.os != 'macos-latest'
-        uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2.3.7
+      - uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          fail_ci_if_error: true
