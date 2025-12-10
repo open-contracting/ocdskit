@@ -43,6 +43,6 @@ jobs:
         run: pytest --benchmark-save=libcove --benchmark-only
       - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.11'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
-      - uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+      - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           fail_ci_if_error: true
