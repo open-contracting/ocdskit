@@ -235,7 +235,7 @@ class Packager:
                         yield merger.create_compiled_release(releases)
                 except InconsistentTypeError as e:
                     if convert_exceptions_to_warnings:
-                        warnings.warn(MergeErrorWarning(str(e)), stacklevel=2)
+                        warnings.warn(str(e), category=MergeErrorWarning, stacklevel=2)
                     else:
                         raise
 
