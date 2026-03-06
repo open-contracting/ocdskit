@@ -36,12 +36,12 @@ jobs:
           pip install orjson
           coverage run --source=ocdskit --append -m pytest -W error -W default::ocdsmerge.exceptions.DuplicateIdValueWarning -W ignore::DeprecationWarning:requests_cache.models.response
           pip uninstall -y orjson
-      - if: matrix.python-version != 'pypy-3.11'
+      - if: matrix.os == 'ubuntu-latest' && matrix.python-version != 'pypy-3.11'
         name: Save libcove performance
         env:
           BENCHMARK_SAVE: 1
         run: pytest --benchmark-save=libcove --benchmark-only
-      - if: matrix.os != 'macos-latest' && matrix.python-version != 'pypy-3.11'
+      - if: matrix.os == 'ubuntu-latest' && matrix.python-version != 'pypy-3.11'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
       - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
