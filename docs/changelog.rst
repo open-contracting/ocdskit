@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+Added
+~~~~~
+
+- :ref:`schema-report`: Support ``$defs``, in addition to ``definitions``.
+- :ref:`set-closed-codelist-enums`: Support ``$defs``, in addition to ``definitions``.
+
 1.5.0 (2025-08-28)
 ------------------
 
