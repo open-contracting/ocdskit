@@ -226,7 +226,7 @@ def get_schema_fields(
     # `definitions` is canonically only at the top level.
     if not pointer:
         # Yield definitions after `properties` and `patternProperties`, to be interpreted in context.
-        for keyword in ("definitions", "$defs"):
+        for keyword in ("$defs", "definitions"):
             if definitions := schema.get(keyword):
                 for name, subschema in definitions.items():
                     # These keywords advance the pointer and set the definition.

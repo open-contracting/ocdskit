@@ -106,7 +106,7 @@ class Command(BaseCommand):
                         data = json.load(f)
 
                     # If the JSON file is a JSON Schema file.
-                    if any(field in data for field in ("$schema", "definitions", "properties")):
+                    if any(field in data for field in ("$schema", "$defs", "definitions", "properties")):
                         expected = deepcopy(data)
                         self.update_codelist_enum(data)
 

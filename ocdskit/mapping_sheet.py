@@ -37,7 +37,7 @@ def mapping_sheet(
                                 parent field
     :param bool include_codelist: whether to include a "codelist" column
     :param bool include_deprecated: whether to include any deprecated fields
-    :param bool include_definitions: whether to traverse the "definitions" property
+    :param bool include_definitions: whether to traverse the "$defs" and/or "definitions" properties
     :param str base_uri: the URL to resolve relative references against
     :returns: information about all field paths in a JSON Schema, as columns and rows
     :rtype: tuple
