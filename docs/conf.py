@@ -47,4 +47,5 @@ autodoc_type_aliases = {}
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "ocdsmerge": ("https://ocds-merge.readthedocs.io/en/latest/", None),
 }

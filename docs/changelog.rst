@@ -831,7 +831,7 @@ Changed
 
 -  Change default behavior to print UTF-8 characters instead of escape sequences.
 -  Add ``--ascii`` option to print escape sequences instead of UTF-8 characters.
--  Rename base exception class from ``ReportError`` to :class:`OCDSKitError`.
+-  Rename base exception class from ``ReportError`` to :exc:`~ocdskit.exceptions.OCDSKitError`.
 
 0.0.2 (2018-03-14)
 ------------------
