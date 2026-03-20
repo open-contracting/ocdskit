@@ -7,8 +7,22 @@ Unreleased
 Added
 ~~~~~
 
-- :ref:`schema-report`: Support ``$defs``, in addition to ``definitions``.
-- :ref:`set-closed-codelist-enums`: Support ``$defs``, in addition to ``definitions``.
+-  :ref:`schema-report`: Support ``$defs``, in addition to ``definitions``.
+-  :ref:`set-closed-codelist-enums`: Support ``$defs``, in addition to ``definitions``.
+
+New library methods:
+
+-  :func:`ocdskit.normalize.convert_from_oas3`
+-  :func:`ocdskit.normalize.fix_validation_errors`
+-  :func:`ocdskit.normalize.get_base_class_name`
+-  :func:`ocdskit.normalize.get_definitions_keyword`
+-  :func:`ocdskit.normalize.get_normal_schema`
+-  :func:`ocdskit.normalize.get_schema_hash`
+-  :func:`ocdskit.normalize.hoist_deep_properties`
+-  :func:`ocdskit.normalize.remove_fields`
+-  :func:`ocdskit.normalize.remove_private_fields`
+-  :func:`ocdskit.normalize.remove_unreachable_definitions`
+-  :func:`ocdskit.util.longest_common_subsequence`
 
 1.5.0 (2025-08-28)
 ------------------
