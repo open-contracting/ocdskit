@@ -351,3 +351,28 @@ def _cast_as_list(value):
     if isinstance(value, str):
         return [value]
     return sorted(value)
+
+
+def longest_common_subsequence(x, y):
+    """Return the longest common subsequence of two word lists."""
+    # https://en.wikipedia.org/wiki/Longest_common_subsequence#Computing_the_length_of_the_LCS
+    m, n = len(x), len(y)
+    c = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if x[i - 1] == y[j - 1]:
+                c[i][j] = c[i - 1][j - 1] + 1
+            else:
+                c[i][j] = max(c[i][j - 1], c[i - 1][j])
+
+    result = []
+    while i > 0 and j > 0:
+        if x[i - 1] == y[j - 1]:
+            result.append(x[i - 1])
+            i -= 1
+            j -= 1
+        elif c[i][j - 1] >= c[i - 1][j]:
+            j -= 1
+        else:
+            i -= 1
+    return list(reversed(result))

@@ -9,6 +9,7 @@ API Reference
    api/mapping_sheet
    api/packager
    api/schema
+   api/normalize
    api/util
    api/cli
    api/exceptions
