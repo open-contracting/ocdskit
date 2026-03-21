@@ -3,7 +3,7 @@ import json
 import zlib
 from collections import defaultdict
 
-from ocdskit.util import _split_camel_case, longest_common_subsequence
+from ocdskit.util import _get_prop_name, _split_camel_case, longest_common_subsequence
 
 VALIDATION_AND_METADATA_KEYWORDS = {  # except `type`
     # https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.6
@@ -395,3 +395,116 @@ def hoist_deep_properties(schema, normalizer):
     for key, value in schema.items():
         _hoist(value, key, schema)
     schema[definition_keyword] = definitions
+
+
+def normalize_schema(schema, normalizer, get_base_classes):
+    """
+    Extract base classes from a schema's definitions. Rewrite definitions to use ``allOf`` inheritance.
+
+    Hashes each ``properties`` member using ``normalizer``, calls ``get_base_classes``, then performs greedy set-cover
+    to determine multiple inheritance for both base classes and original definitions.
+
+    All ``properties`` mappings must be at definitions' top-level. See :ref:`~ocdskit.normalize.hoist_deep_properties`.
+
+    .. warning::
+
+       Modifies ``schema`` in-place.
+
+    :param dict schema: a JSON schema
+    :param normalizer: a function that accepts a JSON Schema and returns a JSON Schema,
+        with all structurally-irrelevant properties removed
+    :param get_base_classes: a function that accepts the schema's definitions as a mapping of definition names to sets
+         of ``{prop}:{hash}`` strings, and returns base classes as a list of dicts with the keys:
+
+         ``name``
+           The name of the base class
+         ``members``
+           A sequence of child classes
+         ``props``
+           A set of ``{prop}:{hash}`` strings
+    """
+    definitions_keyword = get_definitions_keyword(schema)
+    definitions = schema[definitions_keyword]
+    ref_prefix = f"#/{definitions_keyword}/"
+
+    # Base class calculation requires hashable values.
+    classes = defaultdict(set)
+    hashed_to_schema = {}
+    for name, definition in definitions.items():
+        if "properties" in definition:
+            for prop, subschema in definition["properties"].items():
+                hashed = f"{prop}:{get_schema_hash(subschema, normalizer)}"
+                classes[name].add(hashed)
+                hashed_to_schema[hashed] = subschema
+
+    # Calculate base classes.
+    base_classes = get_base_classes(classes)
+
+    # Invert base classes.
+    subclass_bases = defaultdict(list)
+    for base_class in base_classes:
+        for subclass in base_class["members"]:
+            subclass_bases[subclass].append(base_class)
+
+    # Greedy set-cover: for each class, find the fewest bases that cover its properties.
+    used_bases = set()
+    specificity_order = sorted(base_classes, key=lambda base_class: -len(base_class["props"]))
+
+    # Inheritance between base classes.
+    base_allofs = {}
+    for i, base_class in enumerate(specificity_order):
+        allof = []
+        covered = set()
+        for other in specificity_order[i + 1 :]:
+            if other["props"] < base_class["props"] and other["props"] - covered:
+                allof.append(other)
+                covered |= other["props"]
+        if allof:
+            base_allofs[base_class["name"]] = allof
+            used_bases.update(id(base) for base in allof)
+
+    # Inheritance between original classes and base classes.
+    subclass_allofs = {}
+    for subclass, bases in subclass_bases.items():
+        allof = []
+        covered = set()
+        for base_class in sorted(bases, key=lambda base_class: -len(base_class["props"])):
+            if base_class["props"] - covered:
+                allof.append(base_class)
+                covered |= base_class["props"]
+        subclass_allofs[subclass] = allof
+        used_bases.update(id(base) for base in allof)
+
+    # Add base classes to schema definitions.
+    for base_class in base_classes:
+        if id(base_class) not in used_bases:
+            continue
+        name = base_class["name"]
+        if allof := base_allofs.get(name):
+            subschema = {"allOf": [{"$ref": f"{ref_prefix}{base['name']}"} for base in allof]}
+            if remaining := base_class["props"] - set().union(*(base["props"] for base in allof)):
+                properties = {_get_prop_name(p): hashed_to_schema[p] for p in remaining}
+                subschema["allOf"].append({"type": "object", "properties": properties})
+        else:
+            properties = {_get_prop_name(p): hashed_to_schema[p] for p in base_class["props"]}
+            subschema = {"type": "object", "properties": properties}
+        definitions[name] = subschema
+
+    # Modify existing definitions to reference base classes.
+    for subclass, allof in subclass_allofs.items():
+        definition = definitions[subclass]
+        properties = definition["properties"]
+
+        # Remove properties covered by base classes.
+        for base in allof:
+            for prop in base["props"]:
+                if prop in classes[subclass]:
+                    properties.pop(_get_prop_name(prop), None)  # a property can be covered by multiple base classes
+        if not properties:
+            del definition["properties"]
+
+        # Build allOf value.
+        value = [{"$ref": f"{ref_prefix}{base['name']}"} for base in allof]
+        value.append(definition.copy())
+        definition.clear()
+        definition["allOf"] = value
