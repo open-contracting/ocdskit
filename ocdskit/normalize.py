@@ -1,10 +1,9 @@
 import functools
 import json
-import re
 import zlib
 from collections import defaultdict
 
-from ocdskit.util import longest_common_subsequence
+from ocdskit.util import _split_camel_case, longest_common_subsequence
 
 VALIDATION_AND_METADATA_KEYWORDS = {  # except `type`
     # https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.6
@@ -110,11 +109,7 @@ def get_base_class_name(class_names, prefix="Base"):
     if len(class_names) < 2:
         return None
 
-    # Split into capitalized words at space, dot, underscore, dash and camelCase boundaries.
-    sequences = [
-        [part.capitalize() for part in re.split(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", name)]
-        for name in class_names
-    ]
+    sequences = [_split_camel_case(name) for name in class_names]
 
     lcs = sequences[0]
     for sequence in sequences[1:]:
