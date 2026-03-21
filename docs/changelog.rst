@@ -19,6 +19,7 @@ New library methods:
 -  :func:`ocdskit.normalize.get_normal_schema`
 -  :func:`ocdskit.normalize.get_schema_hash`
 -  :func:`ocdskit.normalize.hoist_deep_properties`
+-  :func:`ocdskit.normalize.normalize_schema`
 -  :func:`ocdskit.normalize.remove_fields`
 -  :func:`ocdskit.normalize.remove_private_fields`
 -  :func:`ocdskit.normalize.remove_unreachable_definitions`

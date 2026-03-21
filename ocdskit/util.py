@@ -357,8 +357,13 @@ def _cast_as_list(value):
     return sorted(value)
 
 
+def _get_prop_name(pair):
+    """Extract the property name from a ``prop:hash`` string."""
+    return pair.partition(":")[0]
+
+
 def _split_camel_case(name):
-    # Split into capitalized words at space, dot, underscore, dash and camelCase boundaries.
+    """Split into capitalized words at space, dot, underscore, dash and camelCase boundaries."""
     return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
 
 
