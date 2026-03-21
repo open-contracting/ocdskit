@@ -1,5 +1,6 @@
 import itertools
 import json
+import re
 from decimal import Decimal
 
 import ijson
@@ -22,6 +23,9 @@ except ImportError:
 
     class StrEnum(str, Enum):
         pass
+
+
+WORD_BOUNDARIES = re.compile(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 
 
 # See `grouper` recipe: https://docs.python.org/3/library/itertools.html#recipes
@@ -351,6 +355,21 @@ def _cast_as_list(value):
     if isinstance(value, str):
         return [value]
     return sorted(value)
+
+
+def _split_camel_case(name):
+    # Split into capitalized words at space, dot, underscore, dash and camelCase boundaries.
+    return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
+
+
+def _dedupe_with_counter(name, names):
+    if name in names:
+        root = name
+        counter = 2
+        while name in names:
+            name = f"{root}{counter}"
+            counter += 1
+    return name
 
 
 def longest_common_subsequence(x, y):
