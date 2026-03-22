@@ -24,12 +24,16 @@ dependencies = [
     "concepts",
     "ijson>=2.5",
     "jsonref",
+    "jsonschema",
     "ocdsmerge>=0.6",
     "ocdsextensionregistry>=0.6.7",
 ]
 
 [project.optional-dependencies]
-perf = ["orjson>=3"]
+perf = [
+    "jsonschema-rs",
+    "orjson>=3",
+]
 test = [
     "coverage",
     "jsonpointer",
