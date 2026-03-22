@@ -1,4 +1,5 @@
 import csv
+import json
 import pathlib
 import sys
 from collections import defaultdict
@@ -7,6 +8,20 @@ from operator import itemgetter
 import jsonref
 
 from ocdskit.commands.base import BaseCommand
+from ocdskit.schema import get_schema_fields
+
+KEYWORDS_TO_IGNORE = (
+    # Metadata keywords
+    # https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-6
+    "title",
+    "description",
+    "default",
+    # Extended keywords
+    # http://os4d.opendataservices.coop/development/schema/#extended-json-schema
+    "omitWhenMerged",
+    "wholeListMerge",
+    "versionId",
+)
 
 
 class Command(BaseCommand):
@@ -15,11 +30,12 @@ class Command(BaseCommand):
 
     def add_arguments(self):
         self.add_argument("file", help="the schema file")
-        self.add_argument("--no-codelists", action="store_true", help="skip reporting open and closed codelists")
+        self.add_argument("--field-count", action="store_true", help="report the number of fields")
+        self.add_argument("--codelists", action="store_true", help="report open and closed codelists")
         self.add_argument(
-            "--no-definitions",
+            "--definitions",
             action="store_true",
-            help="skip reporting definitions that can use a common $ref in the versioned release schema",
+            help="report definitions that can use a common $ref in the versioned release schema",
         )
         self.add_argument(
             "--min-occurrences",
@@ -29,28 +45,15 @@ class Command(BaseCommand):
         )
 
     def handle(self):
-        keywords_to_ignore = (
-            # Metadata keywords
-            # https://tools.ietf.org/html/draft-fge-json-schema-validation-00#section-6
-            "title",
-            "description",
-            "default",
-            # Extended keywords
-            # http://os4d.opendataservices.coop/development/schema/#extended-json-schema
-            "omitWhenMerged",
-            "wholeListMerge",
-            "versionId",
-        )
-
-        def add_definition(data):
+        def _add_definition(data):
             if "$ref" not in data:
-                definition = {key: value for key, value in sorted(data.items()) if key not in keywords_to_ignore}
+                definition = {key: value for key, value in sorted(data.items()) if key not in KEYWORDS_TO_IGNORE}
                 definitions[repr(definition)] += 1
 
-        def recurse(data):
+        def _recurse(data):
             if isinstance(data, list):
                 for item in data:
-                    recurse(item)
+                    _recurse(item)
             elif isinstance(data, dict):
                 if "codelist" in data:
                     open_codelist = data.get("openCodelist", "enum" not in data)
@@ -62,27 +65,34 @@ class Command(BaseCommand):
                     # too much work with too little advantage to do so.
                     if key in {"$defs", "definitions", "properties"}:
                         for definition in value.values():
-                            add_definition(definition)
-                    recurse(value)
+                            _add_definition(definition)
+                    _recurse(value)
 
         with open(self.args.file) as f:
-            schema = jsonref.load(f, base_uri=pathlib.Path(self.args.file).resolve().as_uri())
+            text = f.read()
 
-        codelists = defaultdict(set)
-        definitions = defaultdict(int)
-        recurse(schema)
+        if self.args.codelists or self.args.definitions:
+            deref_schema = jsonref.loads(text, base_uri=pathlib.Path(self.args.file).resolve().as_uri())
 
-        if not self.args.no_codelists:
-            writer = csv.writer(sys.stdout, lineterminator="\n")
-            writer.writerow(["codelist", "openCodelist"])
-            for codelist, openness in sorted(codelists.items()):
-                writer.writerow([codelist, "/".join(str(value) for value in sorted(openness))])
+            codelists = defaultdict(set)
+            definitions = defaultdict(int)
+            _recurse(deref_schema)
 
-        if not self.args.no_codelists and not self.args.no_definitions:
-            print()
+            if self.args.codelists:
+                writer = csv.writer(sys.stdout, lineterminator="\n")
+                writer.writerow(["codelist", "openCodelist"])
+                for codelist, openness in sorted(codelists.items()):
+                    writer.writerow([codelist, "/".join(str(value) for value in sorted(openness))])
 
-        if not self.args.no_definitions:
-            for definition, count in sorted(definitions.items(), key=itemgetter(1), reverse=True):
-                if count < self.args.min_occurrences:
-                    break
-                print(f"{count:2d}: {definition}")
+            if self.args.codelists and self.args.definitions:
+                print()
+
+            if self.args.definitions:
+                for definition, count in sorted(definitions.items(), key=itemgetter(1), reverse=True):
+                    if count < self.args.min_occurrences:
+                        break
+                    print(f"{count:2d}: {definition}")
+
+        if self.args.field_count:
+            schema = json.loads(text)
+            print(f"{sum(1 for field in get_schema_fields(schema))} fields")
