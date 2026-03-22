@@ -197,7 +197,7 @@ Update documentation on PyPI.
 Added
 ~~~~~
 
-New CLI options:
+New CLI option:
 
 -  :ref:`mapping-sheet`: ``--no-inherit-extension``
 
@@ -251,7 +251,7 @@ Changed
 Added
 ~~~~~
 
-New CLI options:
+New CLI option:
 
 -  :ref:`mapping-sheet`: ``--codelist``
 
@@ -337,7 +337,7 @@ Added
 Added
 ~~~~~
 
-New CLI options:
+New CLI option:
 
 -  :ref:`mapping-sheet`: ``--language``
 
@@ -379,7 +379,7 @@ Fixed
 Added
 ~~~~~
 
-New CLI commands:
+New CLI command:
 
 -  ``split-project-packages``
 
@@ -540,7 +540,7 @@ Fixed
 Added
 ~~~~~
 
-New CLI commands:
+New CLI command:
 
 -  ``convert-to-oc4ids``
 
@@ -575,7 +575,7 @@ New CLI options:
 -  :ref:`package-records`: ``--size``
 -  :ref:`package-releases`: ``--size``
 
-New CLI commands:
+New CLI command:
 
 -  :ref:`echo`
 
@@ -644,11 +644,11 @@ New CLI options:
 -  :ref:`package-records`: ``--fake``
 -  :ref:`package-releases`: ``--fake``
 
-New CLI commands:
+New CLI command:
 
 -  :ref:`package-records`
 
-New library methods:
+New library method:
 
 -  :func:`ocdskit.combine.package_records`
 
@@ -695,7 +695,7 @@ Command-line inputs can now be `concatenated JSON <https://en.wikipedia.org/wiki
 Added
 ~~~~~
 
-New CLI commands:
+New CLI command:
 
 -  :ref:`detect-format`
 
@@ -778,7 +778,7 @@ Fixed
 Added
 ~~~~~
 
-New CLI options:
+New CLI option:
 
 -  :ref:`compile`:
 
@@ -791,7 +791,7 @@ New CLI options:
 -  :ref:`combine-record-packages`: ``--uri``, ``--published-date``
 -  :ref:`combine-release-packages`: ``--uri``, ``--published-date``
 
-New CLI commands:
+New CLI command:
 
 -  :ref:`upgrade`
 
@@ -861,7 +861,7 @@ Added
 
 New CLI options:
 
--  ``validate``: ``--check-urls`` and ``--timeout``
+-  ``validate``: ``--check-urls``, ``--timeout``
 
 New CLI commands:
 
