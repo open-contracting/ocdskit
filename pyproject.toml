@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
+    "concepts",
     "ijson>=2.5",
     "jsonref",
     "ocdsmerge>=0.6",
