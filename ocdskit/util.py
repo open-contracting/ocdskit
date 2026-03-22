@@ -380,6 +380,7 @@ def longest_common_subsequence(x, y):
             else:
                 c[i][j] = max(c[i][j - 1], c[i - 1][j])
 
+    i, j = m, n
     result = []
     while i > 0 and j > 0:
         if x[i - 1] == y[j - 1]:
