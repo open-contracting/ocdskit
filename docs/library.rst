@@ -10,6 +10,7 @@ API Reference
    api/packager
    api/schema
    api/normalize
+   api/hierarchy
    api/util
    api/cli
    api/exceptions
