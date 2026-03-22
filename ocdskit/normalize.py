@@ -3,7 +3,7 @@ import json
 import zlib
 from collections import defaultdict
 
-from ocdskit.util import _get_prop_name, _split_camel_case, longest_common_subsequence
+from ocdskit.util import _get_prop_name
 
 VALIDATION_AND_METADATA_KEYWORDS = {  # except `type`
     # https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.6
@@ -102,29 +102,6 @@ def get_schema_hash(schema, normalizer):
     :rtype: int
     """
     return zlib.crc32(json.dumps(normalizer(schema), sort_keys=True).encode())
-
-
-def get_base_class_name(class_names, prefix="Base"):
-    """Derive a base class name from the longest common subsequence of words within class names."""
-    if len(class_names) < 2:
-        return None
-
-    sequences = [_split_camel_case(name) for name in class_names]
-
-    lcs = sequences[0]
-    for sequence in sequences[1:]:
-        lcs = longest_common_subsequence(lcs, sequence)
-        if not lcs:
-            return None
-
-    seen = set()
-    unique = []
-    for word in lcs:
-        if word not in seen:
-            seen.add(word)
-            unique.append(word)
-
-    return prefix + "".join(unique)
 
 
 def convert_from_oas3(schema, *, get_only=False):

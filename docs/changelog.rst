@@ -12,10 +12,10 @@ Added
 
 New library methods:
 
+-  :func:`ocdskit.hierarchy.get_base_class_name`
 -  :func:`ocdskit.hierarchy.get_base_classes_via_fca`
 -  :func:`ocdskit.normalize.convert_from_oas3`
 -  :func:`ocdskit.normalize.fix_validation_errors`
--  :func:`ocdskit.normalize.get_base_class_name`
 -  :func:`ocdskit.normalize.get_definitions_keyword`
 -  :func:`ocdskit.normalize.get_normal_schema`
 -  :func:`ocdskit.normalize.get_schema_hash`

@@ -1,6 +1,5 @@
 import itertools
 import json
-import re
 from decimal import Decimal
 
 import ijson
@@ -23,9 +22,6 @@ except ImportError:
 
     class StrEnum(str, Enum):
         pass
-
-
-WORD_BOUNDARIES = re.compile(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 
 
 # See `grouper` recipe: https://docs.python.org/3/library/itertools.html#recipes
@@ -360,11 +356,6 @@ def _cast_as_list(value):
 def _get_prop_name(pair):
     """Extract the property name from a ``prop:hash`` string."""
     return pair.partition(":")[0]
-
-
-def _split_camel_case(name):
-    """Split into capitalized words at space, dot, underscore, dash and camelCase boundaries."""
-    return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
 
 
 def _dedupe_with_counter(name, names):

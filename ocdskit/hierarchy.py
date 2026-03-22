@@ -1,10 +1,40 @@
+import re
 from collections import Counter
 from itertools import chain
 
 from concepts import Context
 
-from ocdskit.normalize import get_base_class_name
-from ocdskit.util import _dedupe_with_counter, _get_prop_name, _split_camel_case
+from ocdskit.util import _dedupe_with_counter, _get_prop_name, longest_common_subsequence
+
+WORD_BOUNDARIES = re.compile(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+
+
+def _split_camel_case(name):
+    """Split into capitalized words at space, dot, underscore, dash and camelCase boundaries."""
+    return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
+
+
+def get_base_class_name(class_names, prefix="Base"):
+    """Derive a base class name from the longest common subsequence of words within class names."""
+    if len(class_names) < 2:
+        return None
+
+    sequences = [_split_camel_case(name) for name in class_names]
+
+    lcs = sequences[0]
+    for sequence in sequences[1:]:
+        lcs = longest_common_subsequence(lcs, sequence)
+        if not lcs:
+            return None
+
+    seen = set()
+    unique = []
+    for word in lcs:
+        if word not in seen:
+            seen.add(word)
+            unique.append(word)
+
+    return prefix + "".join(unique)
 
 
 # https://en.wikipedia.org/wiki/Formal_concept_analysis
