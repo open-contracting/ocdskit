@@ -14,7 +14,7 @@ def _split_camel_case(name):
     return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
 
 
-def get_base_class_name(class_names, prefix="Base"):
+def get_base_class_name(class_names, prefix="ocdskit."):
     """Derive a base class name from the longest common subsequence of words within class names."""
     if len(class_names) < 2:
         return None
