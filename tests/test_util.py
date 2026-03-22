@@ -16,6 +16,7 @@ from ocdskit.util import (
     is_release,
     is_release_package,
     json_dump,
+    longest_common_subsequence,
 )
 from tests import path, read
 
@@ -256,3 +257,19 @@ def test_detect_format_empty(tmp_path):
 
     with pytest.raises(ijson.common.IncompleteJSONError):
         detect_format(path)  # "parse error: premature EOF"
+
+
+@pytest.mark.parametrize(
+    ("x", "y", "expected"),
+    [
+        ([], [], []),
+        (["A"], [], []),
+        ([], ["A"], []),
+        (["A", "B"], ["A", "B"], ["A", "B"]),
+        (["A", "B"], ["C", "D"], []),
+        (["A", "B", "C"], ["A", "C"], ["A", "C"]),
+        (["A", "B", "C"], ["B", "C", "D"], ["B", "C"]),
+    ],
+)
+def test_longest_common_subsequence(x, y, expected):
+    assert longest_common_subsequence(x, y) == expected
