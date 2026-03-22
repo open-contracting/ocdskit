@@ -349,7 +349,7 @@ def hoist_deep_properties(schema, normalizer):
                 # Recalculate the current definition's hash.
                 if definition is not None:
                     hashes[hasher(definition)] = definition_name
-            # Special case for allOf inheritance.
+            # Special case for allOf inheritance (note the `definition` argument). Avoids IndexError when naming.
             if value is definition and "allOf" in value and len(value) == 1:
                 for i, v in enumerate(definition["allOf"]):
                     _hoist(v, i, value["allOf"], v, definition_name, prop)
