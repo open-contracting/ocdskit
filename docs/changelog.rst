@@ -14,6 +14,10 @@ New CLI command:
 
 -  :ref:`normalize`
 
+New CLI option:
+
+-  :ref:`schema-report`: ``--field-count``
+
 New library methods:
 
 -  :func:`ocdskit.hierarchy.get_base_class_name`
@@ -29,6 +33,11 @@ New library methods:
 -  :func:`ocdskit.normalize.remove_private_fields`
 -  :func:`ocdskit.normalize.remove_unreachable_definitions`
 -  :func:`ocdskit.util.longest_common_subsequence`
+
+Changed
+~~~~~~~
+
+-  :ref:`schema-report`: Reports are opt-in, instead of opt-out.
 
 1.5.0 (2025-08-28)
 ------------------
