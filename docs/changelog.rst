@@ -10,6 +10,10 @@ Added
 -  :ref:`schema-report`: Support ``$defs``, in addition to ``definitions``.
 -  :ref:`set-closed-codelist-enums`: Support ``$defs``, in addition to ``definitions``.
 
+New CLI command:
+
+-  :ref:`normalize`
+
 New library methods:
 
 -  :func:`ocdskit.hierarchy.get_base_class_name`

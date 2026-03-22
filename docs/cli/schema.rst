@@ -111,3 +111,34 @@ Sets the enum in a JSON Schema to match the codes in the CSV files of closed cod
 .. code-block:: bash
 
     ocdskit set-closed-codelist-enums path/to/standard path/to/extension1 path/to/extension2
+
+.. _normalize:
+
+normalize
+---------
+
+Normalizes a denormalized JSON Schema.
+
+Required arguments:
+
+* ``file`` the schema file
+
+Optional arguments:
+
+--fix                         fix validation errors
+--remove-private-fields       remove _* fields
+--remove-fields FIELD         remove specified fields
+--root-pattern PATTERN        remove definitions unreachable from names matching this pattern
+--ignore-x-keywords           when deduplicating classes, ignore x-* keywords
+--ignore-fields FIELD         when deduplicating classes, ignore specified fields
+--max-field-prevalence FLOAT  when extracting base classes, ignore fields found in more than this proportion of classes
+--get-only                    if file is OpenAPI Schema, include only schemas used by GET paths
+--check                       check the file for denormalization without modifying the file
+
+.. code-block:: bash
+
+    ocdskit normalize path/to/schema.json
+
+.. note::
+
+   The metadata and validation keywords after normalization are illustrative, not representative, of the original schema.
