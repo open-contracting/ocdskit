@@ -461,10 +461,10 @@ def normalize_schema(schema, normalizer, get_base_classes):
             subschema = {"allOf": [{"$ref": f"{ref_prefix}{base['name']}"} for base in allof]}
             if remaining := base_class["props"] - set().union(*(base["props"] for base in allof)):
                 properties = {_get_prop_name(p): hashed_to_schema[p] for p in remaining}
-                subschema["allOf"].append({"type": "object", "properties": properties})
+                subschema["allOf"].append({"properties": properties})
         else:
             properties = {_get_prop_name(p): hashed_to_schema[p] for p in base_class["props"]}
-            subschema = {"type": "object", "properties": properties}
+            subschema = {"properties": properties}
         definitions[name] = subschema
 
     # Modify existing definitions to reference base classes.
