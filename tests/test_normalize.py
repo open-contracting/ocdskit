@@ -377,7 +377,7 @@ def test_normalize_schema():
     def get_base_classes(classes):
         names = list(classes)
         shared = set.intersection(*(classes[n] for n in names))
-        return [{"name": "ocdskit.Base", "members": names, "props": shared}]
+        return [{"name": "Base", "members": names, "props": shared}]
 
     schema = {
         "definitions": {
@@ -389,9 +389,9 @@ def test_normalize_schema():
 
     assert schema == {
         "definitions": {
-            "A": {"allOf": [{"$ref": "#/definitions/ocdskit.Base"}, {"type": "object"}]},
-            "B": {"allOf": [{"$ref": "#/definitions/ocdskit.Base"}, {"type": "object"}]},
-            "ocdskit.Base": {"type": "object", "properties": {"x": {"type": "string"}, "y": {"type": "integer"}}},
+            "A": {"allOf": [{"$ref": "#/definitions/Base"}, {"type": "object"}]},
+            "B": {"allOf": [{"$ref": "#/definitions/Base"}, {"type": "object"}]},
+            "Base": {"properties": {"x": {"type": "string"}, "y": {"type": "integer"}}},
         }
     }
 
@@ -430,13 +430,8 @@ def test_normalize_schema_inheritance_between_base_classes():
             "A": {"allOf": [{"$ref": "#/definitions/BaseLarge"}, {"type": "object"}]},
             "B": {"allOf": [{"$ref": "#/definitions/BaseLarge"}, {"type": "object"}]},
             "C": {"allOf": [{"$ref": "#/definitions/BaseSmall"}, {"type": "object"}]},
-            "BaseLarge": {
-                "allOf": [
-                    {"$ref": "#/definitions/BaseSmall"},
-                    {"type": "object", "properties": {"z": {"type": "boolean"}}},
-                ]
-            },
-            "BaseSmall": {"type": "object", "properties": {"y": {"type": "integer"}, "x": {"type": "string"}}},
+            "BaseLarge": {"allOf": [{"$ref": "#/definitions/BaseSmall"}, {"properties": {"z": {"type": "boolean"}}}]},
+            "BaseSmall": {"properties": {"y": {"type": "integer"}, "x": {"type": "string"}}},
         }
     }
 
@@ -462,6 +457,6 @@ def test_normalize_schema_duplicate_bases():
         "definitions": {
             "A": {"allOf": [{"$ref": "#/definitions/Base1"}, {"type": "object"}]},
             "B": {"allOf": [{"$ref": "#/definitions/Base1"}, {"type": "object"}]},
-            "Base1": {"type": "object", "properties": {"y": {"type": "integer"}, "x": {"type": "string"}}},
+            "Base1": {"properties": {"y": {"type": "integer"}, "x": {"type": "string"}}},
         }
     }
