@@ -101,7 +101,7 @@ def get_base_classes_via_fca(classes, min_intent=2, min_extent=2, max_field_prev
         name = get_base_class_name(extent, prefix=base_class_name_prefix)
         if name is None or name in names:
             suffix = "".join(word for prop in concept.minimal() for word in _split_camel_case(_get_prop_name(prop)))
-            name = _dedupe_with_counter(f"{name or base_class_name_prefix}{suffix}", names)
+            name = _dedupe_with_counter(f"{name or base_class_name_prefix}{suffix or 'Base'}", names)
         names.add(name)
 
         base_classes.append({"name": name, "members": extent, "props": intent})
