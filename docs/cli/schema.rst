@@ -132,6 +132,7 @@ Optional arguments:
 --ignore-x-keywords           when deduplicating classes, ignore x-* keywords
 --ignore-fields FIELD         when deduplicating classes, ignore specified fields
 --max-field-prevalence FLOAT  when extracting base classes, ignore fields found in more than this proportion of classes
+--base-class-name-prefix      prefix to disambiguate base classes from existing classes
 --get-only                    if file is OpenAPI Schema, include only schemas used by GET paths
 --check                       check the file for denormalization without modifying the file
 

@@ -14,8 +14,15 @@ def _split_camel_case(name):
     return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
 
 
-def get_base_class_name(class_names, prefix="ocdskit."):
-    """Derive a base class name from the longest common subsequence of words within class names."""
+def get_base_class_name(class_names, prefix=""):
+    """
+    Derive a base class name from the longest common subsequence of words within class names.
+
+    :param list[str] class_names: a list of class names
+    :param str prefix: a prefix for the base class name
+    :returns: a base class name
+    :rtype: str or None
+    """
     if len(class_names) < 2:
         return None
 
@@ -38,7 +45,7 @@ def get_base_class_name(class_names, prefix="ocdskit."):
 
 
 # https://en.wikipedia.org/wiki/Formal_concept_analysis
-def get_base_classes_via_fca(classes, min_intent=2, min_extent=2, max_field_prevalence=1.0):
+def get_base_classes_via_fca(classes, min_intent=2, min_extent=2, max_field_prevalence=1.0, base_class_name_prefix=""):
     """
     Identify base classes using `Formal Concept Analysis <https://en.wikipedia.org/wiki/Formal_concept_analysis>`__.
 
@@ -50,6 +57,7 @@ def get_base_classes_via_fca(classes, min_intent=2, min_extent=2, max_field_prev
     :param int min_intent: minimum number of non-inherited, non-common properties for a base class
     :param int min_extent: minimum number of member classes for a base class
     :param float max_field_prevalence: fields found in more than this proportion of classes are considered common
+    :param str base_class_name_prefix: a prefix to disambiguate base class names from existing class names
     :returns: a list of dicts with ``name``, ``members``, and ``props`` keys
     :rtype: list[dict]
     """
@@ -90,10 +98,10 @@ def get_base_classes_via_fca(classes, min_intent=2, min_extent=2, max_field_prev
         if intent <= inherited_properties:
             continue
 
-        name = get_base_class_name(extent)
+        name = get_base_class_name(extent, prefix=base_class_name_prefix)
         if name is None or name in names:
             suffix = "".join(word for prop in concept.minimal() for word in _split_camel_case(_get_prop_name(prop)))
-            name = _dedupe_with_counter(f"{name or 'Base'}{suffix}", names)
+            name = _dedupe_with_counter(f"{name or base_class_name_prefix}{suffix}", names)
         names.add(name)
 
         base_classes.append({"name": name, "members": extent, "props": intent})

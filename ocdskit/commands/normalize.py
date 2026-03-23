@@ -53,6 +53,9 @@ class Command(BaseCommand):
             help="when extracting base classes, ignore fields found in more than this proportion of classes",
         )
         self.add_argument(
+            "--base-class-name-prefix", default="", help="prefix to disambiguate base classes from existing classes"
+        )
+        self.add_argument(
             "--get-only", action="store_true", help="if file is OpenAPI Schema, include only schemas used by GET paths"
         )
         self.add_argument(
@@ -94,7 +97,11 @@ class Command(BaseCommand):
         original = deepcopy(schema)
 
         # Normalize the schema.
-        get_base_classes = partial(get_base_classes_via_fca, max_field_prevalence=self.args.max_field_prevalence)
+        get_base_classes = partial(
+            get_base_classes_via_fca,
+            max_field_prevalence=self.args.max_field_prevalence,
+            base_class_name_prefix=self.args.base_class_name_prefix,
+        )
         normalize_schema(schema, normalizer, get_base_classes)
 
         if self.args.check:
