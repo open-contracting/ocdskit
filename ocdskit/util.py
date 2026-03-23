@@ -95,6 +95,17 @@ def json_dumps(data, *, ensure_ascii=False, indent=None, sort_keys=False, **kwar
     return orjson.dumps(data, default=JSONEncoder().default, option=option).decode()
 
 
+def get_definitions_keyword(schema):
+    """
+    Return the schema's definitions keyword, defaulting to ``$defs``.
+
+    :param dict schema: a JSON schema
+    :returns: ``"$defs"`` or ``"definitions"``
+    :rtype: str
+    """
+    return next((keyword for keyword in ("$defs", "definitions") if keyword in schema), "$defs")
+
+
 def get_ocds_minor_version(data):
     """Return the OCDS minor version of the release package, record package, release or record."""
     if is_package(data):

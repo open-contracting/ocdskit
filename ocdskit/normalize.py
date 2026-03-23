@@ -3,7 +3,7 @@ import json
 import zlib
 from collections import defaultdict
 
-from ocdskit.util import _get_prop_name
+from ocdskit.util import _get_prop_name, get_definitions_keyword
 
 VALIDATION_AND_METADATA_KEYWORDS = {  # except `type`
     # https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.6
@@ -80,17 +80,6 @@ def _traverse_in_place(block):
                 _method(v)
 
     return _method
-
-
-def get_definitions_keyword(schema):
-    """
-    Return the schema's definitions keyword, defaulting to ``$defs``.
-
-    :param dict schema: a JSON schema
-    :returns: ``"$defs"`` or ``"definitions"``
-    :rtype: str
-    """
-    return next((keyword for keyword in ("$defs", "definitions") if keyword in schema), "$defs")
 
 
 def get_schema_hash(schema, normalizer):

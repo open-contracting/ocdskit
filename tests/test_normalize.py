@@ -5,7 +5,6 @@ import pytest
 from ocdskit.normalize import (
     convert_from_oas3,
     fix_validation_errors,
-    get_definitions_keyword,
     get_normal_schema,
     get_schema_hash,
     hoist_deep_properties,
@@ -33,19 +32,6 @@ OAS3_SCHEMA = {
         }
     },
 }
-
-
-@pytest.mark.parametrize(
-    ("schema", "expected"),
-    [
-        ({}, "$defs"),
-        ({"$defs": {}}, "$defs"),
-        ({"definitions": {}}, "definitions"),
-        ({"$defs": {}, "definitions": {}}, "$defs"),
-    ],
-)
-def test_get_definitions_keyword(schema, expected):
-    assert get_definitions_keyword(schema) == expected
 
 
 @pytest.mark.parametrize(

@@ -7,6 +7,7 @@ import pytest
 from ocdskit.exceptions import UnknownFormatError
 from ocdskit.util import (
     detect_format,
+    get_definitions_keyword,
     get_ocds_minor_version,
     is_compiled_release,
     is_linked_release,
@@ -19,6 +20,19 @@ from ocdskit.util import (
     longest_common_subsequence,
 )
 from tests import path, read
+
+
+@pytest.mark.parametrize(
+    ("schema", "expected"),
+    [
+        ({}, "$defs"),
+        ({"$defs": {}}, "$defs"),
+        ({"definitions": {}}, "definitions"),
+        ({"$defs": {}, "definitions": {}}, "$defs"),
+    ],
+)
+def test_get_definitions_keyword(schema, expected):
+    assert get_definitions_keyword(schema) == expected
 
 
 # Same fixture files as in test_detect_format.py, except for concatenated JSON files.
