@@ -370,11 +370,14 @@ def normalize_schema(schema, normalizer, get_base_classes):
     Hashes each ``properties`` member using ``normalizer``, calls ``get_base_classes``, then performs greedy set-cover
     to determine multiple inheritance for both base classes and original definitions.
 
-    All ``properties`` mappings must be at definitions' top-level. See :ref:`~ocdskit.normalize.hoist_deep_properties`.
-
     .. warning::
 
        Modifies ``schema`` in-place.
+
+    .. admonition:: Limitations
+
+       All ``properties`` mappings must be at each definition's top-level.
+       See :func:`~ocdskit.normalize.hoist_deep_properties`.
 
     :param dict schema: a JSON schema
     :param normalizer: a function that accepts a JSON Schema and returns a JSON Schema,
