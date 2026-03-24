@@ -1,17 +1,9 @@
-import re
 from collections import Counter
 from itertools import chain
 
 from concepts import Context
 
-from ocdskit.util import _dedupe_with_counter, _get_prop_name, longest_common_subsequence
-
-WORD_BOUNDARIES = re.compile(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
-
-
-def _split_camel_case(name):
-    """Split into capitalized words at space, dot, underscore, dash and camelCase boundaries."""
-    return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
+from ocdskit.util import _dedupe_with_counter, _get_prop_name, _split_camel_case, longest_common_subsequence
 
 
 def get_base_class_name(class_names, prefix=""):

@@ -1,5 +1,6 @@
 import itertools
 import json
+import re
 from decimal import Decimal
 
 import ijson
@@ -367,6 +368,14 @@ def _cast_as_list(value):
 def _get_prop_name(pair):
     """Extract the property name from a ``prop:hash`` string."""
     return pair.partition(":")[0]
+
+
+WORD_BOUNDARIES = re.compile(r"[ ._-]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+
+
+def _split_camel_case(name):
+    """Split into capitalized words at space, dot, underscore, dash and camelCase boundaries."""
+    return [word.capitalize() for word in WORD_BOUNDARIES.split(name)]
 
 
 def _dedupe_with_counter(name, names):
