@@ -84,9 +84,9 @@ def _get_schema_clusters(names, *, max_k, ignore_words=(), ignore_before=None, v
         for name, words, label in zip(names, word_lists, best_labels, strict=True):
             clusters[label].append((name, words))
         for label, members in sorted(clusters.items()):
-            print(f"Cluster {label}:", file=sys.stderr)
+            print(f"Cluster {label}:", file=sys.stderr)  # noqa: T201
             for name, words in members:
-                print(f"  {name}: {words}", file=sys.stderr)
+                print(f"  {name}: {words}", file=sys.stderr)  # noqa: T201
 
     return best_labels
 
@@ -110,9 +110,9 @@ def _get_color_map(schemas, *, subgraph, manual_clusters=(), ignore_words=(), ig
                 color_map[name] = COLORS[cluster_index]
 
             if verbose:
-                print(f"Manual cluster {cluster_index} ({pattern!r}):", file=sys.stderr)
+                print(f"Manual cluster {cluster_index} ({pattern!r}):", file=sys.stderr)  # noqa: T201
                 for name in sorted(matches):
-                    print(f"  {name}", file=sys.stderr)
+                    print(f"  {name}", file=sys.stderr)  # noqa: T201
 
             cluster_index += 1
             if cluster_index >= len(COLORS):
