@@ -30,6 +30,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+erd = [
+    "graphviz",
+    "scikit-learn",
+]
 perf = [
     "jsonschema-rs",
     "orjson>=3",
@@ -78,3 +82,4 @@ ignore-variadic-names = true
     "ARG001", "D", "FBT003", "INP001", "PLR2004", "S", "TRY003",
 ]
 "*/commands/*" = ["T201"]  # print
+"ocdskit/dot.py"= ["T201"]  # print

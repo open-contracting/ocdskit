@@ -143,3 +143,39 @@ Optional arguments:
 .. note::
 
    The metadata and validation keywords after normalization are illustrative, not representative, of the original schema.
+
+.. _erd:
+
+erd
+---
+
+Generates an entity-relationship diagram from a normalized JSON Schema.
+
+.. note::
+
+   Requires the ``erd`` extra:
+
+   .. code-block:: bash
+
+      pip install ocdskit[erd]
+
+Required arguments:
+
+* ``file`` the schema file
+* ``output`` the output file (Graphviz DOT format)
+
+Optional arguments:
+
+--no-properties               show schema names and relationships only
+--max-properties N            truncate schema properties (default: unlimited)
+--threshold N                 add schemas referenced this many times to a subgraph (default: auto)
+--root-pattern PATTERN        never add schemas matching this regex to the subgraph
+--cluster PATTERN             force schema names matching this regex into one color cluster (repeatable, evaluated in order)
+--ignore-words WORD           when color clustering, ignore these words in schema names
+--ignore-before SEP           when color clustering, ignore the parts of schema names before this character
+--base-class-name-prefix      prefix to disambiguate base classes from existing classes
+-v, --verbose                 print verbose output to stderr
+
+.. code-block:: bash
+
+    ocdskit erd path/to/schema.json schema.dot

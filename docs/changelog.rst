@@ -10,9 +10,10 @@ Added
 -  :ref:`schema-report`: Support ``$defs``, in addition to ``definitions``.
 -  :ref:`set-closed-codelist-enums`: Support ``$defs``, in addition to ``definitions``.
 
-New CLI command:
+New CLI commands:
 
 -  :ref:`normalize`
+-  :ref:`erd`
 
 New CLI option:
 

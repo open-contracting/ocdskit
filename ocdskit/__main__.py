@@ -15,6 +15,7 @@ COMMAND_MODULES = (
     "ocdskit.commands.compile",
     "ocdskit.commands.detect_format",
     "ocdskit.commands.echo",
+    "ocdskit.commands.erd",
     "ocdskit.commands.indent",
     "ocdskit.commands.mapping_sheet",
     "ocdskit.commands.normalize",
