@@ -328,7 +328,7 @@ def hoist_deep_properties(schema, normalizer):
                 if not name:
                     name = value.get("title")
                     if not name:  # don't use default argument to `get` in case prop is empty
-                        name = prop[0].upper() + prop[1:]
+                        name = prop[0].upper() + prop[1:] if prop else definition_name
                     if name in definitions:
                         name = f"{name}_{format(hashed & 0xFFFFFFFF, '08x')}"
                     definitions[name] = value
@@ -338,7 +338,7 @@ def hoist_deep_properties(schema, normalizer):
                 # Recalculate the current definition's hash.
                 if definition is not None:
                     hashes[hasher(definition)] = definition_name
-            # Special case for allOf inheritance (note the `definition` argument). Avoids IndexError when naming.
+            # Special case for allOf inheritance (note the `definition` argument).
             if value is definition and "allOf" in value and len(value) == 1:
                 for i, v in enumerate(definition["allOf"]):
                     _hoist(v, i, value["allOf"], v, definition_name, prop)
@@ -359,7 +359,7 @@ def hoist_deep_properties(schema, normalizer):
 
     schema.pop(definition_keyword)  # avoid re-processing definitions
     for key, value in schema.items():
-        _hoist(value, key, schema)
+        _hoist(value, key, schema, definition_name="Root")
     schema[definition_keyword] = definitions
 
 

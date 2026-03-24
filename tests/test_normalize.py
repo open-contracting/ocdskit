@@ -238,6 +238,27 @@ def test_get_normal_schema_list_traversal():
     assert result == [{"type": "string"}, {"type": "integer"}]
 
 
+def test_hoist_deep_properties_list_traversal():
+    schema = {
+        "definitions": {
+            "Root": {
+                "anyOf": [
+                    {"title": "Child", "type": "object", "properties": {"x": {"type": "string"}}},
+                    {"type": "null"},
+                ]
+            }
+        }
+    }
+    hoist_deep_properties(schema, lambda s: s)
+
+    assert schema == {
+        "definitions": {
+            "Root": {"anyOf": [{"$ref": "#/definitions/Child"}, {"type": "null"}]},
+            "Child": {"title": "Child", "type": "object", "properties": {"x": {"type": "string"}}},
+        }
+    }
+
+
 @pytest.mark.parametrize("keyword", ["definitions", "$defs"])
 def test_hoist_deep_properties_named_by_title(keyword):
     schema = {
@@ -280,19 +301,19 @@ def test_hoist_deep_properties_named_by_prop():
 def test_hoist_deep_properties_name_collision():
     schema = {
         "definitions": {
-            "Child": {"type": "string"},  # name already taken
             "Root": {
                 "type": "object",
                 "properties": {"child": {"type": "object", "properties": {"x": {"type": "string"}}}},
             },
+            "Child": {"type": "string"},  # name already taken
         }
     }
     hoist_deep_properties(schema, lambda s: s)
 
     assert schema == {
         "definitions": {
-            "Child": {"type": "string"},
             "Root": {"type": "object", "properties": {"child": {"$ref": "#/definitions/Child_c018a9ca"}}},
+            "Child": {"type": "string"},
             "Child_c018a9ca": {"type": "object", "properties": {"x": {"type": "string"}}},
         }
     }
@@ -302,7 +323,29 @@ def test_hoist_deep_properties_top_level_definition():
     schema = {"definitions": {"Flat": {"type": "object", "properties": {"x": {"type": "string"}}}}}
     hoist_deep_properties(schema, lambda s: s)
 
-    assert schema == {"definitions": {"Flat": {"type": "object", "properties": {"x": {"type": "string"}}}}}
+    assert schema == {
+        "definitions": {"Flat": {"type": "object", "properties": {"x": {"type": "string"}}}},
+    }
+
+
+def test_hoist_deep_properties_top_level_properties():
+    schema = {"properties": {"top": {"type": "object", "properties": {"x": {"type": "string"}}}}}
+    hoist_deep_properties(schema, lambda s: s)
+
+    assert schema == {
+        "properties": {"top": {"$ref": "#/$defs/Top"}},
+        "$defs": {"Top": {"type": "object", "properties": {"x": {"type": "string"}}}},
+    }
+
+
+def test_hoist_deep_properties_top_level_applicator():
+    schema = {"anyOf": [{"type": "object", "properties": {"x": {"type": "string"}}}]}
+    hoist_deep_properties(schema, lambda s: s)
+
+    assert schema == {
+        "anyOf": [{"$ref": "#/$defs/Root"}],
+        "$defs": {"Root": {"type": "object", "properties": {"x": {"type": "string"}}}},
+    }
 
 
 def test_hoist_deep_properties_allof_special_case():
@@ -328,22 +371,34 @@ def test_hoist_deep_properties_allof_special_case():
     }
 
 
-def test_hoist_deep_properties_top_level_properties():
-    schema = {"properties": {"foo": {"type": "object", "properties": {"x": {"type": "string"}}}}}
+def test_hoist_deep_properties_applicator_allof():
+    schema = {
+        "definitions": {
+            "Root": {
+                "allOf": [{"type": "object", "properties": {"x": {"type": "string"}}}],
+                "description": "x",
+            }
+        }
+    }
     hoist_deep_properties(schema, lambda s: s)
 
     assert schema == {
-        "properties": {"foo": {"$ref": "#/$defs/Foo"}},
-        "$defs": {"Foo": {"type": "object", "properties": {"x": {"type": "string"}}}},
+        "definitions": {
+            "Root": {
+                "allOf": [{"$ref": "#/definitions/Root_c018a9ca"}],
+                "description": "x",
+            },
+            "Root_c018a9ca": {"type": "object", "properties": {"x": {"type": "string"}}},
+        }
     }
 
 
-def test_hoist_deep_properties_list_traversal():
+def test_hoist_deep_properties_applicator_anyof():
     schema = {
         "definitions": {
             "Root": {
                 "anyOf": [
-                    {"title": "Child", "type": "object", "properties": {"x": {"type": "string"}}},
+                    {"type": "object", "properties": {"x": {"type": "string"}}},
                     {"type": "null"},
                 ]
             }
@@ -353,8 +408,8 @@ def test_hoist_deep_properties_list_traversal():
 
     assert schema == {
         "definitions": {
-            "Root": {"anyOf": [{"$ref": "#/definitions/Child"}, {"type": "null"}]},
-            "Child": {"title": "Child", "type": "object", "properties": {"x": {"type": "string"}}},
+            "Root": {"anyOf": [{"$ref": "#/definitions/Root_c018a9ca"}, {"type": "null"}]},
+            "Root_c018a9ca": {"type": "object", "properties": {"x": {"type": "string"}}},
         }
     }
 

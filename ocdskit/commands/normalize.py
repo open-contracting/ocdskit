@@ -73,7 +73,7 @@ class Command(BaseCommand):
             remove_fields=set(self.args.ignore_fields),
         )
 
-        # Get valid JSON Schema, and reduce its size.
+        # Get valid JSON Schema, and reduce its size. NOTE: These operations can in principle be a separate command.
         if schema.get("openapi", "").startswith("3.0"):
             schema = convert_from_oas3(schema, get_only=self.args.get_only)
         if self.args.remove_private_fields:
