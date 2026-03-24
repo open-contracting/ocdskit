@@ -30,10 +30,10 @@ def _auto_threshold(ref_counts, min_relative_gap=0.2):
     if len(ref_counts) < 2:
         return None
     counts = sorted(ref_counts.values(), reverse=True)
-    max_gap, index = max((counts[i] - counts[i + 1], i) for i in range(len(counts) - 1))
-    if max_gap / counts[0] < min_relative_gap:
+    max_gap, index = max(((counts[i] - counts[i + 1]) / counts[i], i) for i in range(len(counts) - 1))
+    if max_gap < min_relative_gap:
         return None
-    return counts[index + 1]
+    return counts[index]
 
 
 class Command(BaseCommand):
