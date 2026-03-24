@@ -1,7 +1,7 @@
 import functools
 import re
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 import graphviz
 from sklearn.cluster import KMeans
@@ -127,8 +127,9 @@ def _get_color_map(schemas, *, subgraph, manual_clusters=(), ignore_words=(), ig
             for name in names:
                 color_map[name] = NEUTRAL_COLOR
         else:
+            largest_label = Counter(labels).most_common(1)[0][0]
             for name, label in zip(names, labels, strict=True):
-                color_map[name] = COLORS[cluster_index + label]
+                color_map[name] = COLORS[-1] if label == largest_label else COLORS[cluster_index + label]
 
     return color_map
 
