@@ -15,7 +15,6 @@ COMMAND_MODULES = (
     "ocdskit.commands.compile",
     "ocdskit.commands.detect_format",
     "ocdskit.commands.echo",
-    "ocdskit.commands.erd",
     "ocdskit.commands.indent",
     "ocdskit.commands.mapping_sheet",
     "ocdskit.commands.normalize",
@@ -29,6 +28,8 @@ COMMAND_MODULES = (
     "ocdskit.commands.upgrade",
 )
 
+OPTIONAL_COMMAND_MODULES = {"ocdskit.commands.erd"}
+
 
 # The arguments are for use in oc4idskit.
 def main(description="Open Contracting Data Standard CLI", modules=COMMAND_MODULES, logger=logger):
@@ -41,11 +42,12 @@ def main(description="Open Contracting Data Standard CLI", modules=COMMAND_MODUL
 
     subcommands = {}
 
-    for module in modules:
+    for module in (*modules, *OPTIONAL_COMMAND_MODULES):
         try:
             command = importlib.import_module(module).Command(subparsers)
         except ImportError as e:
-            logger.error('exception "%s" prevented loading of %s module', e, module)  # noqa: TRY400 # UX
+            if module not in OPTIONAL_COMMAND_MODULES:
+                logger.error('exception "%s" prevented loading of %s module', e, module)  # noqa: TRY400 # UX
         else:
             subcommands[command.name] = command
 
