@@ -27,6 +27,7 @@ def _auto_threshold(ref_counts, min_relative_gap=0.2):
 
     Returns None if the largest gap is relatively small.
     """
+    # NOTE: The kneed package might improve threshold selection for some inputs.
     if len(ref_counts) < 2:
         return None
     counts = sorted(ref_counts.values(), reverse=True)
