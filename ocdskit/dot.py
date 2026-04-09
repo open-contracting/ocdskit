@@ -168,6 +168,8 @@ def get_erd(
     schemas,
     *,
     no_properties=False,
+    no_inheritance=False,
+    only_inheritance=False,
     max_properties=None,
     subgraph=(),
     manual_clusters=(),
@@ -233,7 +235,9 @@ def get_erd(
         if relationship_key not in seen_relationships:
             attrs = {}
             if is_array is None:  # inheritance
-                attrs["style"] = "dashed"  # default "solid"
+                attrs["style"] = "invis" if no_inheritance else "dashed"  # default "solid"
+            elif only_inheritance:
+                attrs["style"] = "invis"
             elif is_array:
                 attrs["arrowhead"] = "crow"  # default "normal"
             if label:  # inheritance uses no label

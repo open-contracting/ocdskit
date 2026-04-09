@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+Added
+~~~~~
+
+New CLI options:
+
+:  :ref:`erd`: ``--no-inheritance``, ``--only-inheritance``.
+
 1.6.0 (2026-03-25)
 ------------------
 

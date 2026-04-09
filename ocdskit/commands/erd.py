@@ -45,6 +45,8 @@ class Command(BaseCommand):
         self.add_argument("file", help="the schema file")
         self.add_argument("output", help="the output file")
         self.add_argument("--no-properties", action="store_true", help="show schema names and relationships only")
+        self.add_argument("--no-inheritance", action="store_true", help="do not display inheritance relationships")
+        self.add_argument("--only-inheritance", action="store_true", help="only display inheritance relationships")
         self.add_argument(
             "--max-properties", type=int, metavar="N", help="truncate schema properties (default: unlimited)"
         )
@@ -125,6 +127,8 @@ class Command(BaseCommand):
         result = get_erd(
             definitions,
             no_properties=self.args.no_properties,
+            no_inheritance=self.args.no_inheritance,
+            only_inheritance=self.args.only_inheritance,
             max_properties=self.args.max_properties,
             subgraph=basic_names,
             manual_clusters=self.args.cluster,
