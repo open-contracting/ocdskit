@@ -33,7 +33,7 @@ OPTIONAL_COMMAND_MODULES = {"ocdskit.commands.erd"}
 
 # The arguments are for use in oc4idskit.
 def main(description="Open Contracting Data Standard CLI", modules=COMMAND_MODULES, logger=logger):
-    parser = argparse.ArgumentParser(description=description)
+    parser = argparse.ArgumentParser(prog="ocdskit", description=description)
     parser.add_argument("--encoding", help="the file encoding")
     parser.add_argument("--ascii", help="print escape sequences instead of UTF-8 characters", action="store_true")
     parser.add_argument("--pretty", help="pretty print output", action="store_true")
