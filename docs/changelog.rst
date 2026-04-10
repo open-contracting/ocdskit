@@ -9,7 +9,9 @@ Added
 
 New CLI options:
 
-:  :ref:`erd`: ``--no-inheritance``, ``--only-inheritance``.
+-  :ref:`erd`: ``--no-inheritance``, ``--only-inheritance``
+
+-  Add support for Python 3.13.
 
 1.6.0 (2026-03-25)
 ------------------
@@ -53,11 +55,19 @@ Changed
 1.5.0 (2025-08-28)
 ------------------
 
+Added
+~~~~~
+
+-  Add support for Python 3.13.
+
 Changed
 ~~~~~~~
 
 -  :class:`ocdskit.packager.Packager`: :meth:`ocdskit.packager.AbstractBackend.add_release` raises :exc:`~ocdskit.exceptions.NonObjectReleaseError` if a release is not an object.
--  Add support for Python 3.13.
+
+Removed
+~~~~~~~
+
 -  Drop support for Python 3.9.
 
 1.4.0 (2025-07-03)
@@ -131,6 +141,9 @@ Changed
    -  :func:`ocdskit.util.json_dump`
    -  :func:`ocdskit.util.json_dumps`
 
+Removed
+~~~~~~~
+
 -  Drop support for Python 3.8.
 
 1.1.13 (2024-05-08)
@@ -177,6 +190,10 @@ Added
 ~~~~~
 
 -  :func:`ocdskit.util.is_linked_release` accepts a ``maximum_properties`` argument (default 3).
+
+Removed
+~~~~~~~
+
 -  Drop support for Python 3.7.
 
 1.1.8 (2023-06-26)
@@ -221,7 +238,7 @@ New CLI option:
 
 -  :ref:`mapping-sheet`: ``--no-inherit-extension``
 
-Changed
+Removed
 ~~~~~~~
 
 -  Drop support for Python 3.6.
