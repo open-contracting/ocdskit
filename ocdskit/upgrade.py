@@ -24,7 +24,9 @@ organization_identification_1_0 = (
 )
 
 
-def _move_to_top(data, fields):
+def _move_to_top(data, fields, *, reorder):
+    if not reorder:
+        return
     for field in reversed(fields):
         if field in data:
             data.move_to_end(field, last=False)
@@ -34,22 +36,23 @@ def _in(obj, field):
     return field in obj and obj[field] is not None
 
 
-def upgrade_10_10(data):
+def upgrade_10_10(data, **kwargs):
     """Upgrade a release package, record package, release or record from 1.0 to 1.0 (no-op)."""
     return data
 
 
-def upgrade_11_11(data):
+def upgrade_11_11(data, **kwargs):
     """Upgrade a release package, record package, release or record from 1.1 to 1.1 (no-op)."""
     return data
 
 
-def upgrade_10_11(data):
+def upgrade_10_11(data, *, reorder=True):
     """
     Upgrade a release package, record package, release or record from 1.0 to 1.1.
 
     Retain the deprecated Amendment.changes, Budget.source and Milestone.documents fields.
 
+    If ``reorder`` is ``True`` (the default), identifying fields like ``ocid`` are moved to the top of objects, and
     ``data`` must be an ``OrderedDict``. If you have only the parsed JSON, re-parse it with:
 
     ``upgrade_10_11(json.loads(json.dumps(data), object_pairs_hook=OrderedDict))``
@@ -60,64 +63,65 @@ def upgrade_10_11(data):
 
     if is_package(data):
         data["version"] = "1.1"
-        _move_to_top(data, ("uri", "version"))
+        _move_to_top(data, ("uri", "version"), reorder=reorder)
 
     if is_record_package(data):
         for record in data["records"]:
-            upgrade_record_10_11(record)
+            upgrade_record_10_11(record, reorder=reorder)
     elif is_release_package(data):
         for release in data["releases"]:
-            upgrade_release_10_11(release)
+            upgrade_release_10_11(release, reorder=reorder)
     elif is_record(data):
-        upgrade_record_10_11(data)
+        upgrade_record_10_11(data, reorder=reorder)
     else:  # release
-        upgrade_release_10_11(data)
+        upgrade_release_10_11(data, reorder=reorder)
 
     return data
 
 
-def upgrade_record_10_11(record):
+def upgrade_record_10_11(record, *, reorder=True):
     """Upgrade a record from 1.0 to 1.1."""
     if "releases" in record:
         for release in record["releases"]:
-            upgrade_release_10_11(release)
+            upgrade_release_10_11(release, reorder=reorder)
     if "compiledRelease" in record:
-        upgrade_release_10_11(record["compiledRelease"])
+        upgrade_release_10_11(record["compiledRelease"], reorder=reorder)
 
 
-def upgrade_release_10_11(release):
+def upgrade_release_10_11(release, *, reorder=True):
     """Apply upgrades for organization handling, amendment handling and transactions terminology."""
-    upgrade_parties_10_to_11(release)
+    upgrade_parties_10_to_11(release, reorder=reorder)
     upgrade_amendments_10_11(release)
-    upgrade_transactions_10_11(release)
+    upgrade_transactions_10_11(release, reorder=reorder)
 
 
-def upgrade_parties_10_to_11(release):
+def upgrade_parties_10_to_11(release, *, reorder=True):
     """Convert organizations to organization references and fill in the ``parties`` array."""
     parties = _get_parties(release)
 
     if _in(release, "buyer"):
         buyer = release["buyer"]
-        release["buyer"] = _add_party(parties, buyer, "buyer")
+        release["buyer"] = _add_party(parties, buyer, "buyer", reorder=reorder)
 
     if _in(release, "tender"):
-        if _in(release["tender"], "procuringEntity"):
-            procuring_entity = release["tender"]["procuringEntity"]
-            release["tender"]["procuringEntity"] = _add_party(parties, procuring_entity, "procuringEntity")
-        if _in(release["tender"], "tenderers"):
-            for i, tenderer in enumerate(release["tender"]["tenderers"]):
-                release["tender"]["tenderers"][i] = _add_party(parties, tenderer, "tenderer")
+        tender = release["tender"]
+        if _in(tender, "procuringEntity"):
+            procuring_entity = tender["procuringEntity"]
+            tender["procuringEntity"] = _add_party(parties, procuring_entity, "procuringEntity", reorder=reorder)
+        if _in(tender, "tenderers"):
+            for i, tenderer in enumerate(tender["tenderers"]):
+                tender["tenderers"][i] = _add_party(parties, tenderer, "tenderer", reorder=reorder)
 
     if _in(release, "awards"):
         for award in release["awards"]:
             if _in(award, "suppliers"):
                 for i, supplier in enumerate(award["suppliers"]):
-                    award["suppliers"][i] = _add_party(parties, supplier, "supplier")
+                    award["suppliers"][i] = _add_party(parties, supplier, "supplier", reorder=reorder)
 
     if parties:
         if "parties" not in release:
             release["parties"] = []
-            _move_to_top(release, ("ocid", "id", "date", "tag", "initiationType", "parties"))
+            _move_to_top(release, ("ocid", "id", "date", "tag", "initiationType", "parties"), reorder=reorder)
 
         for party in parties.values():
             if party not in release["parties"]:
@@ -135,7 +139,7 @@ def _get_parties(release):
     return parties
 
 
-def _add_party(parties, party, role):
+def _add_party(parties, party, role, *, reorder=True):
     """
     Add an ``id`` to the party, add the party to the ``parties`` array, set the party's role, and return an
     OrganizationReference. Warn if there is any data loss from differences in non-identifying fields.
@@ -144,7 +148,7 @@ def _add_party(parties, party, role):
 
     if "id" not in party:
         party["id"] = _create_party_id(party)
-        _move_to_top(party, ("id"))
+        _move_to_top(party, ("id",), reorder=reorder)
 
     _id = party["id"]
 
@@ -165,7 +169,7 @@ def _add_party(parties, party, role):
 
     if "roles" not in parties[_id]:
         parties[_id]["roles"] = []
-        _move_to_top(parties[_id], ("id", "roles"))
+        _move_to_top(parties[_id], ("id", "roles"), reorder=reorder)
 
     # In case the data is invalid.
     parties[_id]["roles"] = _cast_as_list(parties[_id]["roles"])
@@ -220,7 +224,7 @@ def _upgrade_amendment_10_11(block):
         del block["amendment"]
 
 
-def upgrade_transactions_10_11(release):
+def upgrade_transactions_10_11(release, *, reorder=True):
     """
     Rename ``providerOrganization`` to ``payer``, ``receiverOrganization`` to ``payee``, and ``amount`` to ``value``
     under ``contracts.implementation.transactions``, unless they already exist.
@@ -245,5 +249,5 @@ def upgrade_transactions_10_11(release):
                             if "legalName" in transaction[old]:
                                 party["name"] = transaction[old]["legalName"]
 
-                            transaction[new] = _add_party(parties, party, new)
+                            transaction[new] = _add_party(parties, party, new, reorder=reorder)
                             del transaction[old]

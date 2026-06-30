@@ -72,7 +72,7 @@ def test_command_release_tenderers_amendment(capsys, monkeypatch, caplog):
     assert caplog.records[0].levelname == "WARNING"
     assert caplog.records[0].message == (
         'party in "supplier" role differs from party in ["tenderer"] roles:\n'
-        '{"name": "Acme Inc.", "identifier": {"id": 1}, "additionalIdentifiers": [{"id": "a"}], "id": "3c9756cf8983b14066a034079aa7aae4"}\n'  # noqa: E501
+        '{"id": "3c9756cf8983b14066a034079aa7aae4", "name": "Acme Inc.", "identifier": {"id": 1}, "additionalIdentifiers": [{"id": "a"}]}\n'  # noqa: E501
         '{"id": "3c9756cf8983b14066a034079aa7aae4", "name": "Acme Inc.", "identifier": {"id": 1}}'
     )
 
@@ -148,6 +148,30 @@ def test_command_release_party_roles_str(capsys, monkeypatch, caplog):
 
     # Should not raise an error.
     run_streaming(capsys, monkeypatch, main, ["upgrade", "1.0:1.1"], stdin)
+
+    assert len(caplog.records) == 0
+
+
+def test_command_reorder(capsys, monkeypatch, caplog):
+    stdin = b'{"releases": [{"ocid": "ocds-1", "buyer": {"name": "Acme"}}]}'
+
+    actual = run_streaming(capsys, monkeypatch, main, ["upgrade", "1.0:1.1"], stdin)
+
+    data = json.loads(actual.out)
+    assert list(data) == ["version", "releases"]
+    assert list(data["releases"][0]) == ["ocid", "parties", "buyer"]
+
+    assert len(caplog.records) == 0
+
+
+def test_command_no_reorder(capsys, monkeypatch, caplog):
+    stdin = b'{"releases": [{"ocid": "ocds-1", "buyer": {"name": "Acme"}}]}'
+
+    actual = run_streaming(capsys, monkeypatch, main, ["upgrade", "1.0:1.1", "--no-reorder"], stdin)
+
+    data = json.loads(actual.out)
+    assert list(data) == ["releases", "version"]
+    assert list(data["releases"][0]) == ["ocid", "buyer", "parties"]
 
     assert len(caplog.records) == 0
 

@@ -11,6 +11,11 @@ class Command(OCDSCommand):
 
     def add_arguments(self):
         self.add_argument("versions", help="the colon-separated old and new versions")
+        self.add_argument(
+            "--no-reorder",
+            action="store_true",
+            help="don't move identifying fields like 'ocid' to the top of objects",
+        )
 
     def handle(self):
         versions = self.args.versions
@@ -24,5 +29,8 @@ class Command(OCDSCommand):
             message = f"{direction}grade from {versions.replace(':', ' to ')} is not supported"
             raise CommandError(message) from e
 
-        for data in self.items(map_type=OrderedDict):
-            self.print(upgrade_method(data))
+        reorder = not self.args.no_reorder
+        map_type = OrderedDict if reorder else dict
+
+        for data in self.items(map_type=map_type):
+            self.print(upgrade_method(data, reorder=reorder))

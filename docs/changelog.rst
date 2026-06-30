@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.7.0 (2026-06-29)
+------------------
 
 Added
 ~~~~~
@@ -10,8 +10,14 @@ Added
 New CLI options:
 
 -  :ref:`erd`: ``--no-inheritance``, ``--only-inheritance``
+-  :ref:`upgrade`: ``--no-reorder``
 
 -  Add support for Python 3.13.
+
+Fixed
+~~~~~
+
+-  :ref:`upgrade`: Move a created organization's ``id`` field to the top of the object, not only when the organization already has a ``roles`` field.
 
 1.6.0 (2026-03-25)
 ------------------

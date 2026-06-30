@@ -156,6 +156,10 @@ Mandatory positional arguments:
 
 * ``versions`` the colon-separated old and new versions
 
+Optional arguments:
+
+--no-reorder                          don't move identifying fields like ``ocid`` to the top of objects
+
 .. code-block:: bash
    :caption: Example command
 
