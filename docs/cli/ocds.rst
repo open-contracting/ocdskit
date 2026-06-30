@@ -160,6 +160,8 @@ Optional arguments:
 
 --no-reorder                          don't move identifying fields like ``ocid`` to the top of objects
 
+.. warning:: If ocdskit was installed with ``pip install ocdskit[perf]``, fields are never moved.
+
 .. code-block:: bash
    :caption: Example command
 
