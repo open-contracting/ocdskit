@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
+requires-python = ">=3.10"
 dependencies = [
     "concepts",
     "ijson>=2.5",
