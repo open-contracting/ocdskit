@@ -7,5 +7,5 @@ jobs:
       contents: read
     with:
       standard-maintenance-scripts-extras: erd,perf
-      # click and libcove are used by manage.py. test_requirements.py ignores try/except blocks (orjson).
-      standard-maintenance-scripts-ignore: click,libcove,orjson
+      # click and libcove are used by manage.py.
+      standard-maintenance-scripts-ignore: click,libcove
