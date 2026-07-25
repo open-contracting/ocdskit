@@ -43,7 +43,7 @@ perf = [
 test = [
     "coverage",
     "jsonpointer",
-    "libcove==0.32.1",
+    "libcove>=0.32.1",
     "pytest",
     "pytest-benchmark",
 ]

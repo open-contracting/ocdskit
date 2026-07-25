@@ -6,4 +6,6 @@ jobs:
     permissions:
       contents: read
     with:
-      standard-maintenance-scripts-ignore: click
+      standard-maintenance-scripts-extras: erd
+      # Used by manage.py
+      standard-maintenance-scripts-ignore: click,libcove
