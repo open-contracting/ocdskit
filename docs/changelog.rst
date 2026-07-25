@@ -340,7 +340,7 @@ Changed
 ~~~~~~~
 
 -  ``validate``: Remove command. Instead, use `lib-cove-ocds <https://github.com/open-contracting/lib-cove-ocds>`__.
--  ``tabulate``: Remove command. Instead, convert the JSON data to CSV format using `Spoonbill <https://github.com/open-contracting/spoonbill>`__ or `Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/usage-ocds/>`__, and then load the CSV files into your preferred database. See:
+-  ``tabulate``: Remove command. Instead, convert the JSON data to CSV format using `Flatterer <https://docs.flatterer.dev>`__ or `Flatten Tool <https://flatten-tool.readthedocs.io/en/latest/usage-ocds/>`__, and then load the CSV files into your preferred database. See:
 
    -  SQLite's `.import <https://sqlite.org/cli.html#importing_csv_files>`__ command (see also `sqlite-utils <https://sqlite-utils.datasette.io/en/stable/>`__)
    -  PostgreSQL's `COPY <https://www.postgresql.org/docs/current/sql-copy.html>`__ command
