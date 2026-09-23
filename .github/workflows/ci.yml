@@ -43,7 +43,7 @@ jobs:
         run: pytest --benchmark-save=libcove --benchmark-only
       - if: matrix.os == 'ubuntu-latest' && matrix.python-version != 'pypy-3.11'
         run: pytest --benchmark-only --benchmark-compare=0001 --benchmark-compare-fail=mean:10%
-      - uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           fail_ci_if_error: true
   # Without `if: always()`, a failed `test` would skip `build`, and a skipped job satisfies a required status check.
