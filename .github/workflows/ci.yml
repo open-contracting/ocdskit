@@ -21,6 +21,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: pyproject.toml
+      # lxml has no pypy311_pp80 wheels, so it builds from source.
+      - if: matrix.os == 'ubuntu-latest' && matrix.python-version == 'pypy-3.11'
+        run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt1-dev
       - run: pip install .[test]
       # Print the ijson backend, to make any errors easier to debug.
       - run: python -c "import ijson; print(ijson.backend)"
