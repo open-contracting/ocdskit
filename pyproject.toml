@@ -44,7 +44,7 @@ test = [
     "coverage",
     "jsonpointer",
     "libcove>=0.32.1",
-    "pytest",
+    "pytest<9.2",  # https://github.com/ionelmc/pytest-benchmark/issues/321
     "pytest-benchmark",
 ]
 
