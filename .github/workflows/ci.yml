@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        python-version: ['3.11', '3.12', '3.13', '3.14', pypy-3.11]
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15', pypy-3.11]
         # Until lxml publishes pypy311_pp80 wheels for Windows. https://pypi.org/project/lxml/#files
         exclude:
           - os: windows-latest

@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+Added
+~~~~~
+
+-  Add support for Python 3.15.
+
 Removed
 ~~~~~~~
 
