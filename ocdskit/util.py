@@ -2,6 +2,7 @@ import itertools
 import json
 import re
 from decimal import Decimal
+from enum import StrEnum
 
 import ijson
 from ocdsmerge.util import get_tags
@@ -14,15 +15,6 @@ try:
     jsonlib = orjson
 except ImportError:
     jsonlib = json
-
-# https://tomwojcik.com/posts/2023-01-02/python-311-str-enum-breaking-change
-try:
-    from enum import StrEnum
-except ImportError:
-    from enum import Enum
-
-    class StrEnum(str, Enum):
-        pass
 
 
 # See `grouper` recipe: https://docs.python.org/3/library/itertools.html#recipes
