@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,10 +8,9 @@ version = "1.7.0"
 authors = [{name = "Open Contracting Partnership", email = "data@open-contracting.org"}]
 description = "A suite of command-line tools for working with OCDS data"
 readme = "README.rst"
-license = {text = "BSD"}
+license = "BSD-3-Clause"
 urls = {Homepage = "https://github.com/open-contracting/ocdskit"}
 classifiers = [
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
