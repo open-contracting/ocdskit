@@ -90,9 +90,8 @@ class Command(BaseCommand):
                         codes.append(None)
                     if "enum" not in data or set(data["enum"]) != set(codes):
                         data["enum"] = codes
-                elif "array" in types:
-                    if "enum" not in data["items"] or set(data["items"]["enum"]) != set(codes):
-                        data["items"]["enum"] = codes
+                elif "array" in types and ("enum" not in data["items"] or set(data["items"]["enum"]) != set(codes)):
+                    data["items"]["enum"] = codes
 
         return data
 
